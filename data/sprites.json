@@ -8,11 +8,63 @@
     "cloud_alpha": 0.6,
     "sprites_face": "right"
   },
-  "units": {},
-  "tiles": {},
-  "locations": {},
-  "surfaces": {},
-  "skills": {},
-  "statuses": {},
-  "auto": []
+  "units": {
+    "knight": "male_adventurer",
+    "wizard": "female_adventurer",
+    "ranger": "female_person",
+    "cleric": "male_person",
+    "wolf": {
+      "sprite": "worm_green",
+      "scale": 0.8
+    },
+    "goblin_warrior": "zombie",
+    "goblin_shaman": "robot",
+    "training_dummy": "slime_block"
+  },
+  "tiles": {
+    "floor": "dirt_center",
+    "wall": "brick_grey"
+  },
+  "locations": {
+    "village": {
+      "floor": [
+        "grass_center"
+      ]
+    },
+    "forest": {
+      "wall": "platform_tiles#7"
+    }
+  },
+  "surfaces": {
+    "water": "water",
+    "fire": "lava",
+    "ice": "water_top_high",
+    "steam": "torch",
+    "poison_cloud": "torch",
+    "electrified_water": "water"
+  },
+  "skills": {
+    "attack": "coin_gold",
+    "fireball": "gem_red",
+    "rain": "gem_blue",
+    "minor_heal": "gem_green",
+    "flare": "star",
+    "ice_shard": "key_blue",
+    "lightning_bolt": "gem_yellow",
+    "bless": "coin_silver",
+    "curse": "key_red"
+  },
+  "statuses": {
+    "wet": "gem_blue",
+    "burning": "gem_red",
+    "chilled": "key_blue",
+    "blessed": "coin_silver",
+    "cursed": "key_red",
+    "poisoned": "gem_green"
+  },
+  "auto": [
+    "surfaces/water",
+    "tiles/floor",
+    "tiles/wall"
+  ]
 }

@@ -971,8 +971,32 @@ def refs_of(value) -> list[str]:
     return [str(value)] if value else []
 
 
+def all_bindings(bindings: dict):
+    """Все привязки: (подпись, значение), включая свои клетки локаций."""
+    for cat in CATEGORIES:
+        for gid, v in bindings.get(cat, {}).items():
+            yield "%s/%s" % (cat, gid), v
+    for loc, table in bindings.get("locations", {}).items():
+        for gid, v in table.items():
+            yield "locations/%s/%s" % (loc, gid), v
+
+
 def ref_asset(ref: str) -> str:
     return str(ref).split("#")[0]
+
+
+def display_names(data_dir: Path) -> dict[tuple[str, str], str]:
+    """Русские названия для листа привязок."""
+    out = {}
+    sources = {"units": ("characters.json", None), "skills": ("skills.json", None),
+               "statuses": ("statuses.json", "statuses"), "surfaces": ("surfaces.json", "surfaces")}
+    for cat, (name, key) in sources.items():
+        p = data_dir / name
+        table = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+        for gid, d in (table.get(key, {}) if key else table).items():
+            out[(cat, gid)] = str(d.get("name", gid))
+    out.update({("tiles", "floor"): "пол", ("tiles", "wall"): "стена"})
+    return out
 
 
 def auto_bind(catalog: dict, words: dict[str, list[str]], ids: dict, aliases: dict, bindings: dict,
@@ -1174,7 +1198,7 @@ def review_bindings(catalog: dict, bindings: dict, ids: dict, names: dict, out: 
             else:
                 d.line((x, yy, x + cell, yy + cell), fill=(110, 60, 60, 255), width=2)
                 d.line((x + cell, yy, x, yy + cell), fill=(110, 60, 60, 255), width=2)
-            d.text((x, yy + cell + 2), names.get((cat, gid), gid)[:18], fill=(230, 230, 230, 255), font=small)
+            d.text((x, yy + cell + 2), names.get((cat, gid), gid)[:19], fill=(230, 230, 230, 255), font=small)
             d.text((x, yy + cell + 16), (str(ref) if ref else "заглушка")[:20],
                    fill=(150, 150, 160, 255) if ref else (200, 120, 120, 255), font=small)
         y += ((len(ids[cat]) + cols - 1) // cols) * (cell + 34)
@@ -1246,8 +1270,8 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
     bindings_path.write_text(json.dumps(bindings, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     # проверка: привязки к несуществующим спрайтам
-    broken = ["%s/%s -> %s" % (cat, gid, r) for cat in CATEGORIES for gid, v in bindings.get(cat, {}).items()
-              for r in refs_of(v) if ref_asset(r) not in catalog]
+    broken = ["%s -> %s" % (label, r) for label, v in all_bindings(bindings) for r in refs_of(v)
+              if ref_asset(r) not in catalog]
 
     review.mkdir(parents=True, exist_ok=True)
     (review / ".gdignore").touch()
@@ -1255,10 +1279,7 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
         old.unlink()
     for aid, entry in catalog.items():
         entry["_file"] = str(sprites / (aid + ".png"))
-    names = {}
-    for cat, table in ids.items():
-        for gid, phrases in table.items():
-            names[(cat, gid)] = " ".join(phrases[1]) if len(phrases) > 1 and phrases[1] else gid
+    names = display_names(root / "data")
     review_overview(catalog, review)
     review_bindings(catalog, bindings, ids, names, review)
     for aid, entry in catalog.items():
@@ -1267,7 +1288,7 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
         entry.pop("_file", None)
 
     missing = [(cat, gid) for cat in CATEGORIES for gid in ids[cat] if gid not in bindings.get(cat, {})]
-    used = {ref_asset(r) for cat in CATEGORIES for v in bindings.get(cat, {}).values() for r in refs_of(v)}
+    used = {ref_asset(r) for _, v in all_bindings(bindings) for r in refs_of(v)}
     unused = sorted(set(catalog) - used)
     report = ["Спрайтов: %d" % len(catalog), "Новых привязок: %d" % len(made)] + ["  + " + m for m in made]
     if broken:

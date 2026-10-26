@@ -1,3 +1,836 @@
 {
- "assets": {}
+ "assets": {
+  "female_adventurer": {
+   "sheet": "res://art/sprites/female_adventurer.png",
+   "kind": "unit",
+   "frame": [
+    92,
+    100
+   ],
+   "pad": 1,
+   "cols": 8,
+   "count": 40,
+   "pixel_art": false,
+   "source": [
+    "kenney/characters/female_adventurer/femaleAdventurer_climb0.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_climb1.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_fall.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_idle.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_jump.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk0.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk1.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk2.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk3.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk4.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk5.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk6.png",
+    "kenney/characters/female_adventurer/femaleAdventurer_walk7.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 8,
+     "count": 8,
+     "fps": 8.0,
+     "loop": true
+    },
+    "jump": {
+     "start": 16,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    },
+    "fall": {
+     "start": 24,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "climb": {
+     "start": 32,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "female_person": {
+   "sheet": "res://art/sprites/female_person.png",
+   "kind": "unit",
+   "frame": [
+    92,
+    101
+   ],
+   "pad": 1,
+   "cols": 8,
+   "count": 40,
+   "pixel_art": false,
+   "source": [
+    "kenney/characters/female_person/femalePerson_climb0.png",
+    "kenney/characters/female_person/femalePerson_climb1.png",
+    "kenney/characters/female_person/femalePerson_fall.png",
+    "kenney/characters/female_person/femalePerson_idle.png",
+    "kenney/characters/female_person/femalePerson_jump.png",
+    "kenney/characters/female_person/femalePerson_walk0.png",
+    "kenney/characters/female_person/femalePerson_walk1.png",
+    "kenney/characters/female_person/femalePerson_walk2.png",
+    "kenney/characters/female_person/femalePerson_walk3.png",
+    "kenney/characters/female_person/femalePerson_walk4.png",
+    "kenney/characters/female_person/femalePerson_walk5.png",
+    "kenney/characters/female_person/femalePerson_walk6.png",
+    "kenney/characters/female_person/femalePerson_walk7.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 8,
+     "count": 8,
+     "fps": 8.0,
+     "loop": true
+    },
+    "jump": {
+     "start": 16,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    },
+    "fall": {
+     "start": 24,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "climb": {
+     "start": 32,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "male_adventurer": {
+   "sheet": "res://art/sprites/male_adventurer.png",
+   "kind": "unit",
+   "frame": [
+    92,
+    112
+   ],
+   "pad": 1,
+   "cols": 8,
+   "count": 40,
+   "pixel_art": false,
+   "source": [
+    "kenney/characters/male_adventurer/maleAdventurer_climb0.png",
+    "kenney/characters/male_adventurer/maleAdventurer_climb1.png",
+    "kenney/characters/male_adventurer/maleAdventurer_fall.png",
+    "kenney/characters/male_adventurer/maleAdventurer_idle.png",
+    "kenney/characters/male_adventurer/maleAdventurer_jump.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk0.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk1.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk2.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk3.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk4.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk5.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk6.png",
+    "kenney/characters/male_adventurer/maleAdventurer_walk7.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 8,
+     "count": 8,
+     "fps": 8.0,
+     "loop": true
+    },
+    "jump": {
+     "start": 16,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    },
+    "fall": {
+     "start": 24,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "climb": {
+     "start": 32,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "male_person": {
+   "sheet": "res://art/sprites/male_person.png",
+   "kind": "unit",
+   "frame": [
+    92,
+    99
+   ],
+   "pad": 1,
+   "cols": 8,
+   "count": 40,
+   "pixel_art": false,
+   "source": [
+    "kenney/characters/male_person/malePerson_climb0.png",
+    "kenney/characters/male_person/malePerson_climb1.png",
+    "kenney/characters/male_person/malePerson_fall.png",
+    "kenney/characters/male_person/malePerson_idle.png",
+    "kenney/characters/male_person/malePerson_jump.png",
+    "kenney/characters/male_person/malePerson_walk0.png",
+    "kenney/characters/male_person/malePerson_walk1.png",
+    "kenney/characters/male_person/malePerson_walk2.png",
+    "kenney/characters/male_person/malePerson_walk3.png",
+    "kenney/characters/male_person/malePerson_walk4.png",
+    "kenney/characters/male_person/malePerson_walk5.png",
+    "kenney/characters/male_person/malePerson_walk6.png",
+    "kenney/characters/male_person/malePerson_walk7.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 8,
+     "count": 8,
+     "fps": 8.0,
+     "loop": true
+    },
+    "jump": {
+     "start": 16,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    },
+    "fall": {
+     "start": 24,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "climb": {
+     "start": 32,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "robot": {
+   "sheet": "res://art/sprites/robot.png",
+   "kind": "unit",
+   "frame": [
+    93,
+    95
+   ],
+   "pad": 1,
+   "cols": 8,
+   "count": 40,
+   "pixel_art": false,
+   "source": [
+    "kenney/characters/robot/robot_climb0.png",
+    "kenney/characters/robot/robot_climb1.png",
+    "kenney/characters/robot/robot_fall.png",
+    "kenney/characters/robot/robot_idle.png",
+    "kenney/characters/robot/robot_jump.png",
+    "kenney/characters/robot/robot_walk0.png",
+    "kenney/characters/robot/robot_walk1.png",
+    "kenney/characters/robot/robot_walk2.png",
+    "kenney/characters/robot/robot_walk3.png",
+    "kenney/characters/robot/robot_walk4.png",
+    "kenney/characters/robot/robot_walk5.png",
+    "kenney/characters/robot/robot_walk6.png",
+    "kenney/characters/robot/robot_walk7.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 8,
+     "count": 8,
+     "fps": 8.0,
+     "loop": true
+    },
+    "jump": {
+     "start": 16,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    },
+    "fall": {
+     "start": 24,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "climb": {
+     "start": 32,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "zombie": {
+   "sheet": "res://art/sprites/zombie.png",
+   "kind": "unit",
+   "frame": [
+    92,
+    106
+   ],
+   "pad": 1,
+   "cols": 8,
+   "count": 40,
+   "pixel_art": false,
+   "source": [
+    "kenney/characters/zombie/zombie_climb0.png",
+    "kenney/characters/zombie/zombie_climb1.png",
+    "kenney/characters/zombie/zombie_fall.png",
+    "kenney/characters/zombie/zombie_idle.png",
+    "kenney/characters/zombie/zombie_jump.png",
+    "kenney/characters/zombie/zombie_walk0.png",
+    "kenney/characters/zombie/zombie_walk1.png",
+    "kenney/characters/zombie/zombie_walk2.png",
+    "kenney/characters/zombie/zombie_walk3.png",
+    "kenney/characters/zombie/zombie_walk4.png",
+    "kenney/characters/zombie/zombie_walk5.png",
+    "kenney/characters/zombie/zombie_walk6.png",
+    "kenney/characters/zombie/zombie_walk7.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 8,
+     "count": 8,
+     "fps": 8.0,
+     "loop": true
+    },
+    "jump": {
+     "start": 16,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    },
+    "fall": {
+     "start": 24,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "climb": {
+     "start": 32,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "frog": {
+   "sheet": "res://art/sprites/frog.png",
+   "kind": "unit",
+   "frame": [
+    110,
+    97
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 2,
+   "pixel_art": false,
+   "source": [
+    "kenney/enemies/frog_move.png",
+    "kenney/enemies/frog.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 1,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "worm_green": {
+   "sheet": "res://art/sprites/worm_green.png",
+   "kind": "unit",
+   "frame": [
+    116,
+    42
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 3,
+   "pixel_art": false,
+   "source": [
+    "kenney/enemies/wormGreen_dead.png",
+    "kenney/enemies/wormGreen_move.png",
+    "kenney/enemies/wormGreen.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "walk": {
+     "start": 1,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    },
+    "death": {
+     "start": 2,
+     "count": 1,
+     "fps": 8.0,
+     "loop": false
+    }
+   }
+  },
+  "slime_block": {
+   "sheet": "res://art/sprites/slime_block.png",
+   "kind": "image",
+   "frame": [
+    92,
+    92
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/enemies/slimeBlock.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "coin_gold": {
+   "sheet": "res://art/sprites/coin_gold.png",
+   "kind": "image",
+   "frame": [
+    64,
+    64
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/coinGold.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "coin_silver": {
+   "sheet": "res://art/sprites/coin_silver.png",
+   "kind": "image",
+   "frame": [
+    64,
+    64
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/coinSilver.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "gem_blue": {
+   "sheet": "res://art/sprites/gem_blue.png",
+   "kind": "image",
+   "frame": [
+    70,
+    48
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/gemBlue.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "gem_green": {
+   "sheet": "res://art/sprites/gem_green.png",
+   "kind": "image",
+   "frame": [
+    70,
+    48
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/gemGreen.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "gem_red": {
+   "sheet": "res://art/sprites/gem_red.png",
+   "kind": "image",
+   "frame": [
+    70,
+    48
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/gemRed.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "gem_yellow": {
+   "sheet": "res://art/sprites/gem_yellow.png",
+   "kind": "image",
+   "frame": [
+    70,
+    48
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/gemYellow.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "key_blue": {
+   "sheet": "res://art/sprites/key_blue.png",
+   "kind": "image",
+   "frame": [
+    83,
+    52
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/keyBlue.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "key_red": {
+   "sheet": "res://art/sprites/key_red.png",
+   "kind": "image",
+   "frame": [
+    83,
+    52
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/keyRed.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "star": {
+   "sheet": "res://art/sprites/star.png",
+   "kind": "image",
+   "frame": [
+    62,
+    59
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "kenney/items/star.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "torch": {
+   "sheet": "res://art/sprites/torch.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 2,
+   "count": 2,
+   "pixel_art": false,
+   "source": [
+    "kenney/tiles/torch1.png",
+    "kenney/tiles/torch2.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 2,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "brick_grey": {
+   "sheet": "res://art/sprites/brick_grey.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/brickGrey.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "dirt_center": {
+   "sheet": "res://art/sprites/dirt_center.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/dirtCenter.png"
+   ],
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "grass_center": {
+   "sheet": "res://art/sprites/grass_center.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/grassCenter.png"
+   ],
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "lava": {
+   "sheet": "res://art/sprites/lava.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/lava.png"
+   ],
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "platform_tiles": {
+   "sheet": "res://art/sprites/platform_tiles.png",
+   "kind": "tileset",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 13,
+   "count": 156,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/platform_tiles.png"
+   ]
+  },
+  "water": {
+   "sheet": "res://art/sprites/water.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/water.png"
+   ],
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "water_top_high": {
+   "sheet": "res://art/sprites/water_top_high.png",
+   "kind": "tile",
+   "frame": [
+    128,
+    128
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "kenney/tiles/waterTop_high.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  }
+ }
 }
