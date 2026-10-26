@@ -1,0 +1,40 @@
+{
+  "statuses": {
+    "wet":          {"name": "Мокрый", "duration": 3, "negative": false,
+                     "modifiers": {"fire_res": 20, "air_res": -20},
+                     "removes": ["burning"]},
+    "burning":      {"name": "Горит", "duration": 2, "negative": true, "resist_by": "fire",
+                     "blocked_by": ["wet"], "removes": ["chilled", "frozen"],
+                     "tick": {"element": "fire", "base": 4, "per_level": 2}},
+    "poisoned":     {"name": "Отравлен", "duration": 3, "negative": true, "resist_by": "poison",
+                     "tick": {"element": "poison", "base": 3, "per_level": 2}},
+    "chilled":      {"name": "Озноб", "duration": 2, "negative": true, "resist_by": "water",
+                     "modifiers": {"move_per_ap": -0.5, "ap_recovery": -1}, "removes": ["burning"]},
+    "frozen":       {"name": "Заморожен", "duration": 1, "negative": true, "resist_by": "water",
+                     "skip_turn": true, "modifiers": {"dodge": -100},
+                     "removes": ["burning", "chilled"]},
+    "shocked":      {"name": "Наэлектризован", "duration": 1, "negative": true, "resist_by": "air",
+                     "modifiers": {"accuracy": -10}},
+    "stunned":      {"name": "Оглушён", "duration": 1, "negative": true, "resist_by": "tenacity",
+                     "skip_turn": true, "modifiers": {"dodge": -100}},
+    "knocked_down": {"name": "Сбит с ног", "duration": 1, "negative": true, "resist_by": "tenacity",
+                     "skip_turn": true, "modifiers": {"dodge": -100}},
+    "slowed":       {"name": "Замедлен", "duration": 1, "negative": true,
+                     "modifiers": {"move_per_ap": -0.7}},
+    "blessed":      {"name": "Благословлён", "duration": 3, "negative": false,
+                     "modifiers": {"accuracy": 10, "dodge": 10, "fire_res": 10, "water_res": 10, "earth_res": 10, "air_res": 10, "poison_res": 10},
+                     "removes": ["cursed"]},
+    "cursed":       {"name": "Проклят", "duration": 3, "negative": true,
+                     "modifiers": {"accuracy": -10, "dodge": -10, "fire_res": -10, "water_res": -10, "earth_res": -10, "air_res": -10, "poison_res": -10},
+                     "removes": ["blessed"]},
+    "regenerating": {"name": "Регенерация", "duration": 3, "negative": false,
+                     "tick": {"element": "heal", "base": 4, "per_level": 2}}
+  },
+
+  "reactions": [
+    {"has": "wet",     "incoming": "chilled", "result": "frozen",  "consume": ["wet"],     "text": "Мокрая цель замерзает!"},
+    {"has": "chilled", "incoming": "chilled", "result": "frozen",  "consume": ["chilled"], "text": "Озноб переходит в заморозку!"},
+    {"has": "wet",     "incoming": "shocked", "result": "stunned", "consume": [],          "keep_incoming": true, "text": "Электричество по мокрой цели — оглушение!"},
+    {"has": "frozen",  "incoming": "burning", "result": "wet",     "consume": ["frozen"],  "text": "Лёд тает, цель промокла."}
+  ]
+}

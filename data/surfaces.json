@@ -1,0 +1,51 @@
+{
+  "surfaces": {
+    "water":             {"name": "Вода",                 "layer": "ground", "color": "#3a6fd8", "duration": -1,
+                          "statuses": [{"id": "wet", "chance": 100}]},
+    "blood":             {"name": "Кровь",                "layer": "ground", "color": "#8a1c1c", "duration": -1,
+                          "statuses": []},
+    "oil":               {"name": "Масло",                "layer": "ground", "color": "#5a4a1a", "duration": -1,
+                          "statuses": [{"id": "slowed", "chance": 100}]},
+    "poison":            {"name": "Яд",                   "layer": "ground", "color": "#5fae3a", "duration": 6,
+                          "statuses": [{"id": "poisoned", "chance": 100}]},
+    "fire":              {"name": "Огонь",                "layer": "ground", "color": "#e8641e", "duration": 3,
+                          "statuses": [{"id": "burning", "chance": 100}]},
+    "ice":               {"name": "Лёд",                  "layer": "ground", "color": "#b8e6f5", "duration": 5,
+                          "statuses": [{"id": "knocked_down", "chance": 30}]},
+    "electrified_water": {"name": "Вода под током",       "layer": "ground", "color": "#7fb4ff", "duration": 2, "revert_to": "water",
+                          "statuses": [{"id": "wet", "chance": 100}, {"id": "stunned", "chance": 100}]},
+    "electrified_blood": {"name": "Кровь под током",      "layer": "ground", "color": "#c04a7a", "duration": 2, "revert_to": "blood",
+                          "statuses": [{"id": "stunned", "chance": 100}]},
+    "steam":             {"name": "Пар",                  "layer": "cloud",  "color": "#dddddd", "duration": 3,
+                          "statuses": [{"id": "wet", "chance": 100}]},
+    "electrified_steam": {"name": "Наэлектризованный пар","layer": "cloud",  "color": "#d6d6ff", "duration": 2, "revert_to": "steam",
+                          "statuses": [{"id": "wet", "chance": 100}, {"id": "stunned", "chance": 100}]},
+    "poison_cloud":      {"name": "Ядовитое облако",      "layer": "cloud",  "color": "#9be07a", "duration": 3,
+                          "statuses": [{"id": "poisoned", "chance": 100}]}
+  },
+
+  "element_surfaces": {
+    "water": "water", "fire": "fire", "poison": "poison", "oil": "oil", "blood": "blood", "frost": "ice"
+  },
+
+  "reactions": {
+    "water":             {"fire":   {"ground": "none", "cloud": "steam", "text": "Вода испаряется в пар."},
+                          "frost":  {"ground": "ice", "spread": true, "text": "Вода замерзает."},
+                          "air":    {"ground": "electrified_water", "spread": true, "text": "Вода под напряжением!"},
+                          "poison": {"ground": "poison", "text": "Вода отравлена."}},
+    "blood":             {"fire":   {"ground": "none", "cloud": "steam"},
+                          "frost":  {"ground": "ice", "spread": true},
+                          "air":    {"ground": "electrified_blood", "spread": true, "text": "Кровь под напряжением!"}},
+    "oil":               {"fire":   {"ground": "fire", "spread": true, "text": "Масло вспыхивает!"}},
+    "poison":            {"fire":   {"ground": "fire", "explosion": {"element": "fire", "base": 10, "per_level": 4}, "text": "Ядовитая лужа взрывается!"},
+                          "water":  {"ground": "water"}},
+    "fire":              {"water":  {"ground": "none", "cloud": "steam", "text": "Огонь потушен, поднимается пар."},
+                          "frost":  {"ground": "none", "text": "Огонь потушен холодом."}},
+    "ice":               {"fire":   {"ground": "water", "text": "Лёд тает."}},
+    "electrified_water": {"fire":   {"ground": "none", "cloud": "steam"},
+                          "frost":  {"ground": "ice", "spread": true}},
+    "steam":             {"air":    {"cloud": "electrified_steam", "spread": true, "text": "Пар наэлектризован!"},
+                          "frost":  {"cloud": "none", "ground": "ice"}},
+    "poison_cloud":      {"fire":   {"cloud": "none", "explosion": {"element": "fire", "base": 12, "per_level": 4}, "text": "Ядовитое облако взрывается!"}}
+  }
+}

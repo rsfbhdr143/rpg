@@ -1,0 +1,16 @@
+{
+  "lone_wolf":   {"name": "Одиночка", "description": "+2 к макс. ОД и +1 к восстановлению ОД.",
+                  "requirements": {"level": 1}, "modifiers": {"max_ap": 2, "ap_recovery": 1}},
+  "glass_cannon":{"name": "Стеклянная пушка", "description": "Больше ОД в начале боя и за ход, но броня вдвое слабее.",
+                  "requirements": {"level": 1}, "modifiers": {"start_ap": 3, "ap_recovery": 2, "armor_bonus_pct": -50}},
+  "far_out_man": {"name": "Дальнобой", "description": "+2 к дальности навыков.",
+                  "requirements": {"level": 1, "attributes": {"perception": 6}}, "modifiers": {"range_bonus": 2}},
+  "zombie":      {"name": "Зомби", "description": "Яд лечит вместо урона.",
+                  "requirements": {"level": 3}, "flags": ["poison_heals"]},
+  "walk_it_off": {"name": "До свадьбы заживёт", "description": "Негативные статусы длятся на 1 ход меньше.",
+                  "requirements": {"level": 1, "attributes": {"constitution": 6}}, "flags": ["status_duration_minus_1"]},
+  "bigger_and_better": {"name": "Выше, сильнее", "description": "Сразу даёт +1 очко атрибутов и +1 очко способностей.",
+                  "requirements": {"level": 3}, "on_learn": {"attribute_points": 1, "ability_points": 1}},
+  "thick_skin":  {"name": "Толстокожий", "description": "Иммунитет к сбиванию с ног.",
+                  "requirements": {"level": 1, "abilities": {"body_building": 1}}, "flags": ["immune_knocked_down"]}
+}

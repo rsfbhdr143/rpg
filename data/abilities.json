@@ -1,0 +1,20 @@
+{
+  "single_handed":  {"name": "Одноручное оружие", "group": "weapons", "description": "Урон и точность одноручным оружием.", "per_rank": {"physical_damage_pct": 5, "accuracy": 2}},
+  "two_handed":     {"name": "Двуручное оружие",  "group": "weapons", "description": "Урон двуручным оружием.", "per_rank": {"physical_damage_pct": 8}},
+  "bow":            {"name": "Луки",              "group": "weapons", "description": "Урон и точность луками.", "per_rank": {"physical_damage_pct": 5, "accuracy": 3}},
+
+  "armour_specialist": {"name": "Знаток доспехов", "group": "defence", "description": "Повышает эффективность брони.", "per_rank": {"armor_bonus_pct": 10}},
+  "body_building":     {"name": "Закалка",          "group": "defence", "description": "Сопротивление оглушению и сбиванию с ног.", "per_rank": {"tenacity_res": 10}},
+  "willpower":         {"name": "Сила воли",        "group": "defence", "description": "Сопротивление ментальным эффектам (заготовка).", "per_rank": {"tenacity_res": 5}},
+
+  "man_at_arms":     {"name": "Воин",          "group": "skills", "description": "Школа боевых приёмов.", "per_rank": {}},
+  "expert_marksman": {"name": "Стрелок",       "group": "skills", "description": "Школа стрелковых приёмов.", "per_rank": {}},
+  "scoundrel":       {"name": "Плут",          "group": "skills", "description": "Школа плутовских приёмов.", "per_rank": {"dodge": 2}},
+  "pyrokinetic":     {"name": "Пирокинетик",   "group": "skills", "description": "Магия огня.", "per_rank": {"fire_res": 5}},
+  "hydrosophist":    {"name": "Гидрософист",   "group": "skills", "description": "Магия воды и льда, лечение.", "per_rank": {"water_res": 5}},
+  "aerotheurge":     {"name": "Аэротеург",     "group": "skills", "description": "Магия воздуха и молний.", "per_rank": {"air_res": 5}},
+  "geomancer":       {"name": "Геомант",       "group": "skills", "description": "Магия земли и яда.", "per_rank": {"earth_res": 5, "poison_res": 5}},
+  "witchcraft":      {"name": "Ведьмовство",   "group": "skills", "description": "Тёмная магия (заготовка).", "per_rank": {}},
+
+  "leadership": {"name": "Лидерство", "group": "personality", "description": "Заготовка: бонусы союзникам рядом.", "per_rank": {}}
+}

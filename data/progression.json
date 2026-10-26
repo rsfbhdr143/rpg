@@ -1,0 +1,17 @@
+{
+  "max_level": 20,
+  "xp_curve": {"base": 100, "growth": 1.5},
+
+  "start_attribute_points": 5,
+  "start_ability_points": 5,
+  "start_talent_points": 1,
+
+  "attribute_points_per_level": 1,
+  "ability_points_per_level": 1,
+  "talent_point_levels": [3, 5, 8, 11, 14, 17, 20],
+
+  "ability_max_rank": 5,
+  "ability_rank_cost": [1, 1, 2, 3, 4],
+
+  "heal_on_level_up": true
+}
