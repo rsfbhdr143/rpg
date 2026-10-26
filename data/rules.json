@@ -36,5 +36,8 @@
   "max_players": 4,
   "party_templates": ["knight", "wizard", "ranger", "cleric"],
   "min_party_size": 2,
-  "default_encounter": "goblin_camp"
+  "start_location": "village",
+  "start_spawn": "start",
+  "revive_after_combat_hp": 1,
+  "clear_statuses_after_combat": true
 }

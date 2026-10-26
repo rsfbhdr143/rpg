@@ -35,6 +35,13 @@
     "weapon": {"name": "Булава", "min": 4, "max": 6, "element": "physical"},
     "base_stats": {"armor": 14}
   },
+  "wolf": {
+    "name": "Волк", "faction": "enemy", "level": 1, "xp_reward": 40,
+    "attributes": {"strength": 6, "dexterity": 7, "intelligence": 5, "constitution": 5, "speed": 7, "perception": 6},
+    "skills": ["attack"],
+    "weapon": {"name": "Клыки", "min": 3, "max": 6, "element": "physical"},
+    "base_stats": {"armor": 4}
+  },
   "goblin_warrior": {
     "name": "Гоблин-воин", "faction": "enemy", "level": 2, "xp_reward": 60,
     "attributes": {"strength": 7, "dexterity": 6, "intelligence": 5, "constitution": 6, "speed": 5, "perception": 5},

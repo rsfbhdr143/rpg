@@ -31,6 +31,7 @@ var statuses: Dictionary = {}     # status_id -> {"turns": int, "level": int}
 var cooldowns: Dictionary = {}    # skill_id -> оставшиеся ходы
 var cell: Vector2i = Vector2i.ZERO
 var death_handled := false
+var encounter_id := ""            # к какой группе врагов локации относится (для врагов)
 
 
 static func from_template(template_id: String) -> Character:
@@ -186,6 +187,7 @@ func to_dict() -> Dictionary:
 		"hp": hp, "ap": ap,
 		"statuses": statuses.duplicate(true), "cooldowns": cooldowns.duplicate(),
 		"cell": [cell.x, cell.y], "death_handled": death_handled,
+		"encounter": encounter_id,
 	}
 
 
@@ -228,4 +230,9 @@ static func from_dict(d: Dictionary) -> Character:
 	var cl: Array = d.get("cell", [0, 0])
 	c.cell = Vector2i(int(cl[0]), int(cl[1]))
 	c.death_handled = bool(d.get("death_handled", false))
+	c.encounter_id = str(d.get("encounter", ""))
+	# Новые персонажи не должны получить uid, уже занятый загруженными.
+	var n := int(c.uid.get_slice("#", 1))
+	if n >= _next_uid:
+		_next_uid = n + 1
 	return c

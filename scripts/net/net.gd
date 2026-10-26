@@ -220,8 +220,7 @@ func start_game() -> void:
 	ids.sort()
 	for pid in ids:
 		session.add_player(int(pid), str(lobby[pid]["name"]))
-	session.create_party()
-	session.start_encounter()
+	session.new_game()
 	in_game = true
 	if is_networked():
 		_game_started.rpc()

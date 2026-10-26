@@ -3,7 +3,7 @@ extends Control
 ## Запуск выделенного сервера без графики:
 ##   godot --headless --path . -- --server --port 8910
 
-const BATTLE_SCENE := "res://scenes/battle.tscn"
+const GAME_SCENE := "res://scenes/game.tscn"
 
 var _name_edit: LineEdit
 var _port_edit: LineEdit
@@ -180,7 +180,7 @@ func _refresh() -> void:
 
 
 func _on_game_started() -> void:
-	get_tree().change_scene_to_file(BATTLE_SCENE)
+	get_tree().change_scene_to_file(GAME_SCENE)
 
 
 func _on_disconnected(reason: String) -> void:
