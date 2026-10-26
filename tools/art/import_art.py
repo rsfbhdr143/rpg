@@ -918,8 +918,8 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int) -> dict | None:
     }
     if scale != 1.0:
         entry["scale"] = round(scale, 4)
-    if all(np.asarray(f)[..., 3].min() >= 250 for f in flat):
-        entry["opaque"] = True              # сплошная текстура без прозрачности (пол, стена)
+    if all((np.asarray(f)[..., 3] >= 250).mean() >= 0.97 for f in flat):
+        entry["opaque"] = True              # сплошная текстура (пол, стена); скруглённые уголки не мешают
     if anims:
         entry["animations"] = {
             a.name: {"start": st, "count": len(a.frames), "fps": a.fps, "loop": a.loop} for a, st in zip(anims, starts)

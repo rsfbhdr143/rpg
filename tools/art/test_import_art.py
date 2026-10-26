@@ -153,6 +153,7 @@ class ImportTest(unittest.TestCase):
         e = res["catalog"]["dungeon_tiles"]
         self.assertEqual(e["kind"], "tileset")
         self.assertEqual((e["cols"], e["count"], e["frame"]), (6, 24, [16, 16]))
+        self.assertTrue(e.get("opaque"))
 
     def test_lpc_layout(self):
         img = Image.new("RGBA", (832, 1344))
