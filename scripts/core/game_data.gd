@@ -26,10 +26,12 @@ static var _loaded := false
 
 static func ensure_loaded() -> void:
 	if not _loaded:
-		reload()
+		reload_data()
 
 
-static func reload() -> void:
+## Не называть reload(): GameData.reload() снаружи вызывает встроенный
+## GDScript.reload(), который перекомпилирует скрипт и обнуляет данные.
+static func reload_data() -> void:
 	rules = _load_json("rules.json")
 	progression = _load_json("progression.json")
 	abilities = _load_json("abilities.json")

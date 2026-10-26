@@ -8,7 +8,7 @@ var _passed := 0
 
 
 func _init() -> void:
-	GameData.reload()
+	GameData.reload_data()
 	GameLog.echo_to_console = false
 	for t in [
 		"test_data_loaded", "test_derived_stats", "test_status_reactions",
