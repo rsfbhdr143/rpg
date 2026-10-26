@@ -1,0 +1,18 @@
+{
+  "settings": {
+    "projection": "isometric",
+    "pixel_art": false,
+    "unit_scale": 1.0,
+    "pixels_per_cell": 0,
+    "surface_alpha": 0.85,
+    "cloud_alpha": 0.6,
+    "sprites_face": "right"
+  },
+  "units": {},
+  "tiles": {},
+  "locations": {},
+  "surfaces": {},
+  "skills": {},
+  "statuses": {},
+  "auto": []
+}

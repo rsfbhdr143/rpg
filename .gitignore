@@ -1,3 +1,5 @@
 .godot/
 *.import
 build/
+art/review/
+__pycache__/

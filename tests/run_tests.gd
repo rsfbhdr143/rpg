@@ -14,7 +14,7 @@ func _init() -> void:
 		"test_data_loaded", "test_derived_stats", "test_status_reactions",
 		"test_surface_reactions", "test_armor_and_resist", "test_progression",
 		"test_auto_battle", "test_serialization", "test_session_commands",
-		"test_exploration",
+		"test_exploration", "test_sprites",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -314,3 +314,17 @@ func test_exploration() -> void:
 	s.enter_location("forest", "from_village")
 	check(s.enemies.size() == forest_enemies, "состояние леса сохранилось между переходами")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+func test_sprites() -> void:
+	print("sprites")
+	SpriteLibrary.reload_data()
+	check(typeof(SpriteLibrary.bindings.get("settings")) == TYPE_DICTIONARY, "data/sprites.json загружен")
+	for cat in ["units", "tiles", "surfaces", "skills", "statuses"]:
+		var table: Dictionary = SpriteLibrary.bindings.get(cat, {})
+		for id in table:
+			check(SpriteLibrary.has_sprite(cat, id), "%s/%s -> спрайт есть в art/catalog.json" % [cat, id])
+	for aid in SpriteLibrary.assets:
+		var sheet := str(SpriteLibrary.assets[aid].get("sheet", ""))
+		check(ResourceLoader.exists(sheet) or FileAccess.file_exists(sheet), "лист %s существует" % sheet)
+	check(SpriteLibrary.frame("units", "нет_такого").is_empty(), "без привязки — пустой кадр (рисуется заглушка)")
