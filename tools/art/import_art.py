@@ -546,6 +546,7 @@ class Asset:
     sources: list[str] = field(default_factory=list)
     opaque: bool = False
     crop: bool = True
+    bind: list[str] = field(default_factory=list)   # явные привязки из подсказки: "units/knight", "locations/forest/wall"
 
     def add_anim(self, anim: Anim) -> None:
         names = {a.name for a in self.anims}
@@ -648,6 +649,11 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             if path.resolve() in claimed:
                 continue
             info = parse_name(path.stem)
+            explicit = load_override(path, folder_ov).get("id")
+            if explicit:
+                # имя задано в подсказке (так делает генератор): «attack», «knocked_down» — не анимация и не направление
+                singles.append((path, rel, NameInfo(base=split_words(str(explicit)), hints={"explicit": True})))
+                continue
             if info.anim or info.number is not None or info.direction:
                 words = info.base or folder_name
                 g = groups.setdefault(slug(words), {"words": words, "anims": {}, "sources": []})
@@ -660,7 +666,7 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
         rest = []
         for path, rel, info in singles:
             key = slug(info.base or folder_name)
-            if key in groups and "idle" not in groups[key]["anims"]:
+            if key in groups and "idle" not in groups[key]["anims"] and not info.hints.get("explicit"):
                 groups[key]["anims"]["idle"] = [(0, path, rel, info)]
                 groups[key]["sources"].append(rel)
             else:
@@ -702,6 +708,7 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             words = info.base or folder_name or split_words(path.stem)
             own, around = kind_words(words), kind_words(folder_words)
             asset = Asset(slug(words), words, folder_words, sources=[rel])
+            asset.bind = [str(b) for b in (ov["bind"] if isinstance(ov.get("bind"), list) else [ov.get("bind")]) if b]
             frames = open_frames(path)
             if len(frames) > 1:                       # анимированный GIF / WebP
                 asset.kind = "effect" if "effect" in own | around else "unit"
@@ -985,6 +992,26 @@ def ref_asset(ref: str) -> str:
     return str(ref).split("#")[0]
 
 
+def bind_table(bindings: dict, key: str, create: bool = False) -> tuple[dict | None, str]:
+    """Таблица и id для ключа "units/knight" или "locations/forest/wall"."""
+    parts = key.split("/")
+    if parts[0] == "locations" and len(parts) == 3:
+        locs = bindings.setdefault("locations", {}) if create else bindings.get("locations", {})
+        table = locs.setdefault(parts[1], {}) if create else locs.get(parts[1])
+        return table, parts[2]
+    if parts[0] in CATEGORIES and len(parts) == 2:
+        return (bindings.setdefault(parts[0], {}) if create else bindings.get(parts[0])), parts[1]
+    return None, ""
+
+
+def pop_binding(bindings: dict, key: str) -> None:
+    table, gid = bind_table(bindings, key)
+    if table is not None:
+        table.pop(gid, None)
+        if key.startswith("locations/") and not table:
+            bindings.get("locations", {}).pop(key.split("/")[1], None)
+
+
 def display_names(data_dir: Path) -> dict[tuple[str, str], str]:
     """Русские названия для листа привязок."""
     out = {}
@@ -1000,21 +1027,33 @@ def display_names(data_dir: Path) -> dict[tuple[str, str], str]:
 
 
 def auto_bind(catalog: dict, words: dict[str, list[str]], ids: dict, aliases: dict, bindings: dict,
-              rebind: bool, log) -> list[str]:
+              rebind: bool, log, explicit: dict[str, list[str]] | None = None) -> list[str]:
     auto = set(bindings.get("auto", []))
     if rebind:
         for key in list(auto):
-            cat, gid = key.split("/", 1)
-            bindings.get(cat, {}).pop(gid, None)
+            pop_binding(bindings, key)
         auto.clear()
     # убираем авто-привязки к спрайтам, которых больше нет
     for key in list(auto):
-        cat, gid = key.split("/", 1)
-        refs = refs_of(bindings.get(cat, {}).get(gid))
+        table, gid = bind_table(bindings, key)
+        refs = refs_of(table.get(gid)) if table is not None else []
         if not refs or any(ref_asset(r) not in catalog for r in refs):
-            bindings.get(cat, {}).pop(gid, None)
+            pop_binding(bindings, key)
             auto.discard(key)
     made = []
+    # явные привязки из подсказок <имя>.art.json ("bind": "units/knight") идут первыми; ручные не трогаем
+    for aid in sorted(explicit or {}):
+        for key in explicit[aid]:
+            table, gid = bind_table(bindings, key, create=True)
+            if table is None:
+                log("  ! %s: непонятная привязка «%s» в подсказке" % (aid, key))
+                continue
+            if gid in table and key not in auto:
+                continue
+            if table.get(gid) != aid:
+                table[gid] = aid
+                made.append("%s -> %s" % (key, aid))
+            auto.add(key)
     for cat in CATEGORIES:
         table = bindings.setdefault(cat, {})
         used = {ref_asset(r) for v in table.values() for r in refs_of(v)}
@@ -1245,7 +1284,7 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
         files = collect(inbox, Path(tmp))
         log("Найдено файлов: %d" % len(files))
         assets = build_assets(files, log)
-        catalog, words = {}, {}
+        catalog, words, explicit = {}, {}, {}
         for a in assets:
             entry = pack_asset(a, sprites, max_side)
             if entry is None:
@@ -1253,6 +1292,8 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
                 continue
             catalog[a.id] = entry
             words[a.id] = list(a.words)
+            if a.bind:
+                explicit[a.id] = a.bind
     # листы спрайтов, которых больше нет во входящих, удаляем (вместе с файлами импорта Godot)
     if sprites.exists():
         for old in sprites.glob("*.png"):
@@ -1266,7 +1307,7 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
     bindings = json.loads(bindings_path.read_text(encoding="utf-8")) if bindings_path.exists() else {}
     ids = game_ids(root / "data")
     aliases = json.loads(aliases_path.read_text(encoding="utf-8")) if aliases_path.exists() else {}
-    made = auto_bind(catalog, words, ids, aliases, bindings, rebind, log)
+    made = auto_bind(catalog, words, ids, aliases, bindings, rebind, log, explicit)
     bindings_path.write_text(json.dumps(bindings, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     # проверка: привязки к несуществующим спрайтам

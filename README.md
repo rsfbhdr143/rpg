@@ -43,7 +43,8 @@ data/                 всё, что меняется без программи�
 art/inbox/            сюда кладутся картинки и паки как есть
 art/sprites/          нарезанные листы спрайтов (их делает импорт)
 art/catalog.json      описание листов: размер кадра, анимации (его делает импорт)
-tools/art/            импорт картинок: import_art.py, import_art.bat, синонимы для привязки aliases.json
+tools/art/            импорт картинок (import_art.py, синонимы aliases.json) и генерация в Stable Diffusion
+                      (generate.py, что рисовать — prompts.json, выбранные варианты — generated.json)
 scripts/core/         GameData (загрузка JSON), Character, Progression, GameLog
 scripts/combat/       CombatManager (ходы и ОД), SkillSystem, DamageCalc, StatusSystem
 scripts/world/        SurfaceGrid: поле, путь, поверхности двух слоёв
@@ -226,7 +227,8 @@ python tools/art/import_art.py          (любая система; пакеты
 `cols` / `rows_count` — число столбцов и строк, `rows` — названия анимаций по строкам
 (`["idle", "walk", "attack", "hurt", "death"]`), `fps`, `kind` (`unit`, `tileset`, `icon`, `effect`),
 `background: "keep"` — не убирать фон, `bg_tolerance` — насколько фон может отличаться по цвету (по умолчанию 48),
-`single_animation: true` — весь лист одна анимация.
+`single_animation: true` — весь лист одна анимация, `id` — точное имя спрайта (имя файла тогда не разбирается
+на анимации и направления), `bind` — куда привязать: `"units/knight"`, `"locations/forest/wall"` или список.
 
 Настройки вида в `data/sprites.json → settings`: `projection` (`isometric` или `topdown`), `pixel_art`
 (true — без сглаживания при масштабе), `unit_scale` — размер юнитов, `pixels_per_cell` — сколько пикселей
@@ -237,7 +239,29 @@ python tools/art/import_art.py          (любая система; пакеты
 иначе картинка отражается. Павшие лежат последним кадром `death`, если он есть. Пока в виде используются `idle`
 и `death`; ходьба и атаки будут, когда появится плавное перемещение.
 
-Тесты импорта: `python -m unittest discover tools/art`.
+### Картинки из Stable Diffusion
+
+Гравюрные картинки рисует Stable Diffusion на своём компьютере: ComfyUI (Comfy Desktop или портативная версия),
+модель SDXL base 1.0 и LoRA гравюры `wdct`. Что рисовать, описано в `tools/art/prompts.json`: общий стиль
+(`color` — раскрашенная гравюра, `plain` — чёрно-белая) и короткое описание каждого героя, врага, клетки локации,
+поверхности, навыка и статуса. Вид картинки зависит от категории: фигура в полный рост на белом фоне, значок,
+бесшовная текстура пола и стен (вид сверху, края сводятся сами) или облако на чёрном фоне (становится полупрозрачным).
+
+```
+python tools/art/generate.py                       # всё, для чего ещё нет вариантов, по 3 штуки
+python tools/art/generate.py units/knight tiles    # только рыцарь и клетки
+python tools/art/generate.py --more units/knight   # ещё варианты
+python tools/art/generate.py --pick units/knight=2 # выбрать вариант для игры
+python tools/art/import_art.py                     # и как обычно — в игру
+```
+
+На Windows то же самое делают `tools/art/generate.bat` и `tools/art/import_art.bat`; если отдельного Python нет,
+они берут Python из Comfy Desktop. Если ComfyUI не открыт, скрипт откроет его сам. Варианты лежат в
+`art/generated/` (в git не попадают), листы сравнения с номерами — `art/generated/<категория>.png`. Выбранный
+вариант копируется в `art/inbox/generated/` с подсказкой `id` и `bind`, а зерно и текст запроса записываются
+в `tools/art/generated.json`, так что картинку можно повторить.
+
+Тесты импорта и генератора (с поддельным ComfyUI): `python -m unittest discover tools/art`.
 
 ## Как расширять
 
