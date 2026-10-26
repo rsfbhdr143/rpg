@@ -328,11 +328,18 @@ func _blit(fr: Dictionary, dest: Rect2, modulate := Color.WHITE) -> void:
 
 ## Картинка на полу клетки. Квадратная текстура (вид сверху) натягивается на ромб,
 ## изометрическая плитка (вдвое шире высоты) рисуется как есть.
-func _draw_ground_sprite(fr: Dictionary, c: Vector2i, alpha: float) -> void:
+## span > 1: одна бесшовная текстура растянута на span×span клеток, клетка берёт свой кусок —
+## так рисунок крупнее и сетка клеток не повторяет его в каждой клетке.
+func _draw_ground_sprite(fr: Dictionary, c: Vector2i, alpha: float, span := 1) -> void:
 	var region: Rect2 = fr["region"]
 	var mode := str(fr["draw"])
 	if mode == "":
 		mode = "ground" if region.size.x < region.size.y * 1.6 else "tile"
+	if span > 1 and mode == "ground":
+		var piece := region.size / float(span)
+		region = Rect2(region.position + Vector2(posmod(c.x, span), posmod(c.y, span)) * piece, piece)
+		fr = fr.duplicate()
+		fr["region"] = region
 	var mod := Color(1, 1, 1, alpha)
 	if not iso:
 		_blit(fr, _cell_bounds(c), mod)
@@ -371,29 +378,33 @@ func _draw_ground() -> void:
 	var show_range := cur != null and not skill_def.is_empty() and _is_my_combat_turn()
 	var loc := session.location_id
 	var surface_alpha := float(SpriteLibrary.setting("surface_alpha", 0.85))
+	var span := maxi(1, int(SpriteLibrary.setting("texture_cells", 3)))
 	for y in grid.height:
 		for x in grid.width:
 			var c := Vector2i(x, y)
 			var poly := _cell_poly(c)
 			var floor_fr := SpriteLibrary.frame("tiles", "floor", "idle", 0.0, "", _variant(c), loc)
 			if not floor_fr.is_empty():
-				_draw_ground_sprite(floor_fr, c, 1.0)
+				_draw_ground_sprite(floor_fr, c, 1.0, span if bool(floor_fr["opaque"]) else 1)
 			else:
 				draw_colored_polygon(poly, FLOOR_COLOR.darkened(0.06 * ((x + y) % 2)))
 			var g := grid.get_ground(c)
 			if g != "none":
 				var sfr := SpriteLibrary.frame("surfaces", g, "idle", _time + (x * 7 + y * 3) * 0.13)
 				if not sfr.is_empty():
-					_draw_ground_sprite(sfr, c, sfr["alpha"] if float(sfr["alpha"]) >= 0 else surface_alpha)
+					_draw_ground_sprite(sfr, c, sfr["alpha"] if float(sfr["alpha"]) >= 0 else surface_alpha,
+						span if bool(sfr["opaque"]) else 1)
 				else:
 					draw_colored_polygon(poly, Color.html(str(GameData.surface(g).get("color", "#ff00ff"))))
 			if not session.exit_at(c).is_empty():
 				draw_polyline(_shrink(poly, 0.12), Color(1.0, 0.85, 0.2, 0.7), 2.0)
 			if show_range and SurfaceGrid.distance(cur.cell, c) <= SkillSystem.skill_range(cur, skill_def):
 				draw_colored_polygon(poly, Color(1, 1, 0.3, 0.14))
+			# сетка: в бою чётко, на текстурном полу вне боя еле заметно
+			var grid_alpha := 0.3 if floor_fr.is_empty() or session.mode == "combat" else 0.08
 			var closed := poly.duplicate()
 			closed.append(poly[0])
-			draw_polyline(closed, Color(0, 0, 0, 0.3), 1.0)
+			draw_polyline(closed, Color(0, 0, 0, grid_alpha), 1.0)
 	if grid.in_bounds(hovered):
 		var hp := _cell_poly(hovered)
 		hp.append(hp[0])

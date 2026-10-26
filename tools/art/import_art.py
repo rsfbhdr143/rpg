@@ -966,6 +966,8 @@ def game_ids(data_dir: Path) -> dict[str, dict[str, list[list[str]]]]:
     for sid, d in sf.items():
         out["surfaces"][sid] = [sid.split("_"), split_words(str(d.get("name", "")))]
     out["tiles"] = {"floor": [["floor"]], "wall": [["wall"]]}
+    # свои клетки локаций — только для листа проверки, по словам их не привязываем
+    out["locations"] = {"%s/%s" % (loc, t): [] for loc in load("locations.json") for t in ("floor", "wall")}
     return out
 
 
@@ -1023,6 +1025,10 @@ def display_names(data_dir: Path) -> dict[tuple[str, str], str]:
         for gid, d in (table.get(key, {}) if key else table).items():
             out[(cat, gid)] = str(d.get("name", gid))
     out.update({("tiles", "floor"): "пол", ("tiles", "wall"): "стена"})
+    p = data_dir / "locations.json"
+    for loc, d in (json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}).items():
+        for t, word in (("floor", "пол"), ("wall", "стена")):
+            out[("locations", "%s/%s" % (loc, t))] = "%s: %s" % (d.get("name", loc), word)
     return out
 
 
@@ -1209,9 +1215,19 @@ def review_overview(catalog: dict, out: Path) -> None:
     img.save(out / "overview.png")
 
 
+def fit_text(d: ImageDraw.ImageDraw, text: str, font, width: int) -> str:
+    """Подпись, укороченная многоточием, чтобы не наезжала на соседнюю."""
+    if d.textlength(text, font=font) <= width:
+        return text
+    while text and d.textlength(text + "…", font=font) > width:
+        text = text[:-1]
+    return text + "…"
+
+
 def review_bindings(catalog: dict, bindings: dict, ids: dict, names: dict, out: Path) -> None:
-    sections = [("units", "Герои и враги"), ("tiles", "Клетки"), ("surfaces", "Поверхности"),
-                ("skills", "Навыки"), ("statuses", "Статусы")]
+    sections = [("units", "Герои и враги"), ("tiles", "Клетки"), ("locations", "Клетки локаций"),
+                ("surfaces", "Поверхности"), ("skills", "Навыки"), ("statuses", "Статусы")]
+    sections = [(c, t) for c, t in sections if ids.get(c)]
     cols, cell = 8, 80
     height = 8
     for cat, _ in sections:
@@ -1227,7 +1243,8 @@ def review_bindings(catalog: dict, bindings: dict, ids: dict, names: dict, out: 
         for i, gid in enumerate(ids[cat]):
             x, yy = 8 + (i % cols) * (cell + 40), y + (i // cols) * (cell + 34)
             img.alpha_composite(_checker((cell, cell)), (x, yy))
-            refs = refs_of(bindings.get(cat, {}).get(gid))
+            table, key = bind_table(bindings, "%s/%s" % (cat, gid))
+            refs = refs_of((table or {}).get(key))
             ref = refs[0] if refs else None
             fr = ref_image(catalog, sheets, ref) if ref else None
             if fr is not None:
@@ -1237,8 +1254,9 @@ def review_bindings(catalog: dict, bindings: dict, ids: dict, names: dict, out: 
             else:
                 d.line((x, yy, x + cell, yy + cell), fill=(110, 60, 60, 255), width=2)
                 d.line((x + cell, yy, x, yy + cell), fill=(110, 60, 60, 255), width=2)
-            d.text((x, yy + cell + 2), names.get((cat, gid), gid)[:19], fill=(230, 230, 230, 255), font=small)
-            d.text((x, yy + cell + 16), (str(ref) if ref else "заглушка")[:20],
+            d.text((x, yy + cell + 2), fit_text(d, names.get((cat, gid), gid), small, cell + 36),
+                   fill=(230, 230, 230, 255), font=small)
+            d.text((x, yy + cell + 16), fit_text(d, str(ref) if ref else "заглушка", small, cell + 36),
                    fill=(150, 150, 160, 255) if ref else (200, 120, 120, 255), font=small)
         y += ((len(ids[cat]) + cols - 1) // cols) * (cell + 34)
     img.save(out / "bindings.png")

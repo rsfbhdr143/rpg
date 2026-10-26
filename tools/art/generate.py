@@ -137,7 +137,7 @@ def build_prompt(prompts: dict, item: Item, style: str) -> tuple[str, str, list[
         sys.exit("Нет стиля «%s» (есть: %s)" % (style, ", ".join(styles)))
     text = str(item.extra.get("prompt", kind["prompt"])).format(style=styles[style], subject=item.subject)
     trigger = str(s.get("trigger", "")).strip()
-    if trigger:
+    if trigger and float(setting(prompts, item, "lora_strength", 0.9)) > 0:   # без LoRA слово-ключ не нужно
         text = trigger + ", " + text
     negative = ", ".join(x for x in (prompts.get("negative", ""), kind.get("negative", ""),
                                      item.extra.get("negative", "")) if x)
@@ -149,7 +149,7 @@ def workflow(params: dict) -> dict:
     """Схема ComfyUI в формате API: модель (+ LoRA стиля) -> текст -> KSampler -> картинка."""
     model, clip = ["1", 0], ["1", 1]
     wf = {"1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": params["checkpoint"]}}}
-    if params.get("lora"):
+    if params.get("lora") and float(params.get("lora_strength", 0)) > 0:
         wf["2"] = {"class_type": "LoraLoader", "inputs": {
             "model": model, "clip": clip, "lora_name": params["lora"],
             "strength_model": params["lora_strength"], "strength_clip": params["lora_strength"]}}

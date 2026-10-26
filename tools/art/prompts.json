@@ -40,26 +40,30 @@
     },
     "icon": {
       "size": [1024, 1024],
-      "prompt": "{style}, game ability icon, {subject}, single emblem, centered, bold simple shapes, plain white background",
-      "negative": "multiple icons, icon grid, cropped, scenery"
+      "prompt": "{style}, game ability icon, {subject}, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+      "negative": "multiple icons, icon grid, cropped, scenery",
+      "lora_strength": 0.7
     },
     "texture": {
       "size": [1024, 1024],
-      "prompt": "{style}, seamless texture of {subject}, seen from directly above, flat, fills the whole image, no perspective, no horizon, evenly lit",
-      "negative": "perspective, horizon, sky, characters, people, buildings, vignette",
-      "tileable": true
+      "prompt": "{style}, flat 2d game texture, top-down close-up of {subject}, the pattern fills the entire frame edge to edge, evenly lit",
+      "negative": "landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge",
+      "tileable": true,
+      "lora_strength": 0.4
     },
     "wall": {
       "size": [1024, 1024],
-      "prompt": "{style}, seamless texture of {subject}, straight front view, flat, fills the whole image, evenly lit",
-      "negative": "perspective, sky, ground, characters, people, vignette, door, window",
-      "tileable": true
+      "prompt": "{style}, flat 2d game texture, straight-on close-up of {subject}, the pattern fills the entire frame edge to edge, evenly lit",
+      "negative": "landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge",
+      "tileable": true,
+      "lora_strength": 0.4
     },
     "cloud": {
       "size": [1024, 1024],
-      "prompt": "{style}, a drifting cloud of {subject}, soft puffy shape, centered, glowing on a plain solid black background",
-      "negative": "sky, landscape, ground, cropped, border",
-      "alpha_from_black": true
+      "prompt": "{subject}, a soft wispy drifting cloud, glowing, isolated on a pure black background",
+      "negative": "sky, landscape, ground, horizon, sea, frame, border, paper, cropped",
+      "alpha_from_black": true,
+      "lora_strength": 0
     }
   },
   "units": {
@@ -73,22 +77,22 @@
     "training_dummy": {"kind": "object", "subject": "a straw training dummy on a wooden post with a burlap sack head"}
   },
   "tiles": {
-    "village/floor": "packed dirt village road with patches of short grass and small pebbles",
-    "village/wall": "a timber-framed house wall, whitewashed plaster between dark oak beams",
-    "forest/floor": "forest floor with moss, fallen leaves, short grass and twigs",
+    "village/floor": "packed brown dirt with sparse tufts of short grass and small pebbles",
+    "village/wall": "whitewashed plaster between dark oak timber beams",
+    "forest/floor": "moss, fallen leaves, short grass and twigs",
     "forest/wall": {"kind": "object", "subject": "an old gnarled oak tree with a thick trunk and a dense leafy crown"},
-    "goblin_camp/floor": "trampled mud with dry grass, scattered bones and ash",
-    "goblin_camp/wall": "a palisade of sharpened wooden logs bound with rope"
+    "goblin_camp/floor": "trampled mud with dry grass, small bones and ash",
+    "goblin_camp/wall": "sharpened wooden logs standing side by side, bound with rope"
   },
   "surfaces": {
     "water": "shallow clear water with gentle ripples",
-    "blood": "a pool of dark red blood with splatters",
-    "oil": "a slick of thick black oil with glossy swirls",
+    "blood": "dark red blood with splatters",
+    "oil": "thick black oil with glossy swirls",
     "poison": "bubbling green poison sludge",
-    "fire": "burning flames on the ground, bright orange and yellow fire",
-    "ice": "a sheet of cracked pale blue ice with frost",
+    "fire": "a carpet of bright orange and yellow flames",
+    "ice": "cracked pale blue ice with frost",
     "electrified_water": "shallow water crackling with blue lightning sparks",
-    "electrified_blood": "a pool of red blood crackling with violet lightning sparks",
+    "electrified_blood": "dark red blood crackling with violet lightning sparks",
     "steam": "white hot steam",
     "electrified_steam": "white steam crackling with small blue lightning",
     "poison_cloud": "sickly green poison gas"
