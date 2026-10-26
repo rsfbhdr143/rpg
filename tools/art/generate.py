@@ -6,9 +6,12 @@
     python tools/art/generate.py --more units/knight    # ещё варианты, с новыми зёрнами
     python tools/art/generate.py --pick units/knight=2 skills/fireball=1    # выбрать вариант для игры
     python tools/art/generate.py --list                 # что описано, сколько вариантов, что выбрано
+    python tools/art/generate.py --checkpoint other.safetensors units/knight    # попробовать другую модель
 
 Что рисовать и в каком стиле, написано в tools/art/prompts.json. Варианты ложатся в art/generated/<категория>/<id>/
 (в git не попадают), для каждой категории рисуется лист сравнения art/generated/<категория>.png с номерами.
+Фигуры проверяются сами: не убрался фон, фигура обрезана краем, рядом висит отдельный предмет (щит, меч).
+Такие варианты помечаются красным, и если плохи все, скрипт дорисовывает ещё (settings.retries).
 Выбранный вариант копируется в art/inbox/generated/<категория>/<id>.webp вместе с подсказкой для импорта
 (точное имя и привязка к игре), а зерно и текст запроса записываются в tools/art/generated.json: по ним
 картинку можно повторить. После выбора запусти tools/art/import_art.py.
@@ -107,6 +110,21 @@ def select(items: list[Item], wanted: list[str]) -> list[Item]:
             sys.exit("Не нашёл «%s» в %s. Есть: %s" % (w, PROMPTS.name, ", ".join(it.key for it in items)))
         picked += [it for it in found if it not in picked]
     return picked
+
+
+def setting(prompts: dict, item: Item | None, name: str, default=None, checkpoint: str = ""):
+    """Настройка: своя у картинки -> у вида (unit, icon ...) -> у модели (settings.models) -> общая."""
+    s = prompts.get("settings", {})
+    if item is not None and name in item.extra:
+        return item.extra[name]
+    kind = prompts.get("kinds", {}).get(item.kind, {}) if item is not None else {}
+    if name in kind:
+        return kind[name]
+    ckpt = (checkpoint or str(s.get("checkpoint", ""))).lower()
+    for part, model in s.get("models", {}).items():     # "turbo": {...} — для всех моделей с turbo в имени
+        if part.lower() in ckpt and name in model:
+            return model[name]
+    return s.get(name, default)
 
 
 def build_prompt(prompts: dict, item: Item, style: str) -> tuple[str, str, list[int]]:
@@ -332,6 +350,50 @@ def postprocess(img: Image.Image, item: Item, prompts: dict) -> Image.Image:
     return img
 
 
+FIGURE_KINDS = {"unit", "object"}
+
+
+def figure_problems(img: Image.Image) -> list[str]:
+    """Что не так с фигурой на однотонном фоне: фон, обрезка краем, отдельно висящий предмет."""
+    arr = np.asarray(img.convert("RGBA"))
+    if (arr[..., 3] < import_art.ALPHA_MIN).mean() < 0.02:
+        arr, removed = import_art.remove_background(arr)
+        if not removed:
+            return ["фон не убрался"]
+    mask = arr[..., 3] >= 128
+    if mask.mean() > 0.6:
+        return ["фон не убрался"]
+    h, w = mask.shape
+    k = max(1, max(h, w) // 200)
+    small = mask[:h - h % k, :w - w % k].reshape(h // k, k, w // k, k).any(axis=(1, 3))
+    sh, sw = small.shape
+    seen = np.zeros_like(small)
+    sizes = []
+    for y0, x0 in zip(*np.nonzero(small)):
+        if seen[y0, x0]:
+            continue
+        seen[y0, x0] = True
+        stack, n = [(y0, x0)], 0
+        while stack:
+            y, x = stack.pop()
+            n += 1
+            for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
+                if 0 <= ny < sh and 0 <= nx < sw and small[ny, nx] and not seen[ny, nx]:
+                    seen[ny, nx] = True
+                    stack.append((ny, nx))
+        sizes.append(n)
+    if not sizes:
+        return ["пусто"]
+    sizes.sort(reverse=True)
+    problems = []
+    edge = np.concatenate([small[0], small[-1], small[:, 0], small[:, -1]])
+    if edge.mean() > 0.02:
+        problems.append("обрезано краем")
+    if len(sizes) > 1 and sizes[1] >= 0.06 * sizes[0]:
+        problems.append("отдельный предмет")
+    return problems
+
+
 # --- Варианты, выбор, листы сравнения -------------------------------------------
 
 def variant_dir(root: Path, item: Item) -> Path:
@@ -352,7 +414,9 @@ def load_record(path: Path = RECORD) -> dict:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
-def generate(root: Path, prompts: dict, todo: list[Item], count: int, style: str, comfy: Comfy, log=print) -> list[Path]:
+def generate(root: Path, prompts: dict, todo: list[Item], count: int | None, style: str, comfy: Comfy, log=print,
+             checkpoint: str = "") -> list[Path]:
+    """count — сколько вариантов на картинку (None — из prompts.json: у вида или общее)."""
     s = prompts.get("settings", {})
     comfy.start()
     stats = comfy.get("/system_stats")
@@ -360,7 +424,7 @@ def generate(root: Path, prompts: dict, todo: list[Item], count: int, style: str
     log("ComfyUI %s, %s, видеопамять %.1f ГБ" % (stats.get("system", {}).get("comfyui_version", "?"),
                                                 dev.get("name", "?"), float(dev.get("vram_total", 0)) / 2**30))
     checkpoints = comfy.options("CheckpointLoaderSimple", "ckpt_name")
-    checkpoint = str(s.get("checkpoint", ""))
+    checkpoint = checkpoint or str(s.get("checkpoint", ""))
     if checkpoint not in checkpoints:
         raise ComfyError("нет модели «%s» в models/checkpoints (есть: %s)" % (checkpoint, ", ".join(checkpoints) or "ничего"))
     lora = choose_lora(str(s.get("lora", "auto")), comfy.options("LoraLoader", "lora_name"), log)
@@ -370,25 +434,34 @@ def generate(root: Path, prompts: dict, todo: list[Item], count: int, style: str
         prompt, negative, size = build_prompt(prompts, item, style)
         d = variant_dir(root, item)
         d.mkdir(parents=True, exist_ok=True)
-        for _ in range(count):
+
+        def opt(name, default):
+            return setting(prompts, item, name, default, checkpoint)
+
+        want = count or int(opt("variants", 3))
+        good, tries, limit = 0, 0, want + (int(opt("retries", 2)) if item.kind in FIGURE_KINDS else 0)
+        while tries < want or (good == 0 and tries < limit):
+            tries += 1
             seed = random.randint(1, 2**31 - 1)
             params = {"prompt": prompt, "negative": negative, "size": size, "seed": seed, "style": style,
                       "checkpoint": checkpoint, "lora": lora,
-                      "lora_strength": float(item.extra.get("lora_strength", s.get("lora_strength", 0.9))),
-                      "steps": int(item.extra.get("steps", s.get("steps", 25))),
-                      "cfg": float(item.extra.get("cfg", s.get("cfg", 6.5))),
-                      "sampler": str(s.get("sampler", "dpmpp_2m")), "scheduler": str(s.get("scheduler", "karras"))}
+                      "lora_strength": float(opt("lora_strength", 0.9)), "steps": int(opt("steps", 25)),
+                      "cfg": float(opt("cfg", 6.5)), "sampler": str(opt("sampler", "dpmpp_2m")),
+                      "scheduler": str(opt("scheduler", "karras"))}
             t0 = time.time()
             data = comfy.render(workflow(params))
             params["seconds"] = round(time.time() - t0, 1)
             num = max([variant_number(p) for p in variants(root, item)] + [0]) + 1
             path = d / ("v%02d_%s_%d.png" % (num, style, seed))
-            img = Image.open(io.BytesIO(data))
-            postprocess(img, item, prompts).save(path)
+            img = postprocess(Image.open(io.BytesIO(data)), item, prompts)
+            params["problems"] = figure_problems(img) if item.kind in FIGURE_KINDS else []
+            good += not params["problems"]
+            img.save(path)
             path.with_suffix(".json").write_text(json.dumps(params, ensure_ascii=False, indent=1) + "\n",
                                                   encoding="utf-8")
             made.append(path)
-            log("  [%d/%d] %s вариант %d: %.0f с" % (n, len(todo), item.key, num, params["seconds"]))
+            log("  [%d/%d] %s вариант %d: %.0f с%s" % (n, len(todo), item.key, num, params["seconds"],
+                                                      "  ! " + ", ".join(params["problems"]) if params["problems"] else ""))
     return made
 
 
@@ -450,6 +523,11 @@ def contact_sheet(root: Path, category: str, items: list[Item], record: dict, pr
             if chosen == v.name:
                 d.rectangle((x - 3, y - 3, x + cell + 2, y + cell + 2), outline=(120, 220, 120), width=3)
             d.text((x + 4, y + cell + 4), str(variant_number(v)), fill=(255, 255, 255), font=font)
+            meta = v.with_suffix(".json")
+            problems = json.loads(meta.read_text(encoding="utf-8")).get("problems", []) if meta.exists() else []
+            if problems:
+                d.rectangle((x - 1, y - 1, x + cell, y + cell), outline=(230, 70, 60), width=2)
+                d.text((x + 30, y + cell + 7), ", ".join(problems), fill=(240, 110, 100), font=small)
     out = root / "art" / "generated" / (category + ".png")
     sheet.save(out)
     return out
@@ -472,6 +550,7 @@ def main() -> None:
     p.add_argument("--more", action="store_true", help="нарисовать ещё варианты, даже если они уже есть")
     p.add_argument("--variants", type=int, help="сколько вариантов на картинку (по умолчанию из prompts.json)")
     p.add_argument("--style", help="стиль из prompts.json -> styles (color, plain ...)")
+    p.add_argument("--checkpoint", help="другая модель из models/checkpoints (по умолчанию settings.checkpoint)")
     p.add_argument("--pick", nargs="+", metavar="ID=N", help="выбрать вариант N для игры: units/knight=2")
     p.add_argument("--pick-first", action="store_true", help="сразу выбрать первый новый вариант")
     p.add_argument("--list", action="store_true", help="показать, что описано и что выбрано")
@@ -508,12 +587,17 @@ def main() -> None:
         return
 
     todo = [it for it in select(items, args.what) if args.more or not variants(root, it)]
-    count = args.variants or int(s.get("variants", 3))
+    count = args.variants
     if args.dry_run:
+        total = 0
         for it in todo:
             prompt, negative, size = build_prompt(prompts, it, style)
-            print("%s (%s, %dx%d, -> %s)\n  + %s\n  - %s" % (it.key, it.kind, size[0], size[1], it.bind, prompt, negative))
-        print("Всего: %d, по %s" % (len(todo), import_art.plural(count, "варианту", "варианта", "вариантов")))
+            n = count or int(setting(prompts, it, "variants", 3, args.checkpoint or ""))
+            total += n
+            print("%s (%s, %dx%d, %d шт. -> %s)\n  + %s\n  - %s" % (it.key, it.kind, size[0], size[1], n, it.bind,
+                                                                   prompt, negative))
+        print("Всего: %s, %s" % (import_art.plural(len(todo), "картинка", "картинки", "картинок"),
+                                 import_art.plural(total, "вариант", "варианта", "вариантов")))
         return
     if not todo:
         print("Всё уже нарисовано. Ещё варианты: --more, выбор: --pick units/knight=2")
@@ -525,7 +609,7 @@ def main() -> None:
                   s.get("comfy_args", []), app=str(s.get("comfy_app", "")))
     t0 = time.time()
     try:
-        made = generate(root, prompts, todo, count, style, comfy)
+        made = generate(root, prompts, todo, count, style, comfy, checkpoint=args.checkpoint or "")
     except ComfyError as e:
         sys.exit("Ошибка: %s" % e)
     except KeyboardInterrupt:

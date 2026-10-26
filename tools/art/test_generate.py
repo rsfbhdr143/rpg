@@ -73,7 +73,10 @@ class FakeComfy(BaseHTTPRequestHandler):
             ImageDraw.Draw(img).ellipse((w // 4, h // 4, 3 * w // 4, 3 * h // 4), fill=(230, 230, 230))
         else:
             img = Image.new("RGB", (w, h), (252, 251, 248))
-            ImageDraw.Draw(img).rectangle((w // 3, h // 5, 2 * w // 3, 4 * h // 5), fill=(160, 40, 30))
+            d = ImageDraw.Draw(img)
+            d.rectangle((w // 3, h // 5, 2 * w // 3, 4 * h // 5), fill=(160, 40, 30))
+            if "a hovering shield" in text:
+                d.ellipse((w // 20, h // 3, w // 4, h // 2), fill=(60, 60, 160))   # щит висит отдельно от фигуры
         buf = io.BytesIO()
         img.save(buf, "PNG")
         return buf.getvalue()
@@ -171,6 +174,42 @@ class GenerateTest(unittest.TestCase):
         self.assertNotIn("forest", res["bindings"].get("locations", {}))
         self.assertNotIn("locations/forest/wall", res["bindings"]["auto"])
         self.assertEqual(res["bindings"]["locations"]["village"]["floor"], "village_floor")
+
+    def test_figure_problems(self):
+        def fig(extra=None, box=(0.3, 0.2, 0.7, 0.8)):
+            w, h = 400, 600
+            img = Image.new("RGB", (w, h), (233, 216, 178))          # бумажный фон, как у LoRA гравюры
+            d = ImageDraw.Draw(img)
+            d.rectangle((int(box[0] * w), int(box[1] * h), int(box[2] * w), int(box[3] * h)), fill=(40, 30, 20))
+            if extra:
+                d.ellipse(extra, fill=(60, 60, 160))
+            return img
+        self.assertEqual(generate.figure_problems(fig()), [])
+        self.assertEqual(generate.figure_problems(fig(extra=(20, 200, 100, 300))), ["отдельный предмет"])
+        self.assertEqual(generate.figure_problems(fig(extra=(150, 150, 152, 152))), [])   # крапинка не в счёт
+        self.assertEqual(generate.figure_problems(fig(box=(0.3, 0.2, 0.7, 1.0))), ["обрезано краем"])
+        self.assertEqual(generate.figure_problems(Image.new("RGB", (400, 600), (40, 30, 20))), ["фон не убрался"])
+
+    def test_retry_when_all_variants_are_bad(self):
+        bad = generate.Item("units/knight", "units", "knight", "knight", "units/knight", "unit", "a hovering shield")
+        prompts = dict(self.prompts, settings=dict(self.prompts["settings"], retries=2))
+        made = generate.generate(self.root, prompts, [bad], 1, "color", self.comfy, log=lambda *a: None)
+        self.assertEqual(len(made), 3)                    # 1 вариант + 2 попытки, все с отдельным щитом
+        meta = json.loads(made[-1].with_suffix(".json").read_text(encoding="utf-8"))
+        self.assertEqual(meta["problems"], ["отдельный предмет"])
+        good = generate.Item("units/wolf", "units", "wolf", "wolf", "units/wolf", "unit", "a wolf")
+        self.assertEqual(len(generate.generate(self.root, prompts, [good], 1, "color", self.comfy,
+                                               log=lambda *a: None)), 1)
+
+    def test_settings_order(self):
+        it = generate.Item("units/knight", "units", "knight", "knight", "units/knight", "unit", "x", {"steps": 30})
+        prompts = {"settings": {"steps": 25, "cfg": 6.5, "variants": 3, "checkpoint": "base.safetensors",
+                                "models": {"turbo": {"steps": 8, "cfg": 2.0}}},
+                   "kinds": {"unit": {"variants": 4}}}
+        self.assertEqual(generate.setting(prompts, it, "steps"), 30)                    # своё у картинки
+        self.assertEqual(generate.setting(prompts, it, "variants"), 4)                  # у вида
+        self.assertEqual(generate.setting(prompts, it, "cfg"), 6.5)                     # общее
+        self.assertEqual(generate.setting(prompts, it, "cfg", checkpoint="DreamShaperXL_Turbo.safetensors"), 2.0)
 
     def test_tileable(self):
         # плавный перепад слева направо и сверху вниз: у исходной картинки края сильно разные
