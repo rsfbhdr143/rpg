@@ -17,6 +17,24 @@
     "weapon": {"name": "Посох", "min": 3, "max": 5, "element": "physical"},
     "base_stats": {"armor": 6}
   },
+  "ranger": {
+    "name": "Следопыт", "faction": "player", "level": 2,
+    "attributes": {"strength": 5, "dexterity": 8, "intelligence": 5, "constitution": 5, "speed": 6, "perception": 7},
+    "abilities": {"bow": 2, "expert_marksman": 2, "geomancer": 1, "scoundrel": 1},
+    "talents": [],
+    "skills": ["attack", "arrow_shot", "poison_dart", "oil_slick"],
+    "weapon": {"name": "Лук", "min": 5, "max": 8, "element": "physical"},
+    "base_stats": {"armor": 10}
+  },
+  "cleric": {
+    "name": "Жрица", "faction": "player", "level": 2,
+    "attributes": {"strength": 5, "dexterity": 5, "intelligence": 8, "constitution": 7, "speed": 5, "perception": 5},
+    "abilities": {"hydrosophist": 2, "witchcraft": 1, "willpower": 1},
+    "talents": ["walk_it_off"],
+    "skills": ["attack", "minor_heal", "bless", "rain", "ice_shard", "curse"],
+    "weapon": {"name": "Булава", "min": 4, "max": 6, "element": "physical"},
+    "base_stats": {"armor": 14}
+  },
   "goblin_warrior": {
     "name": "Гоблин-воин", "faction": "enemy", "level": 2, "xp_reward": 60,
     "attributes": {"strength": 7, "dexterity": 6, "intelligence": 5, "constitution": 6, "speed": 5, "perception": 5},

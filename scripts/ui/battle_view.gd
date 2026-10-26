@@ -1,81 +1,74 @@
 extends Node2D
-## Временная отладочная визуализация боя. Вся логика — в scripts/core, combat, world.
-## Управление (ход игрока):
+## Временная отладочная визуализация боя. Вся логика — в scripts/core, combat, world;
+## состояние приходит из Net.session (на сервере — живое, у клиента — снимок).
+## Действия отправляются командами через Net.send_command().
+## Управление (когда ходит ваш персонаж):
 ##   ЛКМ по клетке — идти / применить выбранный навык
 ##   1..9 — выбрать навык, 0 или Esc — режим перемещения
-##   Пробел — закончить ход, R — новый бой (герои сохраняют опыт)
+##   Пробел — закончить ход, R — новый бой после победы/поражения, F10 — выйти в меню
 
 const CELL := 48
 const ORIGIN := Vector2(16, 16)
-const AI_DELAY := 0.45
-const PANEL_X := 16 + 14 * 48 + 24
+const MENU_SCENE := "res://scenes/menu.tscn"
 
 var grid: SurfaceGrid
 var combat: CombatManager
 var heroes: Array = []
 var selected_skill := ""
 var hovered := Vector2i(-1, -1)
-var _ai_busy := false
 var _font: Font
+var _notice := ""
+var _last_current := ""
 
 
 func _ready() -> void:
 	GameData.ensure_loaded()
-	GameData.rng.randomize()
 	_font = ThemeDB.fallback_font
-	heroes = [Character.from_template("knight"), Character.from_template("wizard")]
-	_new_battle()
+	Net.notice.connect(_on_notice)
+	Net.disconnected.connect(_on_disconnected)
+	_sync()
 
 
-func _new_battle() -> void:
-	GameLog.clear()
-	selected_skill = ""
-	grid = SurfaceGrid.new(14, 10)
-	for y in range(2, 6):
-		grid.blocked[Vector2i(7, y)] = true
-	for c in grid.cells_in_radius(Vector2i(4, 6), 1):
-		grid.set_surface(c, "water")
-	for c in grid.cells_in_radius(Vector2i(10, 7), 1):
-		grid.set_surface(c, "oil")
-	grid.set_surface(Vector2i(9, 2), "poison")
-
-	for h in heroes:
-		h.full_restore()
-	heroes[0].cell = Vector2i(2, 4)
-	heroes[1].cell = Vector2i(1, 6)
-
-	var enemies := [
-		Character.from_template("goblin_warrior"),
-		Character.from_template("goblin_warrior"),
-		Character.from_template("goblin_shaman"),
-	]
-	enemies[0].cell = Vector2i(11, 3)
-	enemies[1].cell = Vector2i(11, 6)
-	enemies[2].cell = Vector2i(12, 5)
-
-	combat = CombatManager.new(grid)
-	combat.start(heroes + enemies)
+## Берём актуальное состояние из сессии (клиент получает новый объект боя с каждым снимком).
+func _sync() -> void:
+	if Net.session == null or Net.session.combat == null:
+		return
+	combat = Net.session.combat
+	grid = combat.grid
+	heroes = Net.session.heroes
+	var cur_uid: String = combat.current.uid if combat.current != null else ""
+	if cur_uid != _last_current:
+		_last_current = cur_uid
+		selected_skill = ""
+		_notice = ""
 
 
 func _process(_delta: float) -> void:
-	if combat.active and combat.current != null and combat.current.faction != "player" and not _ai_busy:
-		_run_ai()
+	_sync()
 	queue_redraw()
 
 
-func _run_ai() -> void:
-	_ai_busy = true
-	await get_tree().create_timer(AI_DELAY).timeout
-	if combat.active and combat.current != null and combat.current.faction != "player":
-		SimpleAI.take_turn(combat, combat.current)
-	_ai_busy = false
+func _on_notice(text: String) -> void:
+	_notice = text
+
+
+func _on_disconnected(_reason: String) -> void:
+	get_tree().change_scene_to_file(MENU_SCENE)
 
 
 func _is_player_turn() -> bool:
-	return combat.active and combat.current != null and combat.current.faction == "player"
+	return combat != null and combat.active and combat.current != null \
+		and Net.session.owner_of(combat.current) == Net.my_id()
+
+
+func _send(cmd: Dictionary) -> void:
+	_notice = ""
+	Net.send_command(cmd)
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if combat == null:
+		return
 	var motion := event as InputEventMouseMotion
 	if motion != null:
 		hovered = _cell_at(motion.position)
@@ -89,14 +82,17 @@ func _unhandled_input(event: InputEvent) -> void:
 	if key == null or not key.pressed or key.echo:
 		return
 	var k := key.keycode
-	if k == KEY_R:
-		_new_battle()
+	if k == KEY_F10:
+		Net.leave()
+		return
+	if k == KEY_R and not combat.active:
+		_send({"type": "restart"})
 		return
 	if not _is_player_turn():
 		return
 	if k == KEY_SPACE:
 		selected_skill = ""
-		combat.end_turn()
+		_send({"type": "end_turn"})
 	elif k == KEY_0 or k == KEY_ESCAPE:
 		selected_skill = ""
 	elif k >= KEY_1 and k <= KEY_9:
@@ -106,20 +102,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			selected_skill = u.skills[idx]
 			var def := GameData.skill(selected_skill)
 			if str(def.get("target", "")) == "self":   # навыки на себя применяются сразу
-				combat.use_skill(u, selected_skill, u.cell)
+				_send({"type": "skill", "skill": selected_skill, "cell": [u.cell.x, u.cell.y]})
 				selected_skill = ""
 
 
 func _on_click(c: Vector2i) -> void:
 	if not _is_player_turn() or not grid.in_bounds(c):
 		return
-	var u := combat.current
 	if selected_skill == "":
-		if not combat.move(u, c):
-			GameLog.add("Туда не дойти (ОД: %d)." % u.ap)
+		_send({"type": "move", "cell": [c.x, c.y]})
 	else:
-		if combat.use_skill(u, selected_skill, c):
-			selected_skill = ""
+		_send({"type": "skill", "skill": selected_skill, "cell": [c.x, c.y]})
+		selected_skill = ""
 
 
 func _cell_at(p: Vector2) -> Vector2i:
@@ -134,6 +128,9 @@ func _cell_rect(c: Vector2i) -> Rect2:
 # --- Отрисовка ----------------------------------------------------------------
 
 func _draw() -> void:
+	if combat == null:
+		_text(Vector2(40, 40), "Ожидание состояния от сервера...")
+		return
 	draw_rect(Rect2(Vector2.ZERO, get_viewport_rect().size), Color(0.08, 0.08, 0.1))
 	_draw_grid()
 	_draw_units()
@@ -192,7 +189,7 @@ func _text(pos: Vector2, s: String, col := Color.WHITE, size := 14) -> void:
 
 
 func _draw_panel() -> void:
-	var x := PANEL_X
+	var x := int(ORIGIN.x) + grid.width * CELL + 24
 	var y := 30.0
 	if not combat.active:
 		_text(Vector2(x, y), "Бой окончен. Победа: %s. R — новый бой." % combat.winner_faction, Color.YELLOW, 16)
@@ -206,14 +203,15 @@ func _draw_panel() -> void:
 	else:
 		var u := combat.current
 		if u != null:
-			_text(Vector2(x, y), "Раунд %d — ход: %s" % [combat.round_number, u.describe()], Color.YELLOW, 16)
+			_text(Vector2(x, y), "Раунд %d — ход: %s [%s]" % [
+				combat.round_number, u.describe(), Net.session.player_name(Net.session.owner_of(u))], Color.YELLOW, 16)
 			y += 22
 			_text(Vector2(x, y), "ОЗ %d/%d   ОД %d/%d (+%d)   Броня %d" % [
 				u.hp, u.max_hp(), u.ap, u.get_int("max_ap"), u.get_int("ap_recovery"), DamageCalc.effective_armor(u)])
 			y += 20
 			_text(Vector2(x, y), "Статусы: " + _statuses_text(u))
 			y += 24
-			if u.faction == "player":
+			if _is_player_turn():
 				_text(Vector2(x, y), "[0] Перемещение" + ("  <" if selected_skill == "" else ""))
 				y += 18
 				for i in u.skills.size():
@@ -229,8 +227,11 @@ func _draw_panel() -> void:
 				_text(Vector2(x, y), "Пробел — конец хода", Color(0.7, 0.7, 0.7))
 				y += 18
 			else:
-				_text(Vector2(x, y), "Ходит ИИ...", Color(0.7, 0.7, 0.7))
+				_text(Vector2(x, y), "Ходит другой игрок или ИИ...", Color(0.7, 0.7, 0.7))
 				y += 18
+	if _notice != "":
+		_text(Vector2(x, y), "Нельзя: " + _notice, Color(1, 0.5, 0.4))
+		y += 18
 	y += 10
 	if grid.in_bounds(hovered):
 		var info := "Клетка %s: %s / %s" % [str(hovered), _surface_name(grid.get_ground(hovered)), _surface_name(grid.get_cloud(hovered))]

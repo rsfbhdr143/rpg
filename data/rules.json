@@ -31,5 +31,10 @@
   "hit_chance": {"min": 5, "max": 95},
   "skill_damage": {"base": 8, "per_level": 4, "variance": 0.15},
   "unarmed_weapon": {"name": "Кулаки", "min": 1, "max": 3, "element": "physical"},
-  "death_surface": "blood"
+  "death_surface": "blood",
+
+  "max_players": 4,
+  "party_templates": ["knight", "wizard", "ranger", "cleric"],
+  "min_party_size": 2,
+  "default_encounter": "goblin_camp"
 }
