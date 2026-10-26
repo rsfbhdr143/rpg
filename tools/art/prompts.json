@@ -31,12 +31,12 @@
       "size": [832, 1216],
       "variants": 4,
       "prompt": "{style}, {subject}, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
-      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body"
+      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene"
     },
     "object": {
       "size": [832, 1216],
       "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, plain white background",
-      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects"
+      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene"
     },
     "icon": {
       "size": [1024, 1024],
@@ -46,15 +46,15 @@
     },
     "texture": {
       "size": [1024, 1024],
-      "prompt": "{style}, flat 2d game texture, top-down close-up of {subject}, the pattern fills the entire frame edge to edge, evenly lit",
-      "negative": "landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge",
+      "prompt": "{style}, seamless repeating pattern of {subject}, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+      "negative": "landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
       "tileable": true,
       "lora_strength": 0.4
     },
     "wall": {
       "size": [1024, 1024],
-      "prompt": "{style}, flat 2d game texture, straight-on close-up of {subject}, the pattern fills the entire frame edge to edge, evenly lit",
-      "negative": "landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge",
+      "prompt": "{style}, seamless repeating pattern of {subject}, flat 2d game texture, straight-on view, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+      "negative": "landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge, ship, sea, sun, sunset, castle, horse, figure, scene, illustration",
       "tileable": true,
       "lora_strength": 0.4
     },
@@ -85,7 +85,7 @@
     "goblin_camp/wall": "sharpened wooden logs standing side by side, bound with rope"
   },
   "surfaces": {
-    "water": "shallow clear water with gentle ripples",
+    "water": "small gentle blue water ripples",
     "blood": "dark red blood with splatters",
     "oil": "thick black oil with glossy swirls",
     "poison": "bubbling green poison sludge",
