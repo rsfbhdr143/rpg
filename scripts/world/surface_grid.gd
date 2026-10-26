@@ -209,3 +209,34 @@ func statuses_for_cell(c: Vector2i) -> Array:
 		var sts: Array = GameData.surface(sid).get("statuses", [])
 		out.append_array(sts)
 	return out
+
+
+# --- Сериализация -------------------------------------------------------------
+
+func to_dict() -> Dictionary:
+	var walls: Array = []
+	for c in blocked:
+		walls.append([c.x, c.y])
+	var out_layers := {}
+	for layer in LAYERS:
+		var entries: Array = []
+		var d: Dictionary = layers[layer]
+		for c in d:
+			var s: Dictionary = d[c]
+			entries.append([c.x, c.y, s["id"], s["turns"], s["level"]])
+		out_layers[layer] = entries
+	return {"w": width, "h": height, "blocked": walls, "layers": out_layers}
+
+
+static func from_dict(d: Dictionary) -> SurfaceGrid:
+	var g := SurfaceGrid.new(int(d.get("w", 12)), int(d.get("h", 10)))
+	var walls: Array = d.get("blocked", [])
+	for w in walls:
+		g.blocked[Vector2i(int(w[0]), int(w[1]))] = true
+	var in_layers: Dictionary = d.get("layers", {})
+	for layer in LAYERS:
+		var entries: Array = in_layers.get(layer, [])
+		var target: Dictionary = g.layers[layer]
+		for e in entries:
+			target[Vector2i(int(e[0]), int(e[1]))] = {"id": str(e[2]), "turns": int(e[3]), "level": int(e[4])}
+	return g

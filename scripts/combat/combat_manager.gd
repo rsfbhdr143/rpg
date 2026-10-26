@@ -268,3 +268,45 @@ func _cleanup_dead() -> void:
 		if ds != "" and grid.get_ground(c.cell) == "none":
 			grid.set_surface(c.cell, ds, c.level)
 		unit_died.emit(c)
+
+
+# --- Сериализация -------------------------------------------------------------
+# Сервер рассылает снимок боя клиентам; клиенты только рисуют его,
+# сами ничего не считают (сервер — единственный источник истины).
+
+func to_dict() -> Dictionary:
+	var unit_dicts: Array = []
+	for u in units:
+		unit_dicts.append(u.to_dict())
+	var order: Array = []
+	for u in turn_order:
+		order.append(u.uid)
+	return {
+		"grid": grid.to_dict(), "units": unit_dicts, "order": order,
+		"turn_index": turn_index, "round": round_number, "active": active,
+		"current": current.uid if current != null else "",
+		"winner": winner_faction, "had_turn": _had_turn.keys(),
+	}
+
+
+static func from_dict(d: Dictionary) -> CombatManager:
+	var cm := CombatManager.new(SurfaceGrid.from_dict(d.get("grid", {})))
+	var by_uid := {}
+	var unit_dicts: Array = d.get("units", [])
+	for ud in unit_dicts:
+		var c := Character.from_dict(ud)
+		cm.units.append(c)
+		by_uid[c.uid] = c
+	var order: Array = d.get("order", [])
+	for id in order:
+		if by_uid.has(id):
+			cm.turn_order.append(by_uid[id])
+	cm.turn_index = int(d.get("turn_index", -1))
+	cm.round_number = int(d.get("round", 0))
+	cm.active = bool(d.get("active", false))
+	cm.current = by_uid.get(str(d.get("current", "")), null)
+	cm.winner_faction = str(d.get("winner", ""))
+	var had: Array = d.get("had_turn", [])
+	for id in had:
+		cm._had_turn[id] = true
+	return cm

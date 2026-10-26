@@ -17,6 +17,7 @@ static var surface_reactions: Dictionary = {}
 static var element_surfaces: Dictionary = {}
 static var skills: Dictionary = {}
 static var characters: Dictionary = {}
+static var encounters: Dictionary = {}
 
 ## Общий генератор случайных чисел. В тестах можно задать seed.
 static var rng := RandomNumberGenerator.new()
@@ -25,10 +26,12 @@ static var _loaded := false
 
 static func ensure_loaded() -> void:
 	if not _loaded:
-		reload()
+		reload_data()
 
 
-static func reload() -> void:
+## Не называть reload(): GameData.reload() снаружи вызывает встроенный
+## GDScript.reload(), который перекомпилирует скрипт и обнуляет данные.
+static func reload_data() -> void:
 	rules = _load_json("rules.json")
 	progression = _load_json("progression.json")
 	abilities = _load_json("abilities.json")
@@ -42,6 +45,7 @@ static func reload() -> void:
 	element_surfaces = sf.get("element_surfaces", {})
 	skills = _load_json("skills.json")
 	characters = _load_json("characters.json")
+	encounters = _load_json("encounters.json")
 	_loaded = true
 
 
@@ -93,6 +97,11 @@ static func talent(id: String) -> Dictionary:
 static func character(id: String) -> Dictionary:
 	ensure_loaded()
 	return characters.get(id, {})
+
+
+static func encounter(id: String) -> Dictionary:
+	ensure_loaded()
+	return encounters.get(id, {})
 
 
 static func attribute_list() -> Array:

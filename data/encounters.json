@@ -1,0 +1,21 @@
+{
+  "goblin_camp": {
+    "name": "Лагерь гоблинов",
+    "size": [14, 10],
+    "walls": [[7, 2], [7, 3], [7, 4], [7, 5]],
+    "surfaces": [
+      {"id": "water",  "cell": [4, 6], "radius": 1},
+      {"id": "oil",    "cell": [10, 7], "radius": 1},
+      {"id": "poison", "cell": [9, 2], "radius": 0}
+    ],
+    "hero_spawns": [[2, 4], [1, 6], [2, 7], [1, 3]],
+    "enemies": [
+      {"template": "goblin_warrior", "cell": [11, 3]},
+      {"template": "goblin_warrior", "cell": [11, 6]},
+      {"template": "goblin_shaman",  "cell": [12, 5]},
+      {"template": "goblin_warrior", "cell": [12, 2], "min_party": 3},
+      {"template": "goblin_shaman",  "cell": [12, 8], "min_party": 4},
+      {"template": "goblin_warrior", "cell": [11, 8], "min_party": 4}
+    ]
+  }
+}

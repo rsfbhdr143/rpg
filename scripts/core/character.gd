@@ -171,3 +171,61 @@ func full_restore() -> void:
 
 func describe() -> String:
 	return "%s (ур. %d)" % [display_name, level]
+
+
+# --- Сериализация (сеть, сохранения) -----------------------------------------
+
+func to_dict() -> Dictionary:
+	return {
+		"uid": uid, "template_id": template_id, "name": display_name, "faction": faction,
+		"level": level, "xp": xp, "xp_reward": xp_reward,
+		"attributes": attributes.duplicate(), "abilities": abilities.duplicate(),
+		"talents": talents.duplicate(), "skills": skills.duplicate(),
+		"weapon": weapon.duplicate(), "base_stats": base_stats.duplicate(),
+		"points": [unspent_attribute_points, unspent_ability_points, unspent_talent_points],
+		"hp": hp, "ap": ap,
+		"statuses": statuses.duplicate(true), "cooldowns": cooldowns.duplicate(),
+		"cell": [cell.x, cell.y], "death_handled": death_handled,
+	}
+
+
+static func from_dict(d: Dictionary) -> Character:
+	var c := Character.new()
+	c.uid = str(d.get("uid", ""))
+	c.template_id = str(d.get("template_id", ""))
+	c.display_name = str(d.get("name", ""))
+	c.faction = str(d.get("faction", "neutral"))
+	c.level = int(d.get("level", 1))
+	c.xp = int(d.get("xp", 0))
+	c.xp_reward = int(d.get("xp_reward", 0))
+	var attrs: Dictionary = d.get("attributes", {})
+	for a in attrs:
+		c.attributes[a] = int(attrs[a])
+	var abs_d: Dictionary = d.get("abilities", {})
+	for ab in abs_d:
+		c.abilities[ab] = int(abs_d[ab])
+	var t: Array = d.get("talents", [])
+	c.talents = t.duplicate()
+	var s: Array = d.get("skills", [])
+	c.skills = s.duplicate()
+	var w: Dictionary = d.get("weapon", {})
+	c.weapon = w.duplicate()
+	var bs: Dictionary = d.get("base_stats", {})
+	c.base_stats = bs.duplicate()
+	var pts: Array = d.get("points", [0, 0, 0])
+	c.unspent_attribute_points = int(pts[0])
+	c.unspent_ability_points = int(pts[1])
+	c.unspent_talent_points = int(pts[2])
+	c.hp = float(d.get("hp", 1.0))
+	c.ap = int(d.get("ap", 0))
+	var sts: Dictionary = d.get("statuses", {})
+	for id in sts:
+		var st: Dictionary = sts[id]
+		c.statuses[id] = {"turns": int(st.get("turns", 1)), "level": int(st.get("level", 1))}
+	var cds: Dictionary = d.get("cooldowns", {})
+	for sk in cds:
+		c.cooldowns[sk] = int(cds[sk])
+	var cl: Array = d.get("cell", [0, 0])
+	c.cell = Vector2i(int(cl[0]), int(cl[1]))
+	c.death_handled = bool(d.get("death_handled", false))
+	return c

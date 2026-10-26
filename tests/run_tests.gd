@@ -8,12 +8,12 @@ var _passed := 0
 
 
 func _init() -> void:
-	GameData.reload()
+	GameData.reload_data()
 	GameLog.echo_to_console = false
 	for t in [
 		"test_data_loaded", "test_derived_stats", "test_status_reactions",
 		"test_surface_reactions", "test_armor_and_resist", "test_progression",
-		"test_auto_battle",
+		"test_auto_battle", "test_serialization", "test_session_commands",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -175,3 +175,64 @@ func test_auto_battle() -> void:
 		if u.xp > 0 or u.level > int(GameData.character(u.template_id).get("level", 1)):
 			winner_xp = true
 	check(winner_xp or combat.winner_faction == "enemy", "победители получили опыт")
+
+
+func test_serialization() -> void:
+	print("serialization")
+	var g := SurfaceGrid.new(10, 6)
+	g.blocked[Vector2i(5, 1)] = true
+	g.set_surface(Vector2i(2, 2), "water")
+	g.set_surface(Vector2i(3, 3), "steam")
+	var k := Character.from_template("knight")
+	var e := Character.from_template("goblin_warrior")
+	k.cell = Vector2i(1, 1)
+	e.cell = Vector2i(8, 4)
+	StatusSystem.apply(k, "wet")
+	var combat := CombatManager.new(g)
+	combat.start([k, e])
+	var copy := CombatManager.from_dict(combat.to_dict())
+	check(copy.units.size() == 2, "персонажи восстановлены")
+	check(copy.current != null and copy.current.uid == combat.current.uid, "текущий ход восстановлен")
+	check(copy.grid.get_ground(Vector2i(2, 2)) == "water" and copy.grid.get_cloud(Vector2i(3, 3)) == "steam", "поверхности восстановлены")
+	check(copy.grid.blocked.has(Vector2i(5, 1)), "стены восстановлены")
+	var ck: Character = copy.units[0]
+	check(ck.has_status("wet") and ck.cell == k.cell and is_equal_approx(ck.hp, k.hp), "статусы, клетка и ОЗ восстановлены")
+	check(is_equal_approx(ck.get_stat("max_hp"), k.get_stat("max_hp")), "производные характеристики совпадают")
+	check(var_to_str(copy.to_dict()) == var_to_str(combat.to_dict()), "повторная сериализация даёт тот же снимок")
+
+
+func test_session_commands() -> void:
+	print("session (multiplayer without network)")
+	var s := GameSession.new()
+	check(s.add_player(1, "Аня") and s.add_player(2, "Борис"), "два игрока")
+	check(s.add_player(3, "Вера") and s.add_player(4, "Гоша"), "до четырёх игроков")
+	check(not s.add_player(5, "Лишний"), "пятый не помещается")
+	s.remove_player(3)
+	s.remove_player(4)
+	s.create_party()
+	check(s.heroes.size() == 2, "по герою на игрока")
+	check(s.owner_of(s.heroes[0]) == 1 and s.owner_of(s.heroes[1]) == 2, "герои раздаются игрокам")
+	s.start_encounter()
+	check(s.combat != null and s.combat.active, "бой начался")
+	var guard := 0
+	while s.is_ai_turn() and guard < 50:
+		guard += 1
+		s.run_ai_turn()
+	if s.combat.active:
+		var cur := s.combat.current
+		var owner := s.owner_of(cur)
+		var other: int = 2 if owner == 1 else 1
+		check(s.submit(other, {"type": "end_turn"}) != "", "чужой игрок не может ходить")
+		check(s.submit(owner, {"type": "skill", "skill": "nope", "cell": [0, 0]}) != "", "неизвестный навык отклонён")
+		check(s.submit(owner, {"type": "end_turn"}) == "", "владелец заканчивает ход")
+		check(s.combat.current != cur or not s.combat.active, "ход перешёл дальше")
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(mirror.heroes.size() == 2 and mirror.owner_of(mirror.heroes[1]) == 2, "клиентское зеркало из снимка")
+	s.remove_player(2)
+	check(s.owner_of(s.heroes[1]) == 1, "герой ушедшего игрока переходит другому")
+
+	var solo := GameSession.new()
+	solo.add_player(1, "Соло")
+	solo.create_party()
+	check(solo.heroes.size() == 2, "одиночка ведёт двух героев, как в D:OS1")
