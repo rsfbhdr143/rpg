@@ -22,6 +22,7 @@ var active := false
 var current: Character = null
 var winner_faction := ""
 var _had_turn := {}            # uid -> true, кто уже ходил в этом бою
+var bystanders: Array = []     # персонажи на карте, не участвующие в бою (мешают проходу)
 
 
 func _init(p_grid: SurfaceGrid) -> void:
@@ -170,6 +171,9 @@ func occupied_cells(except: Character = null) -> Dictionary:
 	for u in living_units():
 		if u != except:
 			out[u.cell] = true
+	for b in bystanders:
+		if b.is_alive():
+			out[b.cell] = true
 	return out
 
 

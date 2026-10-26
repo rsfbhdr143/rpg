@@ -17,7 +17,7 @@ static var surface_reactions: Dictionary = {}
 static var element_surfaces: Dictionary = {}
 static var skills: Dictionary = {}
 static var characters: Dictionary = {}
-static var encounters: Dictionary = {}
+static var locations: Dictionary = {}
 
 ## Общий генератор случайных чисел. В тестах можно задать seed.
 static var rng := RandomNumberGenerator.new()
@@ -45,7 +45,7 @@ static func reload_data() -> void:
 	element_surfaces = sf.get("element_surfaces", {})
 	skills = _load_json("skills.json")
 	characters = _load_json("characters.json")
-	encounters = _load_json("encounters.json")
+	locations = _load_json("locations.json")
 	_loaded = true
 
 
@@ -99,9 +99,9 @@ static func character(id: String) -> Dictionary:
 	return characters.get(id, {})
 
 
-static func encounter(id: String) -> Dictionary:
+static func location(id: String) -> Dictionary:
 	ensure_loaded()
-	return encounters.get(id, {})
+	return locations.get(id, {})
 
 
 static func attribute_list() -> Array:

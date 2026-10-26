@@ -14,6 +14,7 @@ func _init() -> void:
 		"test_data_loaded", "test_derived_stats", "test_status_reactions",
 		"test_surface_reactions", "test_armor_and_resist", "test_progression",
 		"test_auto_battle", "test_serialization", "test_session_commands",
+		"test_exploration",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -47,6 +48,15 @@ func test_data_loaded() -> void:
 	for ch in GameData.characters:
 		for sk in GameData.character(ch).get("skills", []):
 			check(GameData.skills.has(sk), "%s -> навык %s существует" % [ch, sk])
+	for loc in GameData.locations:
+		var ld := GameData.location(loc)
+		for ex in ld.get("exits", []):
+			var to := str(ex.get("to", ""))
+			check(GameData.locations.has(to) and GameData.location(to).get("spawns", {}).has(str(ex.get("spawn", ""))),
+				"%s -> выход в %s:%s существует" % [loc, to, ex.get("spawn", "")])
+		for enc in ld.get("encounters", []):
+			for e in enc.get("enemies", []):
+				check(GameData.characters.has(str(e["template"])), "%s -> враг %s существует" % [loc, e["template"]])
 
 
 func test_derived_stats() -> void:
@@ -209,26 +219,24 @@ func test_session_commands() -> void:
 	check(not s.add_player(5, "Лишний"), "пятый не помещается")
 	s.remove_player(3)
 	s.remove_player(4)
-	s.create_party()
+	s.new_game()
 	check(s.heroes.size() == 2, "по герою на игрока")
 	check(s.owner_of(s.heroes[0]) == 1 and s.owner_of(s.heroes[1]) == 2, "герои раздаются игрокам")
-	s.start_encounter()
-	check(s.combat != null and s.combat.active, "бой начался")
-	var guard := 0
-	while s.is_ai_turn() and guard < 50:
-		guard += 1
-		s.run_ai_turn()
-	if s.combat.active:
-		var cur := s.combat.current
-		var owner := s.owner_of(cur)
-		var other: int = 2 if owner == 1 else 1
-		check(s.submit(other, {"type": "end_turn"}) != "", "чужой игрок не может ходить")
-		check(s.submit(owner, {"type": "skill", "skill": "nope", "cell": [0, 0]}) != "", "неизвестный навык отклонён")
-		check(s.submit(owner, {"type": "end_turn"}) == "", "владелец заканчивает ход")
-		check(s.combat.current != cur or not s.combat.active, "ход перешёл дальше")
+	check(s.mode == "explore" and s.location_id == str(GameData.rule("start_location", "")), "игра начинается с исследования стартовой локации")
+	var h0: Character = s.heroes[0]
+	var target := _free_neighbor(s, h0.cell)
+	check(s.submit(2, {"type": "move", "unit": h0.uid, "cell": [target.x, target.y]}) != "", "чужим героем ходить нельзя")
+	check(s.submit(1, {"type": "move", "unit": h0.uid, "cell": [target.x, target.y]}) == "" and h0.cell == target, "свой герой идёт")
+	check(s.submit(1, {"type": "end_turn"}) != "", "вне боя нет ходов")
+
+	h0.unspent_attribute_points = 1
+	check(s.submit(1, {"type": "raise_attribute", "unit": h0.uid, "attribute": "strength"}) == "", "очко атрибута через команду")
+	check(s.submit(2, {"type": "raise_ability", "unit": h0.uid, "ability": "bow"}) != "", "чужого героя прокачивать нельзя")
+
 	var mirror := GameSession.new()
 	mirror.load_snapshot(s.snapshot())
 	check(mirror.heroes.size() == 2 and mirror.owner_of(mirror.heroes[1]) == 2, "клиентское зеркало из снимка")
+	check(mirror.grid != null and mirror.location_id == s.location_id, "зеркало знает локацию")
 	s.remove_player(2)
 	check(s.owner_of(s.heroes[1]) == 1, "герой ушедшего игрока переходит другому")
 
@@ -236,3 +244,73 @@ func test_session_commands() -> void:
 	solo.add_player(1, "Соло")
 	solo.create_party()
 	check(solo.heroes.size() == 2, "одиночка ведёт двух героев, как в D:OS1")
+
+
+func _free_neighbor(s: GameSession, c: Vector2i) -> Vector2i:
+	for d in SurfaceGrid.DIRS:
+		var n: Vector2i = c + d
+		if s.grid.is_walkable(n) and s.unit_at(n) == null and s.exit_at(n).is_empty():
+			return n
+	return c
+
+
+## Ведёт героя к клетке; если путь прервался (бой), возвращает false.
+func _walk(s: GameSession, h: Character, to: Vector2i) -> String:
+	return s.submit(s.owner_of(h), {"type": "move", "unit": h.uid, "cell": [to.x, to.y]})
+
+
+func test_exploration() -> void:
+	print("exploration, transitions, combat on the map, save/load")
+	var s := GameSession.new()
+	s.add_player(1, "Соло")
+	s.new_game()
+	var h0: Character = s.heroes[0]
+
+	# Деревня -> лес через выход.
+	var ex: Dictionary = s.location_data()["exits"][0]
+	var ec: Array = ex["cells"][0]
+	check(_walk(s, h0, Vector2i(int(ec[0]), int(ec[1]))) == "", "дойти до выхода")
+	check(s.location_id == str(ex["to"]), "партия перешла в «%s»" % ex["to"])
+	var spawn: Array = s.location_data()["spawns"][str(ex["spawn"])]
+	check(SurfaceGrid.distance(h0.cell, Vector2i(int(spawn[0][0]), int(spawn[0][1]))) <= 2, "герои у точки входа")
+	var forest_enemies := s.enemies.size()
+	check(forest_enemies > 0, "в лесу есть враги")
+
+	# Подходим к врагам — начинается бой прямо на карте.
+	var foe: Character = s.enemies[0]
+	_walk(s, h0, foe.cell + Vector2i(-1, 0))
+	check(s.mode == "combat" and s.combat != null and s.combat.active, "враги заметили партию, начался бой")
+	check(SurfaceGrid.distance(h0.cell, foe.cell) > 1, "движение остановилось, когда враги заметили")
+	var guard := 0
+	while s.mode == "combat" and guard < 400:
+		guard += 1
+		s.run_ai_turn(true)
+	check(s.mode != "combat", "бой закончился (%d ходов)" % guard)
+	if s.mode == "defeat":
+		check(s.submit(1, {"type": "restart"}) == "" and s.mode == "explore", "после поражения — снова у входа")
+	else:
+		check(s.defeated_encounters().size() == 1, "группа врагов отмечена побеждённой")
+		check(s.heroes.all(func(h): return h.is_alive()), "павшие герои поднялись после победы")
+
+	# Сохранение и загрузка.
+	var path := "user://test_save.json"
+	check(s.save_game(path) == "", "сохранение записано")
+	var loc := s.location_id
+	var xp := h0.xp
+	var hp := h0.hp
+	h0.xp += 999
+	s.enter_location("village", "start")
+	check(s.load_game(path) == "", "сохранение загружено")
+	var h0l: Character = s.heroes[0]
+	check(s.location_id == loc and h0l.xp == xp and is_equal_approx(h0l.hp, hp), "локация, опыт и ОЗ восстановлены")
+	check(s.enemies.size() == forest_enemies, "враги локации восстановлены")
+	var uids := {}
+	for u in s.all_units():
+		uids[u.uid] = true
+	check(not uids.has(Character.from_template("wolf").uid), "новые персонажи не повторяют uid загруженных")
+
+	# Возврат в деревню: локация та же, что и была.
+	s.enter_location("village", "from_forest")
+	s.enter_location("forest", "from_village")
+	check(s.enemies.size() == forest_enemies, "состояние леса сохранилось между переходами")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
