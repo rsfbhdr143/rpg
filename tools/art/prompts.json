@@ -58,24 +58,26 @@
         832,
         1216
       ],
-      "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, plain white background",
-      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene",
+      "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
       "px": [
         48,
         72
-      ]
+      ],
+      "lora_strength": 0.45
     },
     "building": {
       "size": [
         1024,
         1024
       ],
-      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, centered, plain white background",
-      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background",
+      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, centered, isolated on a plain white background",
+      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette",
       "px": [
         72,
         72
-      ]
+      ],
+      "lora_strength": 0.45
     },
     "icon": {
       "size": [
