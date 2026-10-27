@@ -55,6 +55,14 @@
     "cemetery": {
       "floor": "cemetery_floor",
       "wall": "cemetery_wall"
+    },
+    "forest": {
+      "floor": "forest_floor",
+      "wall": "forest_wall"
+    },
+    "goblin_camp": {
+      "floor": "goblin_camp_floor",
+      "wall": "goblin_camp_wall"
     }
   },
   "surfaces": {
@@ -62,12 +70,35 @@
     "water": "water"
   },
   "skills": {
-    "fireball": "fireball"
+    "fireball": "fireball",
+    "arrow_shot": "arrow_shot",
+    "attack": "attack",
+    "battering_ram": "battering_ram",
+    "flare": "flare",
+    "ice_shard": "ice_shard",
+    "whirlwind": "whirlwind"
   },
-  "statuses": {},
+  "statuses": {
+    "blessed": "blessed",
+    "burning": "burning",
+    "chilled": "chilled",
+    "cursed": "cursed",
+    "frozen": "frozen",
+    "knocked_down": "knocked_down",
+    "poisoned": "poisoned",
+    "regenerating": "regenerating",
+    "shocked": "shocked",
+    "slowed": "slowed",
+    "stunned": "stunned",
+    "wet": "wet"
+  },
   "auto": [
     "locations/cemetery/floor",
     "locations/cemetery/wall",
+    "locations/forest/floor",
+    "locations/forest/wall",
+    "locations/goblin_camp/floor",
+    "locations/goblin_camp/wall",
     "locations/village/floor",
     "locations/village/wall",
     "portraits/cleric",
@@ -84,7 +115,25 @@
     "props/grave",
     "props/open_grave",
     "props/tombstone",
+    "skills/arrow_shot",
+    "skills/attack",
+    "skills/battering_ram",
     "skills/fireball",
+    "skills/flare",
+    "skills/ice_shard",
+    "skills/whirlwind",
+    "statuses/blessed",
+    "statuses/burning",
+    "statuses/chilled",
+    "statuses/cursed",
+    "statuses/frozen",
+    "statuses/knocked_down",
+    "statuses/poisoned",
+    "statuses/regenerating",
+    "statuses/shocked",
+    "statuses/slowed",
+    "statuses/stunned",
+    "statuses/wet",
     "surfaces/steam",
     "surfaces/water",
     "tiles/floor",
