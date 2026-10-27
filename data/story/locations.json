@@ -256,7 +256,8 @@
             "template": "goblin_warrior"
           },
           {
-            "template": "goblin_warrior"
+            "template": "goblin_warrior",
+            "min_party": 3
           },
           {
             "template": "goblin_shaman"

@@ -515,13 +515,19 @@ func float_text(p: Vector2, text: String, col: Color, size := 8) -> void:
 	for _i in 8:
 		var moved := false
 		for f in floaters:
-			var fp: Vector2 = f["pos"] + Vector2(0, -18.0 * float(f["t"]) / float(f["dur"]))
+			var fp: Vector2 = f["pos"] + _float_rise(f)
 			if float(f["t"]) < 0.6 and absf(fp.x - p.x) < 60.0 and absf(fp.y - p.y) < 10.0:
 				p.y = fp.y - 11.0
 				moved = true
 		if not moved:
 			break
 	floaters.append({"pos": p, "text": text, "col": col, "t": 0.0, "dur": 1.1, "size": size})
+
+
+## Насколько надпись уже поднялась: быстро в первую половину жизни, потом медленно.
+func _float_rise(f: Dictionary) -> Vector2:
+	var k := float(f["t"]) / float(f["dur"])
+	return Vector2(0, -16.0 * minf(k * 2.0, 1.0) - k * 4.0)
 
 
 func shake(power: float, dur: float) -> void:
@@ -691,7 +697,7 @@ func _draw_over() -> void:
 		_over.draw_rect(Rect2((pa["pos"] as Vector2).round(), Vector2(s, s)), Color(pc, clampf(fade * 1.4, 0.0, 1.0)))
 	for f in floaters:
 		var k := float(f["t"]) / float(f["dur"])
-		var p: Vector2 = (f["pos"] as Vector2) + Vector2(0, -16.0 * minf(k * 2.0, 1.0) - k * 4.0)
+		var p: Vector2 = (f["pos"] as Vector2) + _float_rise(f)
 		var col: Color = f["col"]
 		col.a = 1.0 if k < 0.7 else (1.0 - k) / 0.3
 		var size := int(f["size"])

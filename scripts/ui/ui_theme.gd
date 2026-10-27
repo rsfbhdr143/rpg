@@ -331,6 +331,20 @@ static func outline(l: Label, size := 6) -> void:
 	l.add_theme_color_override("font_outline_color", Color(0.03, 0.02, 0.02, 0.92))
 
 
+## Тёмная подложка под надписью поверх карты. Ширина — по тексту, если надпись поставлена с нулевой шириной.
+static func backdrop(l: Label) -> void:
+	if not _boxes.has("backdrop"):
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.05, 0.035, 0.03, 0.62)
+		sb.set_corner_radius_all(3)
+		sb.content_margin_left = 14.0
+		sb.content_margin_right = 14.0
+		sb.content_margin_top = 1.0
+		sb.content_margin_bottom = 3.0
+		_boxes["backdrop"] = sb
+	l.add_theme_stylebox_override("normal", _boxes["backdrop"])
+
+
 ## Окно по центру родителя размером size (если содержимое больше — растёт в обе стороны).
 static func center(c: Control, size: Vector2) -> void:
 	place(c, Control.PRESET_CENTER, -size * 0.5, size)

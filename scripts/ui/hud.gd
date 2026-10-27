@@ -67,8 +67,9 @@ func _build_party() -> void:
 func _build_top() -> void:
 	location_label = UiTheme.label("", 18, UiTheme.GOLD, "bold")
 	location_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.place(location_label, Control.PRESET_CENTER_TOP, Vector2(-200, 10), Vector2(400, 24))
+	UiTheme.place(location_label, Control.PRESET_CENTER_TOP, Vector2(0, 10), Vector2(0, 24))
 	UiTheme.outline(location_label)
+	UiTheme.backdrop(location_label)
 	add_child(location_label)
 	turn_bar = TurnBar.new()
 	turn_bar.hud = self
@@ -156,9 +157,10 @@ func _build_messages() -> void:
 	add_child(banner)
 	sub_banner = UiTheme.label("", 20, UiTheme.TEXT, "bold")
 	sub_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.place(sub_banner, Control.PRESET_CENTER_TOP, Vector2(-400, 90), Vector2(800, 30))
+	UiTheme.place(sub_banner, Control.PRESET_CENTER_TOP, Vector2(0, 90), Vector2(0, 30))
 	sub_banner.modulate.a = 0.0
 	UiTheme.outline(sub_banner)
+	UiTheme.backdrop(sub_banner)
 	add_child(sub_banner)
 	card_title = UiTheme.label("", 24, Color("f0dcae"), "title")
 	card_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -171,7 +173,7 @@ func _build_messages() -> void:
 	card_text = UiTheme.label("", 20, UiTheme.TEXT)
 	card_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UiTheme.place(card_text, Control.PRESET_CENTER_TOP, Vector2(-300, 200), Vector2(600, 60))
+	UiTheme.place(card_text, Control.PRESET_CENTER_TOP, Vector2(-318, 200), Vector2(636, 60))
 	card_text.grow_vertical = Control.GROW_DIRECTION_END
 	card_text.modulate.a = 0.0
 	UiTheme.outline(card_text)
@@ -360,6 +362,16 @@ func show_banner(text: String, sub := "", color: Color = UiTheme.GOLD, hold := 1
 
 func show_sub_banner(text: String, hold := 0.9) -> void:
 	show_banner("", text, UiTheme.GOLD, hold)
+
+
+## Ход перешёл к другому: «Ваш ход» гаснет сразу, не дожидаясь конца показа.
+func hide_sub_banner() -> void:
+	if banner.text != "" or sub_banner.modulate.a <= 0.0:
+		return
+	if _banner_tween != null:
+		_banner_tween.kill()
+	_banner_tween = create_tween()
+	_banner_tween.tween_property(sub_banner, "modulate:a", 0.0, 0.15)
 
 
 func show_card(title: String, text: String) -> void:

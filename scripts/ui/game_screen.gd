@@ -296,6 +296,7 @@ func _present(e: Dictionary) -> float:
 				GameAudio.sfx("turn_start")
 				selected_uid = uid
 				return 0.3
+			hud.hide_sub_banner()
 			return 0.35
 		"combat_start":
 			hud.show_banner("БОЙ!", "", Color("ff8a5a"), 0.7)
