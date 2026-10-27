@@ -11,6 +11,8 @@ const SOLO_PICKS := 2
 
 ## Что сказать игроку при возврате в меню (обрыв связи, выход из игры).
 static var message := ""
+## false — не превращаться в выделенный сервер без графики (так делает прогон tests/ui_tour.gd).
+static var allow_dedicated := true
 
 var _bg: TitleArt
 var _main: VBoxContainer
@@ -59,6 +61,8 @@ func _ready() -> void:
 
 
 func _is_dedicated_launch() -> bool:
+	if not allow_dedicated:
+		return false
 	var args := OS.get_cmdline_user_args() + OS.get_cmdline_args()
 	return args.has("--server") or (DisplayServer.get_name() == "headless" and not args.has("--client"))
 
