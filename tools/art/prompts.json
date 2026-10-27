@@ -216,8 +216,14 @@
         48
       ]
     },
-    "tadeush": "a gaunt elderly priest in a black cassock holding a smoking censer on a chain",
-    "marta": "a sturdy red-haired woman tavern keeper in a green dress and a white apron, arms crossed, stern",
+    "tadeush": {
+      "subject": "a gaunt elderly priest in a plain black cassock holding a censer on a chain",
+      "negative": "interior, room, church, altar, yellow robe, golden vestments, colorful robe"
+    },
+    "marta": {
+      "subject": "a sturdy red-haired woman tavern keeper in a dark red dress and a white apron, arms crossed, stern",
+      "negative": "kitchen, interior, room, table, shelves"
+    },
     "pipin": {
       "subject": "a tiny fussy notary man in a pince-nez and a brown coat, holding a rolled scroll",
       "px": [
