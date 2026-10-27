@@ -88,25 +88,9 @@ vec3 surface_color(int s, vec2 p, float d, float t, vec3 base) {
 	return c;
 }
 
-void fragment() {
-	vec2 p = floor(world) + 0.5;
-	vec2 g = vec2((p.x / 16.0 + p.y / 8.0) * 0.5, (p.y / 8.0 - p.x / 16.0) * 0.5);
-	ivec2 c = ivec2(floor(g));
-	float t = floor(TIME * 8.0) / 8.0;
-	float d = bayer4(p);
-	if (c.x < 0 || c.y < 0 || c.x >= grid_size.x || c.y >= grid_size.y) {
-		// за краем карты: пол темнеет и растворяется в цвете фона
-		vec2 out_d = max(-g, g - vec2(grid_size));
-		float k = clamp(max(out_d.x, out_d.y) / 6.0, 0.0, 1.0);
-		float n0 = noise(p / 27.0 + vec2(0.5, 0.2)) * 0.6 + noise(p / 90.0) * 0.4;
-		vec3 oc = n0 + (d - 0.5) * 0.2 > 0.5 ? floor_b.rgb : floor_dark.rgb;
-		if (use_floor_tex) oc = texture(floor_tex, g / floor_tex_cells).rgb;
-		oc *= 0.62 - 0.22 * k;
-		if (hash(vec2(floor(p.x), floor(p.y * 0.5))) > 0.985) oc = floor_dark.rgb * 0.7;
-		if (k * 1.1 + (d - 0.5) * 0.5 + (n0 - 0.5) * 0.4 > 0.7) oc = outer_color.rgb;
-		COLOR = vec4(oc, 1.0);
-		return;
-	}
+// Клетка внутри карты: пол, поверхности, выход и подсветка боя.
+// (Отдельной функцией: return во fragment() Godot не компилирует.)
+vec3 map_color(vec2 p, vec2 g, ivec2 c, float d) {
 	// неровные края пятен: клетка берётся со смещением по шуму
 	vec2 wob = vec2(noise(p / 61.0), noise(p / 61.0 + vec2(0.37, 0.71))) - 0.5;
 	ivec2 cw = ivec2(floor(g + wob * 0.62));
@@ -177,5 +161,26 @@ void fragment() {
 		// клетка под курсором: светлая рамка через пиксель с тёмной, видна на любом полу
 		col = d < 0.5 ? hover_color.rgb : vec3(0.06, 0.05, 0.04);
 	}
-	COLOR = vec4(col, 1.0);
+	return col;
+}
+
+void fragment() {
+	vec2 p = floor(world) + 0.5;
+	vec2 g = vec2((p.x / 16.0 + p.y / 8.0) * 0.5, (p.y / 8.0 - p.x / 16.0) * 0.5);
+	ivec2 c = ivec2(floor(g));
+	float d = bayer4(p);
+	if (c.x < 0 || c.y < 0 || c.x >= grid_size.x || c.y >= grid_size.y) {
+		// за краем карты: пол темнеет и растворяется в цвете фона
+		vec2 out_d = max(-g, g - vec2(grid_size));
+		float k = clamp(max(out_d.x, out_d.y) / 6.0, 0.0, 1.0);
+		float n0 = noise(p / 27.0 + vec2(0.5, 0.2)) * 0.6 + noise(p / 90.0) * 0.4;
+		vec3 oc = n0 + (d - 0.5) * 0.2 > 0.5 ? floor_b.rgb : floor_dark.rgb;
+		if (use_floor_tex) oc = texture(floor_tex, g / floor_tex_cells).rgb;
+		oc *= 0.62 - 0.22 * k;
+		if (hash(vec2(floor(p.x), floor(p.y * 0.5))) > 0.985) oc = floor_dark.rgb * 0.7;
+		if (k * 1.1 + (d - 0.5) * 0.5 + (n0 - 0.5) * 0.4 > 0.7) oc = outer_color.rgb;
+		COLOR = vec4(oc, 1.0);
+	} else {
+		COLOR = vec4(map_color(p, g, c, d), 1.0);
+	}
 }

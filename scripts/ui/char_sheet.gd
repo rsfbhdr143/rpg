@@ -168,8 +168,8 @@ func _col_abilities(h: Character, editable: bool) -> Control:
 	for ab in GameData.abilities:
 		var def := GameData.ability(str(ab))
 		var rank := h.ability_rank(str(ab))
-		if rank == 0 and not editable:
-			continue
+		if rank == 0 and (not editable or h.unspent_ability_points <= 0):
+			continue   # пустые способности — только когда есть очки, чтобы колонка влезала
 		var cost := Progression.ability_cost(rank + 1)
 		var col := UiTheme.TEXT if rank > 0 else UiTheme.TEXT_DIM
 		_row(v, "%s  %d" % [def.get("name", ab), rank], col, "+", editable and Progression.can_raise_ability(h, str(ab)),

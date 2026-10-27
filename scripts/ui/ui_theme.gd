@@ -325,6 +325,12 @@ static func place(c: Control, preset: Control.LayoutPreset, pos: Vector2, size :
 		else (Control.GROW_DIRECTION_BEGIN if is_equal_approx(ay, 1.0) else Control.GROW_DIRECTION_END)
 
 
+## Тёмная обводка букв: надпись читается поверх карты без подложки.
+static func outline(l: Label, size := 6) -> void:
+	l.add_theme_constant_override("outline_size", size)
+	l.add_theme_color_override("font_outline_color", Color(0.03, 0.02, 0.02, 0.92))
+
+
 ## Окно по центру родителя размером size (если содержимое больше — растёт в обе стороны).
 static func center(c: Control, size: Vector2) -> void:
 	place(c, Control.PRESET_CENTER, -size * 0.5, size)

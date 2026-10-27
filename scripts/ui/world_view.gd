@@ -511,11 +511,16 @@ func burst(p: Vector2, col: Color, count: int, speed: float) -> void:
 
 
 func float_text(p: Vector2, text: String, col: Color, size := 8) -> void:
-	# свежие надписи рядом не накладываются: новая встаёт выше
-	for f in floaters:
-		var fp: Vector2 = f["pos"]
-		if float(f["t"]) < 0.4 and absf(fp.x - p.x) < 56.0 and absf(fp.y - p.y) < 9.0:
-			p.y = fp.y - 10.0
+	# свежие надписи рядом не накладываются: новая встаёт выше, пока не найдёт свободное место
+	for _i in 8:
+		var moved := false
+		for f in floaters:
+			var fp: Vector2 = f["pos"] + Vector2(0, -18.0 * float(f["t"]) / float(f["dur"]))
+			if float(f["t"]) < 0.6 and absf(fp.x - p.x) < 60.0 and absf(fp.y - p.y) < 10.0:
+				p.y = fp.y - 11.0
+				moved = true
+		if not moved:
+			break
 	floaters.append({"pos": p, "text": text, "col": col, "t": 0.0, "dur": 1.1, "size": size})
 
 

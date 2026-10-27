@@ -5,6 +5,7 @@ extends Control
 ## Только показывает состояние и передаёт нажатия в GameScreen (screen), сам ничего не решает.
 
 const FRAME_SIZE := Vector2(244, 66)
+const TOAST_W := 290.0   # шире сообщения переносятся, чтобы не залезать на середину экрана
 const SLOT := 46.0
 
 var screen: Node                    # GameScreen
@@ -24,8 +25,6 @@ var banner: Label
 var sub_banner: Label
 var card_title: Label
 var card_text: Label
-var tip_panel: PanelContainer
-var tip_label: Label
 var tooltip: PanelContainer
 var tooltip_label: RichTextLabel
 var help_panel: PanelContainer
@@ -34,6 +33,7 @@ var waiting_label: Label
 var _quest_key := ""
 var _log_size := -1
 var _tips: Array = []
+var _tip := ""          # совет, который сейчас показан последней строкой журнала боя
 var _tip_t := 0.0
 var _banner_tween: Tween
 var _card_tween: Tween
@@ -68,6 +68,7 @@ func _build_top() -> void:
 	location_label = UiTheme.label("", 18, UiTheme.GOLD, "bold")
 	location_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UiTheme.place(location_label, Control.PRESET_CENTER_TOP, Vector2(-200, 10), Vector2(400, 24))
+	UiTheme.outline(location_label)
 	add_child(location_label)
 	turn_bar = TurnBar.new()
 	turn_bar.hud = self
@@ -141,7 +142,7 @@ func _build_log() -> void:
 func _build_messages() -> void:
 	toast_box = UiTheme.vbox(4)
 	# сообщения — слева под портретами отряда, чтобы не закрывать середину карты
-	UiTheme.place(toast_box, Control.PRESET_TOP_LEFT, Vector2(12, 160), Vector2(420, 10))
+	UiTheme.place(toast_box, Control.PRESET_TOP_LEFT, Vector2(12, 160), Vector2(310, 10))
 	toast_box.alignment = BoxContainer.ALIGNMENT_BEGIN
 	toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(toast_box)
@@ -151,11 +152,13 @@ func _build_messages() -> void:
 	banner.add_theme_constant_override("shadow_offset_x", 4)
 	banner.add_theme_constant_override("shadow_offset_y", 4)
 	banner.modulate.a = 0.0
+	UiTheme.outline(banner)
 	add_child(banner)
 	sub_banner = UiTheme.label("", 20, UiTheme.TEXT, "bold")
 	sub_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UiTheme.place(sub_banner, Control.PRESET_CENTER_TOP, Vector2(-400, 90), Vector2(800, 30))
 	sub_banner.modulate.a = 0.0
+	UiTheme.outline(sub_banner)
 	add_child(sub_banner)
 	card_title = UiTheme.label("", 24, Color("f0dcae"), "title")
 	card_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -163,26 +166,16 @@ func _build_messages() -> void:
 	card_title.add_theme_constant_override("shadow_offset_x", 3)
 	card_title.add_theme_constant_override("shadow_offset_y", 3)
 	card_title.modulate.a = 0.0
+	UiTheme.outline(card_title)
 	add_child(card_title)
 	card_text = UiTheme.label("", 20, UiTheme.TEXT)
 	card_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	UiTheme.place(card_text, Control.PRESET_CENTER_TOP, Vector2(-380, 200), Vector2(760, 60))
+	UiTheme.place(card_text, Control.PRESET_CENTER_TOP, Vector2(-300, 200), Vector2(600, 60))
 	card_text.grow_vertical = Control.GROW_DIRECTION_END
 	card_text.modulate.a = 0.0
+	UiTheme.outline(card_text)
 	add_child(card_text)
-	tip_panel = UiTheme.panel(Vector2(340, 0))
-	UiTheme.place(tip_panel, Control.PRESET_BOTTOM_RIGHT, Vector2(-350, -110), Vector2(340, 0))
-	tip_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tip_panel.visible = false
-	add_child(tip_panel)
-	var tv := UiTheme.vbox(2)
-	tip_panel.add_child(tv)
-	tv.add_child(UiTheme.label("Совет", 16, UiTheme.GOLD, "bold"))
-	tip_label = UiTheme.label("", 16, UiTheme.TEXT)
-	tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	tip_label.custom_minimum_size = Vector2(320, 0)
-	tv.add_child(tip_label)
 
 
 func _build_tooltip() -> void:
@@ -248,22 +241,13 @@ func refresh(s: GameSession) -> void:
 	log_panel.visible = not dlg
 	toast_box.offset_top = party_box.position.y + party_box.size.y + 14.0
 	toast_box.offset_bottom = toast_box.offset_top + 10.0
-	if dlg:
-		# окно разговора внизу во всю ширину: совет подождёт
-		if tip_panel.visible:
-			_tips.push_front(tip_label.text)
-			tip_label.text = ""
-			tip_panel.visible = false
-			_tip_t = 0.0
-	elif _tips.size() > 0 or tip_panel.visible:
+	# советы показываются последней строкой журнала боя (отдельное окно закрывало карту)
+	if not dlg and (not _tips.is_empty() or _tip != ""):
 		_tip_t -= get_process_delta_time()
 		if _tip_t <= 0.0:
-			if _tips.is_empty():
-				tip_panel.visible = false
-			else:
-				tip_label.text = str(_tips.pop_front())
-				tip_panel.visible = true
-				_tip_t = 9.0
+			_tip = str(_tips.pop_front()) if not _tips.is_empty() else ""
+			_tip_t = 12.0
+			_log_size = -1
 
 
 func _refresh_party(s: GameSession) -> void:
@@ -323,6 +307,8 @@ func _refresh_log() -> void:
 	for i in lines.size():
 		var line := str(lines[i]).replace("[", "(").replace("]", ")")
 		out.append(line if i >= lines.size() - 3 else "[color=#8a7e6a]%s[/color]" % line)
+	if _tip != "":
+		out.append("[color=#e8c870]Совет: %s[/color]" % _tip.replace("[", "(").replace("]", ")"))
 	log_label.text = "\n".join(out)
 
 
@@ -337,10 +323,14 @@ func toast(text: String, color: Color = UiTheme.TEXT, dur := 3.2) -> void:
 	p.add_theme_stylebox_override("panel", UiTheme.frame(Color("15110e"), UiTheme.GOLD_DIM, UiTheme.INK, Color("221a14"), 0.9, 3))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	p.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	p.self_modulate.a = 0.9
 	var l := UiTheme.label(text, 16, color)
+	if UiTheme.font("body").get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x > TOAST_W:
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(TOAST_W, 0)
 	p.add_child(l)
 	toast_box.add_child(p)
-	if toast_box.get_child_count() > 4:
+	if toast_box.get_child_count() > 3:
 		toast_box.get_child(0).queue_free()
 	var tw := p.create_tween()
 	p.modulate.a = 0.0
@@ -388,9 +378,9 @@ func show_card(title: String, text: String) -> void:
 
 
 func add_tip(text: String) -> void:
-	if not _tips.has(text) and tip_label.text != text:
+	if not _tips.has(text) and _tip != text:
 		_tips.append(text)
-		if not tip_panel.visible:
+		if _tip == "":
 			_tip_t = 0.0
 
 

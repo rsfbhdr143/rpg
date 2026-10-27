@@ -317,18 +317,19 @@ func _present(e: Dictionary) -> float:
 			return 1.2
 		"xp":
 			var amount := int(e.get("amount", 0))
-			if uid != "" and world.unit_node(uid) != null:
-				world.float_text(world.unit_pos(uid) + Vector2(0, -50), "+%d опыта" % amount, Color("a8b4ff"), 8)
+			# опыт получает вся партия разом: одна надпись над первым героем и одно сообщение
 			if int(_xp_toast.get(amount, -9999)) < Time.get_ticks_msec() - 800:
 				_xp_toast[amount] = Time.get_ticks_msec()
 				hud.toast("Опыт +%d" % amount, Color("a8b4ff"), 2.0)
+				if uid != "" and world.unit_node(uid) != null:
+					world.float_text(world.unit_pos(uid) + Vector2(0, -50), "+%d опыта" % amount, Color("a8b4ff"), 8)
 			return 0.0
 		"level_up":
 			world.level_up_fx(uid)
 			GameAudio.stinger("level_up")
 			var u := session.unit_by_uid(uid)
 			if u != null:
-				hud.toast("%s: уровень %d! Очки — в листе героя (C)" % [u.display_name, int(e.get("level", u.level))], UiTheme.GOLD, 4.5)
+				hud.toast("%s: уровень %d · очки в листе героя (C)" % [u.display_name, int(e.get("level", u.level))], UiTheme.GOLD, 4.5)
 			return 0.4
 		"quest":
 			var qn := str(GameData.quest(str(e.get("quest", ""))).get("name", e.get("quest", "")))

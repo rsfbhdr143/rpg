@@ -462,13 +462,37 @@ func _place_heroes(spawn: String) -> void:
 	for u in enemies + npcs:
 		if u.is_alive():
 			taken[u.cell] = true
+	var spots := _spawn_order(cells)
 	for i in heroes.size():
 		var h: Character = heroes[i]
 		var want := Vector2i(i, 0)
-		if not cells.is_empty():
-			want = _cell_of(cells[i % cells.size()])
+		if not spots.is_empty():
+			want = spots[i % spots.size()]
 		h.cell = _free_cell_near(want, taken)
 		taken[h.cell] = true
+
+
+## Точки появления по рядам экрана (в изометрии ряд — клетки с одинаковым x + y): сначала самый длинный
+## ряд слева направо, потом остальные, — первые герои встают бок о бок, а не друг за другом.
+func _spawn_order(cells: Array) -> Array:
+	var rows := {}
+	for c in cells:
+		var cell := _cell_of(c)
+		var key := cell.x + cell.y
+		if not rows.has(key):
+			rows[key] = []
+		(rows[key] as Array).append(cell)
+	var keys: Array = []
+	for k in rows:
+		keys.append([(rows[k] as Array).size() * 1000 + int(k), k])   # длинный ряд, при равенстве — ближний
+	keys.sort_custom(func(a, b): return int(a[0]) > int(b[0]))
+	var out: Array = []
+	for kk in keys:
+		var k: Variant = kk[1]
+		var row: Array = rows[k]
+		row.sort_custom(func(a, b): return a.x - a.y < b.x - b.y)
+		out.append_array(row)
+	return out
 
 
 func _free_cell_near(c: Vector2i, taken: Dictionary) -> Vector2i:
@@ -1018,9 +1042,9 @@ func _follow_spot(path: Array, reserved: Dictionary, blockers: Dictionary) -> Ve
 			var score := float(SurfaceGrid.distance(cell, dest)) * 10.0
 			if sx == 0:
 				score += 30.0 if sy < 0 else 12.0
+			elif sx == 1 and sy < 0:
+				score += 6.0             # наискосок за спиной — наполовину спрятан
 			score -= float(mini(sx, 2)) * 2.0   # чем дальше вбок, тем лучше видно обоих
-			if path.size() >= 2 and cell == path[-2]:
-				score -= 4.0             # шаг назад по пути — естественно, если он не прячет спутника
 			if score < best_score:
 				best_score = score
 				best = cell

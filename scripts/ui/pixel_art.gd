@@ -275,9 +275,9 @@ static func draw_portrait(ci: CanvasItem, id: String, rect: Rect2, t := 0.0) -> 
 	var s := floorf(side / 24.0) if side >= 48.0 else side / 24.0
 	var ghost := Color(1, 1, 1, 1)
 	if lk.has("beast"):
-		# зверь крупно: голова и грудь по центру
-		var kb := s * 1.5
-		_draw_beast(ci, lk, rect.get_center() - Vector2(9.0, -14.0) * kb, 1, t, kb, ghost)
+		# зверь целиком: силуэт читается лучше, чем морда крупным планом
+		var kb := side / 28.0
+		_draw_beast(ci, lk, rect.get_center() + Vector2(0.0, 11.0 * kb), 1, t, kb, ghost)
 		return
 	var o := rect.position + Vector2(rect.size.x * 0.5, 35.0 * s)
 	_draw_humanoid(ci, lk, o, 1, t, s, ghost)
