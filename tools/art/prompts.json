@@ -448,12 +448,14 @@
       "kind": "building"
     },
     "tavern": {
-      "subject": "a two-storey timber village tavern with a hanging sign and a thatched roof",
+      "subject": "a single two-storey timber-framed tavern standing alone, thatched roof, a wooden sign board hanging over the door, a barrel by the wall",
       "px": [
         88,
         84
       ],
-      "kind": "building"
+      "kind": "building",
+      "lora_strength": 0.35,
+      "negative": "neighboring houses, town, street, road, fence, crowd, church, tower"
     },
     "smithy": {
       "subject": "a village smithy with an open forge, an anvil and a chimney",
@@ -464,11 +466,13 @@
       "kind": "building"
     },
     "well": {
-      "subject": "a stone village well with a small wooden roof and a bucket",
+      "subject": "a single round stone well with a small pitched wooden roof on two posts and a wooden bucket on the rim",
       "px": [
         24,
         32
-      ]
+      ],
+      "lora_strength": 0.35,
+      "negative": "houses, cottages, village, street, people, trees, pond, fountain"
     },
     "tree": {
       "subject": "an autumn tree with orange and yellow leaves",
@@ -482,14 +486,16 @@
       ]
     },
     "bush": {
-      "subject": "a small autumn bush",
+      "subject": "a single round leafy shrub with orange and red autumn leaves, roots hidden",
       "px": [
         24,
         18
-      ]
+      ],
+      "lora_strength": 0.35,
+      "negative": "pot, planter, flower pot, vase, basket, landscape, field, meadow, tree trunk, tall tree"
     },
     "reeds": {
-      "subject": "a clump of marsh reeds and cattails",
+      "subject": "a single tuft of tall green and brown reeds with a few brown cattails, growing from a small clump of roots",
       "px": [
         20,
         28
@@ -497,7 +503,9 @@
       "size": [
         832,
         1216
-      ]
+      ],
+      "lora_strength": 0.35,
+      "negative": "lake, pond, water, reflection, swamp landscape, river bank, birds, boat, sky"
     },
     "rock": {
       "subject": "a mossy grey boulder",
@@ -532,15 +540,17 @@
       ]
     },
     "bones": {
-      "subject": "a small pile of bones and a skull",
+      "subject": "a small heap of bleached white bones with a human skull on top, ribs and long bones, dark ink outlines",
       "px": [
-        20,
-        12
+        24,
+        16
       ],
       "size": [
         1216,
         832
-      ]
+      ],
+      "lora_strength": 0.35,
+      "negative": "rock, stone, boulder, gravel, dust, ash, grey blob"
     },
     "chest": {
       "subject": "a small iron-bound wooden treasure chest",
@@ -570,17 +580,6 @@
         64
       ],
       "kind": "building"
-    },
-    "lado_tracks": {
-      "subject": "a short trail of muddy footprints on the ground, seen from above",
-      "px": [
-        32,
-        16
-      ],
-      "size": [
-        1216,
-        832
-      ]
     }
   },
   "images": {
@@ -589,12 +588,23 @@
     "intro_2": "a funeral at an old cemetery on a hill under a low red sun, a coffin beside a fresh grave pit, a gaunt priest in a black cassock with prayer beads, a sturdy red-haired woman, a tiny notary in a pince-nez with a scroll, villagers behind them, crows on crooked elms",
     "intro_3": "an old cemetery right after sunset under a crimson sky, crows bursting from the trees, old graves cracking open, hands and corpses in burial shrouds climbing out of the earth, villagers running to the fence",
     "intro_4": "a collapsed grave at night under the moon, at the bottom a coffin split open from inside and empty, a straight trail of bare footprints leading from the pit across the cemetery to a misty forest",
-    "farewell": "a funeral pyre burning with blue flame on top of a burial mound at night, a translucent ghost of a young nobleman in a doublet stepping out of the smoke",
+    "farewell": {
+      "subject": "night, a tall funeral pyre burning with bright eerie (cyan blue flames:1.4) on top of a small burial mound, a glowing pale blue (translucent ghost:1.3) of a young man in a doublet rising out of the blue fire, villagers watching from the dark",
+      "negative": "orange fire, yellow fire, daylight, sunny sky, procession, crowd of monks"
+    },
     "epilogue": "a table in an empty priest's house, a guttering candle, scattered black prayer beads and a folded letter, dim light"
   },
   "items": {
     "potion": "a small glass bottle of red healing potion with a cork",
-    "letter": "a folded letter sealed with red wax",
-    "gold": "a small pile of gold coins"
+    "letter": {
+      "subject": "a single folded paper envelope closed with one round red wax seal, plain, no drawing",
+      "lora_strength": 0.4,
+      "negative": "coat of arms, heraldry, shield, crest, emblem, crown, banner, writing, scroll, book"
+    },
+    "gold": {
+      "subject": "a small heap of shiny gold coins",
+      "lora_strength": 0.4,
+      "negative": "card, plaque, frame, border, square, tile, parchment, paper, background texture, coin purse, chest"
+    }
   }
 }

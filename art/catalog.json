@@ -2725,6 +2725,29 @@
      "loop": true
     }
    }
+  },
+  "prop_lado_tracks": {
+   "sheet": "res://art/sprites/prop_lado_tracks.png",
+   "kind": "image",
+   "frame": [
+    31,
+    11
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_lado_tracks.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
   }
  }
 }

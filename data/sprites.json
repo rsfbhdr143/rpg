@@ -154,6 +154,7 @@
     "props/funeral_candles",
     "props/grave",
     "props/house",
+    "props/lado_tracks",
     "props/open_grave",
     "props/pyre",
     "props/rock",
@@ -265,7 +266,8 @@
     "tent": "prop_tent",
     "totem": "prop_totem",
     "tree": "prop_tree",
-    "vetla_hut": "prop_vetla_hut"
+    "vetla_hut": "prop_vetla_hut",
+    "lado_tracks": "prop_lado_tracks"
   },
   "images": {
     "epilogue": "image_epilogue",
