@@ -119,6 +119,7 @@
     "images/intro_4",
     "images/title",
     "items/gold",
+    "items/letter",
     "items/potion",
     "locations/cemetery/floor",
     "locations/cemetery/wall",
@@ -143,8 +144,10 @@
     "portraits/vetla",
     "portraits/wizard",
     "portraits/zaraza",
+    "props/bell_tower",
     "props/bone_throne",
     "props/bones",
+    "props/bush",
     "props/campfire",
     "props/chest",
     "props/coffin",
@@ -157,13 +160,16 @@
     "props/lado_tracks",
     "props/open_grave",
     "props/pyre",
+    "props/reeds",
     "props/rock",
     "props/smithy",
+    "props/tavern",
     "props/tent",
     "props/tombstone",
     "props/totem",
     "props/tree",
     "props/vetla_hut",
+    "props/well",
     "skills/arrow_shot",
     "skills/attack",
     "skills/battering_ram",
@@ -267,7 +273,12 @@
     "totem": "prop_totem",
     "tree": "prop_tree",
     "vetla_hut": "prop_vetla_hut",
-    "lado_tracks": "prop_lado_tracks"
+    "lado_tracks": "prop_lado_tracks",
+    "bell_tower": "prop_bell_tower",
+    "bush": "prop_bush",
+    "reeds": "prop_reeds",
+    "tavern": "prop_tavern",
+    "well": "prop_well"
   },
   "images": {
     "epilogue": "image_epilogue",
@@ -280,6 +291,7 @@
   },
   "items": {
     "gold": "item_gold",
-    "potion": "item_potion"
+    "potion": "item_potion",
+    "letter": "item_letter"
   }
 }

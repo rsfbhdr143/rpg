@@ -1,5 +1,5 @@
 {
-  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"].",
+  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"]. Картинки, которые генератор не осилил (могила, кости, письмо, «сбит с ног», следы Ладо), нарисованы пиксель-артом вручную в art/inbox/handmade и отсюда убраны.",
   "settings": {
     "style": "color",
     "variants": 2,
@@ -343,11 +343,6 @@
     "frozen": "a block of ice",
     "shocked": "a small yellow lightning spark",
     "stunned": "circling stars",
-    "knocked_down": {
-      "subject": "a dented helmet lying tilted on its side with yellow dizzy stars above it and a bold red arrow pointing down",
-      "lora_strength": 0.5,
-      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
-    },
     "slowed": "a snail shell",
     "blessed": "a golden halo",
     "cursed": "a purple evil eye",
@@ -371,18 +366,6 @@
     "lado_ghost": "the glowing pale blue-white ghost of a young nobleman with a sad smile"
   },
   "props": {
-    "grave": {
-      "subject": "a small low mound of dark brown earth with a small wooden cross stuck in it",
-      "px": [
-        26,
-        22
-      ],
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "trees, grass field, rocks, boulder"
-    },
     "tombstone": {
       "subject": "a weathered mossy stone tombstone",
       "px": [
@@ -559,19 +542,6 @@
         1216
       ]
     },
-    "bones": {
-      "subject": "a small heap of bleached white bones with a human skull on top, ribs and long bones, dark ink outlines",
-      "px": [
-        24,
-        16
-      ],
-      "size": [
-        1216,
-        832
-      ],
-      "lora_strength": 0.35,
-      "negative": "rock, stone, boulder, gravel, dust, ash, grey blob"
-    },
     "chest": {
       "subject": "a small iron-bound wooden treasure chest",
       "px": [
@@ -616,11 +586,6 @@
   },
   "items": {
     "potion": "a small glass bottle of red healing potion with a cork",
-    "letter": {
-      "subject": "a single folded paper envelope closed with one round red wax seal, plain, no drawing",
-      "lora_strength": 0.4,
-      "negative": "coat of arms, heraldry, shield, crest, emblem, crown, banner, writing, scroll, book"
-    },
     "gold": {
       "subject": "a small heap of shiny gold coins",
       "lora_strength": 0.4,
