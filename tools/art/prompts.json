@@ -153,7 +153,7 @@
     "knight": "a stern medieval knight in plate armor and a deep blue tabard, both hands resting on the crossguard of a greatsword planted point-down in front of him",
     "wizard": "a young female wizard in a long crimson robe, holding one plain straight wooden staff upright in her right hand, left hand empty",
     "ranger": {
-      "subject": "a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty",
+      "subject": "a hooded ranger in a deep purple hooded cloak over dark brown leather armor, a longbow in his left hand, a quiver on his back",
       "clear_holes": true
     },
     "cleric": "a female cleric in white and gold vestments, holding one simple mace in her right hand, a holy pendant on her chest",
@@ -317,7 +317,7 @@
   "portraits": {
     "knight": "a stern medieval knight with short grey hair and a scar, plate armor and a deep blue tabard",
     "wizard": "a young female wizard with dark braided hair in a crimson hooded robe",
-    "ranger": "a hooded ranger with a short beard in a green cloak",
+    "ranger": "a hooded ranger with a short beard in a deep purple hooded cloak",
     "cleric": "a female cleric in white and gold vestments with a holy pendant, calm face",
     "tadeush": "a gaunt elderly priest in a black cassock, sunken cheeks, thin grey hair",
     "marta": "a sturdy red-haired woman tavern keeper, freckles, stern eyes, white apron",
@@ -333,10 +333,10 @@
   },
   "props": {
     "grave": {
-      "subject": "a low grave mound of dark earth with a simple wooden cross at its head",
+      "subject": "a small low mound of dark brown earth with a small wooden cross stuck in it",
       "px": [
-        32,
-        28
+        26,
+        22
       ],
       "size": [
         1216,

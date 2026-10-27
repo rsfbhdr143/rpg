@@ -515,6 +515,30 @@
     }
    }
   },
+  "goblin_scout": {
+   "sheet": "res://art/sprites/goblin_scout.png",
+   "kind": "unit",
+   "frame": [
+    25,
+    36
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/goblin_scout.webp"
+   ],
+   "scale": 0.0295,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "goblin_shaman": {
    "sheet": "res://art/sprites/goblin_shaman.png",
    "kind": "unit",
@@ -563,6 +587,30 @@
     }
    }
   },
+  "gunter": {
+   "sheet": "res://art/sprites/gunter.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    50
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/gunter.webp"
+   ],
+   "scale": 0.0416,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "knight": {
    "sheet": "res://art/sprites/knight.png",
    "kind": "unit",
@@ -578,6 +626,54 @@
     "generated/units/knight.webp"
    ],
    "scale": 0.0451,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "marta": {
+   "sheet": "res://art/sprites/marta.png",
+   "kind": "unit",
+   "frame": [
+    19,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/marta.webp"
+   ],
+   "scale": 0.0377,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "pipin": {
+   "sheet": "res://art/sprites/pipin.png",
+   "kind": "unit",
+   "frame": [
+    26,
+    36
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/pipin.webp"
+   ],
+   "scale": 0.0289,
    "animations": {
     "idle": {
      "start": 0,
@@ -635,6 +731,30 @@
     }
    }
   },
+  "shmyg": {
+   "sheet": "res://art/sprites/shmyg.png",
+   "kind": "unit",
+   "frame": [
+    23,
+    34
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/shmyg.webp"
+   ],
+   "scale": 0.0282,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "skeleton": {
    "sheet": "res://art/sprites/skeleton.png",
    "kind": "unit",
@@ -650,6 +770,54 @@
     "generated/units/skeleton.webp"
    ],
    "scale": 0.0381,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "sych": {
+   "sheet": "res://art/sprites/sych.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/sych.webp"
+   ],
+   "scale": 0.0371,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "tadeush": {
+   "sheet": "res://art/sprites/tadeush.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/tadeush.webp"
+   ],
+   "scale": 0.0362,
    "animations": {
     "idle": {
      "start": 0,
@@ -698,6 +866,54 @@
     "generated/units/wizard.webp"
    ],
    "scale": 0.0391,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "wolf": {
+   "sheet": "res://art/sprites/wolf.png",
+   "kind": "unit",
+   "frame": [
+    29,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/wolf.webp"
+   ],
+   "scale": 0.0349,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "zaraza": {
+   "sheet": "res://art/sprites/zaraza.png",
+   "kind": "unit",
+   "frame": [
+    22,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/zaraza.webp"
+   ],
+   "scale": 0.028,
    "animations": {
     "idle": {
      "start": 0,

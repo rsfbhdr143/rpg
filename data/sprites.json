@@ -27,7 +27,16 @@
     "skeleton": "skeleton",
     "wizard": "wizard",
     "goblin_shaman": "goblin_shaman",
-    "training_dummy": "training_dummy"
+    "training_dummy": "training_dummy",
+    "goblin_scout": "goblin_scout",
+    "gunter": "gunter",
+    "marta": "marta",
+    "pipin": "pipin",
+    "shmyg": "shmyg",
+    "sych": "sych",
+    "tadeush": "tadeush",
+    "wolf": "wolf",
+    "zaraza": "zaraza"
   },
   "tiles": {
     "floor": "village_floor",
@@ -76,14 +85,23 @@
     "tiles/floor",
     "tiles/wall",
     "units/cleric",
+    "units/goblin_scout",
     "units/goblin_shaman",
     "units/goblin_warrior",
+    "units/gunter",
     "units/knight",
+    "units/marta",
+    "units/pipin",
     "units/ranger",
     "units/risen",
+    "units/shmyg",
     "units/skeleton",
+    "units/sych",
+    "units/tadeush",
     "units/training_dummy",
-    "units/wizard"
+    "units/wizard",
+    "units/wolf",
+    "units/zaraza"
   ],
   "portraits": {
     "cleric": "portrait_cleric",
