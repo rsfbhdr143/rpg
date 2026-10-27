@@ -499,11 +499,13 @@
     }
   },
   "images": {
-    "title": "a lonely village cemetery on a hill at sunset, crows circling over a small bell tower, a fresh grave in the foreground",
-    "intro_1": "a funeral procession of villagers carrying a coffin along a muddy village road at dusk, crows on a fence",
-    "intro_2": "mourners standing around an open grave at a cemetery at sunset, an old priest in black reading a prayer over a coffin",
-    "intro_3": "an empty open coffin at a cemetery, mourners recoiling in horror, crows taking flight, pale mist rising from the graves",
-    "intro_4": "muddy footprints leading from a cemetery into a misty swamp forest of alders, a faint ghostly figure among the trees"
+    "title": "a wooden village bell tower at dusk with crows sitting on its railing, behind it a misty alder forest and a humpbacked burial mound with a small red smoldering light on its top",
+    "intro_1": "a grey marshy plain in fog at sunset, a small village by a river ford with a bell tower, humpbacked burial mounds on the horizon, a flock of crows in the sky",
+    "intro_2": "a funeral at an old cemetery on a hill under a low red sun, a coffin beside a fresh grave pit, a gaunt priest in a black cassock with prayer beads, a sturdy red-haired woman, a tiny notary in a pince-nez with a scroll, villagers behind them, crows on crooked elms",
+    "intro_3": "an old cemetery right after sunset under a crimson sky, crows bursting from the trees, old graves cracking open, hands and corpses in burial shrouds climbing out of the earth, villagers running to the fence",
+    "intro_4": "a collapsed grave at night under the moon, at the bottom a coffin split open from inside and empty, a straight trail of bare footprints leading from the pit across the cemetery to a misty forest",
+    "farewell": "a funeral pyre burning with blue flame on top of a burial mound at night, a translucent ghost of a young nobleman in a doublet stepping out of the smoke",
+    "epilogue": "a table in an empty priest's house, a guttering candle, scattered black prayer beads and a folded letter, dim light"
   },
   "items": {
     "potion": "a small glass bottle of red healing potion with a cork",
