@@ -326,9 +326,9 @@ func _present(e: Dictionary) -> float:
 					world.float_text(world.unit_pos(uid) + Vector2(0, -50), "+%d опыта" % amount, Color("a8b4ff"), 8)
 			return 0.0
 		"level_up":
-			world.level_up_fx(uid)
-			GameAudio.stinger("level_up")
 			var u := session.unit_by_uid(uid)
+			world.level_up_fx(uid, int(e.get("level", 0)))
+			GameAudio.stinger("level_up")
 			if u != null:
 				hud.toast("%s: уровень %d · очки в листе героя (C)" % [u.display_name, int(e.get("level", u.level))], UiTheme.GOLD, 4.5)
 			return 0.4

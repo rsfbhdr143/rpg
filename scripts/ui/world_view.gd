@@ -491,11 +491,11 @@ func explosion_fx(c: Vector2i) -> void:
 	shake(3.0, 0.3)
 
 
-func level_up_fx(uid: String) -> void:
+func level_up_fx(uid: String, level := 0) -> void:
 	var n := unit_node(uid)
 	if n == null:
 		return
-	float_text(n.head() + Vector2(0, -12), "Уровень!", Color("ffd860"), 8)
+	float_text(n.head() + Vector2(0, -12), "Ур. %d!" % level if level > 0 else "Уровень!", Color("ffd860"), 8)
 	for i in 24:
 		particles.append({"pos": n.position + Vector2(randf_range(-10, 10), 0),
 			"vel": Vector2(0, randf_range(-60, -25)), "col": Color("ffe080") if i % 2 else Color("fff8d0"),
@@ -511,17 +511,19 @@ func burst(p: Vector2, col: Color, count: int, speed: float) -> void:
 
 
 func float_text(p: Vector2, text: String, col: Color, size := 8) -> void:
-	# свежие надписи рядом не накладываются: новая встаёт выше, пока не найдёт свободное место
+	# свежие надписи не накладываются: если задевает соседнюю, встаёт выше, пока не найдёт свободное место
+	var w := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
 	for _i in 8:
 		var moved := false
 		for f in floaters:
 			var fp: Vector2 = f["pos"] + _float_rise(f)
-			if float(f["t"]) < 0.6 and absf(fp.x - p.x) < 60.0 and absf(fp.y - p.y) < 10.0:
+			var near_x := absf(fp.x - p.x) < (w + float(f["w"])) * 0.5 + 4.0
+			if float(f["t"]) < 0.6 and near_x and absf(fp.y - p.y) < 10.0:
 				p.y = fp.y - 11.0
 				moved = true
 		if not moved:
 			break
-	floaters.append({"pos": p, "text": text, "col": col, "t": 0.0, "dur": 1.1, "size": size})
+	floaters.append({"pos": p, "text": text, "col": col, "t": 0.0, "dur": 1.1, "size": size, "w": w})
 
 
 ## Насколько надпись уже поднялась: быстро в первую половину жизни, потом медленно.

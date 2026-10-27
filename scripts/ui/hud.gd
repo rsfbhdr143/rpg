@@ -36,6 +36,7 @@ var _tips: Array = []
 var _tip := ""          # совет, который сейчас показан последней строкой журнала боя
 var _tip_t := 0.0
 var _banner_tween: Tween
+var _turn_banner := false   # сейчас показано «Ваш ход»
 var _card_tween: Tween
 var _toasts_recent: Dictionary = {}   # текст -> время, чтобы не повторять одно и то же
 
@@ -231,6 +232,8 @@ func refresh(s: GameSession) -> void:
 	turn_bar.queue_redraw()
 	action_bar.queue_redraw()
 	var my_turn := bool(screen.call("is_my_turn"))
+	if not my_turn and _turn_banner:
+		hide_sub_banner()   # ход уже ушёл, пока проигрываются прошлые действия
 	end_turn_btn.visible = in_combat
 	end_turn_btn.disabled = not my_turn
 	_refresh_quests(s)
@@ -345,6 +348,7 @@ func toast(text: String, color: Color = UiTheme.TEXT, dur := 3.2) -> void:
 func show_banner(text: String, sub := "", color: Color = UiTheme.GOLD, hold := 1.0) -> void:
 	banner.text = text
 	banner.add_theme_color_override("font_color", color)
+	_turn_banner = false
 	sub_banner.text = sub
 	if _banner_tween != null:
 		_banner_tween.kill()
@@ -362,12 +366,14 @@ func show_banner(text: String, sub := "", color: Color = UiTheme.GOLD, hold := 1
 
 func show_sub_banner(text: String, hold := 0.9) -> void:
 	show_banner("", text, UiTheme.GOLD, hold)
+	_turn_banner = true
 
 
 ## Ход перешёл к другому: «Ваш ход» гаснет сразу, не дожидаясь конца показа.
 func hide_sub_banner() -> void:
-	if banner.text != "" or sub_banner.modulate.a <= 0.0:
+	if not _turn_banner:
 		return
+	_turn_banner = false
 	if _banner_tween != null:
 		_banner_tween.kill()
 	_banner_tween = create_tween()

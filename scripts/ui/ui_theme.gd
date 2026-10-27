@@ -335,7 +335,7 @@ static func outline(l: Label, size := 6) -> void:
 static func backdrop(l: Label) -> void:
 	if not _boxes.has("backdrop"):
 		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.05, 0.035, 0.03, 0.62)
+		sb.bg_color = Color(0.05, 0.035, 0.03, 0.8)
 		sb.set_corner_radius_all(3)
 		sb.content_margin_left = 14.0
 		sb.content_margin_right = 14.0
