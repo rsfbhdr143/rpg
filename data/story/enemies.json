@@ -1,0 +1,215 @@
+{
+  "risen": {
+    "name": "Восставший мертвец",
+    "faction": "enemy",
+    "level": 1,
+    "xp_reward": 35,
+    "description": "Медленный мертвец в погребальном саване. Огонь бьёт сильнее, яд лечит.",
+    "attributes": {
+      "strength": 6,
+      "dexterity": 4,
+      "intelligence": 3,
+      "constitution": 6,
+      "speed": 4,
+      "perception": 4
+    },
+    "talents": [
+      "zombie"
+    ],
+    "skills": [
+      "attack"
+    ],
+    "weapon": {
+      "name": "Костлявые пальцы",
+      "min": 3,
+      "max": 5,
+      "element": "physical"
+    },
+    "base_stats": {
+      "armor": 4,
+      "fire_res": -50
+    }
+  },
+  "skeleton": {
+    "name": "Кладбищенский скелет",
+    "faction": "enemy",
+    "level": 2,
+    "xp_reward": 50,
+    "description": "Старые кости с ржавым мечом. Огонь бьёт сильнее, яд лечит.",
+    "attributes": {
+      "strength": 7,
+      "dexterity": 6,
+      "intelligence": 3,
+      "constitution": 4,
+      "speed": 5,
+      "perception": 5
+    },
+    "abilities": {
+      "single_handed": 1
+    },
+    "talents": [
+      "zombie"
+    ],
+    "skills": [
+      "attack"
+    ],
+    "weapon": {
+      "name": "Ржавый меч",
+      "min": 4,
+      "max": 7,
+      "element": "physical"
+    },
+    "base_stats": {
+      "armor": 10,
+      "fire_res": -25
+    }
+  },
+  "drowned": {
+    "name": "Утопленник",
+    "faction": "enemy",
+    "level": 2,
+    "xp_reward": 55,
+    "description": "Раздутый мертвец в тине. Всегда мокрый: держит воду, боится молнии. Бросает ледяные осколки. Яд лечит.",
+    "attributes": {
+      "strength": 6,
+      "dexterity": 4,
+      "intelligence": 6,
+      "constitution": 7,
+      "speed": 4,
+      "perception": 5
+    },
+    "abilities": {
+      "hydrosophist": 1
+    },
+    "talents": [
+      "zombie"
+    ],
+    "skills": [
+      "attack",
+      "ice_shard"
+    ],
+    "weapon": {
+      "name": "Тинистые руки",
+      "min": 3,
+      "max": 6,
+      "element": "physical"
+    },
+    "base_stats": {
+      "armor": 4,
+      "water_res": 50,
+      "fire_res": 25,
+      "air_res": -40
+    }
+  },
+  "goblin_scout": {
+    "name": "Шмыг",
+    "faction": "enemy",
+    "level": 1,
+    "xp_reward": 25,
+    "description": "Трусливый гоблин-дозорный. Дерётся, только если загнать в угол.",
+    "attributes": {
+      "strength": 4,
+      "dexterity": 8,
+      "intelligence": 5,
+      "constitution": 4,
+      "speed": 7,
+      "perception": 6
+    },
+    "abilities": {
+      "single_handed": 1
+    },
+    "skills": [
+      "attack"
+    ],
+    "weapon": {
+      "name": "Ржавая заточка",
+      "min": 2,
+      "max": 5,
+      "element": "physical"
+    },
+    "base_stats": {
+      "armor": 4,
+      "poison_res": 20
+    }
+  },
+  "boss_mukhoglot": {
+    "name": "Шаман Мухоглот",
+    "faction": "enemy",
+    "level": 3,
+    "xp_reward": 200,
+    "boss": true,
+    "description": "Шаман Гнилозубов. Разливает масло, плюётся ядом, проклинает врагов и благословляет своих.",
+    "attributes": {
+      "strength": 5,
+      "dexterity": 5,
+      "intelligence": 8,
+      "constitution": 7,
+      "speed": 5,
+      "perception": 6
+    },
+    "abilities": {
+      "geomancer": 2,
+      "witchcraft": 2
+    },
+    "skills": [
+      "attack",
+      "poison_dart",
+      "oil_slick",
+      "curse",
+      "bless"
+    ],
+    "weapon": {
+      "name": "Посох с черепом",
+      "min": 3,
+      "max": 6,
+      "element": "physical"
+    },
+    "base_stats": {
+      "armor": 8,
+      "poison_res": 60,
+      "max_hp": 25
+    },
+    "barks": [
+      "Бог, бей!",
+      "Мухи, ко мне!",
+      "Это неправильный бог, верните как было!"
+    ]
+  },
+  "lado_body": {
+    "name": "Тело Ладо",
+    "faction": "enemy",
+    "level": 3,
+    "xp_reward": 150,
+    "boss": true,
+    "description": "Ходячее тело Ладо в парадном камзоле и гоблинской короне. Фехтует и уворачивается совсем как живой Ладо, только молчит. Огонь бьёт сильнее, яд лечит.",
+    "attributes": {
+      "strength": 6,
+      "dexterity": 9,
+      "intelligence": 5,
+      "constitution": 7,
+      "speed": 7,
+      "perception": 7
+    },
+    "abilities": {
+      "single_handed": 2,
+      "scoundrel": 1
+    },
+    "talents": [
+      "zombie"
+    ],
+    "skills": [
+      "attack"
+    ],
+    "weapon": {
+      "name": "Рапира Ладо",
+      "min": 5,
+      "max": 9,
+      "element": "physical"
+    },
+    "base_stats": {
+      "armor": 6,
+      "fire_res": -50,
+      "max_hp": 20
+    }
+  }
+}
