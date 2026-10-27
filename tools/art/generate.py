@@ -372,7 +372,8 @@ def components(mask: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:
 
 def cut_figure(img: Image.Image, tolerance: int = 24, holes: bool = False) -> Image.Image:
     """Фигура на бумажном фоне -> вырезанная фигура. Бумага, запертая между ног и под ногами
-    (её не достаёт заливка от краёв), тоже убирается: такие же по цвету пятна в нижней четверти фигуры.
+    (её не достаёт заливка от краёв), тоже убирается: такие же по цвету пятна целиком ниже двух третей фигуры
+    (пятно, которое заходит выше, — это светлый мех или ткань, оно остаётся целиком, без резкой границы).
     holes: такие пятна убираются по всей фигуре (между ветками, внутри лука). Не для белых одежд:
     белая ткань в гравюре того же цвета, что бумага."""
     arr = np.asarray(img.convert("RGBA"))
@@ -388,11 +389,10 @@ def cut_figure(img: Image.Image, tolerance: int = 24, holes: bool = False) -> Im
     if len(rows):
         top, bottom = rows[0], rows[-1]
         cand = figure & (dist <= tolerance)
-        if not holes:
-            cand[:top + int(0.75 * (bottom - top))] = False
+        limit = top + int(0.65 * (bottom - top))
         gone = np.zeros_like(figure)
         for ys, xs in components(cand):
-            if len(ys) >= 0.004 * figure.sum():
+            if len(ys) >= 0.004 * figure.sum() and (holes or ys.min() >= limit):
                 gone[ys, xs] = True
         gone |= import_art._dilate(gone) & (dist <= 2 * tolerance)   # светлая каёмка пятна
         alpha[gone] = 0

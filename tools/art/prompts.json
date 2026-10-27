@@ -46,7 +46,7 @@
         1216
       ],
       "variants": 3,
-      "prompt": "{style}, {subject}, colorful clothes, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+      "prompt": "{style}, {subject}, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
       "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
       "px": [
         32,
@@ -158,7 +158,7 @@
     },
     "cleric": "a female cleric in white and gold vestments, holding one simple mace in her right hand, a holy pendant on her chest",
     "wolf": {
-      "subject": "a lean grey wolf, snarling, standing on four legs, side view",
+      "subject": "a lean dark brown-grey wolf, snarling, standing on four legs, side view",
       "px": [
         44,
         30
@@ -231,7 +231,7 @@
     },
     "vetla": "a bent old herbalist woman in a shawl leaning on a gnarled walking stick, bundles of herbs on her belt",
     "zaraza": {
-      "subject": "an angry white goat with one broken horn, standing on four legs, side view",
+      "subject": "an angry shaggy goat with dirty off-white fur and one broken horn, standing on four legs, side view",
       "px": [
         34,
         28

@@ -204,10 +204,12 @@ class GenerateTest(unittest.TestCase):
         d.rectangle((100, 60, 200, 300), fill=ink)                  # тело
         d.rectangle((110, 120, 190, 200), fill=paper)                # светлый плащ внутри фигуры — остаётся
         d.rectangle((100, 300, 200, 360), outline=ink, width=6)      # ноги и тень, внутри бумага
+        d.rectangle((120, 230, 180, 290), fill=paper)                # светлое брюхо: заходит выше, остаётся
         out = np.asarray(generate.cut_figure(img))
         self.assertEqual(out[10, 10, 3], 0)                          # фон
         self.assertEqual(out[330, 150, 3], 0)                        # бумага между ног
         self.assertEqual(out[160, 150, 3], 255)                      # плащ
+        self.assertEqual(out[285, 150, 3], 255)                      # брюхо целиком, без резкого края
         self.assertEqual(out[200, 102, 3], 255)                      # тело
         holes = np.asarray(generate.cut_figure(img, holes=True))      # дерево, лук: бумага по всей фигуре
         self.assertEqual(holes[160, 150, 3], 0)
