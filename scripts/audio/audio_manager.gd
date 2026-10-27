@@ -12,6 +12,8 @@ extends Node
 ##   Audio.set_volume("Music", 0.5)         — громкость шины 0..1, сохраняется между запусками
 ## Неизвестный id не роняет игру, а один раз пишет предупреждение.
 ## Эффекты на шинах не используются: в веб-сборке Godot они не работают, реверберация уже в файлах.
+## В вебе Godot играет звук как сэмплы и после конца петли начинает с той же точки,
+## с которой запустил, поэтому там музыка и фоны всегда стартуют с начала файла.
 
 const CONFIG_PATH := "res://data/audio.json"
 const SETTINGS_PATH := "user://audio_settings.cfg"
@@ -41,6 +43,7 @@ var _last_variant: Dictionary = {}  # id звука -> индекс послед
 var _last_played: Dictionary = {}  # id звука -> время запуска, мс
 var _volumes: Dictionary = {}  # шина -> громкость игрока 0..1
 var _warned: Dictionary = {}
+var _start_anywhere := not OS.has_feature("web")
 
 
 func _ready() -> void:
@@ -85,7 +88,7 @@ func play_music(id: String, fade := -1.0) -> void:
 	player.stream = stream
 	player.volume_db = SILENT_DB
 	var from := 0.0
-	if bool(entry.get("resume", false)):
+	if _start_anywhere and bool(entry.get("resume", false)):
 		from = float(_positions.get(key, 0.0))
 	player.play(from)
 	current_music = key
@@ -151,7 +154,10 @@ func play_ambient(id: String, fade := -1.0) -> void:
 	player.stream = stream
 	player.volume_db = SILENT_DB
 	# Каждый раз с нового места, чтобы петля не звучала одинаково при каждом входе в локацию.
-	player.play(randf() * maxf(stream.get_length() - 1.0, 0.0))
+	var from := 0.0
+	if _start_anywhere:
+		from = randf() * maxf(stream.get_length() - 1.0, 0.0)
+	player.play(from)
 	current_ambient = key
 	_fade(player, float(entry.get("volume_db", 0.0)), fade)
 

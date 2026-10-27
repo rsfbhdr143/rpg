@@ -1,5 +1,5 @@
 {
-  "_doc": "Музыка и звуки. Пути относительно root. volume_db складывается с громкостью шины. Звуки с несколькими files играются случайным вариантом. Файлы собираются скриптом tools/audio/build.py.",
+  "_doc": "Музыка и звуки. Пути относительно root. volume_db складывается с громкостью шины. Звуки с несколькими files играются случайным вариантом. Файлы собираются скриптом tools/audio/build.py; \"source\": \"game-music\" значит, что трек сделан из готовой записи (tools/audio/import_tracks.py).",
   "root": "res://assets/audio/",
   "buses": {
     "Music": {"volume_db": -2.0},
@@ -17,26 +17,26 @@
   },
 
   "music": {
-    "theme_lado":    {"file": "music/theme_lado.ogg", "volume_db": 0.0},
-    "funeral":       {"file": "music/funeral.ogg", "volume_db": -1.0},
-    "combat_undead": {"file": "music/combat_undead.ogg", "volume_db": 0.0},
-    "village":       {"file": "music/village.ogg", "volume_db": -1.0, "resume": true},
-    "tavern":        {"file": "music/tavern.ogg", "volume_db": -1.0, "resume": true},
-    "forest":        {"file": "music/forest.ogg", "volume_db": 0.0, "resume": true},
-    "combat":        {"file": "music/combat.ogg", "volume_db": 0.0},
-    "goblin_camp":   {"file": "music/goblin_camp.ogg", "volume_db": -1.0, "resume": true},
-    "boss_lado":     {"file": "music/boss_lado.ogg", "volume_db": 0.0},
-    "farewell":      {"file": "music/farewell.ogg", "volume_db": 0.0},
-    "epilogue":      {"file": "music/epilogue.ogg", "volume_db": 0.0}
+    "theme_lado":    {"file": "music/theme_lado.ogg", "volume_db": 0.0, "source": "game-music"},
+    "funeral":       {"file": "music/funeral.ogg", "volume_db": -1.0, "source": "game-music"},
+    "combat_undead": {"file": "music/combat_undead.ogg", "volume_db": 0.0, "source": "game-music"},
+    "village":       {"file": "music/village.ogg", "volume_db": -1.0, "resume": true, "source": "game-music"},
+    "tavern":        {"file": "music/tavern.ogg", "volume_db": -1.0, "resume": true, "source": "game-music"},
+    "forest":        {"file": "music/forest.ogg", "volume_db": 0.0, "resume": true, "source": "game-music"},
+    "combat":        {"file": "music/combat.ogg", "volume_db": 0.0, "source": "game-music"},
+    "goblin_camp":   {"file": "music/goblin_camp.ogg", "volume_db": -1.0, "resume": true, "source": "game-music"},
+    "boss_lado":     {"file": "music/boss_lado.ogg", "volume_db": 0.0, "source": "game-music"},
+    "farewell":      {"file": "music/farewell.ogg", "volume_db": 0.0, "source": "game-music"},
+    "epilogue":      {"file": "music/epilogue.ogg", "volume_db": 0.0, "source": "game-music"}
   },
 
   "stingers": {
-    "omen":       {"file": "stingers/omen.ogg", "music": "stop", "volume_db": 0.0},
-    "victory":    {"file": "stingers/victory.ogg", "music": "stop", "volume_db": -1.0},
-    "defeat":     {"file": "stingers/defeat.ogg", "music": "stop", "volume_db": 0.0},
-    "level_up":   {"file": "stingers/level_up.ogg", "music": "duck", "volume_db": -1.0},
-    "quest":      {"file": "stingers/quest.ogg", "music": "duck", "volume_db": -2.0},
-    "quest_done": {"file": "stingers/quest_done.ogg", "music": "duck", "volume_db": -1.0}
+    "omen":       {"file": "stingers/omen.ogg", "music": "stop", "volume_db": 0.0, "source": "game-music"},
+    "victory":    {"file": "stingers/victory.ogg", "music": "stop", "volume_db": -1.0, "source": "game-music"},
+    "defeat":     {"file": "stingers/defeat.ogg", "music": "stop", "volume_db": 0.0, "source": "game-music"},
+    "level_up":   {"file": "stingers/level_up.ogg", "music": "duck", "volume_db": -1.0, "source": "game-music"},
+    "quest":      {"file": "stingers/quest.ogg", "music": "duck", "volume_db": -2.0, "source": "game-music"},
+    "quest_done": {"file": "stingers/quest_done.ogg", "music": "duck", "volume_db": -1.0, "source": "game-music"}
   },
 
   "ambient": {
