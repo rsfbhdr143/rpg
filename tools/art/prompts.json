@@ -304,8 +304,16 @@
   },
   "skills": {
     "attack": "a crossed sword and axe",
-    "battering_ram": "an armored shoulder charging forward with impact lines",
-    "whirlwind": "a spinning greatsword trailing a swirling wind",
+    "battering_ram": {
+      "subject": "a heavy iron-shod battering ram log smashing into a cracked wooden shield, star-shaped impact burst",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "whirlwind": {
+      "subject": "a steel sword spinning in a circular blur inside a swirling blue-grey wind vortex",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
     "arrow_shot": "a single flying arrow with motion lines",
     "flare": "a small burst of fire above an open palm",
     "fireball": "a blazing fireball",
@@ -315,19 +323,31 @@
     "shocking_touch": "a hand crackling with lightning",
     "lightning_bolt": "a jagged lightning bolt",
     "poison_dart": "a dart dripping green poison",
-    "oil_slick": "a tipped jug spilling black oil",
+    "oil_slick": {
+      "subject": "a tipped clay jug spilling a wide glossy black oil puddle with a rainbow sheen, seen from above",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands, fire, water"
+    },
     "bless": "a radiant golden sun with rays",
     "curse": "a dark purple skull under a crescent moon"
   },
   "statuses": {
     "wet": "a blue water droplet",
-    "burning": "a small flame",
+    "burning": {
+      "subject": "one big bright orange and yellow flame filling the whole icon",
+      "lora_strength": 0.5,
+      "negative": "candle, torch, small flame, campfire, logs, wood"
+    },
     "poisoned": "a green skull with bubbles",
     "chilled": "a pale blue snowflake",
     "frozen": "a block of ice",
     "shocked": "a small yellow lightning spark",
     "stunned": "circling stars",
-    "knocked_down": "a falling figure and an arrow pointing down",
+    "knocked_down": {
+      "subject": "a dented helmet lying tilted on its side with yellow dizzy stars above it and a bold red arrow pointing down",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
     "slowed": "a snail shell",
     "blessed": "a golden halo",
     "cursed": "a purple evil eye",
