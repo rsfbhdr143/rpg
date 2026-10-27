@@ -1264,6 +1264,12 @@ def review_bindings(catalog: dict, bindings: dict, ids: dict, names: dict, out: 
 
 # --- Запуск ---------------------------------------------------------------------
 
+def write_text(path: Path, text: str) -> None:
+    """Текстовый файл с переводами строк LF на любой системе (иначе Windows и Linux спорят в git)."""
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
+
+
 def collect(inbox: Path, tmp: Path) -> list[tuple[Path, str]]:
     files = []
     for path in sorted(inbox.rglob("*")):
@@ -1320,13 +1326,13 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
                 old.with_name(old.name + ".import").unlink(missing_ok=True)
 
     catalog_path.parent.mkdir(parents=True, exist_ok=True)
-    catalog_path.write_text(json.dumps({"assets": catalog}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    write_text(catalog_path, json.dumps({"assets": catalog}, ensure_ascii=False, indent=1) + "\n")
 
     bindings = json.loads(bindings_path.read_text(encoding="utf-8")) if bindings_path.exists() else {}
     ids = game_ids(root / "data")
     aliases = json.loads(aliases_path.read_text(encoding="utf-8")) if aliases_path.exists() else {}
     made = auto_bind(catalog, words, ids, aliases, bindings, rebind, log, explicit)
-    bindings_path.write_text(json.dumps(bindings, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_text(bindings_path, json.dumps(bindings, ensure_ascii=False, indent=2) + "\n")
 
     # проверка: привязки к несуществующим спрайтам
     broken = ["%s -> %s" % (label, r) for label, v in all_bindings(bindings) for r in refs_of(v)
@@ -1354,7 +1360,7 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
         report += ["Привязки к несуществующим спрайтам (в игре будет заглушка):"] + ["  ! " + b for b in broken]
     report.append("Без картинки (заглушка): " + (", ".join("%s/%s" % m for m in missing) or "нет"))
     report.append("Спрайты без привязки: " + (", ".join(unused) or "нет"))
-    (review / "report.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
+    write_text(review / "report.txt", "\n".join(report) + "\n")
     log("\n".join(report))
     log("Проверка: art/review/overview.png и art/review/bindings.png")
     return {"catalog": catalog, "bindings": bindings, "made": made, "missing": missing, "broken": broken,

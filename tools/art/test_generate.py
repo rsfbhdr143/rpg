@@ -190,6 +190,19 @@ class GenerateTest(unittest.TestCase):
         self.assertEqual(generate.figure_problems(fig(box=(0.3, 0.2, 0.7, 1.0))), ["обрезано краем"])
         self.assertEqual(generate.figure_problems(Image.new("RGB", (400, 600), (40, 30, 20))), ["фон не убрался"])
 
+    def test_cut_figure_removes_paper_between_feet(self):
+        paper, ink = (233, 216, 178), (40, 30, 20)
+        img = Image.new("RGB", (300, 400), paper)
+        d = ImageDraw.Draw(img)
+        d.rectangle((100, 60, 200, 300), fill=ink)                  # тело
+        d.rectangle((110, 120, 190, 200), fill=paper)                # светлый плащ внутри фигуры — остаётся
+        d.rectangle((100, 300, 200, 360), outline=ink, width=6)      # ноги и тень, внутри бумага
+        out = np.asarray(generate.cut_figure(img))
+        self.assertEqual(out[10, 10, 3], 0)                          # фон
+        self.assertEqual(out[330, 150, 3], 0)                        # бумага между ног
+        self.assertEqual(out[160, 150, 3], 255)                      # плащ
+        self.assertEqual(out[200, 102, 3], 255)                      # тело
+
     def test_retry_when_all_variants_are_bad(self):
         bad = generate.Item("units/knight", "units", "knight", "knight", "units/knight", "unit", "a hovering shield")
         prompts = dict(self.prompts, settings=dict(self.prompts["settings"], retries=2))

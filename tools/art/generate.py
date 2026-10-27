@@ -51,6 +51,7 @@ DEFAULT_KIND = {"units": "unit", "skills": "icon", "statuses": "icon", "surfaces
 # во что превращается картинка при импорте: вид спрайта и надо ли убирать фон
 IMPORT_KIND = {"unit": "unit", "object": "image", "icon": "icon", "texture": "tile", "wall": "tile", "cloud": "effect"}
 KEEP_BACKGROUND = {"texture", "wall"}
+FIGURE_KINDS = {"unit", "object"}           # фигура на однотонном фоне: вырезается и проверяется
 LORA_HINT = re.compile(r"wood|lino|engrav|etch|wdct", re.I)
 
 
@@ -341,16 +342,65 @@ def alpha_from_black(img: Image.Image) -> Image.Image:
     return Image.fromarray(out.round().astype(np.uint8), "RGBA")
 
 
+def components(mask: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Связные куски маски (по 4 соседям): список (строки, столбцы)."""
+    h, w = mask.shape
+    seen = np.zeros_like(mask)
+    out = []
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if seen[y0, x0]:
+            continue
+        seen[y0, x0] = True
+        stack, ys, xs = [(y0, x0)], [], []
+        while stack:
+            y, x = stack.pop()
+            ys.append(y)
+            xs.append(x)
+            for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
+                if 0 <= ny < h and 0 <= nx < w and mask[ny, nx] and not seen[ny, nx]:
+                    seen[ny, nx] = True
+                    stack.append((ny, nx))
+        out.append((np.array(ys), np.array(xs)))
+    return out
+
+
+def cut_figure(img: Image.Image, tolerance: int = 24) -> Image.Image:
+    """Фигура на бумажном фоне -> вырезанная фигура. Бумага, запертая между ног и под ногами
+    (её не достаёт заливка от краёв), тоже убирается: такие же по цвету пятна в нижней четверти фигуры."""
+    arr = np.asarray(img.convert("RGBA"))
+    out, removed = import_art.remove_background(arr)
+    if not removed:
+        return img
+    rgb = arr[..., :3].astype(np.int16)
+    border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+    dist = np.abs(rgb - np.median(border, axis=0)).max(axis=2)
+    alpha = out[..., 3].copy()
+    figure = alpha >= 128
+    rows = np.nonzero(figure.any(axis=1))[0]
+    if len(rows):
+        top, bottom = rows[0], rows[-1]
+        cand = figure & (dist <= tolerance)
+        cand[:top + int(0.75 * (bottom - top))] = False
+        gone = np.zeros_like(figure)
+        for ys, xs in components(cand):
+            if len(ys) >= 0.004 * figure.sum():
+                gone[ys, xs] = True
+        gone |= import_art._dilate(gone) & (dist <= 2 * tolerance)   # светлая каёмка пятна
+        alpha[gone] = 0
+    out = out.copy()
+    out[..., 3] = alpha
+    return Image.fromarray(out, "RGBA")
+
+
 def postprocess(img: Image.Image, item: Item, prompts: dict) -> Image.Image:
     kind = prompts.get("kinds", {}).get(item.kind, {})
+    if item.kind in FIGURE_KINDS:
+        img = cut_figure(img)
     if kind.get("tileable"):
         img = make_tileable(img)
     if kind.get("alpha_from_black"):
         img = alpha_from_black(img)
     return img
-
-
-FIGURE_KINDS = {"unit", "object"}
 
 
 def figure_problems(img: Image.Image) -> list[str]:
@@ -366,22 +416,7 @@ def figure_problems(img: Image.Image) -> list[str]:
     h, w = mask.shape
     k = max(1, max(h, w) // 200)
     small = mask[:h - h % k, :w - w % k].reshape(h // k, k, w // k, k).any(axis=(1, 3))
-    sh, sw = small.shape
-    seen = np.zeros_like(small)
-    sizes = []
-    for y0, x0 in zip(*np.nonzero(small)):
-        if seen[y0, x0]:
-            continue
-        seen[y0, x0] = True
-        stack, n = [(y0, x0)], 0
-        while stack:
-            y, x = stack.pop()
-            n += 1
-            for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
-                if 0 <= ny < sh and 0 <= nx < sw and small[ny, nx] and not seen[ny, nx]:
-                    seen[ny, nx] = True
-                    stack.append((ny, nx))
-        sizes.append(n)
+    sizes = [len(ys) for ys, _ in components(small)]
     if not sizes:
         return ["пусто"]
     sizes.sort(reverse=True)
@@ -457,8 +492,7 @@ def generate(root: Path, prompts: dict, todo: list[Item], count: int | None, sty
             params["problems"] = figure_problems(img) if item.kind in FIGURE_KINDS else []
             good += not params["problems"]
             img.save(path)
-            path.with_suffix(".json").write_text(json.dumps(params, ensure_ascii=False, indent=1) + "\n",
-                                                  encoding="utf-8")
+            import_art.write_text(path.with_suffix(".json"), json.dumps(params, ensure_ascii=False, indent=1) + "\n")
             made.append(path)
             log("  [%d/%d] %s вариант %d: %.0f с%s" % (n, len(todo), item.key, num, params["seconds"],
                                                       "  ! " + ", ".join(params["problems"]) if params["problems"] else ""))
@@ -481,7 +515,7 @@ def pick(root: Path, item: Item, number: int, record: dict, prompts: dict) -> Pa
             "cols": 1, "rows_count": 1}
     if item.kind in KEEP_BACKGROUND:
         hint["background"] = "keep"
-    dst.with_name(item.out_id + ".art.json").write_text(json.dumps(hint, ensure_ascii=False) + "\n", encoding="utf-8")
+    import_art.write_text(dst.with_name(item.out_id + ".art.json"), json.dumps(hint, ensure_ascii=False) + "\n")
     params = json.loads(src.with_suffix(".json").read_text(encoding="utf-8")) if src.with_suffix(".json").exists() else {}
     record[item.key] = dict(params, variant=src.name, file=dst.relative_to(root).as_posix())
     return dst
@@ -580,7 +614,7 @@ def main() -> None:
             if item is None or not num.isdigit():
                 sys.exit("Не понял «%s»: нужно так: units/knight=2" % spec)
             print("%s: вариант %s -> %s" % (item.key, num, pick(root, item, int(num), record, prompts).relative_to(root)))
-        RECORD.write_text(json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+        import_art.write_text(RECORD, json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
         for cat in {by_key[k].category for k in record if k in by_key}:
             contact_sheet(root, cat, items, record, prompts)
         print("Теперь запусти импорт: python tools/art/import_art.py")
@@ -621,7 +655,7 @@ def main() -> None:
             new = [v for v in variants(root, it) if v in made]
             if new:
                 pick(root, it, variant_number(new[0]), record, prompts)
-        RECORD.write_text(json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+        import_art.write_text(RECORD, json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
     sheets = [contact_sheet(root, cat, items, record, prompts) for cat in CATEGORIES if any(it.category == cat for it in todo)]
     print("Готово: %d картинок за %.0f мин" % (len(made), (time.time() - t0) / 60))
     for sh in sheets:
