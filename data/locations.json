@@ -1,73 +1,478 @@
 {
-  "village": {
-    "name": "Деревня",
-    "size": [20, 14],
-    "wall_rects": [[3, 1, 4, 3], [10, 1, 4, 3], [3, 10, 4, 3], [14, 10, 3, 2]],
-    "walls": [[9, 7], [9, 8]],
-    "surfaces": [
-      {"id": "water", "cell": [12, 7], "radius": 1}
+  "cemetery": {
+    "style": {
+      "wall": "stone",
+      "floor": [
+        "#3b4232",
+        "#353c2d"
+      ],
+      "tint": "#d8d4e8"
+    },
+    "rows": [
+      "##################",
+      "#T.g..t..g..t.gTT#",
+      "#.q.r.......r..T.#",
+      "#.g.t.g..,..,.t..#",
+      "#.....,.S.O.P....#",
+      "#.t.g..u,..M..g..1",
+      "#.r.....a.a.N..b.1",
+      "#.g.t....a.a.....#",
+      "#.q,........r.t..#",
+      "#.t.g.t.,..q..g..#",
+      "#T.....g..r.tq.T.#",
+      "##################"
     ],
-    "spawns": {
-      "start":       [[2, 6], [2, 7], [3, 6], [3, 7]],
-      "from_forest": [[17, 6], [17, 7], [16, 6], [16, 7]]
+    "legend": {
+      "T": {
+        "prop": "dead_tree"
+      },
+      "g": {
+        "prop": "grave"
+      },
+      "t": {
+        "prop": "tombstone"
+      },
+      ",": {
+        "prop": "funeral_candles",
+        "block": false
+      },
+      "O": {
+        "object": "fresh_grave"
+      },
+      "S": {
+        "npc": "sych"
+      },
+      "P": {
+        "npc": "tadeush"
+      },
+      "M": {
+        "npc": "marta"
+      },
+      "N": {
+        "npc": "pipin"
+      },
+      "u": {
+        "npc": "gunter"
+      },
+      "a": {
+        "spawn": "start"
+      },
+      "b": {
+        "spawn": "from_village"
+      },
+      "1": {
+        "exit": "to_village"
+      },
+      "r": {
+        "encounter": "cemetery_rising"
+      },
+      "q": {
+        "encounter": "cemetery_restless"
+      }
     },
     "exits": [
-      {"cells": [[19, 6], [19, 7]], "to": "forest", "spawn": "from_village", "name": "Тропа в лес"}
-    ],
-    "encounters": []
-  },
-
-  "forest": {
-    "name": "Лес",
-    "size": [22, 14],
-    "wall_rects": [[5, 2, 2, 2], [8, 9, 2, 2], [15, 2, 2, 3]],
-    "walls": [[12, 5], [13, 11], [18, 7], [4, 11], [11, 1]],
-    "surfaces": [
-      {"id": "poison", "cell": [11, 8], "radius": 0},
-      {"id": "oil",    "cell": [16, 10], "radius": 1}
-    ],
-    "spawns": {
-      "from_village": [[1, 6], [1, 7], [2, 6], [2, 7]],
-      "from_camp":    [[20, 11], [20, 12], [19, 11], [19, 12]]
-    },
-    "exits": [
-      {"cells": [[0, 6], [0, 7]],   "to": "village",     "spawn": "from_forest", "name": "Назад в деревню"},
-      {"cells": [[21, 11], [21, 12]], "to": "goblin_camp", "spawn": "from_forest", "name": "К лагерю гоблинов"}
+      {
+        "id": "to_village",
+        "to": "village",
+        "spawn": "from_cemetery",
+        "name": "Дорога в деревню"
+      }
     ],
     "encounters": [
-      {"id": "wolves", "trigger_radius": 4, "enemies": [
-        {"template": "wolf", "cell": [12, 7]},
-        {"template": "wolf", "cell": [13, 8]},
-        {"template": "wolf", "cell": [13, 6], "min_party": 3},
-        {"template": "wolf", "cell": [14, 7], "min_party": 4}
-      ]}
+      {
+        "id": "cemetery_rising",
+        "trigger_radius": 3
+      },
+      {
+        "id": "cemetery_restless",
+        "trigger_radius": 3
+      }
     ]
   },
-
-  "goblin_camp": {
-    "name": "Лагерь гоблинов",
-    "size": [14, 10],
-    "walls": [[7, 2], [7, 3], [7, 4], [7, 5]],
-    "surfaces": [
-      {"id": "water",  "cell": [4, 6], "radius": 1},
-      {"id": "oil",    "cell": [10, 7], "radius": 1},
-      {"id": "poison", "cell": [9, 2], "radius": 0}
+  "village": {
+    "style": {
+      "wall": "fence",
+      "floor": [
+        "#4b5434",
+        "#444d2f"
+      ]
+    },
+    "rows": [
+      "##########################",
+      "#.T.....Chhhh5h...T..~~~.#",
+      "1.......hhhhhhh......~~~T#",
+      "1.......hhhhh.........~..#",
+      "#bbG....hhhhh..n.........#",
+      "#bb...,....cP........T...#",
+      "#.T........,.....Rhhhhh..#",
+      "#.........,......hhhhhh..#",
+      "#..Fhhh..........hhhhhh..#",
+      "#..hhhh.u....W...hhhhhh.,#",
+      "#..hhhh.....r...ss.KM....#",
+      "#...........,...ss....ff.2",
+      "#..T.....,...........ff..2",
+      "#.......Hhhh.....Ehh.....#",
+      "#..,....hhhh.k...hhh..T..#",
+      "#...T...hhhh.....hhh.....#",
+      "#.............,.....T....#",
+      "##########################"
     ],
-    "spawns": {
-      "from_forest": [[1, 4], [1, 5], [2, 4], [2, 5]]
+    "legend": {
+      "h": {
+        "solid": true
+      },
+      "C": {
+        "prop": "church",
+        "size": [
+          5,
+          4
+        ]
+      },
+      "5": {
+        "object": "bell_tower",
+        "size": [
+          2,
+          2
+        ]
+      },
+      "R": {
+        "prop": "tavern",
+        "size": [
+          6,
+          4
+        ]
+      },
+      "F": {
+        "prop": "smithy",
+        "size": [
+          4,
+          3
+        ]
+      },
+      "H": {
+        "prop": "house",
+        "size": [
+          4,
+          3
+        ]
+      },
+      "E": {
+        "prop": "house",
+        "size": [
+          3,
+          3
+        ]
+      },
+      "k": {
+        "object": "tadeush_table"
+      },
+      "n": {
+        "object": "notice_board"
+      },
+      "T": {
+        "prop": "tree"
+      },
+      "W": {
+        "prop": "well"
+      },
+      ",": {
+        "prop": "bush",
+        "block": false
+      },
+      "~": {
+        "surface": "water"
+      },
+      "P": {
+        "npc": "tadeush"
+      },
+      "M": {
+        "npc": "marta"
+      },
+      "r": {
+        "npc": "pipin"
+      },
+      "u": {
+        "npc": "gunter"
+      },
+      "c": {
+        "anchor": "church"
+      },
+      "K": {
+        "anchor": "tavern"
+      },
+      "G": {
+        "anchor": "cemetery_gate"
+      },
+      "b": {
+        "spawn": "from_cemetery"
+      },
+      "1": {
+        "exit": "to_cemetery"
+      },
+      "f": {
+        "spawn": "from_forest"
+      },
+      "2": {
+        "exit": "to_forest"
+      },
+      "s": {
+        "spawn": "start"
+      }
+    },
+    "anchors": {
+      "smithy": [
+        8,
+        9
+      ]
     },
     "exits": [
-      {"cells": [[0, 4], [0, 5]], "to": "forest", "spawn": "from_camp", "name": "Обратно в лес"}
+      {
+        "id": "to_cemetery",
+        "to": "cemetery",
+        "spawn": "from_village",
+        "name": "Назад на погост"
+      },
+      {
+        "id": "to_forest",
+        "to": "forest",
+        "spawn": "from_village",
+        "name": "Тропа в Туманный Ольшаник"
+      }
+    ]
+  },
+  "forest": {
+    "style": {
+      "wall": "tree",
+      "floor": [
+        "#36482c",
+        "#314227"
+      ],
+      "tint": "#d0e0d0"
+    },
+    "rows": [
+      "##############################",
+      "#TT...T....TT..T....TT.....TT#",
+      "#T..b.....T...w.w.....T...,.T#",
+      "#.....,.....T...w....b....T..#",
+      "#..T.....,.......w.w.........#",
+      "#....T.......T........T......#",
+      "#.,.....b..........,.....G.T.#",
+      "#..T......T....~~.....,......#",
+      "#...........~~d~~xv....T.....#",
+      "1ff...L...v~~~~x~~~.v......gg2",
+      "1ff........~~d~d~~~~.......gg2",
+      "#....T......~~x~~d~v.q..T....#",
+      "#..Vhh.....v.~~d~~..q.q...T..#",
+      "#..hhh........v..v...q.b.....#",
+      "#..hhhA...o.Z.o.........T....#",
+      "#.........,.S.....,.........T#",
+      "#.T......To...o..,.....T....T#",
+      "#TT...T.....TT......TT....TTT#",
+      "##############################"
+    ],
+    "legend": {
+      "T": {
+        "wall": true
+      },
+      "b": {
+        "prop": "bush",
+        "block": false
+      },
+      ",": {
+        "prop": "reeds",
+        "block": false
+      },
+      "v": {
+        "prop": "reeds",
+        "block": false
+      },
+      "~": {
+        "surface": "water"
+      },
+      "x": {
+        "surface": "poison"
+      },
+      "V": {
+        "prop": "vetla_hut",
+        "size": [
+          3,
+          3
+        ]
+      },
+      "h": {
+        "solid": true
+      },
+      "S": {
+        "prop": "goat_stump"
+      },
+      "L": {
+        "object": "lado_tracks",
+        "block": false
+      },
+      "A": {
+        "anchor": "vetla_hut"
+      },
+      "Z": {
+        "anchor": "goat_stump"
+      },
+      "G": {
+        "anchor": "goblin_trail"
+      },
+      "w": {
+        "encounter": "forest_wolf_pack"
+      },
+      "o": {
+        "encounter": "forest_wolves"
+      },
+      "d": {
+        "encounter": "forest_drowned",
+        "surface": "water"
+      },
+      "q": {
+        "encounter": "forest_bog_dead"
+      },
+      "f": {
+        "spawn": "from_village"
+      },
+      "1": {
+        "exit": "to_village"
+      },
+      "g": {
+        "spawn": "from_camp"
+      },
+      "2": {
+        "exit": "to_camp"
+      }
+    },
+    "exits": [
+      {
+        "id": "to_village",
+        "to": "village",
+        "spawn": "from_forest",
+        "name": "Назад в Вороний Брод"
+      },
+      {
+        "id": "to_camp",
+        "to": "goblin_camp",
+        "spawn": "from_forest",
+        "name": "К Кривому Кургану"
+      }
     ],
     "encounters": [
-      {"id": "goblins", "trigger_radius": 5, "enemies": [
-        {"template": "goblin_warrior", "cell": [11, 3]},
-        {"template": "goblin_warrior", "cell": [11, 6]},
-        {"template": "goblin_shaman",  "cell": [12, 5]},
-        {"template": "goblin_warrior", "cell": [12, 2], "min_party": 3},
-        {"template": "goblin_shaman",  "cell": [12, 8], "min_party": 4},
-        {"template": "goblin_warrior", "cell": [11, 8], "min_party": 4}
-      ]}
+      {
+        "id": "forest_wolves",
+        "trigger_radius": 3
+      },
+      {
+        "id": "forest_wolf_pack",
+        "trigger_radius": 4
+      },
+      {
+        "id": "forest_drowned",
+        "trigger_radius": 3
+      },
+      {
+        "id": "forest_bog_dead",
+        "trigger_radius": 3
+      }
+    ]
+  },
+  "goblin_camp": {
+    "style": {
+      "wall": "palisade",
+      "floor": [
+        "#4a3f2c",
+        "#433826"
+      ],
+      "tint": "#f0d8c0"
+    },
+    "rows": [
+      "########################",
+      "#..A.....t......A....kk#",
+      "#.......g.g....,....kkk#",
+      "#..t......g......T...kk#",
+      "#.A........,.......k...#",
+      "#...g.g......kkk..mBm..#",
+      "#..G..g.....kkkkk.XKX..#",
+      "#.,..........kkk..m.m..#",
+      "1ff..................,.#",
+      "1ff....A....,..P.......#",
+      "#..............Q..t....#",
+      "#..t.....b.......,..A..#",
+      "#....A.......k.........#",
+      "#..........,...A...t...#",
+      "#.kk.......t.......kk..#",
+      "########################"
+    ],
+    "legend": {
+      "A": {
+        "prop": "tent"
+      },
+      "t": {
+        "prop": "totem"
+      },
+      "k": {
+        "prop": "rock"
+      },
+      "b": {
+        "prop": "bones",
+        "block": false
+      },
+      ",": {
+        "prop": "bones",
+        "block": false
+      },
+      "T": {
+        "prop": "campfire"
+      },
+      "B": {
+        "object": "bone_throne"
+      },
+      "P": {
+        "object": "pyre"
+      },
+      "K": {
+        "anchor": "bone_throne"
+      },
+      "Q": {
+        "anchor": "pyre"
+      },
+      "G": {
+        "anchor": "goblin_trail"
+      },
+      "X": {
+        "encounter": "camp_boss"
+      },
+      "m": {
+        "encounter": "camp_boss"
+      },
+      "g": {
+        "encounter": "camp_gate"
+      },
+      "f": {
+        "spawn": "from_forest"
+      },
+      "1": {
+        "exit": "to_forest"
+      }
+    },
+    "exits": [
+      {
+        "id": "to_forest",
+        "to": "forest",
+        "spawn": "from_camp",
+        "name": "Назад в Ольшаник"
+      }
+    ],
+    "encounters": [
+      {
+        "id": "camp_gate",
+        "trigger_radius": 4
+      },
+      {
+        "id": "camp_boss",
+        "trigger_radius": 3
+      }
     ]
   }
 }

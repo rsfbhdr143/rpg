@@ -59,7 +59,7 @@ static func roll_attack(attacker: Character, target: Character, skill_def: Dicti
 	var element := str(dmg.get("element", "physical"))
 	var raw := 0.0
 	if str(dmg.get("source", "skill")) == "weapon":
-		var w := attacker.weapon
+		var w := attacker.effective_weapon()
 		raw = GameData.rng.randf_range(float(w.get("min", 1)), float(w.get("max", 2)))
 		if not dmg.has("element"):
 			element = str(w.get("element", "physical"))

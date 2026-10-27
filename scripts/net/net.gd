@@ -16,7 +16,8 @@ signal disconnected(reason: String)
 enum Mode { NONE, OFFLINE, HOST, CLIENT, DEDICATED }
 
 const DEFAULT_PORT := 8910
-const AI_DELAY := 0.5
+const AI_DELAY := 0.6
+const AI_MAX_WAIT := 4.0         # дольше анимации не ждём
 const BUFFER_SIZE := 1 << 20   # снимок боя — десятки КБ, с запасом
 
 var mode: Mode = Mode.NONE
@@ -24,6 +25,8 @@ var session: GameSession = null
 var lobby: Dictionary = {}       # peer_id -> {"name": String}
 var my_name := "Игрок"
 var in_game := false
+var presentation_busy := false   # вид ещё проигрывает анимации (ИИ на этом же компьютере подождёт)
+var hero_choice: Array = []       # каких героев выбрал этот игрок (шаблоны)
 var _ai_timer := 0.0
 
 
@@ -68,11 +71,17 @@ func is_leader() -> bool:
 
 # --- Запуск -------------------------------------------------------------------
 
-func start_offline() -> void:
+func start_offline(load_save: bool = false) -> void:
 	_reset()
 	mode = Mode.OFFLINE
-	lobby = {1: {"name": my_name}}
+	lobby = {1: {"name": my_name, "heroes": hero_choice.duplicate()}}
 	start_game()
+	if load_save and session != null:
+		GameEvents.clear()
+		var err := session.load_game()
+		if err != "":
+			notice.emit(err)
+		_broadcast_state()
 
 
 ## Хост: сервер и игрок в одном окне. dedicated=true — сервер без игрока.
@@ -122,12 +131,13 @@ func _reset() -> void:
 	session = null
 	lobby = {}
 	in_game = false
+	presentation_busy = false
 
 
 # --- Лобби --------------------------------------------------------------------
 
 func _on_connected() -> void:
-	_register.rpc_id(1, my_name)
+	_register.rpc_id(1, my_name, hero_choice)
 
 
 func _on_connection_failed() -> void:
@@ -141,7 +151,7 @@ func _on_server_disconnected() -> void:
 
 
 @rpc("any_peer", "reliable")
-func _register(player_name: String) -> void:
+func _register(player_name: String, heroes_wanted: Array = []) -> void:
 	if not is_authority():
 		return
 	var pid := multiplayer.get_remote_sender_id()
@@ -154,8 +164,27 @@ func _register(player_name: String) -> void:
 		_kicked.rpc_id(pid, refuse)
 		get_tree().create_timer(0.5).timeout.connect(_drop_peer.bind(pid))
 		return
-	lobby[pid] = {"name": player_name.strip_edges().substr(0, 20)}
+	lobby[pid] = {"name": player_name.strip_edges().substr(0, 20), "heroes": heroes_wanted.slice(0, 1)}
 	_broadcast_lobby()
+
+
+## Игрок выбрал героя в лобби.
+func choose_hero(template: String) -> void:
+	hero_choice = [template]
+	if is_authority():
+		if lobby.has(my_id()):
+			lobby[my_id()]["heroes"] = hero_choice.duplicate()
+			_broadcast_lobby()
+	elif mode == Mode.CLIENT:
+		_choose_hero.rpc_id(1, template)
+
+
+@rpc("any_peer", "reliable")
+func _choose_hero(template: String) -> void:
+	var pid := multiplayer.get_remote_sender_id()
+	if is_authority() and lobby.has(pid) and not in_game:
+		lobby[pid]["heroes"] = [template]
+		_broadcast_lobby()
 
 
 func _drop_peer(pid: int) -> void:
@@ -216,11 +245,15 @@ func start_game() -> void:
 	if lobby.is_empty():
 		return
 	session = GameSession.new()
+	GameLog.clear()
+	GameEvents.clear()
 	var ids := lobby.keys()
 	ids.sort()
+	var choices := {}
 	for pid in ids:
 		session.add_player(int(pid), str(lobby[pid]["name"]))
-	session.new_game()
+		choices[int(pid)] = lobby[pid].get("heroes", [])
+	session.new_game(choices)
 	in_game = true
 	if is_networked():
 		_game_started.rpc()
@@ -289,6 +322,8 @@ func _process(delta: float) -> void:
 		_ai_timer = 0.0
 		return
 	_ai_timer += delta
+	if presentation_busy and _ai_timer < AI_MAX_WAIT:
+		return
 	if _ai_timer >= AI_DELAY:
 		_ai_timer = 0.0
 		session.run_ai_turn()

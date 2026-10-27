@@ -20,6 +20,8 @@ var talents: Array = []           # id талантов
 var skills: Array = []            # id навыков
 var weapon: Dictionary = {}       # {"name","min","max","element"}
 var base_stats: Dictionary = {}   # плоские прибавки от экипировки/шаблона: {"armor": 10, "fire_res": 20}
+var equipment: Array = []         # id надетых предметов (data/story/items.json): их "stats" складываются,
+                                  # предмет с "weapon" заменяет оружие
 
 var unspent_attribute_points: int = 0
 var unspent_ability_points: int = 0
@@ -101,7 +103,19 @@ func _modifier_sum(stat: String) -> float:
 	for st in statuses:
 		var smods: Dictionary = GameData.status(st).get("modifiers", {})
 		s += float(smods.get(stat, 0.0))
+	for it in equipment:
+		var istats: Dictionary = GameData.item(str(it)).get("stats", {})
+		s += float(istats.get(stat, 0.0))
 	return s
+
+
+## Оружие с учётом надетых предметов.
+func effective_weapon() -> Dictionary:
+	for it in equipment:
+		var w: Dictionary = GameData.item(str(it)).get("weapon", {})
+		if not w.is_empty():
+			return w
+	return weapon
 
 
 ## Сопротивление стихии в процентах, ограниченное ±resistance_cap.
@@ -182,7 +196,7 @@ func to_dict() -> Dictionary:
 		"level": level, "xp": xp, "xp_reward": xp_reward,
 		"attributes": attributes.duplicate(), "abilities": abilities.duplicate(),
 		"talents": talents.duplicate(), "skills": skills.duplicate(),
-		"weapon": weapon.duplicate(), "base_stats": base_stats.duplicate(),
+		"weapon": weapon.duplicate(), "base_stats": base_stats.duplicate(), "equipment": equipment.duplicate(),
 		"points": [unspent_attribute_points, unspent_ability_points, unspent_talent_points],
 		"hp": hp, "ap": ap,
 		"statuses": statuses.duplicate(true), "cooldowns": cooldowns.duplicate(),
@@ -214,6 +228,8 @@ static func from_dict(d: Dictionary) -> Character:
 	c.weapon = w.duplicate()
 	var bs: Dictionary = d.get("base_stats", {})
 	c.base_stats = bs.duplicate()
+	var eq: Array = d.get("equipment", [])
+	c.equipment = eq.duplicate()
 	var pts: Array = d.get("points", [0, 0, 0])
 	c.unspent_attribute_points = int(pts[0])
 	c.unspent_ability_points = int(pts[1])

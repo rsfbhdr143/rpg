@@ -47,6 +47,7 @@ static func level_up(c: Character) -> void:
 	else:
 		c.hp = c.max_hp() * hp_ratio
 	GameLog.add("%s достигает уровня %d!" % [c.display_name, c.level])
+	GameEvents.add("level_up", {"unit": c.uid, "level": c.level})
 
 
 # --- Атрибуты -------------------------------------------------------------------

@@ -96,6 +96,7 @@ func _begin_turn(u: Character) -> bool:
 		if int(u.cooldowns[sk]) <= 0:
 			u.cooldowns.erase(sk)
 	GameLog.add("Ход: %s (ОЗ %d/%d, ОД %d)" % [u.display_name, u.hp, u.max_hp(), u.ap])
+	GameEvents.add("turn", {"unit": u.uid, "faction": u.faction})
 	StatusSystem.on_turn_start(u)
 	apply_cell_effects(u)
 	_cleanup_dead()
@@ -128,6 +129,7 @@ func _check_end() -> bool:
 	current = null
 	winner_faction = str(factions.keys()[0]) if factions.size() == 1 else ""
 	GameLog.add("=== Бой окончен. Победа: %s ===" % (winner_faction if winner_faction != "" else "никто"))
+	GameEvents.add("combat_end", {"winner": winner_faction})
 	_award_xp()
 	combat_ended.emit(winner_faction)
 	return true
@@ -142,6 +144,7 @@ func _award_xp() -> void:
 		return
 	for u in living_units():
 		GameLog.add("%s получает %d опыта." % [u.display_name, total])
+		GameEvents.add("xp", {"unit": u.uid, "amount": total})
 		Progression.add_xp(u, total)
 
 
@@ -200,12 +203,15 @@ func move(u: Character, target_cell: Vector2i) -> bool:
 	if cost > u.ap:
 		return false
 	u.ap -= cost
+	var walked: Array = []
 	for step in path:
 		u.cell = step
+		walked.append(GameEvents.cell(step))
 		apply_cell_effects(u)
 		if not u.can_act():
 			GameLog.add("%s остановлен на %s." % [u.display_name, str(step)])
 			break
+	GameEvents.add("move", {"paths": {u.uid: walked}})
 	_cleanup_dead()
 	state_changed.emit()
 	if active and current == u and not u.can_act():
@@ -241,6 +247,8 @@ func use_skill(u: Character, skill_id: String, target_cell: Vector2i) -> bool:
 	if int(def.get("cooldown", 0)) > 0:
 		u.cooldowns[skill_id] = int(def.get("cooldown", 0)) + 1   # +1: тикает в начале нашего же следующего хода
 	GameLog.add("%s использует «%s»." % [u.display_name, def.get("name", skill_id)])
+	GameEvents.add("cast", {"unit": u.uid, "skill": skill_id, "cell": GameEvents.cell(target_cell),
+		"from": GameEvents.cell(u.cell)})
 	SkillSystem.execute(self, u, def, target_cell)
 	_cleanup_dead()
 	state_changed.emit()
@@ -249,6 +257,16 @@ func use_skill(u: Character, skill_id: String, target_cell: Vector2i) -> bool:
 	if not u.can_act():   # например, сам себя заморозил
 		end_turn()
 	return true
+
+
+## После действия не через use_skill (предмет-навык): убрать павших и проверить конец боя.
+func after_external_action(u: Character) -> void:
+	_cleanup_dead()
+	state_changed.emit()
+	if _check_end():
+		return
+	if not u.can_act():
+		end_turn()
 
 
 ## Эффекты поверхностей в клетке персонажа (вход в клетку или начало хода).
@@ -268,6 +286,7 @@ func _cleanup_dead() -> void:
 		c.death_handled = true
 		c.statuses.clear()
 		GameLog.add("%s погибает!" % c.display_name)
+		GameEvents.add("death", {"unit": c.uid, "faction": c.faction})
 		var ds := str(GameData.rule("death_surface", ""))
 		if ds != "" and grid.get_ground(c.cell) == "none":
 			grid.set_surface(c.cell, ds, c.level)

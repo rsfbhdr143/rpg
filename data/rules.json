@@ -1,43 +1,162 @@
 {
-  "attributes": ["strength", "dexterity", "intelligence", "constitution", "speed", "perception"],
+  "attributes": [
+    "strength",
+    "dexterity",
+    "intelligence",
+    "constitution",
+    "speed",
+    "perception"
+  ],
   "attribute_names": {
-    "strength": "Сила", "dexterity": "Ловкость", "intelligence": "Интеллект",
-    "constitution": "Телосложение", "speed": "Скорость", "perception": "Восприятие"
+    "strength": "Сила",
+    "dexterity": "Ловкость",
+    "intelligence": "Интеллект",
+    "constitution": "Телосложение",
+    "speed": "Скорость",
+    "perception": "Восприятие"
   },
   "attribute_base": 5,
   "attribute_max": 15,
-
-  "damage_types": ["physical", "fire", "water", "earth", "air", "poison"],
-  "resistances": ["fire", "water", "earth", "air", "poison", "tenacity"],
+  "damage_types": [
+    "physical",
+    "fire",
+    "water",
+    "earth",
+    "air",
+    "poison"
+  ],
+  "resistances": [
+    "fire",
+    "water",
+    "earth",
+    "air",
+    "poison",
+    "tenacity"
+  ],
   "resistance_cap": 100,
-
   "derived": {
-    "max_hp":              {"base": 30,  "per_level": 12, "attr": {"constitution": 6}},
-    "max_ap":              {"base": 10,  "attr": {"speed": 0.5}},
-    "start_ap":            {"base": 4,   "attr": {"speed": 0.5}},
-    "ap_recovery":         {"base": 5,   "attr": {"speed": 0.5}},
-    "initiative":          {"base": 5,   "attr": {"perception": 1.0, "speed": 0.5}},
-    "move_per_ap":         {"base": 1.5, "attr": {"speed": 0.1}},
-    "accuracy":            {"base": 85,  "attr": {"perception": 2.0}},
-    "dodge":               {"base": 5,   "attr": {"dexterity": 2.0}},
-    "crit_chance":         {"base": 5,   "attr": {"perception": 1.5}},
-    "crit_multiplier":     {"base": 1.5},
-    "physical_damage_pct": {"base": 0,   "attr": {"strength": 5}},
-    "magic_damage_pct":    {"base": 0,   "attr": {"intelligence": 5}},
-    "tenacity_res":        {"base": 0,   "attr": {"constitution": 3}}
+    "max_hp": {
+      "base": 30,
+      "per_level": 12,
+      "attr": {
+        "constitution": 6
+      }
+    },
+    "max_ap": {
+      "base": 10,
+      "attr": {
+        "speed": 0.5
+      }
+    },
+    "start_ap": {
+      "base": 4,
+      "attr": {
+        "speed": 0.5
+      }
+    },
+    "ap_recovery": {
+      "base": 5,
+      "attr": {
+        "speed": 0.5
+      }
+    },
+    "initiative": {
+      "base": 5,
+      "attr": {
+        "perception": 1.0,
+        "speed": 0.5
+      }
+    },
+    "move_per_ap": {
+      "base": 1.5,
+      "attr": {
+        "speed": 0.1
+      }
+    },
+    "accuracy": {
+      "base": 85,
+      "attr": {
+        "perception": 2.0
+      }
+    },
+    "dodge": {
+      "base": 5,
+      "attr": {
+        "dexterity": 2.0
+      }
+    },
+    "crit_chance": {
+      "base": 5,
+      "attr": {
+        "perception": 1.5
+      }
+    },
+    "crit_multiplier": {
+      "base": 1.5
+    },
+    "physical_damage_pct": {
+      "base": 0,
+      "attr": {
+        "strength": 5
+      }
+    },
+    "magic_damage_pct": {
+      "base": 0,
+      "attr": {
+        "intelligence": 5
+      }
+    },
+    "tenacity_res": {
+      "base": 0,
+      "attr": {
+        "constitution": 3
+      }
+    }
   },
-
-  "armor_formula": {"flat": 10, "per_attacker_level": 8, "cap_pct": 75},
-  "hit_chance": {"min": 5, "max": 95},
-  "skill_damage": {"base": 8, "per_level": 4, "variance": 0.15},
-  "unarmed_weapon": {"name": "Кулаки", "min": 1, "max": 3, "element": "physical"},
+  "armor_formula": {
+    "flat": 10,
+    "per_attacker_level": 8,
+    "cap_pct": 75
+  },
+  "hit_chance": {
+    "min": 5,
+    "max": 95
+  },
+  "skill_damage": {
+    "base": 8,
+    "per_level": 4,
+    "variance": 0.15
+  },
+  "unarmed_weapon": {
+    "name": "Кулаки",
+    "min": 1,
+    "max": 3,
+    "element": "physical"
+  },
   "death_surface": "blood",
-
   "max_players": 4,
-  "party_templates": ["knight", "wizard", "ranger", "cleric"],
+  "party_templates": [
+    "knight",
+    "wizard",
+    "ranger",
+    "cleric"
+  ],
   "min_party_size": 2,
-  "start_location": "village",
+  "start_location": "cemetery",
   "start_spawn": "start",
   "revive_after_combat_hp": 1,
-  "clear_statuses_after_combat": true
+  "clear_statuses_after_combat": true,
+  "explore_regen_pct": 2,
+  "item_ap": 2,
+  "start_gold": 0,
+  "start_items": {},
+  "menu_music": "theme_lado",
+  "combat_music": "combat",
+  "boss_music": "boss_lado",
+  "hero_info": {
+    "knight": "Танк и боец ближнего боя: двуручный меч, таран, вихрь.",
+    "wizard": "Стихии огня, воды и воздуха: поджигай масло, бей молнией по мокрым.",
+    "ranger": "Стрелок и геомант: выстрелы издалека, яд и масло.",
+    "cleric": "Лечение и благословение, вода и проклятия."
+  }
 }

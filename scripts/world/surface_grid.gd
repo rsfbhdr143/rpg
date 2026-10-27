@@ -148,6 +148,7 @@ func _apply_element_cell(c: Vector2i, element: String, create: bool, level: int,
 		reacted = true
 		if r.has("text"):
 			GameLog.add(str(r["text"]))
+			GameEvents.add("reaction", {"cell": GameEvents.cell(c), "text": str(r["text"])})
 		var affected: Array = [c]
 		if bool(r.get("spread", false)):
 			affected = flood_fill(layer, c, cur)

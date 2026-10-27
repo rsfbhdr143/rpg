@@ -48,8 +48,11 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 			var res := DamageCalc.roll_attack(caster, target, def)
 			if not bool(res["hit"]):
 				GameLog.add("%s промахивается по %s." % [caster.display_name, target.display_name])
+				GameEvents.add("miss", {"unit": target.uid, "src": caster.uid})
 				continue
 			var dealt := DamageCalc.apply_damage(target, float(res["amount"]), str(res["element"]))
+			GameEvents.add("hit", {"unit": target.uid, "src": caster.uid, "amount": int(dealt),
+				"element": str(res["element"]), "crit": bool(res["crit"])})
 			GameLog.add("%s%s наносит %d урона (%s) по %s." % [
 				"Крит! " if bool(res["crit"]) else "", caster.display_name, dealt, res["element"], target.display_name])
 		if def.has("heal"):
@@ -57,6 +60,7 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 			var amount := float(roundi(DamageCalc.with_variance(DamageCalc.base_skill_damage(caster.level)) * float(heal_def.get("multiplier", 1.0))))
 			target.heal(amount)
 			GameLog.add("%s восстанавливает %d ОЗ." % [target.display_name, amount])
+			GameEvents.add("heal", {"unit": target.uid, "amount": int(amount)})
 		if target.is_alive():
 			_apply_statuses(caster, target, def, "target")
 
@@ -67,10 +71,12 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 		var radius := int(s.get("radius", 0))
 		var explosions := combat.grid.apply_element(center, radius, str(s.get("element", "")), bool(s.get("create", false)), caster.level)
 		for e in explosions:
+			GameEvents.add("explosion", {"cell": GameEvents.cell(e["cell"])})
 			var victim := combat.unit_at(e["cell"])
 			if victim != null:
 				var dealt := DamageCalc.environment_damage(victim, e["damage"], int(e["level"]))
 				GameLog.add("%s получает %d урона от взрыва." % [victim.display_name, dealt])
+				GameEvents.add("hit", {"unit": victim.uid, "amount": int(dealt), "element": "fire", "crit": false})
 		# Персонажи в изменённых клетках сразу получают эффекты поверхности.
 		for c in combat.grid.cells_in_radius(center, radius):
 			var u := combat.unit_at(c)

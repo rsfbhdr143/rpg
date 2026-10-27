@@ -1,39 +1,62 @@
 {
   "knight": {
-    "name": "Рыцарь", "faction": "player", "level": 2,
+    "name": "Рыцарь", "faction": "player", "level": 1,
     "attributes": {"strength": 8, "dexterity": 5, "intelligence": 5, "constitution": 7, "speed": 5, "perception": 5},
-    "abilities": {"two_handed": 2, "man_at_arms": 2, "armour_specialist": 1, "body_building": 1},
+    "abilities": {"two_handed": 1, "man_at_arms": 1, "armour_specialist": 1, "body_building": 1},
     "talents": ["thick_skin"],
-    "skills": ["attack", "battering_ram", "whirlwind"],
-    "weapon": {"name": "Двуручный меч", "min": 7, "max": 11, "element": "physical"},
-    "base_stats": {"armor": 18}
+    "skills": ["attack", "battering_ram"],
+    "weapon": {"name": "Двуручный меч", "min": 7, "max": 10, "element": "physical"},
+    "base_stats": {"armor": 16}
   },
   "wizard": {
-    "name": "Волшебница", "faction": "player", "level": 2,
+    "name": "Волшебница", "faction": "player", "level": 1,
     "attributes": {"strength": 5, "dexterity": 5, "intelligence": 9, "constitution": 5, "speed": 6, "perception": 6},
-    "abilities": {"pyrokinetic": 2, "hydrosophist": 1, "aerotheurge": 2},
+    "abilities": {"pyrokinetic": 1, "hydrosophist": 1, "aerotheurge": 1},
     "talents": ["far_out_man"],
-    "skills": ["attack", "flare", "fireball", "rain", "ice_shard", "minor_heal", "shocking_touch", "lightning_bolt"],
+    "skills": ["attack", "flare", "ice_shard", "shocking_touch"],
     "weapon": {"name": "Посох", "min": 3, "max": 5, "element": "physical"},
     "base_stats": {"armor": 6}
   },
   "ranger": {
-    "name": "Следопыт", "faction": "player", "level": 2,
-    "attributes": {"strength": 5, "dexterity": 8, "intelligence": 5, "constitution": 5, "speed": 6, "perception": 7},
-    "abilities": {"bow": 2, "expert_marksman": 2, "geomancer": 1, "scoundrel": 1},
+    "name": "Следопыт", "faction": "player", "level": 1,
+    "attributes": {"strength": 5, "dexterity": 8, "intelligence": 5, "constitution": 6, "speed": 6, "perception": 7},
+    "abilities": {"bow": 1, "expert_marksman": 1, "geomancer": 1, "scoundrel": 1},
     "talents": [],
-    "skills": ["attack", "arrow_shot", "poison_dart", "oil_slick"],
+    "skills": ["attack", "arrow_shot", "poison_dart"],
     "weapon": {"name": "Лук", "min": 5, "max": 8, "element": "physical"},
     "base_stats": {"armor": 10}
   },
   "cleric": {
-    "name": "Жрица", "faction": "player", "level": 2,
+    "name": "Жрица", "faction": "player", "level": 1,
     "attributes": {"strength": 5, "dexterity": 5, "intelligence": 8, "constitution": 7, "speed": 5, "perception": 5},
-    "abilities": {"hydrosophist": 2, "witchcraft": 1, "willpower": 1},
+    "abilities": {"hydrosophist": 1, "witchcraft": 1, "willpower": 1},
     "talents": ["walk_it_off"],
-    "skills": ["attack", "minor_heal", "bless", "rain", "ice_shard", "curse"],
+    "skills": ["attack", "minor_heal", "bless"],
     "weapon": {"name": "Булава", "min": 4, "max": 6, "element": "physical"},
     "base_stats": {"armor": 14}
+  },
+
+  "risen": {
+    "name": "Восставший", "faction": "enemy", "level": 1, "xp_reward": 30,
+    "attributes": {"strength": 6, "dexterity": 4, "intelligence": 3, "constitution": 5, "speed": 4, "perception": 4},
+    "skills": ["attack"],
+    "weapon": {"name": "Гнилые руки", "min": 3, "max": 5, "element": "physical"},
+    "base_stats": {"armor": 4, "poison_res": 100, "fire_res": -25}
+  },
+  "skeleton": {
+    "name": "Скелет", "faction": "enemy", "level": 1, "xp_reward": 35,
+    "attributes": {"strength": 6, "dexterity": 7, "intelligence": 3, "constitution": 4, "speed": 5, "perception": 5},
+    "skills": ["attack"],
+    "weapon": {"name": "Ржавый меч", "min": 4, "max": 6, "element": "physical"},
+    "base_stats": {"armor": 8, "poison_res": 100, "tenacity_res": 30}
+  },
+  "drowned": {
+    "name": "Утопленник", "faction": "enemy", "level": 2, "xp_reward": 50,
+    "attributes": {"strength": 7, "dexterity": 4, "intelligence": 5, "constitution": 7, "speed": 4, "perception": 4},
+    "abilities": {"hydrosophist": 1},
+    "skills": ["attack", "rain"],
+    "weapon": {"name": "Ил и когти", "min": 4, "max": 7, "element": "physical"},
+    "base_stats": {"armor": 6, "water_res": 50, "poison_res": 100, "air_res": -30, "fire_res": -20}
   },
   "wolf": {
     "name": "Волк", "faction": "enemy", "level": 1, "xp_reward": 40,
@@ -41,6 +64,14 @@
     "skills": ["attack"],
     "weapon": {"name": "Клыки", "min": 3, "max": 6, "element": "physical"},
     "base_stats": {"armor": 4}
+  },
+  "goblin_scout": {
+    "name": "Гоблин-разведчик", "faction": "enemy", "level": 2, "xp_reward": 45,
+    "attributes": {"strength": 5, "dexterity": 8, "intelligence": 5, "constitution": 5, "speed": 6, "perception": 7},
+    "abilities": {"bow": 1},
+    "skills": ["attack", "arrow_shot"],
+    "weapon": {"name": "Короткий лук", "min": 3, "max": 6, "element": "physical"},
+    "base_stats": {"armor": 6, "poison_res": 20}
   },
   "goblin_warrior": {
     "name": "Гоблин-воин", "faction": "enemy", "level": 2, "xp_reward": 60,
@@ -58,6 +89,33 @@
     "weapon": {"name": "Клюка", "min": 2, "max": 4, "element": "physical"},
     "base_stats": {"armor": 4, "poison_res": 50}
   },
+  "boss_mukhoglot": {
+    "name": "Мухоглот", "faction": "enemy", "level": 4, "xp_reward": 300,
+    "attributes": {"strength": 6, "dexterity": 5, "intelligence": 9, "constitution": 9, "speed": 6, "perception": 7},
+    "abilities": {"geomancer": 2, "witchcraft": 2, "pyrokinetic": 1},
+    "skills": ["attack", "poison_dart", "oil_slick", "curse", "flare"],
+    "weapon": {"name": "Посох с мухами", "min": 4, "max": 7, "element": "poison"},
+    "base_stats": {"armor": 10, "poison_res": 80, "max_hp": 50}
+  },
+  "lado_body": {
+    "name": "Тело Ладо", "faction": "enemy", "level": 3, "xp_reward": 150,
+    "attributes": {"strength": 8, "dexterity": 4, "intelligence": 3, "constitution": 9, "speed": 4, "perception": 4},
+    "skills": ["attack"],
+    "weapon": {"name": "Тяжёлые кулаки", "min": 6, "max": 9, "element": "physical"},
+    "base_stats": {"armor": 12, "poison_res": 100, "fire_res": -50}
+  },
+
+  "tadeush": {"name": "Отец Тадеуш", "faction": "npc", "level": 3},
+  "marta":   {"name": "Марта Корн", "faction": "npc", "level": 1},
+  "pipin":   {"name": "Пипин Шмель", "faction": "npc", "level": 1},
+  "sych":    {"name": "Сыч", "faction": "npc", "level": 2},
+  "gunter":  {"name": "Гюнтер", "faction": "npc", "level": 3},
+  "vetla":   {"name": "Ветла", "faction": "npc", "level": 3},
+  "zaraza":  {"name": "Зараза", "faction": "npc", "level": 1},
+  "shmyg":   {"name": "Шмыг", "faction": "npc", "level": 1},
+  "mukhoglot": {"name": "Мухоглот", "faction": "npc", "level": 4},
+  "lado_ghost": {"name": "Призрак Ладо", "faction": "npc", "level": 1},
+
   "training_dummy": {
     "name": "Манекен", "faction": "neutral", "level": 1,
     "attributes": {},
