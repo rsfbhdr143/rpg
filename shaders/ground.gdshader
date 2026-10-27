@@ -3,6 +3,7 @@
 // Данные приходят маленькими текстурами размером с карту (одна точка = одна клетка):
 //   cells_tex: r = 1 непроходимо, g = номер поверхности (палитра surf_pal), b = 1 выход
 //   hl_tex:    r = можно дойти, g = дальность навыка, b = область удара, a = путь
+// За краем карты — та же земля, темнеющая к цвету фона (outer_color), чтобы не было чёрных углов.
 shader_type canvas_item;
 render_mode unshaded;
 
@@ -23,6 +24,7 @@ uniform vec4 exit_color : source_color = vec4(1.0, 0.82, 0.35, 1.0);
 uniform float grid_alpha = 0.0;
 uniform vec2 hover = vec2(-99.0, -99.0);
 uniform vec4 hover_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 outer_color : source_color = vec4(0.04, 0.04, 0.05, 1.0);
 
 varying vec2 world;
 
@@ -90,11 +92,21 @@ void fragment() {
 	vec2 p = floor(world) + 0.5;
 	vec2 g = vec2((p.x / 16.0 + p.y / 8.0) * 0.5, (p.y / 8.0 - p.x / 16.0) * 0.5);
 	ivec2 c = ivec2(floor(g));
-	if (c.x < 0 || c.y < 0 || c.x >= grid_size.x || c.y >= grid_size.y) {
-		discard;
-	}
 	float t = floor(TIME * 8.0) / 8.0;
 	float d = bayer4(p);
+	if (c.x < 0 || c.y < 0 || c.x >= grid_size.x || c.y >= grid_size.y) {
+		// за краем карты: пол темнеет и растворяется в цвете фона
+		vec2 out_d = max(-g, g - vec2(grid_size));
+		float k = clamp(max(out_d.x, out_d.y) / 6.0, 0.0, 1.0);
+		float n0 = noise(p / 27.0 + vec2(0.5, 0.2)) * 0.6 + noise(p / 90.0) * 0.4;
+		vec3 oc = n0 + (d - 0.5) * 0.2 > 0.5 ? floor_b.rgb : floor_dark.rgb;
+		if (use_floor_tex) oc = texture(floor_tex, g / floor_tex_cells).rgb;
+		oc *= 0.62 - 0.22 * k;
+		if (hash(vec2(floor(p.x), floor(p.y * 0.5))) > 0.985) oc = floor_dark.rgb * 0.7;
+		if (k * 1.1 + (d - 0.5) * 0.5 + (n0 - 0.5) * 0.4 > 0.7) oc = outer_color.rgb;
+		COLOR = vec4(oc, 1.0);
+		return;
+	}
 	// неровные края пятен: клетка берётся со смещением по шуму
 	vec2 wob = vec2(noise(p / 61.0), noise(p / 61.0 + vec2(0.37, 0.71))) - 0.5;
 	ivec2 cw = ivec2(floor(g + wob * 0.62));
@@ -144,7 +156,11 @@ void fragment() {
 	// бой: сетка и подсветка
 	vec4 hl = texelFetch(hl_tex, c, 0);
 	if (grid_alpha > 0.0 && edge < 0.034) col *= 1.0 - grid_alpha;
-	if (hl.g > 0.5 && d < 0.25) col = mix(col, vec3(1.0, 0.92, 0.5), 0.5);
+	if (hl.g > 0.5) {
+		// дальность навыка: холодный голубой, заметен и на рыжей листве, и на траве
+		if (d < 0.375) col = mix(col, vec3(0.62, 0.95, 1.0), 0.45);
+		if (edge < 0.04) col = mix(col, vec3(0.55, 0.9, 1.0), 0.55);
+	}
 	if (hl.r > 0.5) {
 		if (d < 0.5) col = mix(col, vec3(0.75, 0.9, 1.0), 0.18);
 		if (edge < 0.04) col = mix(col, vec3(0.7, 0.85, 1.0), 0.35);
@@ -157,8 +173,9 @@ void fragment() {
 		if (d < 0.75) col = mix(col, vec3(1.0, 0.35, 0.2), 0.45);
 		if (edge < 0.05) col = vec3(1.0, 0.55, 0.3);
 	}
-	if (float(c.x) == hover.x && float(c.y) == hover.y && edge < 0.06) {
-		col = mix(col, hover_color.rgb, 0.85);
+	if (float(c.x) == hover.x && float(c.y) == hover.y && edge < 0.075) {
+		// клетка под курсором: светлая рамка через пиксель с тёмной, видна на любом полу
+		col = d < 0.5 ? hover_color.rgb : vec3(0.06, 0.05, 0.04);
 	}
 	COLOR = vec4(col, 1.0);
 }

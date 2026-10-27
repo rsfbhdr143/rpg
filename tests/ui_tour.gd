@@ -10,6 +10,7 @@ var shots_dir := ""
 var shots := 0
 var net: Node
 var screen: Node
+var _tried := {}   # уже выбранные ответы ("диалог/узел/индекс")
 
 
 func _initialize() -> void:
@@ -171,8 +172,16 @@ func _dialogue_step() -> void:
 	var ch: Array = v.get("choices", [])
 	if ch.is_empty():
 		net.call("send_command", {"type": "dialogue_next"})
-	else:
-		net.call("send_command", {"type": "dialogue_choice", "index": int((ch[0] as Dictionary).get("index", 0))})
+		return
+	# первый ещё не выбранный ответ, иначе последний — так из «хаба» разговора можно выйти
+	var where := "%s/%s/" % [v.get("id", ""), v.get("node", "")]
+	var pick: Dictionary = ch[-1]
+	for c in ch:
+		if not _tried.has(where + str(c.get("index", 0))):
+			pick = c
+			break
+	_tried[where + str(pick.get("index", 0))] = true
+	net.call("send_command", {"type": "dialogue_choice", "index": int(pick.get("index", 0))})
 
 
 func _finish_dialogue() -> void:

@@ -26,6 +26,7 @@ var grid_h := 0
 var time := 0.0
 var zoom := 1
 var focus := Vector2.ZERO          # за чем следит камера (точка мира)
+var bg_color := Color("0b0a0c")    # цвет за краем карты (фон экрана подбирается под него)
 var pan := Vector2.ZERO            # сдвиг камеры игроком
 var idle := true                   # GameScreen: события проиграны, можно ставить всех на их клетки
 var hover_cell := Vector2i(-99, -99)
@@ -211,6 +212,8 @@ func _setup_ground(data: Dictionary) -> void:
 	m.set_shader_parameter("floor_dark", Color(str(style.get("dark", a.darkened(0.28).to_html(false)))))
 	m.set_shader_parameter("floor_light", Color(str(style.get("light", a.lightened(0.12).to_html(false)))))
 	m.set_shader_parameter("speck", Color(str(style.get("speck", Color(a.r * 1.15, a.g * 1.4, a.b * 1.05).to_html(false)))))
+	bg_color = Color(str(style["bg"])) if style.has("bg") else a.darkened(0.8)
+	m.set_shader_parameter("outer_color", bg_color)
 	# своя текстура пола из data/sprites.json (только если она задана именно для этой локации)
 	var tex: Texture2D = null
 	var locs: Dictionary = SpriteLibrary.bindings.get("locations", {})
@@ -227,7 +230,7 @@ func _setup_ground(data: Dictionary) -> void:
 
 func _draw_ground() -> void:
 	if grid_w > 0:
-		_ground.draw_rect(_bounds, Color.WHITE)
+		_ground.draw_rect(_bounds.grow(TW * 12), Color.WHITE)
 
 
 ## Клетки -> маленькая текстура для шейдера: стены, поверхности, выходы.

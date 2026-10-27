@@ -14,7 +14,7 @@ var _head: HBoxContainer
 
 func _ready() -> void:
 	theme = UiTheme.theme()
-	custom_minimum_size = Vector2(1080, 600)
+	custom_minimum_size = Vector2(1080, 650)
 	UiTheme.center(self, custom_minimum_size)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
@@ -104,7 +104,7 @@ func _rebuild(s: GameSession, h: Character) -> void:
 
 func _column(title: String, width: float) -> Array:
 	var sc := ScrollContainer.new()
-	sc.custom_minimum_size = Vector2(width, 400)
+	sc.custom_minimum_size = Vector2(width, 470)
 	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	var v := UiTheme.vbox(4)
 	v.custom_minimum_size = Vector2(width - 14, 0)
@@ -171,7 +171,7 @@ func _col_abilities(h: Character, editable: bool) -> Control:
 		if rank == 0 and not editable:
 			continue
 		var cost := Progression.ability_cost(rank + 1)
-		var col := UiTheme.TEXT if rank > 0 else UiTheme.TEXT_FAINT
+		var col := UiTheme.TEXT if rank > 0 else UiTheme.TEXT_DIM
 		_row(v, "%s  %d" % [def.get("name", ab), rank], col, "+", editable and Progression.can_raise_ability(h, str(ab)),
 			{"type": "raise_ability", "unit": h.uid, "ability": ab},
 			"%s\nСледующий ранг стоит %d очк." % [str(def.get("description", "")), cost])

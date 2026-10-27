@@ -391,6 +391,8 @@ const ITEMS := {
 }
 
 
+static var _pix_cache: Dictionary = {}
+
 static func draw_glyph(ci: CanvasItem, glyph: String, rect: Rect2, color: Color, dim := false) -> void:
 	var rows: Array = GLYPHS.get(glyph, GLYPHS["question"])
 	var px := floorf(minf(rect.size.x, rect.size.y) / 10.0)
@@ -466,20 +468,51 @@ static func item_icon(ci: CanvasItem, item_id: String, rect: Rect2, dim := false
 static func portrait(ci: CanvasItem, id: String, rect: Rect2, t := 0.0, dead := false) -> void:
 	var mod := Color(0.45, 0.45, 0.45) if dead else Color.WHITE
 	var fr := SpriteLibrary.frame("portraits", id)
+	var src := Rect2()
 	if not fr.is_empty():
-		ci.draw_texture_rect_region(fr["texture"], rect, fr["region"], mod)
-		return
-	fr = SpriteLibrary.frame("units", id)
+		src = fr["region"]
+	else:
+		fr = SpriteLibrary.frame("units", id)
+		if not fr.is_empty():
+			var region: Rect2 = fr["region"]
+			var side := minf(region.size.x, region.size.y * 0.6)
+			src = Rect2(region.position.x + (region.size.x - side) * 0.5, region.position.y, side, side)
 	if not fr.is_empty():
-		var region: Rect2 = fr["region"]
-		var side := minf(region.size.x, region.size.y * 0.6)
-		var src := Rect2(region.position.x + (region.size.x - side) * 0.5, region.position.y, side, side)
 		ci.draw_rect(rect, Color("221a14"))
-		ci.draw_texture_rect_region(fr["texture"], rect, src, mod)
+		var px := clampi(roundi(minf(rect.size.x, rect.size.y) / 3.0), 20, 48)
+		var tex := _pixelated(fr["texture"], src, px)
+		if tex != null:
+			ci.draw_texture_rect(tex, rect, false, mod)
+		else:
+			ci.draw_texture_rect_region(fr["texture"], rect, src, mod)
 		return
 	PixelArt.draw_portrait(ci, id, rect, t)
 	if dead:
 		ci.draw_rect(rect, Color(0.1, 0.05, 0.05, 0.55))
+
+
+## Рисованный портрет крупными пикселями, как мир на экране: уменьшаем до px×px и урезаем палитру.
+static func _pixelated(tex: Texture2D, src: Rect2, px: int) -> Texture2D:
+	var key := "%d|%s|%d" % [tex.get_instance_id(), src, px]
+	if _pix_cache.has(key):
+		return _pix_cache[key]
+	var img := tex.get_image()
+	if img == null:
+		return null
+	if img.is_compressed():
+		img.decompress()
+	img = img.get_region(Rect2i(src))
+	img.convert(Image.FORMAT_RGBA8)
+	img.resize(px, px, Image.INTERPOLATE_LANCZOS)
+	var levels := 10.0
+	for y in px:
+		for x in px:
+			var c := img.get_pixel(x, y)
+			img.set_pixel(x, y, Color(roundf(c.r * levels) / levels, roundf(c.g * levels) / levels,
+				roundf(c.b * levels) / levels, 1.0 if c.a > 0.5 else 0.0))
+	var out := ImageTexture.create_from_image(img)
+	_pix_cache[key] = out
+	return out
 
 
 ## Цвет статуса для полоски над головой (тот же, что у значка).

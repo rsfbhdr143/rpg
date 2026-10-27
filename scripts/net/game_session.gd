@@ -1000,20 +1000,33 @@ func _walk_party(u: Character, path: Array) -> String:
 
 ## Куда встать спутнику: позади ведущего, на свободной клетке рядом с концом пути.
 func _follow_spot(path: Array, reserved: Dictionary, blockers: Dictionary) -> Vector2i:
+	# Спутник встаёт рядом с ведущим, но не прямо за ним по экрану (в изометрии он бы спрятался за спину):
+	# выбираем ближнюю свободную клетку, лучше всего — сбоку на том же уровне экрана.
 	var dest: Vector2i = path[-1]
-	var candidates: Array = []
-	for i in range(path.size() - 2, -1, -1):
-		candidates.append(path[i])
-		if candidates.size() >= 2:
-			break
+	var best := dest
+	var best_score := 1e9
 	for r in [1, 2, 3]:
 		for c in grid.cells_in_radius(dest, r):
-			candidates.append(c)
-	for c in candidates:
-		var cell: Vector2i = c
-		if grid.is_walkable(cell) and not reserved.has(cell) and not blockers.has(cell) and exit_at(cell).is_empty():
-			return cell
-	return dest
+			var cell: Vector2i = c
+			if cell == dest or not grid.is_walkable(cell) or reserved.has(cell) or blockers.has(cell) \
+					or not exit_at(cell).is_empty():
+				continue
+			var dx := cell.x - dest.x
+			var dy := cell.y - dest.y
+			var sx := absi(dx - dy)      # сдвиг по экрану вбок (в полуклетках)
+			var sy := dx + dy            # < 0 — выше по экрану, то есть за спиной
+			var score := float(SurfaceGrid.distance(cell, dest)) * 10.0
+			if sx == 0:
+				score += 30.0 if sy < 0 else 12.0
+			score -= float(mini(sx, 2)) * 2.0   # чем дальше вбок, тем лучше видно обоих
+			if path.size() >= 2 and cell == path[-2]:
+				score -= 4.0             # шаг назад по пути — естественно, если он не прячет спутника
+			if score < best_score:
+				best_score = score
+				best = cell
+		if best_score < 25.0:
+			break
+	return best
 
 
 func _cmd_talk(pid: int, cmd: Dictionary) -> String:

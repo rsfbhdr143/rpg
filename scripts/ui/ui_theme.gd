@@ -68,7 +68,7 @@ static func theme() -> Theme:
 	var t := Theme.new()
 	t.default_font = font("body")
 	t.default_font_size = 18
-	var panel := frame(PANEL, GOLD_DIM, INK, Color("2c231a"), 0.95)
+	var panel := frame(PANEL, GOLD_DIM, INK, Color("2c231a"), 1.0)
 	t.set_stylebox("panel", "PanelContainer", panel)
 	t.set_stylebox("panel", "Panel", panel)
 	t.set_stylebox("panel", "PopupPanel", panel)
@@ -230,7 +230,7 @@ static func slot_box(border: Color = Color("5a4630"), fill: Color = Color("0f0c0
 	for y in n:
 		for x in n:
 			var edge := x == 0 or y == 0 or x == n - 1 or y == n - 1
-			img.set_pixel(x, y, border if edge else (fill.lightened(0.04) if y == n - 2 else fill))
+			img.set_pixel(x, y, border if edge else fill)
 	_boxes[key] = _box(img, 1, 1)
 	return _boxes[key]
 

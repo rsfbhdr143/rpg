@@ -190,8 +190,7 @@ func _location_audio() -> void:
 	if session == null:
 		return
 	var data := session.location_data()
-	var style: Dictionary = data.get("style", {})
-	_bg.color = Color(str(style.get("bg", "0b0a0c")))
+	_bg.color = world.bg_color
 	if session.mode != "combat":
 		GameAudio.music(str(data.get("music", "")))
 	GameAudio.ambient(str(data.get("ambient", "")))
@@ -329,7 +328,7 @@ func _present(e: Dictionary) -> float:
 			GameAudio.stinger("level_up")
 			var u := session.unit_by_uid(uid)
 			if u != null:
-				hud.toast("%s: уровень %d! Откройте лист героя (C), чтобы потратить очки." % [u.display_name, int(e.get("level", u.level))], UiTheme.GOLD, 4.5)
+				hud.toast("%s: уровень %d! Очки — в листе героя (C)" % [u.display_name, int(e.get("level", u.level))], UiTheme.GOLD, 4.5)
 			return 0.4
 		"quest":
 			var qn := str(GameData.quest(str(e.get("quest", ""))).get("name", e.get("quest", "")))

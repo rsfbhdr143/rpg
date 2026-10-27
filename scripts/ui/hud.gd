@@ -18,6 +18,7 @@ var quest_box: VBoxContainer
 var quest_panel: PanelContainer
 var gold_label: Label
 var log_label: RichTextLabel
+var log_panel: PanelContainer
 var toast_box: VBoxContainer
 var banner: Label
 var sub_banner: Label
@@ -124,6 +125,7 @@ func _build_log() -> void:
 	sb.set_content_margin_all(6)
 	p.add_theme_stylebox_override("panel", sb)
 	UiTheme.place(p, Control.PRESET_BOTTOM_LEFT, Vector2(10, -150), Vector2(380, 140))
+	log_panel = p
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(p)
 	log_label = RichTextLabel.new()
@@ -138,8 +140,8 @@ func _build_log() -> void:
 
 func _build_messages() -> void:
 	toast_box = UiTheme.vbox(4)
-	UiTheme.place(toast_box, Control.PRESET_CENTER_TOP, Vector2(-260, 96), Vector2(520, 10))
-	toast_box.grow_vertical = Control.GROW_DIRECTION_END
+	# сообщения — слева под портретами отряда, чтобы не закрывать середину карты
+	UiTheme.place(toast_box, Control.PRESET_TOP_LEFT, Vector2(12, 160), Vector2(420, 10))
 	toast_box.alignment = BoxContainer.ALIGNMENT_BEGIN
 	toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(toast_box)
@@ -152,7 +154,7 @@ func _build_messages() -> void:
 	add_child(banner)
 	sub_banner = UiTheme.label("", 20, UiTheme.TEXT, "bold")
 	sub_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.place(sub_banner, Control.PRESET_CENTER, Vector2(-400, -100), Vector2(800, 30))
+	UiTheme.place(sub_banner, Control.PRESET_CENTER_TOP, Vector2(-400, 90), Vector2(800, 30))
 	sub_banner.modulate.a = 0.0
 	add_child(sub_banner)
 	card_title = UiTheme.label("", 24, Color("f0dcae"), "title")
@@ -243,7 +245,17 @@ func refresh(s: GameSession) -> void:
 	action_bar.visible = not dlg
 	quest_panel.visible = not dlg
 	end_turn_btn.visible = end_turn_btn.visible and not dlg
-	if _tips.size() > 0 or tip_panel.visible:
+	log_panel.visible = not dlg
+	toast_box.offset_top = party_box.position.y + party_box.size.y + 14.0
+	toast_box.offset_bottom = toast_box.offset_top + 10.0
+	if dlg:
+		# окно разговора внизу во всю ширину: совет подождёт
+		if tip_panel.visible:
+			_tips.push_front(tip_label.text)
+			tip_label.text = ""
+			tip_panel.visible = false
+			_tip_t = 0.0
+	elif _tips.size() > 0 or tip_panel.visible:
 		_tip_t -= get_process_delta_time()
 		if _tip_t <= 0.0:
 			if _tips.is_empty():
@@ -324,12 +336,11 @@ func toast(text: String, color: Color = UiTheme.TEXT, dur := 3.2) -> void:
 	var p := PanelContainer.new()
 	p.add_theme_stylebox_override("panel", UiTheme.frame(Color("15110e"), UiTheme.GOLD_DIM, UiTheme.INK, Color("221a14"), 0.9, 3))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	p.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	var l := UiTheme.label(text, 17, color)
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	p.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	var l := UiTheme.label(text, 16, color)
 	p.add_child(l)
 	toast_box.add_child(p)
-	if toast_box.get_child_count() > 5:
+	if toast_box.get_child_count() > 4:
 		toast_box.get_child(0).queue_free()
 	var tw := p.create_tween()
 	p.modulate.a = 0.0

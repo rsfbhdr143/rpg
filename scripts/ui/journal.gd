@@ -10,6 +10,7 @@ var _sel_item := ""
 var _list: VBoxContainer
 var _detail: VBoxContainer
 var _tab_buttons: Dictionary = {}
+var _title: Label
 
 
 func _ready() -> void:
@@ -22,9 +23,9 @@ func _ready() -> void:
 	add_child(root)
 	var top := UiTheme.hbox(8)
 	root.add_child(top)
-	var title := UiTheme.label("Журнал", 22, UiTheme.GOLD, "bold")
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(title)
+	_title = UiTheme.label("Журнал", 22, UiTheme.GOLD, "bold")
+	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(_title)
 	for t in [["quests", "Задания (J)"], ["bag", "Сумка (I)"]]:
 		var b := UiTheme.button(str(t[1]), func() -> void: open(str(t[0])), 16)
 		_tab_buttons[str(t[0])] = b
@@ -69,6 +70,7 @@ func _process(_delta: float) -> void:
 	if key == _key:
 		return
 	_key = key
+	_title.text = "Журнал заданий" if tab == "quests" else "Сумка отряда"
 	for t in _tab_buttons:
 		(_tab_buttons[t] as Button).disabled = t == tab
 	for c in _list.get_children():

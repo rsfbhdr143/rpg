@@ -6,10 +6,10 @@ extends RefCounted
 const PATH := "user://settings.cfg"
 const VOLUME_BUSES := {"music": "Music", "sfx": "SFX", "ambient": "Ambient", "ui": "UI"}
 ## Растёт, когда меняются значения по умолчанию: старый файл настроек тогда их не перебивает.
-const VERSION := 2
+const VERSION := 3
 
 static var values := {
-	"fullscreen": false, "pixel_scale": 3, "posterize": true, "shake": true,
+	"fullscreen": false, "pixel_scale": 2, "posterize": true, "shake": true,
 	"text_speed": 60.0, "player_name": "Игрок", "server_url": "ws://127.0.0.1:8910",
 }
 static var _loaded := false
