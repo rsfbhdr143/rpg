@@ -7,6 +7,15 @@
     "surface_alpha": 0.85,
     "cloud_alpha": 0.6,
     "texture_cells": 3,
+    "pixelate": {
+      "enabled": true,
+      "unit": 44,
+      "cell": 24,
+      "icon": 24,
+      "colors": 24,
+      "tile_colors": 12,
+      "outline": true
+    },
     "sprites_face": "right"
   },
   "units": {

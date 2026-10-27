@@ -130,6 +130,43 @@ class ImportTest(unittest.TestCase):
         self.assertEqual(out[1 + fh // 2, 1 + fw // 2, 3], 255)
         self.assertEqual(out[1 + 80, 1 + 60, 3], 255)              # белое пятно внутри не стало дырой
 
+    def test_pixelate(self):
+        """settings.pixelate: рисованная фигура и текстура становятся пиксель-артом, пиксельный пак не трогается."""
+        (self.root / "data" / "sprites.json").write_text(json.dumps({"settings": {
+            "texture_cells": 3, "pixelate": {"unit": 48, "cell": 16, "colors": 8, "tile_colors": 6}}}))
+        rng = np.random.default_rng(3)
+        smooth = np.zeros((600, 400, 4), np.uint8)
+        smooth[..., 0] = np.linspace(0, 255, 400)[None, :]
+        smooth[..., 1] = np.linspace(0, 255, 600)[:, None]
+        smooth[..., 2] = rng.integers(0, 255, (600, 400))
+        smooth[60:580, 100:300, 3] = 255
+        self.put("wizard.png", Image.fromarray(smooth))
+        (self.inbox / "wizard.art.json").write_text('{"kind": "unit"}')
+        x = np.linspace(0, 2 * np.pi, 512, endpoint=False)
+        wave = (127 + 120 * np.cos(x)[None, :] * np.cos(x)[:, None]).astype(np.uint8)     # бесшовный узор
+        hue = (127 + 120 * np.cos(2 * x)[:, None] * np.cos(3 * x)[None, :]).astype(np.uint8)
+        self.put("floor.png", Image.fromarray(np.dstack([wave, hue, 255 - wave, np.full_like(wave, 255)])))
+        self.put("goblin.png", figure((32, 32)))                  # уже пиксель-арт: два цвета, резкие края
+        res = self.run_import()
+        cat = res["catalog"]
+        self.assertTrue(cat["wizard"]["pixel_art"])
+        fw, fh = cat["wizard"]["frame"]
+        self.assertEqual(fh, 48 + 2)                               # рост юнита + обводка
+        out = np.asarray(Image.open(self.root / "art" / "sprites" / "wizard.png"))
+        frame = out[1:1 + fh, 1:1 + fw]
+        self.assertTrue(set(np.unique(frame[..., 3])) <= {0, 255})  # резкие края
+        visible = frame[frame[..., 3] > 0][:, :3]
+        self.assertLessEqual(len({tuple(c) for c in visible}), 8 + 1)    # палитра + цвет обводки
+        self.assertIn(tuple(import_art.OUTLINE_COLOR), {tuple(c) for c in visible})
+        self.assertEqual(cat["floor"]["frame"], [48, 48])           # клетка 16 × texture_cells
+        tile = np.asarray(Image.open(self.root / "art" / "sprites" / "floor.png"))[1:49, 1:49, :3].astype(int)
+        self.assertLessEqual(len({tuple(c) for c in tile.reshape(-1, 3)}), 6)
+        inner = np.abs(np.diff(tile, axis=1)).mean()
+        seam = np.abs(tile[:, 0] - tile[:, -1]).mean()
+        self.assertLessEqual(seam, inner)                            # остаётся бесшовной
+        x0, y0, x1, y1 = import_art.bbox_union([figure((32, 32))])
+        self.assertEqual(cat["goblin"]["frame"], [x1 - x0, y1 - y0])   # пиксельный спрайт как был, без обводки
+
     def test_magenta_key(self):
         rows = [[figure((32, 32))] * 3]
         img = sheet(rows, (32, 32), bg=(255, 0, 255, 255))

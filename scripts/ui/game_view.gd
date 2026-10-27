@@ -49,8 +49,10 @@ func _ready() -> void:
 	GameData.ensure_loaded()
 	SpriteLibrary.ensure_loaded()
 	iso = str(SpriteLibrary.setting("projection", "isometric")) != "topdown"
-	if bool(SpriteLibrary.setting("pixel_art", false)):
-		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var pixelate: Variant = SpriteLibrary.setting("pixelate", {})
+	if bool(SpriteLibrary.setting("pixel_art", false)) \
+			or pixelate is Dictionary and not pixelate.is_empty() and bool(pixelate.get("enabled", true)):
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST   # пиксель-арт без размытия при увеличении
 	_font = ThemeDB.fallback_font
 	Net.notice.connect(_on_notice)
 	Net.disconnected.connect(_on_disconnected)

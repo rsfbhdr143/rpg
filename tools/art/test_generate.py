@@ -107,6 +107,8 @@ class GenerateTest(unittest.TestCase):
             "surfaces": {"steam": "steam"},
             "skills": {"attack": "a sword"},
             "statuses": {"knocked_down": "a falling figure"},
+            "props": {"open_grave": {"subject": "a grave", "px": [36, 24],
+                                     "bind": ["props/open_grave", "props/fresh_grave"]}},
         })
         self.items = generate.items_of(self.prompts, self.root / "data")
         self.comfy = generate.Comfy([self.url], log=lambda *a: None)
@@ -145,6 +147,9 @@ class GenerateTest(unittest.TestCase):
         self.assertIn("seed", record["units/knight"])
         hint = json.loads((self.root / "art/inbox/generated/skills/attack.art.json").read_text(encoding="utf-8"))
         self.assertEqual(hint["id"], "attack")
+        hint = json.loads((self.root / "art/inbox/generated/props/open_grave.art.json").read_text(encoding="utf-8"))
+        self.assertEqual(hint["pixel_box"], [36, 24])
+        self.assertEqual(hint["kind"], "image")
         sheet = generate.contact_sheet(self.root, "units", self.items, record, self.prompts)
         self.assertTrue(sheet.exists())
 
@@ -157,6 +162,7 @@ class GenerateTest(unittest.TestCase):
         self.assertEqual(b["locations"]["village"]["floor"], "village_floor")
         self.assertEqual(b["locations"]["forest"]["wall"], "forest_wall")
         self.assertIn("locations/forest/wall", b["auto"])
+        self.assertEqual(b["props"], {"open_grave": "open_grave", "fresh_grave": "open_grave"})   # одна на два id
         cat = res["catalog"]
         self.assertTrue(cat["village_floor"].get("opaque"))      # фон текстуры не срезан
         self.assertFalse(cat["forest_wall"].get("opaque"))       # дерево вырезано с белого фона

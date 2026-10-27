@@ -4,17 +4,17 @@
    "sheet": "res://art/sprites/fireball.png",
    "kind": "icon",
    "frame": [
-    512,
-    476
+    26,
+    24
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/skills/fireball.webp"
    ],
-   "scale": 0.5079,
+   "scale": 0.0238,
    "animations": {
     "idle": {
      "start": 0,
@@ -28,17 +28,17 @@
    "sheet": "res://art/sprites/steam.png",
    "kind": "effect",
    "frame": [
-    512,
-    500
+    24,
+    23
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/surfaces/steam.webp"
    ],
-   "scale": 0.5596,
+   "scale": 0.0262,
    "animations": {
     "idle": {
      "start": 0,
@@ -52,17 +52,17 @@
    "sheet": "res://art/sprites/water.png",
    "kind": "tile",
    "frame": [
-    512,
-    512
+    72,
+    72
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/surfaces/water.webp"
    ],
-   "scale": 0.5,
+   "scale": 0.0703,
    "opaque": true,
    "animations": {
     "idle": {
@@ -77,17 +77,17 @@
    "sheet": "res://art/sprites/village_floor.png",
    "kind": "tile",
    "frame": [
-    512,
-    512
+    72,
+    72
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/tiles/village_floor.webp"
    ],
-   "scale": 0.5,
+   "scale": 0.0703,
    "opaque": true,
    "animations": {
     "idle": {
@@ -102,17 +102,17 @@
    "sheet": "res://art/sprites/village_wall.png",
    "kind": "tile",
    "frame": [
-    512,
-    512
+    72,
+    72
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/tiles/village_wall.webp"
    ],
-   "scale": 0.5,
+   "scale": 0.0703,
    "opaque": true,
    "animations": {
     "idle": {
@@ -127,17 +127,17 @@
    "sheet": "res://art/sprites/goblin_warrior.png",
    "kind": "unit",
    "frame": [
-    337,
-    512
+    24,
+    36
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/units/goblin_warrior.webp"
    ],
-   "scale": 0.4559,
+   "scale": 0.0303,
    "animations": {
     "idle": {
      "start": 0,
@@ -151,17 +151,17 @@
    "sheet": "res://art/sprites/knight.png",
    "kind": "unit",
    "frame": [
-    344,
-    512
+    32,
+    46
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "generated/units/knight.webp"
    ],
-   "scale": 0.5251,
+   "scale": 0.0451,
    "animations": {
     "idle": {
      "start": 0,

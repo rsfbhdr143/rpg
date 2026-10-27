@@ -46,12 +46,14 @@ from import_art import Image, ImageDraw, np  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 PROMPTS = Path(__file__).with_name("prompts.json")
 RECORD = Path(__file__).with_name("generated.json")
-CATEGORIES = ("units", "tiles", "surfaces", "skills", "statuses")
-DEFAULT_KIND = {"units": "unit", "skills": "icon", "statuses": "icon", "surfaces": "texture"}
+CATEGORIES = ("units", "tiles", "surfaces", "skills", "statuses", "portraits", "props", "images", "items")
+DEFAULT_KIND = {"units": "unit", "skills": "icon", "statuses": "icon", "surfaces": "texture", "portraits": "portrait",
+                "props": "object", "images": "scene", "items": "icon"}
 # во что превращается картинка при импорте: вид спрайта и надо ли убирать фон
-IMPORT_KIND = {"unit": "unit", "object": "image", "icon": "icon", "texture": "tile", "wall": "tile", "cloud": "effect"}
-KEEP_BACKGROUND = {"texture", "wall"}
-FIGURE_KINDS = {"unit", "object"}           # фигура на однотонном фоне: вырезается и проверяется
+IMPORT_KIND = {"unit": "unit", "object": "image", "building": "image", "icon": "icon", "texture": "tile", "wall": "tile", "cloud": "effect",
+               "portrait": "portrait", "scene": "scene"}
+KEEP_BACKGROUND = {"texture", "wall", "portrait", "scene"}
+FIGURE_KINDS = {"unit", "object", "building"}           # фигура на однотонном фоне: вырезается и проверяется
 LORA_HINT = re.compile(r"wood|lino|engrav|etch|wdct", re.I)
 
 
@@ -63,7 +65,7 @@ class Item:
     category: str
     gid: str           # id в игре: "knight", для клеток "forest/wall" или "floor"
     out_id: str        # имя спрайта: "knight", "forest_wall"
-    bind: str          # куда привязать: "units/knight", "locations/forest/wall"
+    bind: str | list   # куда привязать: "units/knight", "locations/forest/wall" или список
     kind: str          # unit, object, icon, texture, wall, cloud
     subject: str
     extra: dict = field(default_factory=dict)
@@ -94,6 +96,7 @@ def items_of(prompts: dict, data_dir: Path) -> list[Item]:
                 kind = "cloud" if cat == "surfaces" and gid in clouds else DEFAULT_KIND[cat]
                 bind = "%s/%s" % (cat, gid)
             kind = str(spec.pop("kind", kind))
+            bind = spec.pop("bind", bind)         # своя привязка: одна картинка на несколько id
             subject = str(spec.pop("subject", gid.replace("_", " ")))
             out.append(Item("%s/%s" % (cat, gid), cat, gid, gid.replace("/", "_"), bind, kind, subject, spec))
     return out
@@ -515,6 +518,12 @@ def pick(root: Path, item: Item, number: int, record: dict, prompts: dict) -> Pa
             "cols": 1, "rows_count": 1}
     if item.kind in KEEP_BACKGROUND:
         hint["background"] = "keep"
+    px = setting(prompts, item, "px")
+    if px:      # размер в игровых пикселях для пикселизации при импорте: [ширина, высота] или одно число
+        hint["pixel_box"] = list(px) if isinstance(px, list) else [px, px]
+    colors = setting(prompts, item, "pixel_colors")
+    if colors:
+        hint["pixel_colors"] = colors
     import_art.write_text(dst.with_name(item.out_id + ".art.json"), json.dumps(hint, ensure_ascii=False) + "\n")
     params = json.loads(src.with_suffix(".json").read_text(encoding="utf-8")) if src.with_suffix(".json").exists() else {}
     record[item.key] = dict(params, variant=src.name, file=dst.relative_to(root).as_posix())

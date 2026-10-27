@@ -1,1 +1,1 @@
-{"id": "goblin_warrior", "bind": "units/goblin_warrior", "kind": "unit", "cols": 1, "rows_count": 1}
+{"id": "goblin_warrior", "bind": "units/goblin_warrior", "kind": "unit", "cols": 1, "rows_count": 1, "pixel_box": [30, 34]}

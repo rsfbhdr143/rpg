@@ -39,7 +39,7 @@ from pathlib import Path
 
 try:
     import numpy as np
-    from PIL import Image, ImageDraw, ImageFont, ImageSequence
+    from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageSequence
 except ImportError:  # pragma: no cover - подсказка для запуска на чистой машине
     sys.exit("Нужны пакеты pillow и numpy: pip install pillow numpy")
 
@@ -547,6 +547,8 @@ class Asset:
     opaque: bool = False
     crop: bool = True
     bind: list[str] = field(default_factory=list)   # явные привязки из подсказки: "units/knight", "locations/forest/wall"
+    pixel_box: tuple[int, int] | None = None         # из подсказки: размер в игровых пикселях при пикселизации
+    pixel_colors: int = 0
 
     def add_anim(self, anim: Anim) -> None:
         names = {a.name for a in self.anims}
@@ -709,6 +711,9 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             own, around = kind_words(words), kind_words(folder_words)
             asset = Asset(slug(words), words, folder_words, sources=[rel])
             asset.bind = [str(b) for b in (ov["bind"] if isinstance(ov.get("bind"), list) else [ov.get("bind")]) if b]
+            if ov.get("pixel_box"):
+                asset.pixel_box = (int(ov["pixel_box"][0]), int(ov["pixel_box"][1]))
+            asset.pixel_colors = int(ov.get("pixel_colors", 0))
             frames = open_frames(path)
             if len(frames) > 1:                       # анимированный GIF / WebP
                 asset.kind = "effect" if "effect" in own | around else "unit"
@@ -861,7 +866,102 @@ def is_pixel_art(frames: list[Image.Image]) -> bool:
     return total > 0 and semi / total < 0.02 and len(colors) < 256
 
 
-def pack_asset(asset: Asset, out_dir: Path, max_side: int) -> dict | None:
+# --- Пикселизация -------------------------------------------------------------------
+# data/sprites.json -> settings.pixelate превращает рисованные картинки в пиксель-арт прямо при импорте:
+# уменьшает до размера в «игровых пикселях», сводит к немногим цветам, делает края резкими и обводит фигуры.
+# Исходники во входящих не меняются: выключил настройку и запустил импорт — картинки снова рисованные.
+
+PIXELATE_DEFAULTS = {"enabled": False, "unit": 64, "cell": 32, "icon": 32, "colors": 24, "tile_colors": 12,
+                     "outline": True}
+OUTLINE_COLOR = (24, 18, 14)
+
+
+def pixelate_options(settings: dict) -> dict | None:
+    opts = settings.get("pixelate")
+    if not isinstance(opts, dict) or not opts.get("enabled", True):
+        return None
+    out = dict(PIXELATE_DEFAULTS, **opts)
+    out["span"] = max(1, int(settings.get("texture_cells", 1)))
+    return out
+
+
+def pixel_box(kind: str, size: tuple[int, int], opts: dict) -> tuple[int, int] | None:
+    """Рамка в игровых пикселях, в которую вписывается кадр. None — этот вид не пикселизуется."""
+    w, h = size
+    if kind == "portrait":
+        return 64, 64
+    if kind == "scene":
+        return 320, 180
+    per_cell = opts["unit"] / 1.25     # юнит в игре ростом 1.25 клетки: столько его пикселей на ширину клетки
+    if kind in ("unit", "sheet", "sprite"):
+        return round(per_cell * 0.9), opts["unit"]       # рамка юнита в игре 0.9 × 1.25 клетки
+    if kind == "image":                                   # дерево, стена-картинка или персонаж одной картинкой
+        return round(per_cell), round(per_cell * 1.5)
+    if kind in ("icon", "icons"):
+        return opts["icon"], opts["icon"]
+    if kind == "tile":
+        if w >= h * 1.6:                                  # изометрическая плитка: ширина — клетка
+            return round(per_cell), round(per_cell)
+        return opts["cell"] * opts["span"], opts["cell"] * opts["span"]   # бесшовная текстура на span×span клеток
+    if kind == "effect":
+        return opts["cell"], opts["cell"]
+    return None
+
+
+def add_outline(a: np.ndarray) -> np.ndarray:
+    """Тёмная обводка в пиксель вокруг непрозрачной части (кадр становится на 2 пикселя больше)."""
+    a = np.pad(a, ((1, 1), (1, 1), (0, 0)))
+    vis = a[..., 3] > 0
+    near = np.zeros_like(vis)
+    near[1:] |= vis[:-1]
+    near[:-1] |= vis[1:]
+    near[:, 1:] |= vis[:, :-1]
+    near[:, :-1] |= vis[:, 1:]
+    a[near & ~vis] = (*OUTLINE_COLOR, 255)
+    return a
+
+
+def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, seamless: bool,
+             soft_alpha: bool) -> list:
+    """Кадры -> пиксель-арт одного размера с общей палитрой на все кадры."""
+    w, h = size
+
+    def shrink(f: Image.Image) -> Image.Image:
+        # штриховка при уменьшении усредняется в серое — чуть поднимаем цвет и контраст
+        rgb = ImageEnhance.Contrast(ImageEnhance.Color(f.convert("RGB")).enhance(1.2)).enhance(1.1)
+        rgb.putalpha(f.getchannel("A"))
+        if not seamless:
+            return resize_rgba(rgb, size, False)
+        big = Image.new("RGBA", (f.width * 3, f.height * 3))    # 3×3 копии, чтобы края остались бесшовными
+        for i in range(3):
+            for j in range(3):
+                big.paste(rgb, (i * f.width, j * f.height))
+        return resize_rgba(big, (w * 3, h * 3), False).crop((w, h, 2 * w, 2 * h))
+
+    small = [None if f is None else np.asarray(shrink(f)) for f in pieces]
+    seen = [a[a[..., 3] >= 128][:, :3] for a in small if a is not None]
+    pixels = np.concatenate(seen) if seen else np.zeros((0, 3), np.uint8)
+    if len(pixels) == 0:
+        pixels = np.zeros((1, 3), np.uint8)
+    pixels = pixels[:: max(1, len(pixels) // 200000)]
+    palette = Image.fromarray(np.ascontiguousarray(pixels.reshape(1, -1, 3))).quantize(
+        colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    out = []
+    for a in small:
+        if a is None:
+            out.append(None)
+            continue
+        rgb = Image.fromarray(np.ascontiguousarray(a[..., :3])).quantize(palette=palette, dither=Image.Dither.NONE)
+        if soft_alpha:     # облака: четыре ступени прозрачности вместо плавной
+            alpha = (np.round(a[..., 3] / 85.0) * 85).astype(np.uint8)
+        else:
+            alpha = np.where(a[..., 3] >= 128, 255, 0).astype(np.uint8)
+        px = np.dstack([np.asarray(rgb.convert("RGB")), alpha])
+        out.append(Image.fromarray(add_outline(px) if outline else px, "RGBA"))
+    return out
+
+
+def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None = None) -> dict | None:
     """Складывает кадры спрайта в один лист: каждая анимация с новой строки, длинные переносятся."""
     if asset.tiles is not None:
         anims, frames, cols = [], asset.tiles, asset.cols
@@ -898,19 +998,29 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int) -> dict | None:
     fw, fh = box[2] - box[0], box[3] - box[1]
     rows = len(cells) // cols
     pixel = is_pixel_art(flat)
-    scale = min(1.0, max_side / max(fw, fh))
+    target = None
+    if not pixel and pixelate is not None and asset.tiles is None:
+        target = asset.pixel_box or pixel_box(asset.kind, (fw, fh), pixelate)
+    scale = min(1.0, max_side / max(fw, fh)) if target is None else min(1.0, target[0] / fw, target[1] / fh)
     tw, th = max(1, round(fw * scale)), max(1, round(fh * scale))
     while cols * (tw + 2 * PAD) > MAX_SHEET_SIDE or rows * (th + 2 * PAD) > MAX_SHEET_SIDE:
         scale *= 0.8
         tw, th = max(1, round(fw * scale)), max(1, round(fh * scale))
+    pieces = [None if f is None else f.crop(box) for f in cells]
+    if target is not None:
+        tile = asset.kind == "tile"
+        pieces = pixelize(pieces, (tw, th), asset.pixel_colors or pixelate["tile_colors" if tile else "colors"],
+                          pixelate["outline"] and asset.kind not in ("tile", "effect", "scene"),
+                          tile and tw == th and all((np.asarray(f)[..., 3] >= 250).mean() >= 0.97 for f in flat),
+                          asset.kind == "effect")
+        tw, th = next(f for f in pieces if f is not None).size
+        pixel = True
+    elif (tw, th) != (fw, fh):
+        pieces = [None if f is None else resize_rgba(f, (tw, th), pixel) for f in pieces]
     sheet = Image.new("RGBA", (cols * (tw + 2 * PAD), rows * (th + 2 * PAD)))
-    for k, f in enumerate(cells):
-        if f is None:
-            continue
-        piece = f.crop(box)
-        if (tw, th) != (fw, fh):
-            piece = resize_rgba(piece, (tw, th), pixel)
-        sheet.paste(piece, ((k % cols) * (tw + 2 * PAD) + PAD, (k // cols) * (th + 2 * PAD) + PAD))
+    for k, piece in enumerate(pieces):
+        if piece is not None:
+            sheet.paste(piece, ((k % cols) * (tw + 2 * PAD) + PAD, (k // cols) * (th + 2 * PAD) + PAD))
     out_dir.mkdir(parents=True, exist_ok=True)
     sheet.save(out_dir / (asset.id + ".png"), optimize=True)
     entry = {
@@ -937,6 +1047,7 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int) -> dict | None:
 # --- Привязка к игре ------------------------------------------------------------
 
 CATEGORIES = ("units", "tiles", "surfaces", "skills", "statuses")
+EXTRA_CATEGORIES = ("portraits", "props", "images", "items")    # только явные привязки из подсказок
 KIND_FIT = {
     "units": {"unit": 3, "sheet": 2, "image": 2, "sprite": 3},
     "tiles": {"tile": 3, "image": 2, "tileset": 1},
@@ -1001,7 +1112,7 @@ def bind_table(bindings: dict, key: str, create: bool = False) -> tuple[dict | N
         locs = bindings.setdefault("locations", {}) if create else bindings.get("locations", {})
         table = locs.setdefault(parts[1], {}) if create else locs.get(parts[1])
         return table, parts[2]
-    if parts[0] in CATEGORIES and len(parts) == 2:
+    if parts[0] in CATEGORIES + EXTRA_CATEGORIES and len(parts) == 2:
         return (bindings.setdefault(parts[0], {}) if create else bindings.get(parts[0])), parts[1]
     return None, ""
 
@@ -1303,6 +1414,10 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
     catalog_path, bindings_path = root / "art" / "catalog.json", root / "data" / "sprites.json"
     aliases_path = Path(__file__).with_name("aliases.json")
     inbox.mkdir(parents=True, exist_ok=True)
+    bindings = json.loads(bindings_path.read_text(encoding="utf-8")) if bindings_path.exists() else {}
+    pixelate = pixelate_options(bindings.get("settings", {}))
+    if pixelate:
+        log("Пикселизация: юнит %d px, клетка %d px, значок %d px" % (pixelate["unit"], pixelate["cell"], pixelate["icon"]))
 
     with tempfile.TemporaryDirectory() as tmp:
         files = collect(inbox, Path(tmp))
@@ -1310,7 +1425,7 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
         assets = build_assets(files, log)
         catalog, words, explicit = {}, {}, {}
         for a in assets:
-            entry = pack_asset(a, sprites, max_side)
+            entry = pack_asset(a, sprites, max_side, pixelate)
             if entry is None:
                 log("  ! %s: пустая картинка, пропущена" % a.id)
                 continue
@@ -1328,7 +1443,6 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
     catalog_path.parent.mkdir(parents=True, exist_ok=True)
     write_text(catalog_path, json.dumps({"assets": catalog}, ensure_ascii=False, indent=1) + "\n")
 
-    bindings = json.loads(bindings_path.read_text(encoding="utf-8")) if bindings_path.exists() else {}
     ids = game_ids(root / "data")
     aliases = json.loads(aliases_path.read_text(encoding="utf-8")) if aliases_path.exists() else {}
     made = auto_bind(catalog, words, ids, aliases, bindings, rebind, log, explicit)
