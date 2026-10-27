@@ -270,13 +270,15 @@ static func _draw_dead(ci: CanvasItem, lk: Dictionary, o: Vector2, k: float, tin
 static func draw_portrait(ci: CanvasItem, id: String, rect: Rect2, t := 0.0) -> void:
 	var lk := look(id)
 	ci.draw_rect(rect, Color("221a14"))
-	var s := floorf(minf(rect.size.x, rect.size.y) / 24.0)
-	var o := rect.position + Vector2(rect.size.x * 0.5, rect.size.y + 6.0 * s)
+	# по пояс: макушка чуть ниже верхнего края, ноги уходят за нижний (рамку надо обрезать, см. IconArt.PortraitView)
+	var side := minf(rect.size.x, rect.size.y)
+	var s := floorf(side / 24.0) if side >= 48.0 else side / 24.0
 	var ghost := Color(1, 1, 1, 1)
 	if lk.has("beast"):
 		_draw_beast(ci, lk, rect.position + Vector2(rect.size.x * 0.5, rect.size.y - 2 * s), 1, t, s * 1.4, ghost)
 		return
-	_draw_humanoid(ci, lk, o, 1, t, s * 1.1, ghost)
+	var o := rect.position + Vector2(rect.size.x * 0.5, 35.0 * s)
+	_draw_humanoid(ci, lk, o, 1, t, s, ghost)
 
 
 # --- Декорации ------------------------------------------------------------------------

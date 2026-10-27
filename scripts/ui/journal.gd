@@ -14,9 +14,8 @@ var _tab_buttons: Dictionary = {}
 
 func _ready() -> void:
 	theme = UiTheme.theme()
-	set_anchors_preset(Control.PRESET_CENTER)
 	custom_minimum_size = Vector2(980, 580)
-	position = Vector2(-490, -300)
+	UiTheme.center(self, custom_minimum_size)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
 	var root := UiTheme.vbox(8)

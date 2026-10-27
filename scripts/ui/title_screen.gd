@@ -42,7 +42,7 @@ func _ready() -> void:
 	SpriteLibrary.ensure_loaded()
 	GameSettings.ensure_loaded()
 	GameSettings.apply()
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(self)
 	theme = UiTheme.theme()
 	_picks = (GameData.rule("party_templates", ["knight", "wizard"]) as Array).slice(0, SOLO_PICKS)
 	_build()
@@ -83,15 +83,14 @@ func _start_dedicated() -> void:
 
 func _build() -> void:
 	_bg = TitleArt.new()
-	_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(_bg)
 	_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(_bg)
 
 	var head := UiTheme.vbox(10)
-	head.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	head.position = Vector2(-500, 70)
 	head.custom_minimum_size = Vector2(1000, 0)
+	UiTheme.place(head, Control.PRESET_CENTER_TOP, Vector2(-500, 70), Vector2(1000, 90))
 	head.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(head)
 	var title := UiTheme.label("ПЕПЕЛЬНЫЕ СТРАЖИ", 40, UiTheme.GOLD, "title")
@@ -108,9 +107,9 @@ func _build() -> void:
 	head.add_child(sub)
 
 	_main = UiTheme.vbox(10)
-	_main.set_anchors_preset(Control.PRESET_CENTER)
-	_main.position = Vector2(-170, -40)
 	_main.custom_minimum_size = Vector2(340, 0)
+	UiTheme.place(_main, Control.PRESET_CENTER, Vector2(-170, -40), Vector2(340, 0))
+	_main.grow_vertical = Control.GROW_DIRECTION_END
 	add_child(_main)
 	_main.add_child(_menu_button("Новая игра", _open_new))
 	if GameSession.has_save():
@@ -126,8 +125,7 @@ func _build() -> void:
 	_main.add_child(_status)
 
 	var foot := UiTheme.label("Прототип · пошаговая партийная RPG · до 4 игроков по сети", 14, UiTheme.TEXT_FAINT)
-	foot.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	foot.position = Vector2(16, -30)
+	UiTheme.place(foot, Control.PRESET_BOTTOM_LEFT, Vector2(16, -30), Vector2(800, 20))
 	foot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(foot)
 
@@ -148,8 +146,8 @@ func _menu_button(text: String, cb: Callable) -> Button:
 
 func _build_new() -> void:
 	_new_panel = UiTheme.panel(Vector2(1040, 0))
-	_new_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_new_panel.position = Vector2(-520, -150)
+	UiTheme.place(_new_panel, Control.PRESET_CENTER, Vector2(-520, -170), Vector2(1040, 0))
+	_new_panel.grow_vertical = Control.GROW_DIRECTION_END
 	_new_panel.visible = false
 	add_child(_new_panel)
 	var v := UiTheme.vbox(10)
@@ -180,8 +178,8 @@ func _build_new() -> void:
 
 func _build_net() -> void:
 	_net_panel = UiTheme.panel(Vector2(620, 0))
-	_net_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_net_panel.position = Vector2(-310, -130)
+	UiTheme.place(_net_panel, Control.PRESET_CENTER, Vector2(-310, -130), Vector2(620, 0))
+	_net_panel.grow_vertical = Control.GROW_DIRECTION_END
 	_net_panel.visible = false
 	add_child(_net_panel)
 	var v := UiTheme.vbox(10)
@@ -232,8 +230,8 @@ func _build_net() -> void:
 
 func _build_lobby() -> void:
 	_lobby_panel = UiTheme.panel(Vector2(1040, 0))
-	_lobby_panel.set_anchors_preset(Control.PRESET_CENTER)
-	_lobby_panel.position = Vector2(-520, -170)
+	UiTheme.place(_lobby_panel, Control.PRESET_CENTER, Vector2(-520, -190), Vector2(1040, 0))
+	_lobby_panel.grow_vertical = Control.GROW_DIRECTION_END
 	_lobby_panel.visible = false
 	add_child(_lobby_panel)
 	var v := UiTheme.vbox(10)
@@ -512,8 +510,15 @@ class HeroCard extends Control:
 	var taken := false
 	var compact := false
 	var _hover := false
+	var _view: IconArt.PortraitView
 
 	func _ready() -> void:
+		_view = IconArt.PortraitView.new()
+		var side := 96.0 if compact else 132.0
+		_view.position = Vector2((custom_minimum_size.x - side) * 0.5, 14)
+		_view.size = Vector2(side, side)
+		_view.id = template
+		add_child(_view)
 		mouse_filter = Control.MOUSE_FILTER_STOP
 		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -551,7 +556,9 @@ class HeroCard extends Control:
 		var t := float(Time.get_ticks_msec()) / 1000.0
 		var side := 96.0 if compact else 132.0
 		var pr := Rect2((size.x - side) * 0.5, 14, side, side)
-		IconArt.portrait(self, template, pr, t, taken)
+		_view.position = pr.position
+		_view.dead = taken
+		draw_rect(pr.grow(2), border)
 		var f := UiTheme.font("bold")
 		var def := GameData.character(template)
 		var name := str(def.get("name", template))

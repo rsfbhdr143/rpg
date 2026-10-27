@@ -50,7 +50,7 @@ var _xp_toast := {}
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(self)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = UiTheme.theme()
 	GameData.ensure_loaded()
@@ -58,7 +58,7 @@ func _ready() -> void:
 	GameSettings.ensure_loaded()
 	_pixel_scale = int(GameSettings.get_value("pixel_scale"))
 	container = SubViewportContainer.new()
-	container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(container)
 	container.stretch = true
 	container.stretch_shrink = _pixel_scale
 	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -78,7 +78,7 @@ func _ready() -> void:
 	bg_layer.layer = -10
 	viewport.add_child(bg_layer)
 	_bg = ColorRect.new()
-	_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(_bg)
 	_bg.color = Color("0b0a0c")
 	bg_layer.add_child(_bg)
 	world = WorldView.new()
@@ -1147,8 +1147,7 @@ func _to_title() -> void:
 
 func _build_pause() -> void:
 	pause_panel = UiTheme.panel(Vector2(360, 0))
-	pause_panel.set_anchors_preset(Control.PRESET_CENTER)
-	pause_panel.position = Vector2(-180, -210)
+	UiTheme.center(pause_panel, Vector2(360, 420))
 	pause_panel.visible = false
 	add_child(pause_panel)
 	var v := UiTheme.vbox(8)
@@ -1190,8 +1189,7 @@ func _quit() -> void:
 
 func _build_defeat() -> void:
 	defeat_panel = UiTheme.panel(Vector2(520, 0))
-	defeat_panel.set_anchors_preset(Control.PRESET_CENTER)
-	defeat_panel.position = Vector2(-260, -110)
+	UiTheme.center(defeat_panel, Vector2(520, 220))
 	defeat_panel.visible = false
 	add_child(defeat_panel)
 	var v := UiTheme.vbox(10)
@@ -1215,7 +1213,7 @@ func _build_defeat() -> void:
 func _build_end() -> void:
 	end_panel = ColorRect.new()
 	(end_panel as ColorRect).color = Color(0.02, 0.015, 0.02, 0.92)
-	end_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(end_panel)
 	end_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	end_panel.visible = false
 	add_child(end_panel)
@@ -1225,9 +1223,8 @@ func _show_end() -> void:
 	for c in end_panel.get_children():
 		c.queue_free()
 	var v := UiTheme.vbox(14)
-	v.set_anchors_preset(Control.PRESET_CENTER)
-	v.position = Vector2(-420, -230)
 	v.custom_minimum_size = Vector2(840, 0)
+	UiTheme.center(v, Vector2(840, 460))
 	end_panel.add_child(v)
 	var t := UiTheme.label("Конец пролога", 32, UiTheme.GOLD, "title")
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

@@ -32,6 +32,9 @@ const ELEMENT_COLORS := {
 
 static var _fonts: Dictionary = {}
 static var _theme: Theme = null
+## Рамки кэшируются: стиль, созданный прямо в _draw, освобождается раньше, чем кадр нарисован,
+## и вместо рамки получается белый прямоугольник.
+static var _boxes: Dictionary = {}
 
 
 static func font(kind: String = "body") -> Font:
@@ -161,6 +164,9 @@ static func theme() -> Theme:
 
 ## Рамка окна: тёмный контур, золотистая кайма, тёмная внутренняя полоса, заливка. Уголки срезаны.
 static func frame(fill: Color, border: Color, outline: Color, inner: Color, alpha := 1.0, pad := 5) -> StyleBoxTexture:
+	var key := "frame%s%s%s%s%s%d" % [fill, border, outline, inner, alpha, pad]
+	if _boxes.has(key):
+		return _boxes[key]
 	var n := 12
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
 	var f := Color(fill.r, fill.g, fill.b, alpha)
@@ -183,10 +189,14 @@ static func frame(fill: Color, border: Color, outline: Color, inner: Color, alph
 	# заклёпки в углах
 	for p in [Vector2i(1, 1), Vector2i(n - 2, 1), Vector2i(1, n - 2), Vector2i(n - 2, n - 2)]:
 		img.set_pixel(p.x, p.y, border.lightened(0.35))
-	return _box(img, 3, pad)
+	_boxes[key] = _box(img, 3, pad)
+	return _boxes[key]
 
 
 static func button_box(fill: Color, border: Color, highlight: Color, pressed := false) -> StyleBoxTexture:
+	var key := "button%s%s%s%s" % [fill, border, highlight, pressed]
+	if _boxes.has(key):
+		return _boxes[key]
 	var n := 10
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
 	for y in n:
@@ -206,18 +216,23 @@ static func button_box(fill: Color, border: Color, highlight: Color, pressed := 
 	var sb := _box(img, 2, 4)
 	sb.content_margin_left = 10 * PX
 	sb.content_margin_right = 10 * PX
+	_boxes[key] = sb
 	return sb
 
 
 ## Пустая ячейка (под значок навыка, портрет).
 static func slot_box(border: Color = Color("5a4630"), fill: Color = Color("0f0c0a")) -> StyleBoxTexture:
+	var key := "slot%s%s" % [border, fill]
+	if _boxes.has(key):
+		return _boxes[key]
 	var n := 8
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
 	for y in n:
 		for x in n:
 			var edge := x == 0 or y == 0 or x == n - 1 or y == n - 1
 			img.set_pixel(x, y, border if edge else (fill.lightened(0.04) if y == n - 2 else fill))
-	return _box(img, 1, 1)
+	_boxes[key] = _box(img, 1, 1)
+	return _boxes[key]
 
 
 static func _box(img: Image, margin: int, pad: int) -> StyleBoxTexture:
@@ -291,6 +306,33 @@ static func panel(min_size := Vector2.ZERO) -> PanelContainer:
 	p.custom_minimum_size = min_size
 	p.mouse_filter = Control.MOUSE_FILTER_STOP
 	return p
+
+
+## Привязать элемент к точке родителя (preset: угол, край или центр) со смещением pos и размером size.
+## В Godot 4 position у привязанного элемента считается от левого верхнего угла родителя, поэтому
+## задаём offset_* напрямую; растёт элемент от точки привязки (по центру — в обе стороны).
+static func place(c: Control, preset: Control.LayoutPreset, pos: Vector2, size := Vector2.ZERO) -> void:
+	c.set_anchors_preset(preset, true)
+	c.offset_left = pos.x
+	c.offset_top = pos.y
+	c.offset_right = pos.x + size.x
+	c.offset_bottom = pos.y + size.y
+	var ax := c.anchor_left
+	var ay := c.anchor_top
+	c.grow_horizontal = Control.GROW_DIRECTION_BOTH if is_equal_approx(ax, 0.5) \
+		else (Control.GROW_DIRECTION_BEGIN if is_equal_approx(ax, 1.0) else Control.GROW_DIRECTION_END)
+	c.grow_vertical = Control.GROW_DIRECTION_BOTH if is_equal_approx(ay, 0.5) \
+		else (Control.GROW_DIRECTION_BEGIN if is_equal_approx(ay, 1.0) else Control.GROW_DIRECTION_END)
+
+
+## Окно по центру родителя размером size (если содержимое больше — растёт в обе стороны).
+static func center(c: Control, size: Vector2) -> void:
+	place(c, Control.PRESET_CENTER, -size * 0.5, size)
+
+
+## Растянуть на весь родитель.
+static func fill_parent(c: Control) -> void:
+	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 static func vbox(sep := 8) -> VBoxContainer:

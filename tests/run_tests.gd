@@ -272,9 +272,11 @@ func _walk(s: GameSession, h: Character, to: Vector2i) -> String:
 	return s.submit(s.owner_of(h), {"type": "move", "unit": h.uid, "cell": [to.x, to.y]})
 
 
-## Проматывает разговоры (первый доступный ответ) и бои (ИИ за всех). strong — герои неуязвимы, чтобы не проиграть.
+## Проматывает разговоры (первый ещё не выбранный ответ, иначе последний — из «хаба» разговора так можно выйти)
+## и бои (ИИ за всех). strong — герои неуязвимы, чтобы не проиграть.
 func _drive(s: GameSession, strong := false, max_steps := 800) -> void:
 	var guard := 0
+	var tried := {}
 	while guard < max_steps:
 		guard += 1
 		if s.mode == "dialogue":
@@ -283,7 +285,14 @@ func _drive(s: GameSession, strong := false, max_steps := 800) -> void:
 			if vis.is_empty():
 				s.submit(pid, {"type": "dialogue_next"})
 			else:
-				s.submit(pid, {"type": "dialogue_choice", "index": int(vis[0]["index"])})
+				var where := "%s/%s/" % [s.dialogue["id"], s.dialogue["node"]]
+				var pick: Dictionary = vis[-1]
+				for v in vis:
+					if not tried.has(where + str(v["index"])):
+						pick = v
+						break
+				tried[where + str(pick["index"])] = true
+				s.submit(pid, {"type": "dialogue_choice", "index": int(pick["index"])})
 		elif s.mode == "combat":
 			if strong:
 				for h in s.heroes:
@@ -393,10 +402,10 @@ func test_dialogue_engine() -> void:
 	s.submit(1, {"type": "dialogue_choice", "index": 0})
 	check(str(s.dialogue["node"]) == "f", "проверка атрибута не прошла -> fail")
 	s.submit(1, {"type": "dialogue_next"})
+	var xp: int = s.heroes[0].xp + s.heroes[0].level * 1000   # опыт даёт узел end при входе
 	s.submit(1, {"type": "dialogue_choice", "index": 2})
 	check(s.gold == 5 and int(s.items.get("funeral_bread", 0)) == 2, "золото и предметы")
 	check(str(s.dialogue["node"]) == "end", "next списком и невидимый узел")
-	var xp := s.heroes[0].xp + s.heroes[0].level * 1000
 	s.submit(1, {"type": "dialogue_next"})
 	check(s.mode == "explore" and s.dialogue.is_empty(), "разговор закончился")
 	check(s.quests.get("last_will", "") == "prepare", "стадия задания")
@@ -431,8 +440,8 @@ func test_npcs_and_items() -> void:
 	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": marta.uid}) == "", "заговорить с Мартой")
 	check(s.mode == "dialogue" and str(s.dialogue["id"]) == "marta_village", "разговор с Мартой")
 	check(SurfaceGrid.distance(h.cell, marta.cell) <= 1, "герой подошёл к Марте")
-	check(int(s.items.get("lamp_oil", 0)) > 0 and s.gold >= 40, "Марта дала масло и золото")
 	_drive(s)
+	check(int(s.items.get("lamp_oil", 0)) > 0 and s.gold >= 40, "Марта дала масло и золото")   # золото — во второй реплике
 	check(s.mode == "explore", "разговор закончен")
 	s.give_item("healing_brew", 1)
 	h.hp = 5
@@ -576,7 +585,8 @@ func test_events() -> void:
 func test_balance() -> void:
 	print("balance (ИИ за обе стороны, только для сведения)")
 	for party in [["knight", "wizard"], ["ranger", "cleric"], ["knight", "wizard", "ranger", "cleric"]]:
-		for enc in [["cemetery", "cemetery_rising"], ["forest", "forest_wolf_pack"], ["goblin_camp", "camp_gate"]]:
+		# третий элемент — уровень, с которым партия обычно приходит к этому бою
+		for enc in [["cemetery", "cemetery_rising", 1], ["forest", "forest_wolf_pack", 2], ["goblin_camp", "camp_gate", 3]]:
 			var wins := 0
 			for i in 10:
 				GameData.rng.seed = 1000 + i
@@ -587,6 +597,9 @@ func test_balance() -> void:
 				for p in party.size():
 					choices[p + 1] = [party[p]]
 				s.create_party(choices)
+				for h in s.heroes:
+					while (h as Character).level < int(enc[2]):
+						Progression.add_xp(h, Progression.xp_to_next((h as Character).level) - (h as Character).xp)
 				s.enter_location(enc[0], "from_village" if enc[0] != "goblin_camp" else "from_forest")
 				s.mode = "explore"
 				s.dialogue = {}
@@ -598,7 +611,7 @@ func test_balance() -> void:
 					s.run_ai_turn(true)
 				if s.mode != "defeat":
 					wins += 1
-			print("    %s против %s: побед %d из 10" % ["+".join(party), enc[1], wins])
+			print("    %s (ур. %d) против %s: побед %d из 10" % ["+".join(party), int(enc[2]), enc[1], wins])
 	check(true, "баланс посчитан")
 
 

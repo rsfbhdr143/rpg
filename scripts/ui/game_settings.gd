@@ -5,9 +5,11 @@ extends RefCounted
 
 const PATH := "user://settings.cfg"
 const VOLUME_BUSES := {"music": "Music", "sfx": "SFX", "ambient": "Ambient", "ui": "UI"}
+## Растёт, когда меняются значения по умолчанию: старый файл настроек тогда их не перебивает.
+const VERSION := 2
 
 static var values := {
-	"fullscreen": false, "pixel_scale": 2, "posterize": true, "shake": true,
+	"fullscreen": false, "pixel_scale": 3, "posterize": true, "shake": true,
 	"text_speed": 60.0, "player_name": "Игрок", "server_url": "ws://127.0.0.1:8910",
 }
 static var _loaded := false
@@ -19,7 +21,10 @@ static func ensure_loaded() -> void:
 	_loaded = true
 	var cfg := ConfigFile.new()
 	if cfg.load(PATH) == OK:
+		var old := int(cfg.get_value("settings", "version", 1)) < VERSION
 		for k in values.keys():
+			if old and k == "pixel_scale":
+				continue
 			values[k] = cfg.get_value("settings", k, values[k])
 	apply()
 
@@ -43,6 +48,7 @@ static func set_value(key: String, v: Variant) -> void:
 
 static func save() -> void:
 	var cfg := ConfigFile.new()
+	cfg.set_value("settings", "version", VERSION)
 	for k in values:
 		cfg.set_value("settings", k, values[k])
 	cfg.save(PATH)

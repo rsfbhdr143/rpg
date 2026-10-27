@@ -336,7 +336,8 @@ func _spawn_encounters(st: Dictionary, force_id: String = "") -> void:
 		var eid := str(enc.get("id", ""))
 		if (st["spawned"] as Array).has(eid) or (st["defeated"] as Array).has(eid):
 			continue
-		if eid != force_id and not Story.check(self, enc.get("if")):
+		# сценарная встреча появляется только по эффекту combat (до того на её месте обычно стоит NPC)
+		if eid != force_id and (bool(enc.get("script", false)) or not Story.check(self, enc.get("if"))):
 			continue
 		st["spawned"].append(eid)
 		var taken := _occupied(null)

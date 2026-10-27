@@ -40,7 +40,7 @@ var _toasts_recent: Dictionary = {}   # текст -> время, чтобы н�
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(self)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = UiTheme.theme()
 	_build_party()
@@ -65,29 +65,24 @@ func _build_party() -> void:
 
 func _build_top() -> void:
 	location_label = UiTheme.label("", 18, UiTheme.GOLD, "bold")
-	location_label.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	location_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	location_label.position = Vector2(-200, 10)
-	location_label.size = Vector2(400, 24)
+	UiTheme.place(location_label, Control.PRESET_CENTER_TOP, Vector2(-200, 10), Vector2(400, 24))
 	add_child(location_label)
 	turn_bar = TurnBar.new()
 	turn_bar.hud = self
-	turn_bar.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	turn_bar.position = Vector2(-300, 8)
-	turn_bar.size = Vector2(600, 70)
+	UiTheme.place(turn_bar, Control.PRESET_CENTER_TOP, Vector2(-300, 8), Vector2(600, 70))
 	turn_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(turn_bar)
 	waiting_label = UiTheme.label("Ждём состояние игры от сервера…", 22, UiTheme.TEXT_DIM)
-	waiting_label.set_anchors_preset(Control.PRESET_CENTER)
-	waiting_label.position = Vector2(-220, -16)
+	waiting_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.place(waiting_label, Control.PRESET_CENTER, Vector2(-300, -16), Vector2(600, 32))
 	waiting_label.visible = false
 	add_child(waiting_label)
 
 
 func _build_quests() -> void:
 	quest_panel = UiTheme.panel(Vector2(300, 0))
-	quest_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	quest_panel.position = Vector2(-312, 10)
+	UiTheme.place(quest_panel, Control.PRESET_TOP_RIGHT, Vector2(-310, 10), Vector2(300, 0))
 	quest_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(quest_panel)
 	var v := UiTheme.vbox(4)
@@ -113,14 +108,11 @@ func _build_quests() -> void:
 func _build_bottom() -> void:
 	action_bar = ActionBar.new()
 	action_bar.hud = self
-	action_bar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	action_bar.position = Vector2(-330, -86)
-	action_bar.size = Vector2(660, 78)
+	UiTheme.place(action_bar, Control.PRESET_CENTER_BOTTOM, Vector2(-330, -86), Vector2(660, 78))
 	add_child(action_bar)
 	end_turn_btn = UiTheme.button("Конец хода", func() -> void: screen.call("end_turn"), 18)
-	end_turn_btn.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	end_turn_btn.position = Vector2(340, -70)
-	end_turn_btn.size = Vector2(140, 44)
+	UiTheme.place(end_turn_btn, Control.PRESET_CENTER_BOTTOM, Vector2(340, -70), Vector2(140, 44))
+	end_turn_btn.grow_horizontal = Control.GROW_DIRECTION_END
 	end_turn_btn.tooltip_text = "Пробел"
 	add_child(end_turn_btn)
 
@@ -131,9 +123,7 @@ func _build_log() -> void:
 	sb.bg_color = Color(0.05, 0.035, 0.03, 0.55)
 	sb.set_content_margin_all(6)
 	p.add_theme_stylebox_override("panel", sb)
-	p.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	p.position = Vector2(10, -150)
-	p.size = Vector2(380, 140)
+	UiTheme.place(p, Control.PRESET_BOTTOM_LEFT, Vector2(10, -150), Vector2(380, 140))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(p)
 	log_label = RichTextLabel.new()
@@ -148,48 +138,39 @@ func _build_log() -> void:
 
 func _build_messages() -> void:
 	toast_box = UiTheme.vbox(4)
-	toast_box.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	toast_box.position = Vector2(-260, 86)
-	toast_box.size = Vector2(520, 10)
+	UiTheme.place(toast_box, Control.PRESET_CENTER_TOP, Vector2(-260, 96), Vector2(520, 10))
+	toast_box.grow_vertical = Control.GROW_DIRECTION_END
 	toast_box.alignment = BoxContainer.ALIGNMENT_BEGIN
 	toast_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(toast_box)
 	banner = UiTheme.label("", 32, UiTheme.GOLD, "title")
-	banner.set_anchors_preset(Control.PRESET_CENTER)
 	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	banner.position = Vector2(-400, -150)
-	banner.size = Vector2(800, 48)
+	UiTheme.place(banner, Control.PRESET_CENTER, Vector2(-400, -150), Vector2(800, 48))
 	banner.add_theme_constant_override("shadow_offset_x", 4)
 	banner.add_theme_constant_override("shadow_offset_y", 4)
 	banner.modulate.a = 0.0
 	add_child(banner)
 	sub_banner = UiTheme.label("", 20, UiTheme.TEXT, "bold")
-	sub_banner.set_anchors_preset(Control.PRESET_CENTER)
 	sub_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sub_banner.position = Vector2(-400, -100)
-	sub_banner.size = Vector2(800, 30)
+	UiTheme.place(sub_banner, Control.PRESET_CENTER, Vector2(-400, -100), Vector2(800, 30))
 	sub_banner.modulate.a = 0.0
 	add_child(sub_banner)
 	card_title = UiTheme.label("", 24, Color("f0dcae"), "title")
-	card_title.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	card_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	card_title.position = Vector2(-500, 150)
-	card_title.size = Vector2(1000, 40)
+	UiTheme.place(card_title, Control.PRESET_CENTER_TOP, Vector2(-500, 150), Vector2(1000, 40))
 	card_title.add_theme_constant_override("shadow_offset_x", 3)
 	card_title.add_theme_constant_override("shadow_offset_y", 3)
 	card_title.modulate.a = 0.0
 	add_child(card_title)
 	card_text = UiTheme.label("", 20, UiTheme.TEXT)
-	card_text.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	card_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	card_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	card_text.position = Vector2(-380, 200)
-	card_text.size = Vector2(760, 60)
+	UiTheme.place(card_text, Control.PRESET_CENTER_TOP, Vector2(-380, 200), Vector2(760, 60))
+	card_text.grow_vertical = Control.GROW_DIRECTION_END
 	card_text.modulate.a = 0.0
 	add_child(card_text)
 	tip_panel = UiTheme.panel(Vector2(340, 0))
-	tip_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	tip_panel.position = Vector2(-352, -190)
+	UiTheme.place(tip_panel, Control.PRESET_BOTTOM_RIGHT, Vector2(-350, -110), Vector2(340, 0))
 	tip_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tip_panel.visible = false
 	add_child(tip_panel)
@@ -221,8 +202,7 @@ func _build_tooltip() -> void:
 
 func _build_help() -> void:
 	help_panel = UiTheme.panel(Vector2(560, 0))
-	help_panel.set_anchors_preset(Control.PRESET_CENTER)
-	help_panel.position = Vector2(-280, -230)
+	UiTheme.center(help_panel, Vector2(560, 300))
 	help_panel.visible = false
 	add_child(help_panel)
 	var v := UiTheme.vbox(6)
@@ -432,9 +412,14 @@ func set_tooltip(text: String, at: Vector2) -> void:
 class PartyFrame extends Control:
 	var hud: Hud
 	var uid := ""
+	var _portrait: IconArt.PortraitView
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_STOP
+		_portrait = IconArt.PortraitView.new()
+		_portrait.position = Vector2(11, 11)
+		_portrait.size = Vector2(44, 44)
+		add_child(_portrait)
 
 	func _gui_input(event: InputEvent) -> void:
 		var mb := event as InputEventMouseButton
@@ -462,7 +447,8 @@ class PartyFrame extends Control:
 		draw_style_box(UiTheme.frame(Color("1d1712"), border, UiTheme.INK, Color("2c231a"), 0.92, 4), Rect2(Vector2.ZERO, size))
 		var pr := Rect2(8, 8, 50, 50)
 		draw_style_box(UiTheme.slot_box(), pr)
-		IconArt.portrait(self, h.template_id, pr.grow(-3), t, not h.is_alive())
+		_portrait.id = h.template_id
+		_portrait.dead = not h.is_alive()
 		var font := UiTheme.font("bold")
 		var body := UiTheme.font("body")
 		draw_string(font, Vector2(66, 24), h.display_name, HORIZONTAL_ALIGNMENT_LEFT, 120, 18, UiTheme.TEXT if mine else UiTheme.TEXT_DIM)
@@ -512,6 +498,43 @@ class PartyFrame extends Control:
 ## Очередь ходов в бою: портреты по порядку, текущий крупнее.
 class TurnBar extends Control:
 	var hud: Hud
+	var _views: Array = []
+
+	func _ready() -> void:
+		for i in 10:
+			var v := IconArt.PortraitView.new()
+			v.visible = false
+			add_child(v)
+			_views.append(v)
+
+	func _process(_delta: float) -> void:
+		var s: GameSession = Net.session
+		var order := _order(s)
+		var n := mini(order.size(), _views.size())
+		var w := 44.0 + maxf(0.0, n - 1) * 40.0
+		var x := (size.x - w) * 0.5
+		for i in _views.size():
+			var v: IconArt.PortraitView = _views[i]
+			v.visible = i < n
+			if i >= n:
+				continue
+			var sz := 44.0 if i == 0 else 34.0
+			v.position = Vector2(x, 4.0 if i == 0 else 9.0) + Vector2(2, 2)
+			v.size = Vector2(sz - 4, sz - 4)
+			v.id = (order[i] as Character).template_id
+			x += sz + 6.0
+		queue_redraw()
+
+	func _order(s: GameSession) -> Array:
+		var order: Array = []
+		if s == null or s.combat == null:
+			return order
+		var cm := s.combat
+		for i in range(maxi(0, cm.turn_index), cm.turn_order.size()):
+			var u: Character = cm.turn_order[i]
+			if u.is_alive():
+				order.append(u)
+		return order
 
 	func _draw() -> void:
 		var s: GameSession = Net.session
@@ -541,7 +564,6 @@ class TurnBar extends Control:
 			draw_rect(r.grow(2.0), Color("0b0807"))
 			draw_rect(r.grow(1.0), col)
 			draw_rect(r, Color("1a1410"))
-			IconArt.portrait(self, u.template_id, r.grow(-2), t, false)
 			var hb := Rect2(r.position.x, r.end.y + 2, sz, 3)
 			draw_rect(hb, Color("3a1410"))
 			draw_rect(Rect2(hb.position, Vector2(roundf(sz * clampf(u.hp / maxf(1.0, u.max_hp()), 0, 1)), 3)), Color("6ac04a") if hero else Color("d0402c"))

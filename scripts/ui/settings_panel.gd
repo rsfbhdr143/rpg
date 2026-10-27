@@ -10,9 +10,8 @@ var _rows: VBoxContainer
 
 func _ready() -> void:
 	theme = UiTheme.theme()
-	set_anchors_preset(Control.PRESET_CENTER)
 	custom_minimum_size = Vector2(560, 0)
-	position = Vector2(-280, -250)
+	UiTheme.center(self, Vector2(560, 470))
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var v := UiTheme.vbox(10)
 	add_child(v)

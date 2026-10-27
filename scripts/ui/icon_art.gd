@@ -486,3 +486,22 @@ static func portrait(ci: CanvasItem, id: String, rect: Rect2, t := 0.0, dead := 
 static func status_color(status_id: String) -> Color:
 	var e: Array = STATUSES.get(status_id, ["question", "c8c8c8"])
 	return Color(str(e[1]))
+
+
+## Портрет в своём прямоугольнике: всё, что выходит за край, обрезается (clip_contents).
+class PortraitView extends Control:
+	var id := ""
+	var dead := false
+
+	func _ready() -> void:
+		clip_contents = true
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+
+	func _process(_delta: float) -> void:
+		if is_visible_in_tree():
+			queue_redraw()
+
+	func _draw() -> void:
+		if id != "":
+			IconArt.portrait(self, id, Rect2(Vector2.ZERO, size), float(Time.get_ticks_msec()) / 1000.0, dead)

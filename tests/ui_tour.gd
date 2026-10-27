@@ -13,7 +13,14 @@ var screen: Node
 
 
 func _initialize() -> void:
+	# сторож: если внутри прогона случится ошибка скрипта, корутина встанет — не висеть вечно
+	create_timer(420.0).timeout.connect(_on_watchdog)
 	_run()
+
+
+func _on_watchdog() -> void:
+	printerr("UI TOUR: FAIL — прогон завис (ошибка выше?)")
+	quit(2)
 
 
 func _run() -> void:
@@ -27,7 +34,9 @@ func _run() -> void:
 		printerr("UI TOUR: нет автозагрузки Net")
 		quit(1)
 		return
-	TitleScreen.allow_dedicated = false
+	# не по имени класса: title_screen.gd использует автозагрузку Net, а её имени ещё нет,
+	# когда Godot компилирует скрипт из -s, — прогон тогда не собирается
+	load("res://scripts/ui/title_screen.gd").set("allow_dedicated", false)
 
 	# титульный экран и выбор героев
 	var title: Node = load("res://scenes/title.tscn").instantiate()
@@ -51,24 +60,17 @@ func _run() -> void:
 	# вступление: несколько реплик со снимками, остальное пролистать
 	await _wait(2.5)
 	await _shot("03_intro")
-	for k in 4:
+	for k in 5:
 		_dialogue_step()
-		await _wait(1.8)
+		await _wait(2.0)
 		await _shot("04_intro_%d" % k)
 	await _finish_dialogue()
-	await _wait(2.0)
-	await _shot("05_cemetery")
-
-	# разговор с первым жителем, если он есть
 	var s: GameSession = net.get("session")
-	if not s.npcs.is_empty():
-		var npc: Character = s.npcs[0]
-		var hero := str(screen.get("selected_uid"))
-		net.call("send_command", {"type": "talk", "unit": hero, "target": npc.uid})
-		await _wait(2.5)
-		await _shot("06_talk")
-		await _finish_dialogue()
-		await _wait(1.0)
+	if s.mode == "combat":
+		await _combat("05_cemetery")
+	await _finish_dialogue()
+	await _wait(2.0)
+	await _shot("06_cemetery")
 
 	# лист героя, журнал, сумка
 	screen.call("open_panel", "sheet")
@@ -77,51 +79,66 @@ func _run() -> void:
 	screen.call("open_panel", "journal")
 	await _wait(0.6)
 	await _shot("08_journal")
+	screen.call("open_panel", "bag")
+	await _wait(0.6)
+	await _shot("08_bag")
 	screen.call("open_panel", "")
 
-	# бой на погосте
+	# деревня и разговор с жителем
+	await _goto("village", "from_cemetery", "10_village")
 	s = net.get("session")
-	var encs: Array = s.location_data().get("encounters", [])
-	for e in encs:
-		if s.mode == "explore" and not s.encounter_defeated(str(e.get("id", ""))):
+	if not s.npcs.is_empty():
+		var npc: Character = s.npcs[0]
+		for n in s.npcs:
+			if (n as Character).template_id == "marta":
+				npc = n
+		net.call("send_command", {"type": "talk", "unit": str(screen.get("selected_uid")), "target": npc.uid})
+		await _wait(3.0)
+		await _shot("11_talk")
+		_dialogue_step()
+		await _wait(2.0)
+		await _shot("12_talk")
+		await _finish_dialogue()
+		await _wait(1.0)
+
+	# лес с боем, курган
+	await _goto("forest", "from_village", "20_forest")
+	s = net.get("session")
+	for e in s.location_data().get("encounters", []):
+		if s.mode == "explore" and not s.encounter_defeated(str(e.get("id", ""))) and not bool(e.get("script", false)):
 			s.start_encounter(str(e.get("id", "")))
 			break
 	if s.mode == "combat":
-		await _combat("09")
+		await _combat("21_forest")
 	await _finish_dialogue()
-
-	# остальные локации
-	for loc in [["village", "from_cemetery"], ["forest", "from_village"], ["goblin_camp", "from_forest"]]:
-		s = net.get("session")
-		if s.mode == "combat":
-			await _combat("x")
-		s.mode = "explore"
-		s.goto_location(str(loc[0]), str(loc[1]))
-		await _wait(3.0)
-		await _shot("20_%s" % loc[0])
-		await _finish_dialogue()
-		await _wait(1.0)
-		if s.location_id == "forest":
-			for e in s.location_data().get("encounters", []):
-				if s.mode == "explore" and not s.encounter_defeated(str(e.get("id", ""))):
-					s.start_encounter(str(e.get("id", "")))
-					break
-			if s.mode == "combat":
-				await _combat("21_forest")
-			await _finish_dialogue()
+	await _goto("goblin_camp", "from_forest", "30_goblin_camp")
 
 	# настройки и пауза
 	(screen.get("settings") as Control).visible = true
 	await _wait(0.4)
-	await _shot("30_settings")
+	await _shot("40_settings")
 	(screen.get("settings") as Control).visible = false
 	screen.call("open_panel", "menu")
 	await _wait(0.4)
-	await _shot("31_pause")
+	await _shot("41_pause")
 	screen.call("open_panel", "")
 	await _wait(0.3)
+	s = net.get("session")
 	print("UI TOUR: OK, режим %s, локация %s, снимков %d" % [s.mode, s.location_id, shots])
 	quit(0)
+
+
+func _goto(loc: String, spawn: String, shot: String) -> void:
+	var s: GameSession = net.get("session")
+	if s.mode == "combat":
+		await _combat("x_" + s.location_id)
+	await _finish_dialogue()
+	s.mode = "explore"
+	s.goto_location(loc, spawn)
+	await _wait(3.0)
+	await _shot(shot)
+	await _finish_dialogue()
+	await _wait(1.0)
 
 
 func _hero_names() -> String:

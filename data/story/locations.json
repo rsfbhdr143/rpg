@@ -42,7 +42,8 @@
             "template": "risen"
           },
           {
-            "template": "skeleton"
+            "template": "skeleton",
+            "min_party": 3
           },
           {
             "template": "risen",

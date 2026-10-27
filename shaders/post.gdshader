@@ -5,7 +5,7 @@ shader_type canvas_item;
 uniform bool posterize = true;
 uniform float levels = 14.0;
 uniform float dither = 0.6;
-uniform float vignette = 0.35;
+uniform float vignette = 0.25;
 uniform vec4 tint : source_color = vec4(1.0);
 uniform float fade = 0.0;
 uniform float flash = 0.0;

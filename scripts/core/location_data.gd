@@ -186,9 +186,12 @@ static func merge_story(mine: Dictionary, story: Dictionary, id: String, warning
 	for key in story:
 		match str(key):
 			"encounters":
-				out["encounters"] = _merge_by_id(out.get("encounters", []), story[key], id, "встреча", warnings)
+				var anchors: Dictionary = out.get("anchors", {})
+				out["encounters"] = _merge_by_id(out.get("encounters", []), story[key], id, "встреча", warnings, anchors)
 				for enc in out["encounters"]:
 					_assign_cells(enc)
+					if anchors.has(str(enc.get("anchor", ""))):
+						continue   # враги без клетки встанут у именованной точки карты
 					for e in enc.get("enemies", []):
 						if not e.has("cell"):
 							warnings.append("%s: врагу %s встречи %s не хватило клетки на карте" % [id, e.get("template", "?"), enc.get("id", "?")])
@@ -211,7 +214,8 @@ static func merge_story(mine: Dictionary, story: Dictionary, id: String, warning
 	return out
 
 
-static func _merge_by_id(mine: Array, theirs: Array, loc: String, what: String, warnings: Array) -> Array:
+## anchors — именованные точки карты: запись с "anchor" на одну из них рисовать на карте не нужно.
+static func _merge_by_id(mine: Array, theirs: Array, loc: String, what: String, warnings: Array, anchors: Dictionary = {}) -> Array:
 	var out: Array = mine.duplicate(true)
 	for t in theirs:
 		if typeof(t) != TYPE_DICTIONARY:
@@ -222,7 +226,8 @@ static func _merge_by_id(mine: Array, theirs: Array, loc: String, what: String, 
 			if str(m.get("id", "")) == tid:
 				found = m
 		if found.is_empty():
-			warnings.append("%s: %s %s из сюжета не нарисован на карте" % [loc, what, tid])
+			if not anchors.has(str(t.get("anchor", ""))):
+				warnings.append("%s: %s %s из сюжета не нарисован на карте" % [loc, what, tid])
 			out.append(t.duplicate(true))
 			continue
 		for k in t:

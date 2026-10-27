@@ -32,19 +32,18 @@ var _cine_hint: Label
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(self)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	theme = UiTheme.theme()
 	visible = false
 	_cine = CineLayer.new()
 	_cine.box = self
-	_cine.set_anchors_preset(Control.PRESET_FULL_RECT)
+	UiTheme.fill_parent(_cine)
 	_cine.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(_cine)
 	var cv := UiTheme.vbox(6)
-	cv.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	cv.position = Vector2(-460, -168)
-	cv.size = Vector2(920, 160)
+	UiTheme.place(cv, Control.PRESET_CENTER_BOTTOM, Vector2(-460, -176), Vector2(920, 168))
+	cv.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cine.add_child(cv)
 	_cine_name = UiTheme.label("", 18, UiTheme.GOLD, "bold")
@@ -60,8 +59,7 @@ func _ready() -> void:
 	cv.add_child(_cine_hint)
 
 	_box = UiTheme.panel(Vector2(1060, 196))
-	_box.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	_box.position = Vector2(-530, -206)
+	UiTheme.place(_box, Control.PRESET_CENTER_BOTTOM, Vector2(-530, -206), Vector2(1060, 196))
 	_box.gui_input.connect(_on_box_input)
 	add_child(_box)
 	var h := UiTheme.hbox(14)
@@ -272,8 +270,15 @@ class CineLayer extends Control:
 
 class PortraitRect extends Control:
 	var box: DialogueBox
+	var _view: IconArt.PortraitView
+
+	func _ready() -> void:
+		_view = IconArt.PortraitView.new()
+		UiTheme.place(_view, Control.PRESET_FULL_RECT, Vector2(6, 6))
+		_view.offset_right = -6
+		_view.offset_bottom = -6
+		add_child(_view)
 
 	func _draw() -> void:
-		var r := Rect2(Vector2.ZERO, size)
-		draw_style_box(UiTheme.slot_box(UiTheme.GOLD_DIM), r)
-		IconArt.portrait(self, str(box.view.get("portrait", "")), r.grow(-6), float(Time.get_ticks_msec()) / 1000.0)
+		draw_style_box(UiTheme.slot_box(UiTheme.GOLD_DIM), Rect2(Vector2.ZERO, size))
+		_view.id = str(box.view.get("portrait", ""))

@@ -14,9 +14,8 @@ var _head: HBoxContainer
 
 func _ready() -> void:
 	theme = UiTheme.theme()
-	set_anchors_preset(Control.PRESET_CENTER)
 	custom_minimum_size = Vector2(1080, 600)
-	position = Vector2(-540, -310)
+	UiTheme.center(self, custom_minimum_size)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
 	var root := UiTheme.vbox(8)
@@ -249,7 +248,13 @@ static func _item_tip(it: String) -> String:
 class PortraitBox extends Control:
 	var template := ""
 
+	func _ready() -> void:
+		var v := IconArt.PortraitView.new()
+		v.id = template
+		UiTheme.place(v, Control.PRESET_FULL_RECT, Vector2(5, 5))
+		v.offset_right = -5
+		v.offset_bottom = -5
+		add_child(v)
+
 	func _draw() -> void:
-		var r := Rect2(Vector2.ZERO, size)
-		draw_style_box(UiTheme.slot_box(UiTheme.GOLD_DIM), r)
-		IconArt.portrait(self, template, r.grow(-5), float(Time.get_ticks_msec()) / 1000.0)
+		draw_style_box(UiTheme.slot_box(UiTheme.GOLD_DIM), Rect2(Vector2.ZERO, size))
