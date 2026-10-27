@@ -1,0 +1,331 @@
+{
+  "tadeush": {
+    "name": "Отец Тадеуш",
+    "title": "священник",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Сухой пожилой священник в чёрной рясе. Пахнет ладаном и всё время перебирает чётки из чёрного камня.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "if": {
+          "flag": "tadeush_gone"
+        },
+        "id": null
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "tadeush_village",
+    "barks": [
+      "Да хранит вас Тихий Берег.",
+      "(Щёлк. Щёлк.)",
+      "Перевозчик терпелив."
+    ],
+    "anchor": "church"
+  },
+  "marta": {
+    "name": "Марта Корн",
+    "title": "хозяйка таверны «Пьяный Ворон»",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Старшая сестра Ладо: рыжая, крепкая, громкая. Умеет плакать и ругаться одновременно.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": [
+      {
+        "if": {
+          "flag": "epilogue_open"
+        },
+        "id": "marta_after"
+      },
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "return",
+            "done"
+          ]
+        },
+        "id": "marta_epilogue"
+      },
+      {
+        "id": "marta_village"
+      }
+    ],
+    "barks": [
+      "Масло не забыли?",
+      "Дурак ты, Ладо. Какой же ты дурак.",
+      "Ешьте. Потом спасёте мир."
+    ],
+    "anchor": "tavern"
+  },
+  "pipin": {
+    "name": "Пипин Шмель",
+    "title": "нотариус из Сольгарда",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Маленький, в пенсне, ужасно серьёзный. Гонорар получен вперёд.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "pipin_village",
+    "barks": [
+      "Гонорар уплачен, совесть чиста.",
+      "Где-то тут была клякса... А, это подпись."
+    ],
+    "anchor": "tavern"
+  },
+  "sych": {
+    "name": "Сыч",
+    "title": "могильщик",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Сгорбленный старик с лопатой и фонарём. Знает каждого покойника по имени.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "sych_village",
+    "barks": [
+      "Лежи, Йозеф. Лежи.",
+      "Сорок лет копаю...",
+      "Болото неспокойно, я ж говорил."
+    ],
+    "anchor": "cemetery_gate"
+  },
+  "gunter": {
+    "name": "Гюнтер",
+    "title": "кузнец",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Здоровяк в кожаном фартуке. Говорит мало, думает основательно.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "gunter_village",
+    "barks": [
+      "Хм.",
+      "...",
+      "Лопату так и не вернул."
+    ],
+    "anchor": "smithy"
+  },
+  "vetla": {
+    "name": "Бабка Ветла",
+    "title": "травница",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Старуха с клюкой и пучками трав за поясом. Язвительная, видит больше, чем говорит.",
+    "location": "forest",
+    "dialogue": "vetla",
+    "barks": [
+      "Под ноги смотри, не на меня.",
+      "Зараза! Зара-а-аза!"
+    ],
+    "anchor": "vetla_hut"
+  },
+  "zaraza": {
+    "name": "Зараза",
+    "title": "коза",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Белая злющая коза с обломанным рогом.",
+    "location": "forest",
+    "dialogue": [
+      {
+        "if": {
+          "flag": "goat_rescued"
+        },
+        "id": "zaraza_home"
+      },
+      {
+        "id": "zaraza_stump"
+      }
+    ],
+    "barks": [
+      "Бе-е-е!"
+    ],
+    "anchor": [
+      {
+        "if": {
+          "flag": "goat_rescued"
+        },
+        "id": "vetla_hut"
+      },
+      {
+        "id": "goat_stump"
+      }
+    ]
+  },
+  "shmyg": {
+    "name": "Шмыг",
+    "title": "гоблин-дозорный",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Тощий трусливый гоблин с ушами как лопухи.",
+    "location": [
+      {
+        "if": {
+          "flag": "back_path"
+        },
+        "id": "goblin_camp"
+      },
+      {
+        "if": {
+          "flag": "shmyg_fled"
+        },
+        "id": null
+      },
+      {
+        "if": {
+          "flag": "shmyg_fought"
+        },
+        "id": null
+      },
+      {
+        "id": "forest"
+      }
+    ],
+    "dialogue": [
+      {
+        "if": {
+          "flag": "back_path"
+        },
+        "id": "shmyg_follow"
+      },
+      {
+        "id": "shmyg"
+      }
+    ],
+    "barks": [
+      "Я куст. Я очень куст.",
+      "Шмыг сзади. Шмыг прикрывает."
+    ],
+    "anchor": "goblin_trail"
+  },
+  "mukhoglot": {
+    "name": "Шаман Мухоглот",
+    "title": "шаман Гнилозубов",
+    "faction": "neutral",
+    "level": 3,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Толстый гоблин-шаман в маске из черепа. Вокруг жужжат мухи.",
+    "location": [
+      {
+        "if": {
+          "flag": "body_burned"
+        },
+        "id": null
+      },
+      {
+        "id": "goblin_camp"
+      }
+    ],
+    "dialogue": "mukhoglot_throne",
+    "barks": [
+      "Бог молчит! Бог согласен!",
+      "Пойте громче, бог не слышит!"
+    ],
+    "anchor": "bone_throne"
+  },
+  "lado_ghost": {
+    "name": "Ладо Корн",
+    "title": "призрак",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Полупрозрачный голубоватый призрак в парадном камзоле.",
+    "location": "goblin_camp",
+    "dialogue": "lado_ghost_idle",
+    "barks": [],
+    "anchor": "pyre",
+    "hidden": true
+  }
+}
