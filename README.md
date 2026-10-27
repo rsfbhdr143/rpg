@@ -202,6 +202,14 @@ game.example.com {
 
 В веб-версии доступны одиночная игра и подключение к серверу. Кнопки «Создать игру» в браузере нет.
 
+Для Windows есть пресет **Windows Desktop**: один файл `build/windows/PepelnyeStrazhi.exe` (данные внутри exe).
+Из командной строки обе сборки делаются так:
+
+```
+godot --headless --path . --export-release "Web" build/web/index.html
+godot --headless --path . --export-release "Windows Desktop" build/windows/PepelnyeStrazhi.exe
+```
+
 ## Графика: картинки без ручной нарезки
 
 Картинки не надо резать и прописывать руками. Их можно отдать Claude прямо в чате или положить как есть
