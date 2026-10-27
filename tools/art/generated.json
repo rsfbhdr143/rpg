@@ -274,6 +274,111 @@
   "style": "color",
   "variant": "v08_color_2062049794.png"
  },
+ "skills/arrow_shot": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/arrow_shot.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a single flying arrow with motion lines, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 34.3,
+  "seed": 940967415,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_940967415.png"
+ },
+ "skills/attack": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/attack.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a crossed sword and axe, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1198188403,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1198188403.png"
+ },
+ "skills/battering_ram": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/battering_ram.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, an armored shoulder charging forward with impact lines, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.2,
+  "seed": 922160957,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_922160957.png"
+ },
+ "skills/bless": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/bless.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a radiant golden sun with rays, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 84648871,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_84648871.png"
+ },
+ "skills/curse": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/curse.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a dark purple skull under a crescent moon, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 1217512887,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1217512887.png"
+ },
  "skills/fireball": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -294,6 +399,446 @@
   "steps": 25,
   "style": "color",
   "variant": "v04_color_1341648993.png"
+ },
+ "skills/flare": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/flare.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a small burst of fire above an open palm, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1688961621,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1688961621.png"
+ },
+ "skills/ice_shard": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/ice_shard.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a sharp shard of blue ice, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 1081694181,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1081694181.png"
+ },
+ "skills/lightning_bolt": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/lightning_bolt.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a jagged lightning bolt, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 34.2,
+  "seed": 1290089476,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1290089476.png"
+ },
+ "skills/minor_heal": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/minor_heal.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a glowing hand with droplets of healing water, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 1654040254,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1654040254.png"
+ },
+ "skills/oil_slick": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/oil_slick.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a tipped jug spilling black oil, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 770255701,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_770255701.png"
+ },
+ "skills/poison_dart": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/poison_dart.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a dart dripping green poison, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 633326005,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_633326005.png"
+ },
+ "skills/rain": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/rain.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a dark rain cloud pouring rain, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 1176289314,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1176289314.png"
+ },
+ "skills/shocking_touch": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/shocking_touch.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a hand crackling with lightning, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.2,
+  "seed": 617193796,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_617193796.png"
+ },
+ "skills/whirlwind": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/whirlwind.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a spinning greatsword trailing a swirling wind, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 37.4,
+  "seed": 382054380,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_382054380.png"
+ },
+ "statuses/blessed": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/blessed.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a golden halo, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.2,
+  "seed": 1190844241,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1190844241.png"
+ },
+ "statuses/burning": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/burning.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a small flame, single emblem, centered, bold simple shapes, plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 40.2,
+  "seed": 1736483262,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v01_color_1736483262.png"
+ },
+ "statuses/chilled": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/chilled.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a pale blue snowflake, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.4,
+  "seed": 219239602,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_219239602.png"
+ },
+ "statuses/cursed": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/cursed.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a purple evil eye, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1084377863,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1084377863.png"
+ },
+ "statuses/frozen": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/frozen.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a block of ice, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.2,
+  "seed": 2014381783,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_2014381783.png"
+ },
+ "statuses/knocked_down": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/knocked_down.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a falling figure and an arrow pointing down, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 34.2,
+  "seed": 851831654,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_851831654.png"
+ },
+ "statuses/poisoned": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/poisoned.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a green skull with bubbles, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.4,
+  "seed": 1683614342,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1683614342.png"
+ },
+ "statuses/regenerating": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/regenerating.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a green leaf with a small heart, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 780689545,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_780689545.png"
+ },
+ "statuses/shocked": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/shocked.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a small yellow lightning spark, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1019278387,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1019278387.png"
+ },
+ "statuses/slowed": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/slowed.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a snail shell, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 113541526,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_113541526.png"
+ },
+ "statuses/stunned": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/stunned.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, circling stars, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 1517657555,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1517657555.png"
+ },
+ "statuses/wet": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/statuses/wet.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a blue water droplet, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.2,
+  "seed": 1249079262,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1249079262.png"
  },
  "surfaces/steam": {
   "cfg": 6.5,
@@ -378,6 +923,92 @@
   "steps": 22,
   "style": "color",
   "variant": "v01_color_1444093705.png"
+ },
+ "tiles/forest/floor": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/forest_floor.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of boggy marsh ground with moss, small dark puddles and fallen alder leaves, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.4,
+  "seed": 2116977941,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_2116977941.png"
+ },
+ "tiles/forest/wall": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/forest_wall.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "problems": [
+   "обрезано краем"
+  ],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a gnarled black alder tree with a crooked trunk and sparse autumn leaves, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 70.6,
+  "seed": 782400034,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v04_color_782400034.png"
+ },
+ "tiles/goblin_camp/floor": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/goblin_camp_floor.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of trampled mud of an ancient burial mound with dry grass, small bones and ash, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 75.7,
+  "seed": 1827257885,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1827257885.png"
+ },
+ "tiles/goblin_camp/wall": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/goblin_camp_wall.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge, ship, sea, sun, sunset, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of sharpened wooden logs standing side by side, bound with rope, flat 2d game texture, straight-on view, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 90.4,
+  "seed": 932630137,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_932630137.png"
  },
  "tiles/village/floor": {
   "cfg": 6.5,
