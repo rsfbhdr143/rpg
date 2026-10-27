@@ -1,5 +1,229 @@
 {
  "assets": {
+  "image_epilogue": {
+   "sheet": "res://art/sprites/image_epilogue.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_epilogue.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_farewell": {
+   "sheet": "res://art/sprites/image_farewell.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_farewell.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_1": {
+   "sheet": "res://art/sprites/image_intro_1.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_1.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_2": {
+   "sheet": "res://art/sprites/image_intro_2.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_2.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_3": {
+   "sheet": "res://art/sprites/image_intro_3.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_3.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_4": {
+   "sheet": "res://art/sprites/image_intro_4.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_4.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_title": {
+   "sheet": "res://art/sprites/image_title.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_title.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "item_gold": {
+   "sheet": "res://art/sprites/item_gold.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/items/item_gold.webp"
+   ],
+   "scale": 0.0234,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "item_potion": {
+   "sheet": "res://art/sprites/item_potion.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/items/item_potion.webp"
+   ],
+   "scale": 0.0277,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "portrait_cleric": {
    "sheet": "res://art/sprites/portrait_cleric.png",
    "kind": "portrait",
@@ -13,6 +237,31 @@
    "pixel_art": true,
    "source": [
     "generated/portraits/portrait_cleric.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_gunter": {
+   "sheet": "res://art/sprites/portrait_gunter.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_gunter.webp"
    ],
    "scale": 0.0625,
    "opaque": true,
@@ -50,6 +299,56 @@
     }
    }
   },
+  "portrait_lado": {
+   "sheet": "res://art/sprites/portrait_lado.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_lado.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_lado_ghost": {
+   "sheet": "res://art/sprites/portrait_lado_ghost.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_lado_ghost.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "portrait_marta": {
    "sheet": "res://art/sprites/portrait_marta.png",
    "kind": "portrait",
@@ -63,6 +362,56 @@
    "pixel_art": true,
    "source": [
     "generated/portraits/portrait_marta.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_mukhoglot": {
+   "sheet": "res://art/sprites/portrait_mukhoglot.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_mukhoglot.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_pipin": {
+   "sheet": "res://art/sprites/portrait_pipin.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_pipin.webp"
    ],
    "scale": 0.0625,
    "opaque": true,
@@ -100,6 +449,56 @@
     }
    }
   },
+  "portrait_shmyg": {
+   "sheet": "res://art/sprites/portrait_shmyg.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_shmyg.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_sych": {
+   "sheet": "res://art/sprites/portrait_sych.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_sych.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "portrait_tadeush": {
    "sheet": "res://art/sprites/portrait_tadeush.png",
    "kind": "portrait",
@@ -113,6 +512,31 @@
    "pixel_art": true,
    "source": [
     "generated/portraits/portrait_tadeush.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_vetla": {
+   "sheet": "res://art/sprites/portrait_vetla.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_vetla.webp"
    ],
    "scale": 0.0625,
    "opaque": true,
@@ -141,6 +565,127 @@
    ],
    "scale": 0.0625,
    "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_zaraza": {
+   "sheet": "res://art/sprites/portrait_zaraza.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_zaraza.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bone_throne": {
+   "sheet": "res://art/sprites/prop_bone_throne.png",
+   "kind": "image",
+   "frame": [
+    42,
+    43
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bone_throne.webp"
+   ],
+   "scale": 0.0407,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bones": {
+   "sheet": "res://art/sprites/prop_bones.png",
+   "kind": "image",
+   "frame": [
+    20,
+    14
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bones.webp"
+   ],
+   "scale": 0.0148,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_campfire": {
+   "sheet": "res://art/sprites/prop_campfire.png",
+   "kind": "image",
+   "frame": [
+    22,
+    21
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_campfire.webp"
+   ],
+   "scale": 0.0226,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_chest": {
+   "sheet": "res://art/sprites/prop_chest.png",
+   "kind": "image",
+   "frame": [
+    22,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_chest.webp"
+   ],
+   "scale": 0.0197,
    "animations": {
     "idle": {
      "start": 0,
@@ -270,6 +815,30 @@
     }
    }
   },
+  "prop_house": {
+   "sheet": "res://art/sprites/prop_house.png",
+   "kind": "image",
+   "frame": [
+    74,
+    69
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_house.webp"
+   ],
+   "scale": 0.0721,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_open_grave": {
    "sheet": "res://art/sprites/prop_open_grave.png",
    "kind": "image",
@@ -294,6 +863,102 @@
     }
    }
   },
+  "prop_pyre": {
+   "sheet": "res://art/sprites/prop_pyre.png",
+   "kind": "image",
+   "frame": [
+    32,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_pyre.webp"
+   ],
+   "scale": 0.0308,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_rock": {
+   "sheet": "res://art/sprites/prop_rock.png",
+   "kind": "image",
+   "frame": [
+    20,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_rock.webp"
+   ],
+   "scale": 0.0201,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_smithy": {
+   "sheet": "res://art/sprites/prop_smithy.png",
+   "kind": "image",
+   "frame": [
+    74,
+    69
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_smithy.webp"
+   ],
+   "scale": 0.0717,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tent": {
+   "sheet": "res://art/sprites/prop_tent.png",
+   "kind": "image",
+   "frame": [
+    41,
+    42
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_tent.webp"
+   ],
+   "scale": 0.0407,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_tombstone": {
    "sheet": "res://art/sprites/prop_tombstone.png",
    "kind": "image",
@@ -309,6 +974,78 @@
     "generated/props/prop_tombstone.webp"
    ],
    "scale": 0.02,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_totem": {
+   "sheet": "res://art/sprites/prop_totem.png",
+   "kind": "image",
+   "frame": [
+    18,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_totem.webp"
+   ],
+   "scale": 0.0202,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tree": {
+   "sheet": "res://art/sprites/prop_tree.png",
+   "kind": "image",
+   "frame": [
+    50,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_tree.webp"
+   ],
+   "scale": 0.0606,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_vetla_hut": {
+   "sheet": "res://art/sprites/prop_vetla_hut.png",
+   "kind": "image",
+   "frame": [
+    65,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_vetla_hut.webp"
+   ],
+   "scale": 0.065,
    "animations": {
     "idle": {
      "start": 0,
@@ -966,6 +1703,229 @@
     }
    }
   },
+  "blood": {
+   "sheet": "res://art/sprites/blood.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/blood.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "electrified_blood": {
+   "sheet": "res://art/sprites/electrified_blood.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/electrified_blood.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "electrified_steam": {
+   "sheet": "res://art/sprites/electrified_steam.png",
+   "kind": "effect",
+   "frame": [
+    24,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/electrified_steam.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "electrified_water": {
+   "sheet": "res://art/sprites/electrified_water.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/electrified_water.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "fire": {
+   "sheet": "res://art/sprites/fire.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/fire.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "ice": {
+   "sheet": "res://art/sprites/ice.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/ice.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "oil": {
+   "sheet": "res://art/sprites/oil.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/oil.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poison": {
+   "sheet": "res://art/sprites/poison.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/poison.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poison_cloud": {
+   "sheet": "res://art/sprites/poison_cloud.png",
+   "kind": "effect",
+   "frame": [
+    24,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/poison_cloud.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "steam": {
    "sheet": "res://art/sprites/steam.png",
    "kind": "effect",
@@ -1242,7 +2202,7 @@
    "sheet": "res://art/sprites/drowned.png",
    "kind": "unit",
    "frame": [
-    30,
+    32,
     46
    ],
    "pad": 1,
@@ -1252,7 +2212,7 @@
    "source": [
     "generated/units/drowned.webp"
    ],
-   "scale": 0.0374,
+   "scale": 0.0362,
    "animations": {
     "idle": {
      "start": 0,
@@ -1386,7 +2346,7 @@
    "sheet": "res://art/sprites/lado_body.png",
    "kind": "unit",
    "frame": [
-    33,
+    32,
     46
    ],
    "pad": 1,
@@ -1396,7 +2356,7 @@
    "source": [
     "generated/units/lado_body.webp"
    ],
-   "scale": 0.0374,
+   "scale": 0.0362,
    "animations": {
     "idle": {
      "start": 0,
@@ -1670,6 +2630,30 @@
     }
    }
   },
+  "vetla": {
+   "sheet": "res://art/sprites/vetla.png",
+   "kind": "unit",
+   "frame": [
+    25,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/vetla.webp"
+   ],
+   "scale": 0.0389,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "wizard": {
    "sheet": "res://art/sprites/wizard.png",
    "kind": "unit",
@@ -1733,6 +2717,29 @@
     "generated/units/zaraza.webp"
    ],
    "scale": 0.028,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_lado_tracks": {
+   "sheet": "res://art/sprites/prop_lado_tracks.png",
+   "kind": "image",
+   "frame": [
+    31,
+    11
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_lado_tracks.png"
+   ],
    "animations": {
     "idle": {
      "start": 0,
