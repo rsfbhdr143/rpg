@@ -1,12 +1,14 @@
 class_name GameSettings
 extends RefCounted
-## Настройки игрока (громкость, пиксельность, полный экран, скорость текста) в user://settings.cfg.
+## Настройки игрока (пиксельность, полный экран, скорость текста, имя) в user://settings.cfg.
+## Громкость хранит сам звуковой менеджер (user://audio_settings.cfg), здесь только мост к нему.
 
 const PATH := "user://settings.cfg"
+const VOLUME_BUSES := {"music": "Music", "sfx": "SFX", "ambient": "Ambient", "ui": "UI"}
 
 static var values := {
-	"music": 0.7, "sfx": 0.8, "ambient": 0.6, "fullscreen": false,
-	"pixel_scale": 2, "posterize": true, "text_speed": 60.0, "player_name": "Игрок",
+	"fullscreen": false, "pixel_scale": 2, "posterize": true, "shake": true,
+	"text_speed": 60.0, "player_name": "Игрок", "server_url": "ws://127.0.0.1:8910",
 }
 static var _loaded := false
 
@@ -24,11 +26,16 @@ static func ensure_loaded() -> void:
 
 static func get_value(key: String) -> Variant:
 	ensure_loaded()
+	if VOLUME_BUSES.has(key):
+		return GameAudio.get_volume(VOLUME_BUSES[key])
 	return values.get(key)
 
 
 static func set_value(key: String, v: Variant) -> void:
 	ensure_loaded()
+	if VOLUME_BUSES.has(key):
+		GameAudio.set_volume(VOLUME_BUSES[key], float(v))
+		return
 	values[key] = v
 	apply()
 	save()
@@ -42,12 +49,10 @@ static func save() -> void:
 
 
 static func apply() -> void:
-	GameAudio.set_volume("Music", float(values["music"]))
-	GameAudio.set_volume("SFX", float(values["sfx"]))
-	GameAudio.set_volume("UI", float(values["sfx"]))
-	GameAudio.set_volume("Ambience", float(values["ambient"]))
-	if not OS.has_feature("web") and DisplayServer.get_name() != "headless":
-		var want := DisplayServer.WINDOW_MODE_FULLSCREEN if bool(values["fullscreen"]) else DisplayServer.WINDOW_MODE_WINDOWED
-		if DisplayServer.window_get_mode() != want and not (want == DisplayServer.WINDOW_MODE_WINDOWED \
-				and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED):
-			DisplayServer.window_set_mode(want)
+	if OS.has_feature("web") or DisplayServer.get_name() == "headless":
+		return
+	var want := DisplayServer.WINDOW_MODE_FULLSCREEN if bool(values["fullscreen"]) else DisplayServer.WINDOW_MODE_WINDOWED
+	var now := DisplayServer.window_get_mode()
+	if now == want or (want == DisplayServer.WINDOW_MODE_WINDOWED and now == DisplayServer.WINDOW_MODE_MAXIMIZED):
+		return
+	DisplayServer.window_set_mode(want)

@@ -4,3 +4,4 @@ build/
 art/review/
 art/generated/
 __pycache__/
+*.whl

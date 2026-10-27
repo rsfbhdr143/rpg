@@ -1,0 +1,174 @@
+{
+  "_doc": "Музыка и звуки. Пути относительно root. volume_db складывается с громкостью шины. Звуки с несколькими files играются случайным вариантом. Файлы собираются скриптом tools/audio/build.py.",
+  "root": "res://assets/audio/",
+  "buses": {
+    "Music": {"volume_db": -2.0},
+    "Ambient": {"volume_db": -4.0},
+    "SFX": {"volume_db": 0.0},
+    "UI": {"volume_db": -3.0}
+  },
+  "defaults": {
+    "music_fade": 1.5,
+    "ambient_fade": 2.5,
+    "stinger_duck_db": -14.0,
+    "pitch_jitter": 0.04,
+    "sfx_min_gap": 0.03,
+    "sfx_max_instances": 4
+  },
+
+  "music": {
+    "theme_lado":    {"file": "music/theme_lado.ogg", "volume_db": 0.0},
+    "funeral":       {"file": "music/funeral.ogg", "volume_db": -1.0},
+    "combat_undead": {"file": "music/combat_undead.ogg", "volume_db": 0.0},
+    "village":       {"file": "music/village.ogg", "volume_db": -1.0, "resume": true},
+    "tavern":        {"file": "music/tavern.ogg", "volume_db": -1.0, "resume": true},
+    "forest":        {"file": "music/forest.ogg", "volume_db": 0.0, "resume": true},
+    "combat":        {"file": "music/combat.ogg", "volume_db": 0.0},
+    "goblin_camp":   {"file": "music/goblin_camp.ogg", "volume_db": -1.0, "resume": true},
+    "boss_lado":     {"file": "music/boss_lado.ogg", "volume_db": 0.0},
+    "farewell":      {"file": "music/farewell.ogg", "volume_db": 0.0},
+    "epilogue":      {"file": "music/epilogue.ogg", "volume_db": 0.0}
+  },
+
+  "stingers": {
+    "omen":       {"file": "stingers/omen.ogg", "music": "stop", "volume_db": 0.0},
+    "victory":    {"file": "stingers/victory.ogg", "music": "stop", "volume_db": -1.0},
+    "defeat":     {"file": "stingers/defeat.ogg", "music": "stop", "volume_db": 0.0},
+    "level_up":   {"file": "stingers/level_up.ogg", "music": "duck", "volume_db": -1.0},
+    "quest":      {"file": "stingers/quest.ogg", "music": "duck", "volume_db": -2.0},
+    "quest_done": {"file": "stingers/quest_done.ogg", "music": "duck", "volume_db": -1.0}
+  },
+
+  "ambient": {
+    "amb_cemetery": {"file": "ambient/amb_cemetery.ogg", "volume_db": 0.0},
+    "amb_village":  {"file": "ambient/amb_village.ogg", "volume_db": 0.0},
+    "amb_forest":   {"file": "ambient/amb_forest.ogg", "volume_db": 0.0},
+    "amb_camp":     {"file": "ambient/amb_camp.ogg", "volume_db": 0.0}
+  },
+
+  "sfx": {
+    "melee_hit":   {"files": ["sfx/melee_hit_1.ogg", "sfx/melee_hit_2.ogg", "sfx/melee_hit_3.ogg"], "pitch_jitter": 0.06},
+    "melee_crit":  {"file": "sfx/melee_crit.ogg", "pitch_jitter": 0.03, "volume_db": 2.0},
+    "melee_miss":  {"files": ["sfx/melee_miss_1.ogg", "sfx/melee_miss_2.ogg"], "pitch_jitter": 0.08},
+    "slash":       {"files": ["sfx/slash_1.ogg", "sfx/slash_2.ogg"], "pitch_jitter": 0.06},
+    "whoosh":      {"files": ["sfx/whoosh_1.ogg", "sfx/whoosh_2.ogg", "sfx/whoosh_3.ogg"], "pitch_jitter": 0.08},
+    "bow_shot":    {"file": "sfx/bow_shot.ogg", "pitch_jitter": 0.05},
+    "arrow_hit":   {"file": "sfx/arrow_hit.ogg", "pitch_jitter": 0.06},
+    "hurt":        {"files": ["sfx/hurt_1.ogg", "sfx/hurt_2.ogg"], "pitch_jitter": 0.08},
+    "death":       {"file": "sfx/death.ogg", "pitch_jitter": 0.02},
+    "enemy_death": {"file": "sfx/enemy_death.ogg", "pitch_jitter": 0.05},
+    "bone_crunch": {"file": "sfx/bone_crunch.ogg", "pitch_jitter": 0.08},
+
+    "fire_cast":        {"file": "sfx/fire_cast.ogg"},
+    "fire_impact":      {"file": "sfx/fire_impact.ogg"},
+    "water_cast":       {"file": "sfx/water_cast.ogg"},
+    "water_impact":     {"file": "sfx/water_impact.ogg"},
+    "ice_cast":         {"file": "sfx/ice_cast.ogg"},
+    "ice_impact":       {"file": "sfx/ice_impact.ogg"},
+    "lightning_cast":   {"file": "sfx/lightning_cast.ogg"},
+    "lightning_impact": {"file": "sfx/lightning_impact.ogg"},
+    "poison_cast":      {"file": "sfx/poison_cast.ogg"},
+    "poison_impact":    {"file": "sfx/poison_impact.ogg"},
+    "oil_cast":         {"file": "sfx/oil_cast.ogg"},
+    "heal":             {"file": "sfx/heal.ogg", "pitch_jitter": 0.0},
+    "bless":            {"file": "sfx/bless.ogg", "pitch_jitter": 0.0},
+    "curse":            {"file": "sfx/curse.ogg", "pitch_jitter": 0.0},
+    "explosion":        {"file": "sfx/explosion.ogg", "pitch_jitter": 0.05},
+    "freeze":           {"file": "sfx/freeze.ogg"},
+    "steam":            {"file": "sfx/steam.ogg"},
+    "potion":           {"file": "sfx/potion.ogg", "pitch_jitter": 0.05},
+
+    "footstep":      {"files": ["sfx/footstep_1.ogg", "sfx/footstep_2.ogg", "sfx/footstep_3.ogg", "sfx/footstep_4.ogg"], "volume_db": -6.0, "pitch_jitter": 0.08, "min_gap": 0.12, "max_instances": 2},
+    "bell":          {"file": "sfx/bell.ogg", "pitch_jitter": 0.0, "max_instances": 2},
+    "shovel":        {"files": ["sfx/shovel_1.ogg", "sfx/shovel_2.ogg"], "pitch_jitter": 0.06},
+    "crow_caw":      {"files": ["sfx/crow_caw_1.ogg", "sfx/crow_caw_2.ogg"], "pitch_jitter": 0.06},
+    "earth_rumble":  {"file": "sfx/earth_rumble.ogg", "pitch_jitter": 0.0},
+    "coffin_crack":  {"file": "sfx/coffin_crack.ogg", "pitch_jitter": 0.03},
+    "undead_moan":   {"files": ["sfx/undead_moan_1.ogg", "sfx/undead_moan_2.ogg"], "pitch_jitter": 0.08},
+    "wolf_howl":     {"file": "sfx/wolf_howl.ogg", "pitch_jitter": 0.05},
+    "goblin_chatter":{"files": ["sfx/goblin_chatter_1.ogg", "sfx/goblin_chatter_2.ogg"], "pitch_jitter": 0.08},
+    "swamp_bubble":  {"file": "sfx/swamp_bubble.ogg", "pitch_jitter": 0.1},
+    "enemy_alert":   {"file": "sfx/enemy_alert.ogg", "pitch_jitter": 0.0},
+
+    "pickup":      {"file": "sfx/pickup.ogg", "pitch_jitter": 0.03},
+    "coin":        {"file": "sfx/coin.ogg", "pitch_jitter": 0.06},
+    "door":        {"file": "sfx/door.ogg", "pitch_jitter": 0.04},
+    "chest_open":  {"file": "sfx/chest_open.ogg", "pitch_jitter": 0.03},
+    "transition":  {"file": "sfx/transition.ogg", "pitch_jitter": 0.0},
+    "turn_start":  {"file": "sfx/turn_start.ogg", "pitch_jitter": 0.0, "volume_db": -3.0},
+
+    "ui_click":      {"file": "sfx/ui_click.ogg", "bus": "UI", "pitch_jitter": 0.05},
+    "ui_hover":      {"file": "sfx/ui_hover.ogg", "bus": "UI", "pitch_jitter": 0.05, "volume_db": -6.0, "min_gap": 0.05},
+    "ui_confirm":    {"file": "sfx/ui_confirm.ogg", "bus": "UI", "pitch_jitter": 0.0},
+    "ui_back":       {"file": "sfx/ui_back.ogg", "bus": "UI", "pitch_jitter": 0.0},
+    "ui_open":       {"file": "sfx/ui_open.ogg", "bus": "UI", "pitch_jitter": 0.03},
+    "ui_error":      {"file": "sfx/ui_error.ogg", "bus": "UI", "pitch_jitter": 0.0},
+    "page":          {"files": ["sfx/page_1.ogg", "sfx/page_2.ogg"], "bus": "UI", "pitch_jitter": 0.06},
+    "dialogue_blip": {"files": ["sfx/dialogue_blip_1.ogg", "sfx/dialogue_blip_2.ogg", "sfx/dialogue_blip_3.ogg"], "bus": "UI", "pitch_jitter": 0.1, "volume_db": -8.0, "min_gap": 0.045, "max_instances": 2}
+  },
+
+  "aliases": {
+    "menu": "theme_lado",
+    "main_menu": "theme_lado",
+    "intro": "funeral",
+    "cemetery": "funeral",
+    "explore_village": "village",
+    "explore_wilds": "forest",
+    "boss": "boss_lado",
+    "bell_toll": "bell",
+    "gold": "coin",
+    "paper": "page",
+    "fire_whoosh": "fire_cast",
+    "amb_wind": "amb_cemetery",
+    "amb_swamp": "amb_forest",
+    "amb_fire": "amb_camp"
+  },
+
+  "skills": {
+    "_default":       {"cast": "whoosh", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "attack":         {"cast": "slash", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "battering_ram":  {"cast": "whoosh", "hit": "melee_crit", "miss": "melee_miss"},
+    "whirlwind":      {"cast": "slash", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "arrow_shot":     {"cast": "bow_shot", "hit": "arrow_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "flare":          {"cast": "fire_cast", "hit": "fire_impact"},
+    "fireball":       {"cast": "fire_cast", "hit": "explosion"},
+    "rain":           {"cast": "water_cast", "hit": "water_impact"},
+    "ice_shard":      {"cast": "ice_cast", "hit": "ice_impact"},
+    "minor_heal":     {"cast": "heal"},
+    "shocking_touch": {"cast": "lightning_cast", "hit": "lightning_impact"},
+    "lightning_bolt": {"cast": "lightning_cast", "hit": "lightning_impact"},
+    "poison_dart":    {"cast": "poison_cast", "hit": "poison_impact"},
+    "oil_slick":      {"cast": "oil_cast"},
+    "bless":          {"cast": "bless"},
+    "curse":          {"cast": "curse"}
+  },
+
+  "statuses": {
+    "wet": "water_impact",
+    "burning": "fire_impact",
+    "poisoned": "poison_impact",
+    "chilled": "ice_impact",
+    "frozen": "freeze",
+    "shocked": "lightning_impact",
+    "stunned": "lightning_impact",
+    "knocked_down": "melee_crit",
+    "blessed": "bless",
+    "cursed": "curse",
+    "regenerating": "heal"
+  },
+
+  "surfaces": {
+    "water": "water_impact",
+    "blood": "water_impact",
+    "oil": "oil_cast",
+    "poison": "poison_impact",
+    "fire": "fire_impact",
+    "ice": "freeze",
+    "steam": "steam",
+    "electrified_water": "lightning_impact",
+    "electrified_blood": "lightning_impact",
+    "electrified_steam": "lightning_impact",
+    "poison_cloud": "poison_cast",
+    "explosion": "explosion"
+  }
+}

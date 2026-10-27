@@ -470,6 +470,15 @@ static func _blob(ci: CanvasItem, c: Vector2, rx: float, ry: float, col: Color) 
 		y += step
 
 
+## Полупрозрачный пиксельный «овал» без контура (облака, дым).
+static func _blob_soft(ci: CanvasItem, c: Vector2, rx: float, ry: float, col: Color) -> void:
+	var y := -ry
+	while y < ry:
+		var w := roundf(rx * sqrt(maxf(0.0, 1.0 - (y / ry) * (y / ry))))
+		ci.draw_rect(Rect2(c + Vector2(-w, y).round(), Vector2(w * 2, 1)), col)
+		y += 1.0
+
+
 static func _iso_mound(ci: CanvasItem, o: Vector2, s: float, col: Color) -> void:
 	var pts := PackedVector2Array([o + Vector2(-10, 0) * s, o + Vector2(0, -5) * s, o + Vector2(10, 0) * s, o + Vector2(0, 5) * s])
 	ci.draw_colored_polygon(pts, col)

@@ -49,7 +49,9 @@ static func font(kind: String = "body") -> Font:
 		f = ThemeDB.fallback_font
 	if f is FontFile:
 		var ffile := f as FontFile
-		ffile.antialiasing = TextServer.FONT_ANTIALIASING_NONE
+		# Press Start 2P нарисован по сетке 8 px: без сглаживания он чёткий на размерах, кратных 8.
+		# Pixelify Sans не по сетке, со сглаживанием он читается лучше.
+		ffile.antialiasing = TextServer.FONT_ANTIALIASING_NONE if kind == "title" else TextServer.FONT_ANTIALIASING_GRAY
 		ffile.hinting = TextServer.HINTING_NONE
 		ffile.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_DISABLED
 		ffile.generate_mipmaps = false
@@ -275,10 +277,13 @@ static func button(text: String, on_press: Callable = Callable(), size := 18) ->
 	if on_press.is_valid():
 		b.pressed.connect(on_press)
 	b.pressed.connect(func() -> void: GameAudio.ui("ui_click"))
-	b.mouse_entered.connect(func() -> void:
-		if not b.disabled:
-			GameAudio.ui("ui_hover"))
+	b.mouse_entered.connect(func() -> void: _hover_sound(b))
 	return b
+
+
+static func _hover_sound(b: Button) -> void:
+	if not b.disabled:
+		GameAudio.ui("ui_hover")
 
 
 static func panel(min_size := Vector2.ZERO) -> PanelContainer:

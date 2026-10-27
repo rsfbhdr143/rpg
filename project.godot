@@ -4,15 +4,32 @@ config_version=5
 
 [application]
 
-config/name="DOS-like RPG Skeleton"
-run/main_scene="res://scenes/menu.tscn"
+config/name="Пепельные стражи"
+config/description="Пошаговая партийная RPG в духе Divinity: Original Sin. Пролог «Последняя воля»."
+run/main_scene="res://scenes/title.tscn"
 config/features=PackedStringArray("4.3")
+
+[autoload]
+
+Net="*res://scripts/net/net.gd"
+Audio="*res://scripts/audio/audio_manager.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
-[autoload]
+[gui]
 
-Net="*res://scripts/net/net.gd"
+common/snap_controls_to_pixels=true
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true
+environment/defaults/default_clear_color=Color(0.043, 0.039, 0.047, 1)
