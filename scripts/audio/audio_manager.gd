@@ -320,7 +320,7 @@ func _apply_bus_volume(bus_name: String) -> void:
 
 func _load_settings() -> void:
 	var cf := ConfigFile.new()
-	if cf.load(SETTINGS_PATH) != OK:
+	if cf.load(SETTINGS_PATH) != OK or not cf.has_section("volume"):
 		return
 	for bus_name in cf.get_section_keys("volume"):
 		set_volume(bus_name, float(cf.get_value("volume", bus_name, 1.0)), false)
@@ -387,8 +387,10 @@ func _stream(path: String) -> AudioStream:
 
 
 func _set_loop(stream: AudioStream, loop: bool) -> void:
-	if "loop" in stream:
-		stream.set("loop", loop)
+	if stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = loop
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = loop
 
 
 func _play_mapped(section: String, id: String) -> AudioStreamPlayer:

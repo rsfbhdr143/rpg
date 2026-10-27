@@ -48,7 +48,7 @@
 
   "sfx": {
     "melee_hit":   {"files": ["sfx/melee_hit_1.ogg", "sfx/melee_hit_2.ogg", "sfx/melee_hit_3.ogg"], "pitch_jitter": 0.06},
-    "melee_crit":  {"file": "sfx/melee_crit.ogg", "pitch_jitter": 0.03},
+    "melee_crit":  {"file": "sfx/melee_crit.ogg", "pitch_jitter": 0.03, "volume_db": 2.0},
     "melee_miss":  {"files": ["sfx/melee_miss_1.ogg", "sfx/melee_miss_2.ogg"], "pitch_jitter": 0.08},
     "slash":       {"files": ["sfx/slash_1.ogg", "sfx/slash_2.ogg"], "pitch_jitter": 0.06},
     "whoosh":      {"files": ["sfx/whoosh_1.ogg", "sfx/whoosh_2.ogg", "sfx/whoosh_3.ogg"], "pitch_jitter": 0.08},
