@@ -390,6 +390,54 @@
     }
    }
   },
+  "bless": {
+   "sheet": "res://art/sprites/bless.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/bless.webp"
+   ],
+   "scale": 0.0242,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "curse": {
+   "sheet": "res://art/sprites/curse.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/curse.webp"
+   ],
+   "scale": 0.0236,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "fireball": {
    "sheet": "res://art/sprites/fireball.png",
    "kind": "icon",
@@ -453,6 +501,150 @@
     "generated/skills/ice_shard.webp"
    ],
    "scale": 0.0279,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "lightning_bolt": {
+   "sheet": "res://art/sprites/lightning_bolt.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/lightning_bolt.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "minor_heal": {
+   "sheet": "res://art/sprites/minor_heal.png",
+   "kind": "icon",
+   "frame": [
+    20,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/minor_heal.webp"
+   ],
+   "scale": 0.0265,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "oil_slick": {
+   "sheet": "res://art/sprites/oil_slick.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/oil_slick.webp"
+   ],
+   "scale": 0.0269,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poison_dart": {
+   "sheet": "res://art/sprites/poison_dart.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/poison_dart.webp"
+   ],
+   "scale": 0.025,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "rain": {
+   "sheet": "res://art/sprites/rain.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/rain.webp"
+   ],
+   "scale": 0.0268,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "shocking_touch": {
+   "sheet": "res://art/sprites/shocking_touch.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/shocking_touch.webp"
+   ],
+   "scale": 0.0237,
    "animations": {
     "idle": {
      "start": 0,
