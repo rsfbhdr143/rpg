@@ -1,0 +1,116 @@
+{
+  "order_of_bravery": {
+    "name": "Орден «За храбрость»",
+    "type": "trinket",
+    "for": "knight",
+    "description": "Выигран Ладо в кости у капитана Вольке. Храбрости в нём ни на грош, но вам идёт.",
+    "stats": {
+      "tenacity_res": 10,
+      "accuracy": 3
+    }
+  },
+  "own_grimoire": {
+    "name": "Ваш гримуар",
+    "type": "trinket",
+    "for": "wizard",
+    "description": "Шесть лет у Ладо. На полях пометки: «скучно», «тут я уснул», «а вот это красиво».",
+    "stats": {
+      "magic_damage_pct": 5
+    }
+  },
+  "lado_map": {
+    "name": "Карта курганов Пограничья",
+    "type": "quest",
+    "for": "ranger",
+    "description": "Половина пометок: «здесь я ничего не нашёл». Одна, на севере, обведена трижды.",
+    "stats": {
+      "crit_chance": 3
+    }
+  },
+  "copper_raven": {
+    "name": "Медный оберег-ворон",
+    "type": "trinket",
+    "for": "cleric",
+    "description": "На обороте выбит язык пламени в круге. Вы не знаете этого знака. Пока.",
+    "stats": {
+      "fire_res": 5,
+      "water_res": 5,
+      "earth_res": 5,
+      "air_res": 5,
+      "poison_res": 5
+    }
+  },
+  "lamp_oil": {
+    "name": "Лампадное масло",
+    "type": "consumable",
+    "description": "Бутыль масла из таверны Марты. Разлить и поджечь.",
+    "use": {
+      "skill": "oil_slick"
+    }
+  },
+  "tar_torch": {
+    "name": "Дёгтевый факел",
+    "type": "consumable",
+    "description": "Работы Гюнтера. Горит даже в болоте. Можно бросить в масло или яд.",
+    "use": {
+      "skill": "flare"
+    }
+  },
+  "funeral_bread": {
+    "name": "Поминальный хлеб с сыром",
+    "type": "consumable",
+    "description": "Марта не отпускает в дорогу голодными.",
+    "use": {
+      "heal": 15
+    }
+  },
+  "healing_brew": {
+    "name": "Отвар Ветлы",
+    "type": "consumable",
+    "description": "Горький, как сама Ветла. Лечит и выводит яд.",
+    "use": {
+      "heal": 30,
+      "remove_status": [
+        "poisoned"
+      ]
+    }
+  },
+  "juniper_bottle": {
+    "name": "Можжевеловка",
+    "type": "quest",
+    "description": "Долг Ладо перед могильщиком Сычом."
+  },
+  "black_bead": {
+    "name": "Чёрная бусина",
+    "type": "quest",
+    "description": "Гладкая, тёплая, пахнет ладаном. Найдена на колокольне, откуда упал Ладо."
+  },
+  "smith_hammer": {
+    "name": "Кузнечный молот Гюнтера",
+    "type": "weapon",
+    "description": "Тяжёлый и честный, как сам Гюнтер.",
+    "weapon": {
+      "name": "Кузнечный молот",
+      "min": 6,
+      "max": 10,
+      "element": "physical"
+    }
+  },
+  "gravedigger_lantern": {
+    "name": "Фонарь могильщика",
+    "type": "trinket",
+    "description": "С ним видно то, что прячется в тумане.",
+    "stats": {
+      "accuracy": 5,
+      "initiative": 1
+    }
+  },
+  "smoldering_seal": {
+    "name": "Тлеющая печать",
+    "type": "quest",
+    "description": "Уголь размером с орех из груди Ладо. Тёплый даже в ледяной воде. Иногда кажется, что он дышит.",
+    "stats": {
+      "fire_res": 15
+    }
+  }
+}
