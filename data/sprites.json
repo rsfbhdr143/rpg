@@ -20,7 +20,14 @@
   },
   "units": {
     "goblin_warrior": "goblin_warrior",
-    "knight": "knight"
+    "knight": "knight",
+    "cleric": "cleric",
+    "ranger": "ranger",
+    "risen": "risen",
+    "skeleton": "skeleton",
+    "wizard": "wizard",
+    "goblin_shaman": "goblin_shaman",
+    "training_dummy": "training_dummy"
   },
   "tiles": {
     "floor": "village_floor",
@@ -30,6 +37,10 @@
     "village": {
       "floor": "village_floor",
       "wall": "village_wall"
+    },
+    "cemetery": {
+      "floor": "cemetery_floor",
+      "wall": "cemetery_wall"
     }
   },
   "surfaces": {
@@ -41,14 +52,55 @@
   },
   "statuses": {},
   "auto": [
+    "locations/cemetery/floor",
+    "locations/cemetery/wall",
     "locations/village/floor",
     "locations/village/wall",
+    "portraits/cleric",
+    "portraits/knight",
+    "portraits/marta",
+    "portraits/ranger",
+    "portraits/tadeush",
+    "portraits/wizard",
+    "props/coffin",
+    "props/dead_tree",
+    "props/fence",
+    "props/fresh_grave",
+    "props/funeral_candles",
+    "props/grave",
+    "props/open_grave",
+    "props/tombstone",
     "skills/fireball",
     "surfaces/steam",
     "surfaces/water",
     "tiles/floor",
     "tiles/wall",
+    "units/cleric",
+    "units/goblin_shaman",
     "units/goblin_warrior",
-    "units/knight"
-  ]
+    "units/knight",
+    "units/ranger",
+    "units/risen",
+    "units/skeleton",
+    "units/training_dummy",
+    "units/wizard"
+  ],
+  "portraits": {
+    "cleric": "portrait_cleric",
+    "knight": "portrait_knight",
+    "marta": "portrait_marta",
+    "ranger": "portrait_ranger",
+    "tadeush": "portrait_tadeush",
+    "wizard": "portrait_wizard"
+  },
+  "props": {
+    "coffin": "prop_coffin",
+    "dead_tree": "prop_dead_tree",
+    "funeral_candles": "prop_funeral_candles",
+    "grave": "prop_grave",
+    "open_grave": "prop_open_grave",
+    "fresh_grave": "prop_open_grave",
+    "tombstone": "prop_tombstone",
+    "fence": "prop_fence"
+  }
 }

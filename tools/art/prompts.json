@@ -46,36 +46,41 @@
         1216
       ],
       "variants": 3,
-      "prompt": "{style}, {subject}, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
-      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+      "prompt": "{style}, {subject}, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
       "px": [
         32,
         44
-      ]
+      ],
+      "lora_strength": 0.6
     },
     "object": {
       "size": [
-        832,
-        1216
+        1024,
+        1024
       ],
-      "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, plain white background",
-      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene",
+      "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
       "px": [
         48,
         72
-      ]
+      ],
+      "lora_strength": 0.45,
+      "clear_holes": true
     },
     "building": {
       "size": [
         1024,
         1024
       ],
-      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, centered, plain white background",
-      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background",
+      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, centered, isolated on a plain white background",
+      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette",
       "px": [
         72,
         72
-      ]
+      ],
+      "lora_strength": 0.45,
+      "clear_holes": true
     },
     "icon": {
       "size": [
@@ -147,10 +152,13 @@
   "units": {
     "knight": "a stern medieval knight in plate armor and a deep blue tabard, both hands resting on the crossguard of a greatsword planted point-down in front of him",
     "wizard": "a young female wizard in a long crimson robe, holding one plain straight wooden staff upright in her right hand, left hand empty",
-    "ranger": "a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty",
+    "ranger": {
+      "subject": "a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty",
+      "clear_holes": true
+    },
     "cleric": "a female cleric in white and gold vestments, holding one simple mace in her right hand, a holy pendant on her chest",
     "wolf": {
-      "subject": "a lean grey wolf, snarling, standing on four legs, side view",
+      "subject": "a lean dark brown-grey wolf, snarling, standing on four legs, side view",
       "px": [
         44,
         30
@@ -172,10 +180,21 @@
     },
     "training_dummy": {
       "kind": "object",
-      "subject": "a straw training dummy on a wooden post with a burlap sack head"
+      "subject": "a straw training dummy on a wooden post with a burlap sack head",
+      "size": [
+        832,
+        1216
+      ],
+      "px": [
+        30,
+        44
+      ]
     },
     "risen": "a risen corpse in a torn white burial shroud, grey rotting skin, both arms reaching forward, shambling",
-    "skeleton": "a skeleton warrior in tattered rags holding one rusty notched sword in his right hand",
+    "skeleton": {
+      "subject": "an undead skeleton warrior, bare bones, empty eye sockets, bald skull, tattered grey loincloth rags, holding one rusty short sword in his right hand",
+      "negative": "hat, straw hat, helmet, spear, staff, polearm, bow, two weapons"
+    },
     "drowned": "a bloated drowned corpse covered in green pond weed and mud, pale blue-green skin, dripping water",
     "goblin_scout": {
       "subject": "a skinny green goblin scout in a hooded ragged cloak, holding one short bow in his left hand",
@@ -216,7 +235,7 @@
     },
     "vetla": "a bent old herbalist woman in a shawl leaning on a gnarled walking stick, bundles of herbs on her belt",
     "zaraza": {
-      "subject": "an angry white goat with one broken horn, standing on four legs, side view",
+      "subject": "an angry shaggy goat with dirty off-white fur and one broken horn, standing on four legs, side view",
       "px": [
         34,
         28
@@ -242,6 +261,10 @@
       "px": [
         40,
         64
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "goblin_camp/floor": "trampled mud of an ancient burial mound with dry grass, small bones and ash",
@@ -310,11 +333,16 @@
   },
   "props": {
     "grave": {
-      "subject": "a grave mound with a simple wooden cross",
+      "subject": "a low grave mound of dark earth with a simple wooden cross at its head",
       "px": [
         32,
         28
-      ]
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "trees, grass field, rocks, boulder"
     },
     "tombstone": {
       "subject": "a weathered mossy stone tombstone",
@@ -332,13 +360,22 @@
       "bind": [
         "props/open_grave",
         "props/fresh_grave"
-      ]
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "trees, spruce, fir"
     },
     "coffin": {
       "subject": "a closed plain wooden coffin",
       "px": [
         32,
         18
+      ],
+      "size": [
+        1216,
+        832
       ]
     },
     "funeral_candles": {
@@ -349,7 +386,7 @@
       ]
     },
     "bell_tower": {
-      "subject": "a small old stone chapel bell tower with a pointed roof and a bell",
+      "subject": "a single small dark weathered wooden bell tower standing alone, shingled roof, a bronze bell, on four timber legs",
       "px": [
         48,
         112
@@ -358,13 +395,18 @@
       "size": [
         832,
         1216
-      ]
+      ],
+      "negative": "church, chapel, white walls, clouds, pink sky, town, city, village, pagoda, neighboring houses"
     },
     "fence": {
-      "subject": "a short section of old wooden picket fence",
+      "subject": "a short straight section of an old wooden picket fence, five pickets and two rails, side view",
       "px": [
         32,
         18
+      ],
+      "size": [
+        1216,
+        832
       ]
     },
     "dead_tree": {
@@ -372,6 +414,10 @@
       "px": [
         40,
         68
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "house": {
@@ -410,6 +456,10 @@
       "px": [
         48,
         72
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "bush": {
@@ -424,6 +474,10 @@
       "px": [
         20,
         28
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "rock": {
@@ -452,6 +506,10 @@
       "px": [
         16,
         44
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "bones": {
@@ -459,6 +517,10 @@
       "px": [
         20,
         12
+      ],
+      "size": [
+        1216,
+        832
       ]
     },
     "chest": {
@@ -495,15 +557,21 @@
       "px": [
         32,
         16
+      ],
+      "size": [
+        1216,
+        832
       ]
     }
   },
   "images": {
-    "title": "a lonely village cemetery on a hill at sunset, crows circling over a small bell tower, a fresh grave in the foreground",
-    "intro_1": "a funeral procession of villagers carrying a coffin along a muddy village road at dusk, crows on a fence",
-    "intro_2": "mourners standing around an open grave at a cemetery at sunset, an old priest in black reading a prayer over a coffin",
-    "intro_3": "an empty open coffin at a cemetery, mourners recoiling in horror, crows taking flight, pale mist rising from the graves",
-    "intro_4": "muddy footprints leading from a cemetery into a misty swamp forest of alders, a faint ghostly figure among the trees"
+    "title": "a wooden village bell tower at dusk with crows sitting on its railing, behind it a misty alder forest and a humpbacked burial mound with a small red smoldering light on its top",
+    "intro_1": "a grey marshy plain in fog at sunset, a small village by a river ford with a bell tower, humpbacked burial mounds on the horizon, a flock of crows in the sky",
+    "intro_2": "a funeral at an old cemetery on a hill under a low red sun, a coffin beside a fresh grave pit, a gaunt priest in a black cassock with prayer beads, a sturdy red-haired woman, a tiny notary in a pince-nez with a scroll, villagers behind them, crows on crooked elms",
+    "intro_3": "an old cemetery right after sunset under a crimson sky, crows bursting from the trees, old graves cracking open, hands and corpses in burial shrouds climbing out of the earth, villagers running to the fence",
+    "intro_4": "a collapsed grave at night under the moon, at the bottom a coffin split open from inside and empty, a straight trail of bare footprints leading from the pit across the cemetery to a misty forest",
+    "farewell": "a funeral pyre burning with blue flame on top of a burial mound at night, a translucent ghost of a young nobleman in a doublet stepping out of the smoke",
+    "epilogue": "a table in an empty priest's house, a guttering candle, scattered black prayer beads and a folded letter, dim light"
   },
   "items": {
     "potion": "a small glass bottle of red healing potion with a cork",

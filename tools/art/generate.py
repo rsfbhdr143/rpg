@@ -53,6 +53,8 @@ DEFAULT_KIND = {"units": "unit", "skills": "icon", "statuses": "icon", "surfaces
 IMPORT_KIND = {"unit": "unit", "object": "image", "building": "image", "icon": "icon", "texture": "tile", "wall": "tile", "cloud": "effect",
                "portrait": "portrait", "scene": "scene"}
 KEEP_BACKGROUND = {"texture", "wall", "portrait", "scene"}
+# имя спрайта у новых категорий с приставкой, чтобы портрет рыцаря не совпал с самим рыцарем
+OUT_PREFIX = {"portraits": "portrait_", "props": "prop_", "images": "image_", "items": "item_"}
 FIGURE_KINDS = {"unit", "object", "building"}           # фигура на однотонном фоне: вырезается и проверяется
 LORA_HINT = re.compile(r"wood|lino|engrav|etch|wdct", re.I)
 
@@ -98,7 +100,8 @@ def items_of(prompts: dict, data_dir: Path) -> list[Item]:
             kind = str(spec.pop("kind", kind))
             bind = spec.pop("bind", bind)         # своя привязка: одна картинка на несколько id
             subject = str(spec.pop("subject", gid.replace("_", " ")))
-            out.append(Item("%s/%s" % (cat, gid), cat, gid, gid.replace("/", "_"), bind, kind, subject, spec))
+            out_id = OUT_PREFIX.get(cat, "") + gid.replace("/", "_")
+            out.append(Item("%s/%s" % (cat, gid), cat, gid, out_id, bind, kind, subject, spec))
     return out
 
 
@@ -367,9 +370,12 @@ def components(mask: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:
     return out
 
 
-def cut_figure(img: Image.Image, tolerance: int = 24) -> Image.Image:
+def cut_figure(img: Image.Image, tolerance: int = 24, holes: bool = False) -> Image.Image:
     """Фигура на бумажном фоне -> вырезанная фигура. Бумага, запертая между ног и под ногами
-    (её не достаёт заливка от краёв), тоже убирается: такие же по цвету пятна в нижней четверти фигуры."""
+    (её не достаёт заливка от краёв), тоже убирается: такие же по цвету пятна целиком ниже двух третей фигуры
+    (пятно, которое заходит выше, — это светлый мех или ткань, оно остаётся целиком, без резкой границы).
+    holes: такие пятна убираются по всей фигуре (между ветками, внутри лука). Не для белых одежд:
+    белая ткань в гравюре того же цвета, что бумага."""
     arr = np.asarray(img.convert("RGBA"))
     out, removed = import_art.remove_background(arr)
     if not removed:
@@ -383,10 +389,10 @@ def cut_figure(img: Image.Image, tolerance: int = 24) -> Image.Image:
     if len(rows):
         top, bottom = rows[0], rows[-1]
         cand = figure & (dist <= tolerance)
-        cand[:top + int(0.75 * (bottom - top))] = False
+        limit = top + int(0.65 * (bottom - top))
         gone = np.zeros_like(figure)
         for ys, xs in components(cand):
-            if len(ys) >= 0.004 * figure.sum():
+            if len(ys) >= 0.004 * figure.sum() and (holes or ys.min() >= limit):
                 gone[ys, xs] = True
         gone |= import_art._dilate(gone) & (dist <= 2 * tolerance)   # светлая каёмка пятна
         alpha[gone] = 0
@@ -398,7 +404,7 @@ def cut_figure(img: Image.Image, tolerance: int = 24) -> Image.Image:
 def postprocess(img: Image.Image, item: Item, prompts: dict) -> Image.Image:
     kind = prompts.get("kinds", {}).get(item.kind, {})
     if item.kind in FIGURE_KINDS:
-        img = cut_figure(img)
+        img = cut_figure(img, holes=bool(setting(prompts, item, "clear_holes", False)))
     if kind.get("tileable"):
         img = make_tileable(img)
     if kind.get("alpha_from_black"):
@@ -435,7 +441,7 @@ def figure_problems(img: Image.Image) -> list[str]:
 # --- Варианты, выбор, листы сравнения -------------------------------------------
 
 def variant_dir(root: Path, item: Item) -> Path:
-    return root / "art" / "generated" / item.category / item.out_id
+    return root / "art" / "generated" / item.category / item.gid.replace("/", "_")
 
 
 def variants(root: Path, item: Item) -> list[Path]:
