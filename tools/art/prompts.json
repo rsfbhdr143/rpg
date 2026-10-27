@@ -195,7 +195,10 @@
       "subject": "an undead skeleton warrior, bare bones, empty eye sockets, bald skull, tattered grey loincloth rags, holding one rusty short sword in his right hand",
       "negative": "hat, straw hat, helmet, spear, staff, polearm, bow, two weapons"
     },
-    "drowned": "a bloated drowned corpse covered in green pond weed and mud, pale blue-green skin, dripping water",
+    "drowned": {
+      "subject": "a drowned corpse in soaked dark tattered rags draped with green pond weed, bloated grey-blue skin, open mouth, arms hanging",
+      "negative": "pond, puddle, water surface, lake, ground, reeds, statue, stone"
+    },
     "goblin_scout": {
       "subject": "a skinny green goblin scout in a hooded ragged cloak, holding one short bow in his left hand",
       "px": [
@@ -203,7 +206,11 @@
         34
       ]
     },
-    "lado_body": "a pale dead young nobleman with empty white eyes in an elegant dark red doublet, holding one thin rapier, a crude crown of bones on his head",
+    "lado_body": {
+      "subject": "a pale dead young nobleman with empty white eyes in an elegant dark red doublet, holding one thin rapier, a crude crown of bones on his head",
+      "clear_holes": true,
+      "negative": "cape, cloak, banner, sheet, cloth behind"
+    },
     "lado_ghost": {
       "subject": "the translucent ghost of a young nobleman in an elegant doublet, pale blue-white glowing ethereal body, sad face, no hat",
       "negative": "interior, room, two people, hat, tricorn, colorful clothes"
