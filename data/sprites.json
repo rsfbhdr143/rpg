@@ -25,7 +25,9 @@
     "ranger": "ranger",
     "risen": "risen",
     "skeleton": "skeleton",
-    "wizard": "wizard"
+    "wizard": "wizard",
+    "goblin_shaman": "goblin_shaman",
+    "training_dummy": "training_dummy"
   },
   "tiles": {
     "floor": "village_floor",
@@ -62,6 +64,7 @@
     "portraits/wizard",
     "props/coffin",
     "props/dead_tree",
+    "props/fence",
     "props/fresh_grave",
     "props/funeral_candles",
     "props/grave",
@@ -73,11 +76,13 @@
     "tiles/floor",
     "tiles/wall",
     "units/cleric",
+    "units/goblin_shaman",
     "units/goblin_warrior",
     "units/knight",
     "units/ranger",
     "units/risen",
     "units/skeleton",
+    "units/training_dummy",
     "units/wizard"
   ],
   "portraits": {
@@ -95,6 +100,7 @@
     "grave": "prop_grave",
     "open_grave": "prop_open_grave",
     "fresh_grave": "prop_open_grave",
-    "tombstone": "prop_tombstone"
+    "tombstone": "prop_tombstone",
+    "fence": "prop_fence"
   }
 }

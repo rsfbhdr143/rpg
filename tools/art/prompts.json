@@ -184,6 +184,10 @@
       "size": [
         832,
         1216
+      ],
+      "px": [
+        30,
+        44
       ]
     },
     "risen": "a risen corpse in a torn white burial shroud, grey rotting skin, both arms reaching forward, shambling",
@@ -382,7 +386,7 @@
       ]
     },
     "bell_tower": {
-      "subject": "a small dark weathered wooden bell tower with a shingled roof and a bronze bell, on four timber legs",
+      "subject": "a single small dark weathered wooden bell tower standing alone, shingled roof, a bronze bell, on four timber legs",
       "px": [
         48,
         112
@@ -392,7 +396,7 @@
         832,
         1216
       ],
-      "negative": "church, chapel, white walls, clouds, pink sky"
+      "negative": "church, chapel, white walls, clouds, pink sky, town, city, village, pagoda, neighboring houses"
     },
     "fence": {
       "subject": "a short straight section of an old wooden picket fence, five pickets and two rails, side view",

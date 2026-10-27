@@ -198,6 +198,30 @@
     }
    }
   },
+  "prop_fence": {
+   "sheet": "res://art/sprites/prop_fence.png",
+   "kind": "image",
+   "frame": [
+    31,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_fence.webp"
+   ],
+   "scale": 0.0253,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_funeral_candles": {
    "sheet": "res://art/sprites/prop_funeral_candles.png",
    "kind": "image",
@@ -226,8 +250,8 @@
    "sheet": "res://art/sprites/prop_grave.png",
    "kind": "image",
    "frame": [
-    22,
-    30
+    34,
+    24
    ],
    "pad": 1,
    "cols": 1,
@@ -236,7 +260,7 @@
    "source": [
     "generated/props/prop_grave.webp"
    ],
-   "scale": 0.0235,
+   "scale": 0.0263,
    "animations": {
     "idle": {
      "start": 0,
@@ -471,7 +495,7 @@
    "sheet": "res://art/sprites/cleric.png",
    "kind": "unit",
    "frame": [
-    31,
+    33,
     46
    ],
    "pad": 1,
@@ -481,7 +505,31 @@
    "source": [
     "generated/units/cleric.webp"
    ],
-   "scale": 0.0371,
+   "scale": 0.0375,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_shaman": {
+   "sheet": "res://art/sprites/goblin_shaman.png",
+   "kind": "unit",
+   "frame": [
+    22,
+    38
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/goblin_shaman.webp"
+   ],
+   "scale": 0.0312,
    "animations": {
     "idle": {
      "start": 0,
@@ -543,7 +591,7 @@
    "sheet": "res://art/sprites/ranger.png",
    "kind": "unit",
    "frame": [
-    33,
+    32,
     46
    ],
    "pad": 1,
@@ -553,7 +601,7 @@
    "source": [
     "generated/units/ranger.webp"
    ],
-   "scale": 0.0379,
+   "scale": 0.0371,
    "animations": {
     "idle": {
      "start": 0,
@@ -591,7 +639,7 @@
    "sheet": "res://art/sprites/skeleton.png",
    "kind": "unit",
    "frame": [
-    33,
+    27,
     46
    ],
    "pad": 1,
@@ -601,7 +649,31 @@
    "source": [
     "generated/units/skeleton.webp"
    ],
-   "scale": 0.037,
+   "scale": 0.0381,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "training_dummy": {
+   "sheet": "res://art/sprites/training_dummy.png",
+   "kind": "image",
+   "frame": [
+    26,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/training_dummy.webp"
+   ],
+   "scale": 0.0376,
    "animations": {
     "idle": {
      "start": 0,
@@ -615,8 +687,8 @@
    "sheet": "res://art/sprites/wizard.png",
    "kind": "unit",
    "frame": [
-    34,
-    45
+    32,
+    46
    ],
    "pad": 1,
    "cols": 1,
@@ -625,7 +697,7 @@
    "source": [
     "generated/units/wizard.webp"
    ],
-   "scale": 0.0386,
+   "scale": 0.0391,
    "animations": {
     "idle": {
      "start": 0,
