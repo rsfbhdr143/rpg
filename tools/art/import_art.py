@@ -1285,9 +1285,9 @@ def collect(inbox: Path, tmp: Path) -> list[tuple[Path, str]]:
             for inner in sorted(dest.rglob("*")):
                 irel = inner.relative_to(dest)
                 if inner.is_file() and not any(p.startswith(".") or p == "__MACOSX" for p in irel.parts):
-                    files.append((inner, str(Path(path.stem) / irel)))
+                    files.append((inner, (Path(path.stem) / irel).as_posix()))
         elif path.is_file() and (path.suffix.lower() in IMAGE_EXT or path.suffix.lower() == ".json"):
-            files.append((path, str(rel)))
+            files.append((path, rel.as_posix()))   # одинаково на Windows и Linux
     return files
 
 

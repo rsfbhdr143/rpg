@@ -9,11 +9,37 @@
     "texture_cells": 3,
     "sprites_face": "right"
   },
-  "units": {},
-  "tiles": {},
-  "locations": {},
-  "surfaces": {},
-  "skills": {},
+  "units": {
+    "goblin_warrior": "goblin_warrior",
+    "knight": "knight"
+  },
+  "tiles": {
+    "floor": "village_floor",
+    "wall": "village_wall"
+  },
+  "locations": {
+    "village": {
+      "floor": "village_floor",
+      "wall": "village_wall"
+    }
+  },
+  "surfaces": {
+    "steam": "steam",
+    "water": "water"
+  },
+  "skills": {
+    "fireball": "fireball"
+  },
   "statuses": {},
-  "auto": []
+  "auto": [
+    "locations/village/floor",
+    "locations/village/wall",
+    "skills/fireball",
+    "surfaces/steam",
+    "surfaces/water",
+    "tiles/floor",
+    "tiles/wall",
+    "units/goblin_warrior",
+    "units/knight"
+  ]
 }

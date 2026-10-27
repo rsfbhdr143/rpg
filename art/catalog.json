@@ -1,3 +1,175 @@
 {
- "assets": {}
+ "assets": {
+  "fireball": {
+   "sheet": "res://art/sprites/fireball.png",
+   "kind": "icon",
+   "frame": [
+    512,
+    476
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/skills/fireball.webp"
+   ],
+   "scale": 0.5079,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "steam": {
+   "sheet": "res://art/sprites/steam.png",
+   "kind": "effect",
+   "frame": [
+    512,
+    500
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/surfaces/steam.webp"
+   ],
+   "scale": 0.5596,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "water": {
+   "sheet": "res://art/sprites/water.png",
+   "kind": "tile",
+   "frame": [
+    512,
+    512
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/surfaces/water.webp"
+   ],
+   "scale": 0.5,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "village_floor": {
+   "sheet": "res://art/sprites/village_floor.png",
+   "kind": "tile",
+   "frame": [
+    512,
+    512
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/tiles/village_floor.webp"
+   ],
+   "scale": 0.5,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "village_wall": {
+   "sheet": "res://art/sprites/village_wall.png",
+   "kind": "tile",
+   "frame": [
+    512,
+    512
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/tiles/village_wall.webp"
+   ],
+   "scale": 0.5,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_warrior": {
+   "sheet": "res://art/sprites/goblin_warrior.png",
+   "kind": "unit",
+   "frame": [
+    337,
+    512
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/units/goblin_warrior.webp"
+   ],
+   "scale": 0.4559,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "knight": {
+   "sheet": "res://art/sprites/knight.png",
+   "kind": "unit",
+   "frame": [
+    344,
+    512
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "generated/units/knight.webp"
+   ],
+   "scale": 0.5251,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  }
+ }
 }

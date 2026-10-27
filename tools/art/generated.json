@@ -1,0 +1,149 @@
+{
+ "skills/fireball": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/skills/fireball.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a blazing fireball, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.3,
+  "seed": 1341648993,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v04_color_1341648993.png"
+ },
+ "surfaces/steam": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/surfaces/steam.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.0,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, sky, landscape, ground, horizon, sea, frame, border, paper, cropped",
+  "problems": [],
+  "prompt": "white hot steam, a soft wispy drifting cloud, glowing, isolated on a pure black background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 38.2,
+  "seed": 1211625916,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v03_color_1211625916.png"
+ },
+ "surfaces/water": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/surfaces/water.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of small gentle blue water ripples, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 37.2,
+  "seed": 1884408930,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v08_color_1884408930.png"
+ },
+ "tiles/village/floor": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/village_floor.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of packed brown dirt with sparse tufts of short grass and small pebbles, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 40.3,
+  "seed": 1824025151,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v06_color_1824025151.png"
+ },
+ "tiles/village/wall": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/village_wall.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, flat 2d game texture, straight-on close-up of whitewashed plaster between dark oak timber beams, the pattern fills the entire frame edge to edge, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.3,
+  "seed": 1708409544,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v04_color_1708409544.png"
+ },
+ "units/goblin_warrior": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/goblin_warrior.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a small green goblin warrior in ragged brown leather, gripping one short crude cleaver in his right hand, left hand empty, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 38.3,
+  "seed": 58980970,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v03_color_58980970.png"
+ },
+ "units/knight": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/knight.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a stern medieval knight in plate armor and a deep blue tabard, both hands resting on the crossguard of a greatsword planted point-down in front of him, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 38.2,
+  "seed": 1477090407,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 25,
+  "style": "color",
+  "variant": "v20_color_1477090407.png"
+ }
+}
