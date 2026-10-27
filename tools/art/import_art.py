@@ -874,6 +874,7 @@ def is_pixel_art(frames: list[Image.Image]) -> bool:
 PIXELATE_DEFAULTS = {"enabled": False, "unit": 64, "cell": 32, "icon": 32, "colors": 24, "tile_colors": 12,
                      "outline": True}
 OUTLINE_COLOR = (24, 18, 14)
+PIXEL_ALPHA = 80        # ниже — прозрачный пиксель; не 128, чтобы тонкие ноги скелета и древко не пропадали
 
 
 def pixelate_options(settings: dict) -> dict | None:
@@ -939,7 +940,7 @@ def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, se
         return resize_rgba(big, (w * 3, h * 3), False).crop((w, h, 2 * w, 2 * h))
 
     small = [None if f is None else np.asarray(shrink(f)) for f in pieces]
-    seen = [a[a[..., 3] >= 128][:, :3] for a in small if a is not None]
+    seen = [a[a[..., 3] >= PIXEL_ALPHA][:, :3] for a in small if a is not None]
     pixels = np.concatenate(seen) if seen else np.zeros((0, 3), np.uint8)
     if len(pixels) == 0:
         pixels = np.zeros((1, 3), np.uint8)
@@ -955,7 +956,7 @@ def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, se
         if soft_alpha:     # облака: четыре ступени прозрачности вместо плавной
             alpha = (np.round(a[..., 3] / 85.0) * 85).astype(np.uint8)
         else:
-            alpha = np.where(a[..., 3] >= 128, 255, 0).astype(np.uint8)
+            alpha = np.where(a[..., 3] >= PIXEL_ALPHA, 255, 0).astype(np.uint8)
         px = np.dstack([np.asarray(rgb.convert("RGB")), alpha])
         out.append(Image.fromarray(add_outline(px) if outline else px, "RGBA"))
     return out
