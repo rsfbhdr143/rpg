@@ -515,6 +515,30 @@
     }
    }
   },
+  "drowned": {
+   "sheet": "res://art/sprites/drowned.png",
+   "kind": "unit",
+   "frame": [
+    30,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/drowned.webp"
+   ],
+   "scale": 0.0374,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "goblin_scout": {
    "sheet": "res://art/sprites/goblin_scout.png",
    "kind": "unit",
@@ -635,11 +659,59 @@
     }
    }
   },
+  "lado_body": {
+   "sheet": "res://art/sprites/lado_body.png",
+   "kind": "unit",
+   "frame": [
+    33,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/lado_body.webp"
+   ],
+   "scale": 0.0374,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "lado_ghost": {
+   "sheet": "res://art/sprites/lado_ghost.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/lado_ghost.webp"
+   ],
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "marta": {
    "sheet": "res://art/sprites/marta.png",
    "kind": "unit",
    "frame": [
-    19,
+    32,
     46
    ],
    "pad": 1,
@@ -649,7 +721,31 @@
    "source": [
     "generated/units/marta.webp"
    ],
-   "scale": 0.0377,
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "mukhoglot": {
+   "sheet": "res://art/sprites/mukhoglot.png",
+   "kind": "unit",
+   "frame": [
+    34,
+    50
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/mukhoglot.webp"
+   ],
+   "scale": 0.0412,
    "animations": {
     "idle": {
      "start": 0,
@@ -687,7 +783,7 @@
    "sheet": "res://art/sprites/ranger.png",
    "kind": "unit",
    "frame": [
-    32,
+    29,
     46
    ],
    "pad": 1,
@@ -697,7 +793,7 @@
    "source": [
     "generated/units/ranger.webp"
    ],
-   "scale": 0.0371,
+   "scale": 0.0378,
    "animations": {
     "idle": {
      "start": 0,
