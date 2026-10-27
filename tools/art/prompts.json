@@ -46,17 +46,18 @@
         1216
       ],
       "variants": 3,
-      "prompt": "{style}, {subject}, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
-      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+      "prompt": "{style}, {subject}, colorful clothes, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
       "px": [
         32,
         44
-      ]
+      ],
+      "lora_strength": 0.6
     },
     "object": {
       "size": [
-        832,
-        1216
+        1024,
+        1024
       ],
       "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
       "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
@@ -64,7 +65,8 @@
         48,
         72
       ],
-      "lora_strength": 0.45
+      "lora_strength": 0.45,
+      "clear_holes": true
     },
     "building": {
       "size": [
@@ -77,7 +79,8 @@
         72,
         72
       ],
-      "lora_strength": 0.45
+      "lora_strength": 0.45,
+      "clear_holes": true
     },
     "icon": {
       "size": [
@@ -149,7 +152,10 @@
   "units": {
     "knight": "a stern medieval knight in plate armor and a deep blue tabard, both hands resting on the crossguard of a greatsword planted point-down in front of him",
     "wizard": "a young female wizard in a long crimson robe, holding one plain straight wooden staff upright in her right hand, left hand empty",
-    "ranger": "a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty",
+    "ranger": {
+      "subject": "a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty",
+      "clear_holes": true
+    },
     "cleric": "a female cleric in white and gold vestments, holding one simple mace in her right hand, a holy pendant on her chest",
     "wolf": {
       "subject": "a lean grey wolf, snarling, standing on four legs, side view",
@@ -174,10 +180,17 @@
     },
     "training_dummy": {
       "kind": "object",
-      "subject": "a straw training dummy on a wooden post with a burlap sack head"
+      "subject": "a straw training dummy on a wooden post with a burlap sack head",
+      "size": [
+        832,
+        1216
+      ]
     },
     "risen": "a risen corpse in a torn white burial shroud, grey rotting skin, both arms reaching forward, shambling",
-    "skeleton": "a skeleton warrior in tattered rags holding one rusty notched sword in his right hand",
+    "skeleton": {
+      "subject": "an undead skeleton warrior, bare bones, empty eye sockets, bald skull, tattered grey loincloth rags, holding one rusty short sword in his right hand",
+      "negative": "hat, straw hat, helmet, spear, staff, polearm, bow, two weapons"
+    },
     "drowned": "a bloated drowned corpse covered in green pond weed and mud, pale blue-green skin, dripping water",
     "goblin_scout": {
       "subject": "a skinny green goblin scout in a hooded ragged cloak, holding one short bow in his left hand",
@@ -244,6 +257,10 @@
       "px": [
         40,
         64
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "goblin_camp/floor": "trampled mud of an ancient burial mound with dry grass, small bones and ash",
@@ -312,11 +329,16 @@
   },
   "props": {
     "grave": {
-      "subject": "a grave mound with a simple wooden cross",
+      "subject": "a low grave mound of dark earth with a simple wooden cross at its head",
       "px": [
         32,
         28
-      ]
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "trees, grass field, rocks, boulder"
     },
     "tombstone": {
       "subject": "a weathered mossy stone tombstone",
@@ -334,13 +356,22 @@
       "bind": [
         "props/open_grave",
         "props/fresh_grave"
-      ]
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "trees, spruce, fir"
     },
     "coffin": {
       "subject": "a closed plain wooden coffin",
       "px": [
         32,
         18
+      ],
+      "size": [
+        1216,
+        832
       ]
     },
     "funeral_candles": {
@@ -351,7 +382,7 @@
       ]
     },
     "bell_tower": {
-      "subject": "a small old stone chapel bell tower with a pointed roof and a bell",
+      "subject": "a small dark weathered wooden bell tower with a shingled roof and a bronze bell, on four timber legs",
       "px": [
         48,
         112
@@ -360,13 +391,18 @@
       "size": [
         832,
         1216
-      ]
+      ],
+      "negative": "church, chapel, white walls, clouds, pink sky"
     },
     "fence": {
-      "subject": "a short section of old wooden picket fence",
+      "subject": "a short straight section of an old wooden picket fence, five pickets and two rails, side view",
       "px": [
         32,
         18
+      ],
+      "size": [
+        1216,
+        832
       ]
     },
     "dead_tree": {
@@ -374,6 +410,10 @@
       "px": [
         40,
         68
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "house": {
@@ -412,6 +452,10 @@
       "px": [
         48,
         72
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "bush": {
@@ -426,6 +470,10 @@
       "px": [
         20,
         28
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "rock": {
@@ -454,6 +502,10 @@
       "px": [
         16,
         44
+      ],
+      "size": [
+        832,
+        1216
       ]
     },
     "bones": {
@@ -461,6 +513,10 @@
       "px": [
         20,
         12
+      ],
+      "size": [
+        1216,
+        832
       ]
     },
     "chest": {
@@ -497,6 +553,10 @@
       "px": [
         32,
         16
+      ],
+      "size": [
+        1216,
+        832
       ]
     }
   },

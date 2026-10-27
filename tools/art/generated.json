@@ -1,4 +1,258 @@
 {
+ "portraits/cleric": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/portraits/portrait_cleric.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple people, full body, hands, cropped head, frame, border, text",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, head and shoulders portrait of a female cleric in white and gold vestments with a holy pendant, calm face, facing the viewer, expressive face, centered, simple dark muted background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 34.3,
+  "seed": 1591228309,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1591228309.png"
+ },
+ "portraits/knight": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/portraits/portrait_knight.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple people, full body, hands, cropped head, frame, border, text",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, head and shoulders portrait of a stern medieval knight with short grey hair and a scar, plate armor and a deep blue tabard, facing the viewer, expressive face, centered, simple dark muted background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.2,
+  "seed": 1515097906,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1515097906.png"
+ },
+ "portraits/marta": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/portraits/portrait_marta.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple people, full body, hands, cropped head, frame, border, text",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, head and shoulders portrait of a sturdy red-haired woman tavern keeper, freckles, stern eyes, white apron, facing the viewer, expressive face, centered, simple dark muted background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 34.2,
+  "seed": 1655388047,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1655388047.png"
+ },
+ "portraits/ranger": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/portraits/portrait_ranger.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple people, full body, hands, cropped head, frame, border, text",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, head and shoulders portrait of a hooded ranger with a short beard in a green cloak, facing the viewer, expressive face, centered, simple dark muted background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 667515356,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_667515356.png"
+ },
+ "portraits/tadeush": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/portraits/portrait_tadeush.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple people, full body, hands, cropped head, frame, border, text",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, head and shoulders portrait of a gaunt elderly priest in a black cassock, sunken cheeks, thin grey hair, facing the viewer, expressive face, centered, simple dark muted background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.2,
+  "seed": 1449198515,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_1449198515.png"
+ },
+ "portraits/wizard": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/portraits/portrait_wizard.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.7,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple people, full body, hands, cropped head, frame, border, text",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, head and shoulders portrait of a young female wizard with dark braided hair in a crimson hooded robe, facing the viewer, expressive face, centered, simple dark muted background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 35.3,
+  "seed": 871150400,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_871150400.png"
+ },
+ "props/coffin": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_coffin.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a closed plain wooden coffin, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 439309557,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v06_color_439309557.png"
+ },
+ "props/dead_tree": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_dead_tree.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a dead leafless black tree with twisted branches, the whole object, isometric three-quarter view from above, single object, centered, plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 19712948,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_19712948.png"
+ },
+ "props/funeral_candles": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_funeral_candles.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a group of three tall funeral candles burning, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1256060127,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v07_color_1256060127.png"
+ },
+ "props/grave": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_grave.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "problems": [
+   "фон не убрался"
+  ],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a grave mound with a simple wooden cross, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 73.4,
+  "seed": 2041983278,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v08_color_2041983278.png"
+ },
+ "props/open_grave": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_open_grave.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a freshly dug open grave pit with a pile of earth and a shovel stuck in it, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.1,
+  "seed": 236387882,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v06_color_236387882.png"
+ },
+ "props/tombstone": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_tombstone.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a weathered mossy stone tombstone, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 71.4,
+  "seed": 2062049794,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v08_color_2062049794.png"
+ },
  "skills/fireball": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -62,6 +316,48 @@
   "style": "color",
   "variant": "v08_color_1884408930.png"
  },
+ "tiles/cemetery/floor": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/cemetery_floor.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of dry autumn grass with fallen yellow leaves and patches of dark earth, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 543480892,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_543480892.png"
+ },
+ "tiles/cemetery/wall": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/cemetery_wall.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge, ship, sea, sun, sunset, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of old mossy fieldstone wall, flat 2d game texture, straight-on view, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 35.3,
+  "seed": 1444093705,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1444093705.png"
+ },
  "tiles/village/floor": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -104,6 +400,27 @@
   "style": "color",
   "variant": "v04_color_1708409544.png"
  },
+ "units/cleric": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/cleric.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a female cleric in white and gold vestments, holding one simple mace in her right hand, a holy pendant on her chest, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 914239609,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v04_color_914239609.png"
+ },
  "units/goblin_warrior": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -145,5 +462,89 @@
   "steps": 25,
   "style": "color",
   "variant": "v20_color_1477090407.png"
+ },
+ "units/ranger": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/ranger.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 70.5,
+  "seed": 733103389,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v06_color_733103389.png"
+ },
+ "units/risen": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/risen.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a risen corpse in a torn white burial shroud, grey rotting skin, both arms reaching forward, shambling, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 71.6,
+  "seed": 375937081,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v04_color_375937081.png"
+ },
+ "units/skeleton": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/skeleton.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a skeleton warrior in tattered rags holding one rusty notched sword in his right hand, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1039738116,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v03_color_1039738116.png"
+ },
+ "units/wizard": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/wizard.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.9,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a young female wizard in a long crimson robe, holding one plain straight wooden staff upright in her right hand, left hand empty, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.4,
+  "seed": 483570711,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_483570711.png"
  }
 }

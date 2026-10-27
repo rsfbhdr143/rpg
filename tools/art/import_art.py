@@ -1093,7 +1093,7 @@ def refs_of(value) -> list[str]:
 
 def all_bindings(bindings: dict):
     """Все привязки: (подпись, значение), включая свои клетки локаций."""
-    for cat in CATEGORIES:
+    for cat in CATEGORIES + EXTRA_CATEGORIES:
         for gid, v in bindings.get(cat, {}).items():
             yield "%s/%s" % (cat, gid), v
     for loc, table in bindings.get("locations", {}).items():

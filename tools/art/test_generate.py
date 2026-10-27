@@ -147,7 +147,7 @@ class GenerateTest(unittest.TestCase):
         self.assertIn("seed", record["units/knight"])
         hint = json.loads((self.root / "art/inbox/generated/skills/attack.art.json").read_text(encoding="utf-8"))
         self.assertEqual(hint["id"], "attack")
-        hint = json.loads((self.root / "art/inbox/generated/props/open_grave.art.json").read_text(encoding="utf-8"))
+        hint = json.loads((self.root / "art/inbox/generated/props/prop_open_grave.art.json").read_text(encoding="utf-8"))
         self.assertEqual(hint["pixel_box"], [36, 24])
         self.assertEqual(hint["kind"], "image")
         sheet = generate.contact_sheet(self.root, "units", self.items, record, self.prompts)
@@ -162,7 +162,8 @@ class GenerateTest(unittest.TestCase):
         self.assertEqual(b["locations"]["village"]["floor"], "village_floor")
         self.assertEqual(b["locations"]["forest"]["wall"], "forest_wall")
         self.assertIn("locations/forest/wall", b["auto"])
-        self.assertEqual(b["props"], {"open_grave": "open_grave", "fresh_grave": "open_grave"})   # одна на два id
+        self.assertEqual(b["props"], {"open_grave": "prop_open_grave", "fresh_grave": "prop_open_grave"})   # одна на два id
+        self.assertNotIn("prop_open_grave", res["unused"])
         cat = res["catalog"]
         self.assertTrue(cat["village_floor"].get("opaque"))      # фон текстуры не срезан
         self.assertFalse(cat["forest_wall"].get("opaque"))       # дерево вырезано с белого фона
@@ -208,6 +209,9 @@ class GenerateTest(unittest.TestCase):
         self.assertEqual(out[330, 150, 3], 0)                        # бумага между ног
         self.assertEqual(out[160, 150, 3], 255)                      # плащ
         self.assertEqual(out[200, 102, 3], 255)                      # тело
+        holes = np.asarray(generate.cut_figure(img, holes=True))      # дерево, лук: бумага по всей фигуре
+        self.assertEqual(holes[160, 150, 3], 0)
+        self.assertEqual(holes[200, 102, 3], 255)
 
     def test_retry_when_all_variants_are_bad(self):
         bad = generate.Item("units/knight", "units", "knight", "knight", "units/knight", "unit", "a hovering shield")
