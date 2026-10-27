@@ -28,9 +28,12 @@ SR = dsp.SR
 SRC = os.path.join(OUT, "game-music")
 EXTS = (".mp3", ".wav", ".ogg", ".flac", ".m4a", ".opus")
 # Длина стингеров в секундах: генератор делает длинные треки, берём удачное начало такой длины.
-STINGER_LEN = {"omen": 10.0, "victory": 6.0, "defeat": 11.0, "level_up": 4.0, "quest": 5.0, "quest_done": 5.0}
+STINGER_LEN = {"omen": 10.0, "victory": 6.0, "defeat": 12.0, "level_up": 5.5, "quest": 5.0, "quest_done": 7.0}
 HOP = 0.05  # шаг поиска стыка, с
 WIN = 3.0  # сколько секунд после стыка должно совпасть
+MIN_LOOP = 50.0  # петля не короче, с
+# Треки, где важно развитие: прощание нарастает к полному оркестру, короткая петля его бы потеряла.
+MIN_LOOP_FOR = {"farewell": 100.0}
 
 
 def decode(path):
@@ -82,25 +85,29 @@ def features(x):
     return f / (np.linalg.norm(f, axis=1, keepdims=True) + 1e-9)
 
 
-def find_loop(x):
-    """(a, b) в сэмплах: после b музыка звучит как после a, так что x[a:b] можно крутить по кругу."""
+def find_loop(x, min_loop=MIN_LOOP):
+    """(a, b) в сэмплах: после b музыка звучит как после a, так что x[a:b] можно крутить по кругу.
+
+    Ищем пару мест, где следующие WIN секунд звучат одинаково (обычно это повтор куплета или темы),
+    с петлёй не короче min_loop. Длинная петля чуть лучше, но похожесть важнее.
+    """
     end = body_end(x)
     dur = end / SR
     f = features(x[:end])
     w = int(WIN / HOP)
     n = len(f) - w
-    a_lo, a_hi = int(2 / HOP), int(min(25.0, dur * 0.3) / HOP)
-    b_lo = int(max(dur * 0.55, (a_hi * HOP) + 20) / HOP)
-    if n <= b_lo or a_hi <= a_lo:
+    a_lo, a_hi = int(2 / HOP), int(dur * 0.5 / HOP)
+    min_len = int(min_loop / HOP)
+    if n <= a_lo + min_len:
         return None
     win = np.stack([f[i:i + w].ravel() for i in range(n)])
     win /= np.linalg.norm(win, axis=1, keepdims=True) + 1e-9
-    sim = win[a_lo:a_hi] @ win[b_lo:n].T
-    # чем длиннее петля, тем лучше: небольшая премия за длину
-    length = (np.arange(b_lo, n)[None, :] - np.arange(a_lo, a_hi)[:, None]) * HOP
-    score = sim + 0.002 * length
+    a_idx = np.arange(a_lo, min(a_hi, n - min_len))
+    sim = win[a_idx] @ win.T
+    length = (np.arange(n)[None, :] - a_idx[:, None]) * HOP
+    score = np.where(length >= min_loop, sim + 0.0007 * length, -1.0)
     i, j = np.unravel_index(np.argmax(score), score.shape)
-    a, b = (a_lo + i) * int(HOP * SR), (b_lo + j) * int(HOP * SR)
+    a, b = a_idx[i] * int(HOP * SR), j * int(HOP * SR)
     return refine(x, a, b), float(sim[i, j])
 
 
@@ -122,8 +129,8 @@ def refine(x, a, b):
     return a, b + best_d * step
 
 
-def make_music_loop(x, xfade=0.35):
-    found = find_loop(x)
+def make_music_loop(x, min_loop=MIN_LOOP, xfade=0.35):
+    found = find_loop(x, min_loop)
     if found is None:
         print("    стык не найден, обычная петля с перекрытием")
         return dsp.make_loop(x[: body_end(x)], 3.0), None
@@ -162,7 +169,7 @@ def import_one(path, out_root=None):
         return None
     x = trim_silence(decode(path))
     if section == "music":
-        x, info = make_music_loop(x)
+        x, info = make_music_loop(x, MIN_LOOP_FOR.get(base, MIN_LOOP))
         audio = dsp.master(x, target_db=TARGET[section], loop=True)
         where = f"стык {info[0]:.1f}→{info[1]:.1f} с, похожесть {info[2]:.2f}" if info else ""
     else:
