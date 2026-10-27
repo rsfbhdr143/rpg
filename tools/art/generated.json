@@ -26,20 +26,20 @@
   "file": "art/inbox/generated/images/image_farewell.webp",
   "lora": "wdct.safetensors",
   "lora_strength": 0.8,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, frame, border, black border, text, letters, modern, cars",
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, frame, border, black border, text, letters, modern, cars, orange fire, yellow fire, daylight, sunny sky, procession, crowd of monks",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a funeral pyre burning with blue flame on top of a burial mound at night, a translucent ghost of a young nobleman in a doublet stepping out of the smoke, wide view, gloomy late autumn, fog, northern borderland village",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, night, a tall funeral pyre burning with bright eerie (cyan blue flames:1.4) on top of a small burial mound, a glowing pale blue (translucent ghost:1.3) of a young man in a doublet rising out of the blue fire, villagers watching from the dark, wide view, gloomy late autumn, fog, northern borderland village",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 33.3,
-  "seed": 676641047,
+  "seconds": 35.2,
+  "seed": 1051235882,
   "size": [
    1344,
    768
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v01_color_676641047.png"
+  "variant": "v04_color_1051235882.png"
  },
  "images/intro_1": {
   "cfg": 6.5,
@@ -151,21 +151,21 @@
   "checkpoint": "sd_xl_base_1.0.safetensors",
   "file": "art/inbox/generated/items/item_gold.webp",
   "lora": "wdct.safetensors",
-  "lora_strength": 0.7,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery, card, plaque, frame, border, square, tile, parchment, paper, background texture, coin purse, chest",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a small pile of gold coins, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a small heap of shiny gold coins, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 33.3,
-  "seed": 896154855,
+  "seconds": 37.3,
+  "seed": 1762115438,
   "size": [
    1024,
    1024
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v01_color_896154855.png"
+  "variant": "v03_color_1762115438.png"
  },
  "items/potion": {
   "cfg": 6.5,
@@ -503,6 +503,27 @@
   "style": "color",
   "variant": "v01_color_1694486483.png"
  },
+ "props/bell_tower": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_bell_tower.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, church, chapel, white walls, clouds, pink sky, town, city, village, pagoda, neighboring houses",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single small dark weathered wooden bell tower standing alone, shingled roof, a bronze bell, on four timber legs, the whole building, isometric three-quarter view from above, single building, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 43.4,
+  "seed": 1827981806,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v14_color_1827981806.png"
+ },
  "props/bone_throne": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -524,26 +545,26 @@
   "style": "color",
   "variant": "v01_color_766588424.png"
  },
- "props/bones": {
+ "props/bush": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_bones.webp",
+  "file": "art/inbox/generated/props/prop_bush.webp",
   "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+  "lora_strength": 0.35,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, pot, planter, flower pot, vase, basket, landscape, field, meadow, tree trunk, tall tree",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a small pile of bones and a skull, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single round leafy shrub with orange and red autumn leaves, roots hidden, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 32.3,
-  "seed": 2083282762,
+  "seconds": 39.2,
+  "seed": 980208938,
   "size": [
-   1216,
-   832
+   1024,
+   1024
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v02_color_2083282762.png"
+  "variant": "v06_color_980208938.png"
  },
  "props/campfire": {
   "cfg": 6.5,
@@ -671,29 +692,6 @@
   "style": "color",
   "variant": "v07_color_1256060127.png"
  },
- "props/grave": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_grave.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, trees, grass field, rocks, boulder",
-  "problems": [
-   "фон не убрался"
-  ],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a low grave mound of dark earth with a simple wooden cross at its head, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 32.3,
-  "seed": 2019410050,
-  "size": [
-   1216,
-   832
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v12_color_2019410050.png"
- },
  "props/house": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -757,6 +755,27 @@
   "style": "color",
   "variant": "v02_color_876123007.png"
  },
+ "props/reeds": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_reeds.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.35,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, lake, pond, water, reflection, swamp landscape, river bank, birds, boat, sky",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single tuft of tall green and brown reeds with a few brown cattails, growing from a small clump of roots, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 37.1,
+  "seed": 396615324,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v06_color_396615324.png"
+ },
  "props/rock": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -798,6 +817,27 @@
   "steps": 22,
   "style": "color",
   "variant": "v01_color_517882378.png"
+ },
+ "props/tavern": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_tavern.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.35,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, neighboring houses, town, street, road, fence, crowd, church, tower",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single two-storey timber-framed tavern standing alone, thatched roof, a wooden sign board hanging over the door, a barrel by the wall, the whole building, isometric three-quarter view from above, single building, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 46.7,
+  "seed": 524489528,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v09_color_524489528.png"
  },
  "props/tent": {
   "cfg": 6.5,
@@ -904,6 +944,27 @@
   "style": "color",
   "variant": "v04_color_777915173.png"
  },
+ "props/well": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_well.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.35,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, houses, cottages, village, street, people, trees, pond, fountain",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single round stone well with a small pitched wooden roof on two posts and a wooden bucket on the rim, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.2,
+  "seed": 1918428675,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v09_color_1918428675.png"
+ },
  "skills/arrow_shot": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -951,21 +1012,21 @@
   "checkpoint": "sd_xl_base_1.0.safetensors",
   "file": "art/inbox/generated/skills/battering_ram.webp",
   "lora": "wdct.safetensors",
-  "lora_strength": 0.7,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "lora_strength": 0.5,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery, person, man, knight, warrior, figure, body, legs, arms, face, hands",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, an armored shoulder charging forward with impact lines, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a heavy iron-shod battering ram log smashing into a cracked wooden shield, star-shaped impact burst, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 33.2,
-  "seed": 922160957,
+  "seconds": 34.1,
+  "seed": 1874289206,
   "size": [
    1024,
    1024
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v02_color_922160957.png"
+  "variant": "v04_color_1874289206.png"
  },
  "skills/bless": {
   "cfg": 6.5,
@@ -1119,21 +1180,21 @@
   "checkpoint": "sd_xl_base_1.0.safetensors",
   "file": "art/inbox/generated/skills/oil_slick.webp",
   "lora": "wdct.safetensors",
-  "lora_strength": 0.7,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "lora_strength": 0.5,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery, person, man, knight, warrior, figure, body, legs, arms, face, hands, fire, water",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a tipped jug spilling black oil, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a tipped clay jug spilling a wide glossy black oil puddle with a rainbow sheen, seen from above, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 33.3,
-  "seed": 770255701,
+  "seconds": 36.2,
+  "seed": 940800763,
   "size": [
    1024,
    1024
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v01_color_770255701.png"
+  "variant": "v03_color_940800763.png"
  },
  "skills/poison_dart": {
   "cfg": 6.5,
@@ -1203,21 +1264,21 @@
   "checkpoint": "sd_xl_base_1.0.safetensors",
   "file": "art/inbox/generated/skills/whirlwind.webp",
   "lora": "wdct.safetensors",
-  "lora_strength": 0.7,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
+  "lora_strength": 0.5,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery, person, man, knight, warrior, figure, body, legs, arms, face, hands",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a spinning greatsword trailing a swirling wind, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a steel sword spinning in a circular blur inside a swirling blue-grey wind vortex, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 37.4,
-  "seed": 382054380,
+  "seconds": 35.1,
+  "seed": 2070290177,
   "size": [
    1024,
    1024
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v02_color_382054380.png"
+  "variant": "v04_color_2070290177.png"
  },
  "statuses/blessed": {
   "cfg": 6.5,
@@ -1245,20 +1306,21 @@
   "checkpoint": "sd_xl_base_1.0.safetensors",
   "file": "art/inbox/generated/statuses/burning.webp",
   "lora": "wdct.safetensors",
-  "lora_strength": 0.9,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a small flame, single emblem, centered, bold simple shapes, plain white background",
+  "lora_strength": 0.5,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery, candle, torch, small flame, campfire, logs, wood",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, one big bright orange and yellow flame filling the whole icon, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 40.2,
-  "seed": 1736483262,
+  "seconds": 39.2,
+  "seed": 407878431,
   "size": [
    1024,
    1024
   ],
-  "steps": 25,
+  "steps": 22,
   "style": "color",
-  "variant": "v01_color_1736483262.png"
+  "variant": "v03_color_407878431.png"
  },
  "statuses/chilled": {
   "cfg": 6.5,
@@ -1322,27 +1384,6 @@
   "steps": 22,
   "style": "color",
   "variant": "v01_color_2014381783.png"
- },
- "statuses/knocked_down": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/statuses/knocked_down.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.7,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple icons, icon grid, cropped, scenery",
-  "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, game ability icon, a falling figure and an arrow pointing down, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 34.2,
-  "seed": 851831654,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v01_color_851831654.png"
  },
  "statuses/poisoned": {
   "cfg": 6.5,
