@@ -442,6 +442,27 @@
   "style": "color",
   "variant": "v07_color_204556752.png"
  },
+ "units/drowned": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/drowned.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.6,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a bloated drowned corpse covered in green pond weed and mud, pale blue-green skin, dripping water, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 72.4,
+  "seed": 2033686654,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v04_color_2033686654.png"
+ },
  "units/goblin_scout": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -547,26 +568,89 @@
   "style": "color",
   "variant": "v20_color_1477090407.png"
  },
- "units/marta": {
+ "units/lado_body": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/units/marta.webp",
+  "file": "art/inbox/generated/units/lado_body.webp",
   "lora": "wdct.safetensors",
   "lora_strength": 0.6,
   "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a sturdy red-haired woman tavern keeper in a green dress and a white apron, arms crossed, stern, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a pale dead young nobleman with empty white eyes in an elegant dark red doublet, holding one thin rapier, a crude crown of bones on his head, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 33.3,
-  "seed": 56529841,
+  "seconds": 84.4,
+  "seed": 58132061,
   "size": [
    832,
    1216
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v05_color_56529841.png"
+  "variant": "v04_color_58132061.png"
+ },
+ "units/lado_ghost": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/lado_ghost.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.6,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, the translucent glowing pale blue-white ghost of a young nobleman in an elegant doublet, sad face, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 34.2,
+  "seed": 410142424,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_410142424.png"
+ },
+ "units/marta": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/marta.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.6,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale, kitchen, interior, room, table, shelves",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a sturdy red-haired woman tavern keeper in a dark red dress and a white apron, arms crossed, stern, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 110.0,
+  "seed": 47003759,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v07_color_47003759.png"
+ },
+ "units/mukhoglot": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/units/mukhoglot.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.6,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a fat green goblin shaman wearing a cracked animal skull as a mask, black flies buzzing around him, holding one bone staff, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 112.6,
+  "seed": 1243195503,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v06_color_1243195503.png"
  },
  "units/pipin": {
   "cfg": 6.5,
@@ -597,18 +681,18 @@
   "lora_strength": 0.6,
   "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
   "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a hooded ranger in a green cloak and leather armor, a longbow slung across his back, a quiver at his hip, hands empty, colorful clothes, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a hooded ranger in a deep purple hooded cloak over dark brown leather armor, a longbow in his left hand, a quiver on his back, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
   "sampler": "dpmpp_2m",
   "scheduler": "karras",
-  "seconds": 33.3,
-  "seed": 426967520,
+  "seconds": 52.6,
+  "seed": 448119725,
   "size": [
    832,
    1216
   ],
   "steps": 22,
   "style": "color",
-  "variant": "v09_color_426967520.png"
+  "variant": "v10_color_448119725.png"
  },
  "units/risen": {
   "cfg": 6.5,

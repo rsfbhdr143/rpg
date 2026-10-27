@@ -204,7 +204,10 @@
       ]
     },
     "lado_body": "a pale dead young nobleman with empty white eyes in an elegant dark red doublet, holding one thin rapier, a crude crown of bones on his head",
-    "lado_ghost": "the translucent glowing pale blue-white ghost of a young nobleman in an elegant doublet, sad face",
+    "lado_ghost": {
+      "subject": "the translucent ghost of a young nobleman in an elegant doublet, pale blue-white glowing ethereal body, sad face, no hat",
+      "negative": "interior, room, two people, hat, tricorn, colorful clothes"
+    },
     "mukhoglot": {
       "subject": "a fat green goblin shaman wearing a cracked animal skull as a mask, black flies buzzing around him, holding one bone staff",
       "bind": [
@@ -216,8 +219,14 @@
         48
       ]
     },
-    "tadeush": "a gaunt elderly priest in a black cassock holding a smoking censer on a chain",
-    "marta": "a sturdy red-haired woman tavern keeper in a green dress and a white apron, arms crossed, stern",
+    "tadeush": {
+      "subject": "a gaunt old man in a long plain black robe with a small white collar, holding a censer on a chain",
+      "negative": "church, interior, altar, pews, room, columns, windows, arches, yellow robe, golden vestments, colorful robe"
+    },
+    "marta": {
+      "subject": "a sturdy red-haired woman tavern keeper in a dark red dress and a white apron, arms crossed, stern",
+      "negative": "kitchen, interior, room, table, shelves"
+    },
     "pipin": {
       "subject": "a tiny fussy notary man in a pince-nez and a brown coat, holding a rolled scroll",
       "px": [
@@ -233,7 +242,10 @@
         48
       ]
     },
-    "vetla": "a bent old herbalist woman in a shawl leaning on a gnarled walking stick, bundles of herbs on her belt",
+    "vetla": {
+      "subject": "a bent old woman in a grey shawl and a brown skirt leaning on a gnarled walking stick, a small pouch on her belt",
+      "negative": "tree, trees, garden, plants, bushes, flowers, landscape"
+    },
     "zaraza": {
       "subject": "an angry shaggy goat with dirty off-white fur and one broken horn, standing on four legs, side view",
       "px": [
