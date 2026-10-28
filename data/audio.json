@@ -32,11 +32,11 @@
 
   "stingers": {
     "omen":       {"file": "stingers/omen.ogg", "music": "stop", "volume_db": 0.0, "source": "game-music"},
-    "victory":    {"file": "stingers/victory.ogg", "music": "stop", "volume_db": -1.0, "source": "game-music"},
+    "victory":    {"file": "stingers/victory.ogg", "music": "stop", "volume_db": -1.0},
     "defeat":     {"file": "stingers/defeat.ogg", "music": "stop", "volume_db": 0.0, "source": "game-music"},
-    "level_up":   {"file": "stingers/level_up.ogg", "music": "duck", "volume_db": -1.0, "source": "game-music"},
-    "quest":      {"file": "stingers/quest.ogg", "music": "duck", "volume_db": -2.0, "source": "game-music"},
-    "quest_done": {"file": "stingers/quest_done.ogg", "music": "duck", "volume_db": -1.0, "source": "game-music"}
+    "level_up":   {"file": "stingers/level_up.ogg", "music": "duck", "volume_db": -1.0},
+    "quest":      {"file": "stingers/quest.ogg", "music": "duck", "volume_db": -2.0},
+    "quest_done": {"file": "stingers/quest_done.ogg", "music": "duck", "volume_db": -1.0}
   },
 
   "ambient": {

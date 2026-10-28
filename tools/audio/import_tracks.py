@@ -2,7 +2,7 @@
 
   python3 tools/audio/import_tracks.py              # все файлы из assets/audio/game-music
   python3 tools/audio/import_tracks.py funeral      # только этот id
-  python3 tools/audio/import_tracks.py --alt-out=/tmp/alt   # ещё и запасные варианты <id>__alt в /tmp/alt
+  python3 tools/audio/import_tracks.py --alt-out=/tmp/alt   # ещё и все остальные варианты (<id>__alt, __v3...) в /tmp/alt
 
 Исходник assets/audio/game-music/<id>.<mp3|wav|ogg|flac|m4a> превращается в assets/audio/music/<id>.ogg
 (или stingers/<id>.ogg). У музыки обрезаются вступление и концовка и подбирается место стыка, где
@@ -11,6 +11,7 @@
 """
 
 import glob
+import json
 import os
 import subprocess
 import sys
@@ -21,14 +22,18 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import dsp  # noqa: E402
-from build import OUT, QUALITY, TARGET  # noqa: E402
+from build import CONFIG, OUT, QUALITY, TARGET  # noqa: E402
 from songs import MUSIC, STINGERS  # noqa: E402
 
 SR = dsp.SR
 SRC = os.path.join(OUT, "game-music")
 EXTS = (".mp3", ".wav", ".ogg", ".flac", ".m4a", ".opus")
-# Длина стингеров в секундах: генератор делает длинные треки, берём удачное начало такой длины.
-STINGER_LEN = {"omen": 10.0, "victory": 6.0, "defeat": 12.0, "level_up": 5.5, "quest": 5.0, "quest_done": 7.0}
+# Какой вариант записи идёт в игру: <id>.mp3 — первый, <id>__alt.mp3 — второй, <id>__v3/__v4 — следующие.
+# Выбор пользователя 2026-10-28. Треки без "source": "game-music" в data/audio.json играют процедурную версию.
+USE = {"farewell": "farewell__alt", "defeat": "defeat__alt"}
+# Стингеры: генератор делает длинные треки, берём первую фразу не короче min и не длиннее max секунд.
+STINGER_LEN = {"omen": (9.0, 12.5), "victory": (2.5, 6.0), "defeat": (4.0, 9.0),
+               "level_up": (2.0, 5.0), "quest": (2.0, 5.0), "quest_done": (2.0, 5.0)}
 HOP = 0.05  # шаг поиска стыка, с
 WIN = 3.0  # сколько секунд после стыка должно совпасть
 MIN_LOOP = 50.0  # петля не короче, с
@@ -143,22 +148,34 @@ def make_music_loop(x, min_loop=MIN_LOOP, xfade=0.35):
     return out, (a / SR, b / SR, sim)
 
 
-def cut_stinger(x, target):
-    """Начало трека длиной около target: режем в самом тихом месте рядом и плавно гасим."""
-    if len(x) <= target * 1.3 * SR:
+def cut_stinger(x, min_len, max_len):
+    """Первая законченная фраза: режем там, где звук после пика стих на 10 дБ и снова начинает расти.
+
+    Если такого места нет, режем в самом тихом месте между min_len и max_len и гасим подольше.
+    """
+    if len(x) <= max_len * SR:
         return x
-    rms = frame_rms(x, 0.05)
-    lo, hi = int(target * 0.75 / 0.05), int(min(target * 1.3, len(x) / SR) / 0.05)
-    smooth = np.convolve(rms, np.ones(4) / 4, mode="same")
-    cut = (lo + int(np.argmin(smooth[lo:hi]))) * int(0.05 * SR)
-    fade = int(min(1.2, 0.25 * target) * SR)
-    y = x[:cut].copy()
-    y[-fade:] *= np.cos(np.linspace(0, np.pi / 2, fade))[:, None] ** 2
+    hop = 0.05
+    db = 20 * np.log10(np.convolve(frame_rms(x, hop), np.ones(4) / 4, mode="same") + 1e-9)
+    lo, hi = int(min_len / hop), int(max_len / hop)
+    peak = np.maximum.accumulate(db)
+    cut, fade = None, 0.3
+    for i in range(lo, hi):
+        if db[i] < peak[i] - 10 and db[i] <= db[i - 1] and db[i] <= db[i + 1]:
+            cut = i
+            break
+    if cut is None:
+        cut = lo + int(np.argmin(db[lo:hi]))
+        fade = min(1.5, 0.3 * cut * hop)
+    n, f = cut * int(hop * SR), int(fade * SR)
+    y = x[:n].copy()
+    y[-f:] *= np.cos(np.linspace(0, np.pi / 2, f))[:, None] ** 2
     return y
 
 
-def import_one(path, out_root=None):
-    name = os.path.splitext(os.path.basename(path))[0]
+def import_one(path, out_root=None, name=None):
+    """Запись -> <out_root>/<music|stingers>/<name>.ogg (name по умолчанию — имя файла записи)."""
+    name = name or os.path.splitext(os.path.basename(path))[0]
     base = name.split("__")[0]
     if base in MUSIC:
         section, folder = "music", "music"
@@ -173,7 +190,7 @@ def import_one(path, out_root=None):
         audio = dsp.master(x, target_db=TARGET[section], loop=True)
         where = f"стык {info[0]:.1f}→{info[1]:.1f} с, похожесть {info[2]:.2f}" if info else ""
     else:
-        x = cut_stinger(x, STINGER_LEN.get(base, 6.0))
+        x = cut_stinger(x, *STINGER_LEN.get(base, (2.0, 6.0)))
         audio = dsp.master(x, target_db=TARGET[section], loop=False)
         where = ""
     out = os.path.join(out_root or OUT, folder, f"{name}.ogg")
@@ -185,22 +202,25 @@ def import_one(path, out_root=None):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     alt_root = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--alt-out=")), None)
-    names = set(args)
-    files = sorted(p for p in glob.glob(os.path.join(SRC, "*")) if p.lower().endswith(EXTS))
-    if names:
-        files = [p for p in files if os.path.splitext(os.path.basename(p))[0].split("__")[0] in names]
-    # запасные варианты (<id>__alt) в игру не идут, только в папку для сравнения, если она задана
-    alts = [p for p in files if "__" in os.path.basename(p)]
-    files = [p for p in files if "__" not in os.path.basename(p)]
+    files = {os.path.splitext(os.path.basename(p))[0]: p
+             for p in glob.glob(os.path.join(SRC, "*")) if p.lower().endswith(EXTS)}
     if not files:
         print(f"Нет исходников в {os.path.relpath(SRC)}")
         return
     open(os.path.join(SRC, ".gdignore"), "a").close()  # сами исходники Godot не импортирует
-    for p in files:
-        import_one(p)
-    if alt_root:
-        for p in alts:
-            import_one(p, alt_root)
+    cfg = json.load(open(CONFIG, encoding="utf-8"))
+    for base in sorted({n.split("__")[0] for n in files}):
+        if args and base not in args:
+            continue
+        section = "music" if base in MUSIC else "stingers"
+        chosen = USE.get(base, base)
+        # в игру — выбранный вариант, если трек в audio.json помечен как запись; остальные только для сравнения
+        if cfg[section].get(base, {}).get("source") == "game-music" and chosen in files:
+            import_one(files[chosen], name=base)
+        if alt_root:
+            for n in sorted(files):
+                if n.split("__")[0] == base and n != chosen:
+                    import_one(files[n], alt_root)
 
 
 if __name__ == "__main__":
