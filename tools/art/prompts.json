@@ -418,28 +418,6 @@
         18
       ]
     },
-    "bell_tower": {
-      "subject": "a single small dark weathered wooden bell tower standing alone, shingled roof, a bronze bell, on four timber legs",
-      "px": [
-        48,
-        112
-      ],
-      "kind": "building",
-      "size": [
-        832,
-        1216
-      ],
-      "negative": "church, chapel, white walls, clouds, pink sky, town, city, village, pagoda, neighboring houses"
-    },
-    "church": {
-      "subject": "a small dark wooden village church with a steep shingled roof, a small onion-domed belfry with a cross on top, weathered dark timber walls, narrow arched windows",
-      "kind": "building",
-      "px": [
-        128,
-        116
-      ],
-      "negative": "bell tower standing apart, stone cathedral, gothic, castle, town, neighboring houses, graveyard"
-    },
     "fence": {
       "subject": "a short straight section of an old wooden picket fence, five pickets and two rails, side view",
       "px": [
@@ -466,86 +444,6 @@
         1.2
       ],
       "trim": true
-    },
-    "house": {
-      "subject": "a small one-storey timber-framed cottage with a steep dark thatched roof, plain plastered walls with small shuttered windows, no door",
-      "px": [
-        176,
-        176
-      ],
-      "kind": "building",
-      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
-    },
-    "house_b": {
-      "subject": "a long low one-storey peasant house with a thick thatched roof, whitewashed walls with dark timber beams and small shuttered windows, no door",
-      "px": [
-        192,
-        170
-      ],
-      "kind": "building",
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
-    },
-    "house_c": {
-      "subject": "a narrow two-storey timber-framed house with a tall steep front gable, carved window frames and wooden shutters, a small roofed porch, no door",
-      "px": [
-        176,
-        184
-      ],
-      "kind": "building",
-      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
-    },
-    "house_log": {
-      "subject": "a sturdy log cabin made of thick round logs with a mossy turf roof, small square windows with wooden shutters, no door",
-      "px": [
-        176,
-        170
-      ],
-      "kind": "building",
-      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
-    },
-    "barn": {
-      "subject": "a large plank barn with a high steep thatched roof and small square vents under the eaves, solid plank walls without doors",
-      "px": [
-        224,
-        200
-      ],
-      "kind": "building",
-      "size": [
-        1216,
-        832
-      ],
-      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse, silo, tractor, hay bales"
-    },
-    "tavern": {
-      "subject": "a single two-storey timber-framed tavern standing alone, thatched roof, a wooden sign board hanging over the door, a barrel by the wall",
-      "px": [
-        96,
-        92
-      ],
-      "kind": "building",
-      "lora_strength": 0.35,
-      "negative": "neighboring houses, town, street, road, fence, crowd, church, tower"
-    },
-    "smithy": {
-      "subject": "a village smithy with an open forge, an anvil and a chimney",
-      "px": [
-        88,
-        88
-      ],
-      "kind": "building"
-    },
-    "well": {
-      "subject": "a single round stone well with a small pitched wooden roof on two posts and a wooden bucket on the rim",
-      "px": [
-        24,
-        32
-      ],
-      "lora_strength": 0.35,
-      "negative": "houses, cottages, village, street, people, trees, pond, fountain"
     },
     "tree": {
       "subject": "an autumn tree with orange and yellow leaves",
@@ -632,14 +530,6 @@
         40,
         44
       ]
-    },
-    "vetla_hut": {
-      "subject": "a crooked old herbalist hut with a mossy roof and drying herbs hanging by the door",
-      "px": [
-        80,
-        80
-      ],
-      "kind": "building"
     },
     "waystone": {
       "subject": "a single tall standing stone menhir with a glowing pale blue carved rune on its face",

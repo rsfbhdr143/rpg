@@ -566,27 +566,6 @@
   "style": "color",
   "variant": "v01_color_1564444915.png"
  },
- "props/bell_tower": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_bell_tower.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, church, chapel, white walls, clouds, pink sky, town, city, village, pagoda, neighboring houses",
-  "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single small dark weathered wooden bell tower standing alone, shingled roof, a bronze bell, on four timber legs, the whole building, isometric three-quarter view from above, single building, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 43.4,
-  "seed": 1827981806,
-  "size": [
-   832,
-   1216
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v14_color_1827981806.png"
- },
  "props/bench": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -692,29 +671,6 @@
   "style": "color",
   "variant": "v01_color_2067619189.png"
  },
- "props/church": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_church.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile, bell tower standing apart, stone cathedral, gothic, castle, town, neighboring houses, graveyard",
-  "problems": [
-   "обрезано краем"
-  ],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a small dark wooden village church with a steep shingled roof, a small onion-domed belfry with a cross on top, weathered dark timber walls, narrow arched windows, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 31.4,
-  "seed": 748695615,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v07_color_748695615.png"
- },
  "props/coffin": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -819,29 +775,6 @@
   "steps": 22,
   "style": "color",
   "variant": "v07_color_1256060127.png"
- },
- "props/house": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_house.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile",
-  "problems": [
-   "фон не убрался"
-  ],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a small timber-framed village house with a dark thatched roof, dark weathered timber, rich warm colors, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 32.3,
-  "seed": 892341152,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v09_color_892341152.png"
  },
  "props/open_grave": {
   "cfg": 6.5,
@@ -971,29 +904,6 @@
   "style": "color",
   "variant": "v01_color_1399371226.png"
  },
- "props/smithy": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_smithy.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile",
-  "problems": [
-   "отдельный предмет"
-  ],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a village smithy with an open forge, an anvil and a chimney, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 32.2,
-  "seed": 1770610226,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v07_color_1770610226.png"
- },
  "props/table": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -1014,27 +924,6 @@
   "steps": 22,
   "style": "color",
   "variant": "v05_color_2070770136.png"
- },
- "props/tavern": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_tavern.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.35,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile, neighboring houses, town, street, road, fence, crowd, church, tower",
-  "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single two-storey timber-framed tavern standing alone, thatched roof, a wooden sign board hanging over the door, a barrel by the wall, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 32.3,
-  "seed": 2127874060,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v14_color_2127874060.png"
  },
  "props/tent": {
   "cfg": 6.5,
@@ -1120,27 +1009,6 @@
   "style": "color",
   "variant": "v02_color_958899373.png"
  },
- "props/vetla_hut": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_vetla_hut.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.45,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile",
-  "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a crooked old herbalist hut with a mossy roof and drying herbs hanging by the door, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 32.2,
-  "seed": 17992017,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v07_color_17992017.png"
- },
  "props/waystone": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -1161,27 +1029,6 @@
   "steps": 22,
   "style": "color",
   "variant": "v02_color_267676644.png"
- },
- "props/well": {
-  "cfg": 6.5,
-  "checkpoint": "sd_xl_base_1.0.safetensors",
-  "file": "art/inbox/generated/props/prop_well.webp",
-  "lora": "wdct.safetensors",
-  "lora_strength": 0.35,
-  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, houses, cottages, village, street, people, trees, pond, fountain",
-  "problems": [],
-  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single round stone well with a small pitched wooden roof on two posts and a wooden bucket on the rim, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
-  "sampler": "dpmpp_2m",
-  "scheduler": "karras",
-  "seconds": 36.2,
-  "seed": 1918428675,
-  "size": [
-   1024,
-   1024
-  ],
-  "steps": 22,
-  "style": "color",
-  "variant": "v09_color_1918428675.png"
  },
  "skills/arrow_shot": {
   "cfg": 6.5,

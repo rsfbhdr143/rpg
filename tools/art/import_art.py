@@ -750,6 +750,8 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
                 asset.kind = "sheet"
             asset.opaque = sl.opaque
             asset.crop = asset.kind not in ("tileset", "tile") and not sl.opaque
+            if "crop" in ov:          # дома из tools/art/buildings.py: поле картинки задаёт точку опоры, не обрезать
+                asset.crop = bool(ov["crop"])
             if asset.kind == "tileset":
                 asset.tiles = [f for row in sl.rows for f in row]
                 asset.cols = sl.cols
