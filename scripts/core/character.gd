@@ -145,6 +145,16 @@ func ability_rank(ability_id: String) -> int:
 	return int(abilities.get(ability_id, 0))
 
 
+## Класс героя («Рыцарь»): имя у героя своё, класс берётся из шаблона.
+func class_title() -> String:
+	return str(GameData.character(template_id).get("name", template_id))
+
+
+## Нежить ("type": "undead" в шаблоне): лечение и благословение её жгут.
+func is_undead() -> bool:
+	return str(GameData.character(template_id).get("type", "")) == "undead"
+
+
 # --- Состояние ----------------------------------------------------------------
 
 func is_alive() -> bool:

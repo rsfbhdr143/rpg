@@ -27,7 +27,7 @@ const AP := Color("9ad248")
 const XP := Color("7a8ef0")
 const ELEMENT_COLORS := {
 	"physical": Color("d8d0c0"), "fire": Color("ff8a3a"), "water": Color("5ab0ff"), "earth": Color("b08a50"),
-	"air": Color("c8b8ff"), "poison": Color("8ad848"), "heal": Color("82e870"), "": Color("d8d0c0"),
+	"air": Color("c8b8ff"), "poison": Color("8ad848"), "heal": Color("82e870"), "holy": Color("fff0a8"), "": Color("d8d0c0"),
 }
 
 static var _fonts: Dictionary = {}

@@ -673,15 +673,14 @@ class ActionBar extends Control:
 			var r := Rect2(x, y0, Hud.SLOT, Hud.SLOT)
 			var cd := int(u.cooldowns.get(sk, 0))
 			var cost := int(def.get("ap", 0))
-			var usable := in_combat and my_turn and cd <= 0 and cost <= u.ap
+			var usable := cd <= 0 and ((in_combat and my_turn and cost <= u.ap) or s.mode == "explore")
 			var active := sel_skill == sk
 			_slot(r, active, i == hover_index)
-			IconArt.skill_icon(self, sk, r.grow(-6), not usable and in_combat)
-			if not in_combat:
-				draw_rect(r.grow(-3), Color(0, 0, 0, 0.35))
+			IconArt.skill_icon(self, sk, r.grow(-6), not usable)
 			draw_string(title, r.position + Vector2(4, 12), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 8, UiTheme.TEXT_DIM)
-			draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(cost), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14,
-				UiTheme.AP if cost <= u.ap else UiTheme.RED)
+			if in_combat:   # вне боя навыки ОД не тратят
+				draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(cost), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14,
+					UiTheme.AP if cost <= u.ap else UiTheme.RED)
 			if cd > 0:
 				draw_rect(r.grow(-3), Color(0, 0, 0, 0.55))
 				draw_string(title, r.get_center() + Vector2(-4, 6), str(cd), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, UiTheme.TEXT)

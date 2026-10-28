@@ -467,7 +467,8 @@ func _update_selection() -> void:
 		cur = session.combat.current.uid
 	world.current_uid = cur
 	world.selected_uid = selected_uid if session.mode == "explore" else ""
-	if not is_my_turn() and (selected_skill != "" or selected_item != ""):
+	var can_aim := is_my_turn() or (session.mode == "explore" and selected_item == "")
+	if not can_aim and (selected_skill != "" or selected_item != ""):
 		_cancel_targeting()
 
 
@@ -481,12 +482,22 @@ func _update_hover() -> void:
 		world.hover_uid = ""
 		world.hover_object = ""
 		world.hover_cell = Vector2i(-99, -99)
+		world.hover_point = Vector2(-9999, -9999)
 		return
 	var vp := (get_global_mouse_position() - container.global_position) / float(_pixel_scale)
+	world.pick_prefer = _pick_prefer()
 	var pk := world.pick(world.viewport_to_world(vp))
 	world.hover_uid = str(pk.get("uid", ""))
 	world.hover_object = str(pk.get("object", ""))
 	world.hover_cell = pk.get("cell", Vector2i(-99, -99))
+
+
+## Кого выбирать при перекрытии фигур: с союзным навыком — своих, иначе врагов и жителей.
+func _pick_prefer() -> String:
+	var sk := selected_skill
+	if sk == "" and selected_item != "":
+		sk = str((GameData.item(selected_item).get("use", {}) as Dictionary).get("skill", ""))
+	return "ally" if str(GameData.skill(sk).get("target", "")) == "ally" else "foe"
 
 
 func _update_highlights() -> void:
@@ -497,6 +508,9 @@ func _update_highlights() -> void:
 	world.target_uids = {}
 	_preview_ap = 0
 	world.grid_lines = session.mode == "combat"
+	if session.mode == "explore" and selected_skill != "":
+		_explore_aim_highlights()
+		return
 	if not is_my_turn() or not world.idle or world.busy_fx():
 		return
 	var cm := session.combat
@@ -692,8 +706,10 @@ func _slot_tip(slot: Dictionary) -> String:
 			lines.append("%s, шанс %d%%" % [GameData.status(str(sd.get("id", ""))).get("name", sd.get("id", "")), int(sd.get("chance", 100))])
 		if def.has("description"):
 			lines.append("[color=#a89a80]%s[/color]" % str(def["description"]))
-		if session.mode != "combat":
-			lines.append("[color=#6e6454]Навыки применяются в бою[/color]")
+		if def.has("vs_undead"):
+			lines.append("[color=#fff0a8]По нежити: святой урон[/color]")
+		if session.mode == "explore":
+			lines.append("[color=#6e6454]Вне боя — без ОД; удар по врагу начнёт бой[/color]")
 		return "\n".join(lines)
 	var idef := GameData.item(id)
 	var out := "[b]%s[/b]" % idef.get("name", id)
@@ -722,7 +738,8 @@ func _world_tip() -> String:
 				lines.append("[color=#c8a060]ЛКМ — поговорить[/color]")
 			return "\n".join(lines)
 		var hero := session.heroes.has(u)
-		lines.append("[b][color=%s]%s[/color][/b]  ур. %d" % ["#ecdfc2" if hero else "#e8806a", u.display_name, u.level])
+		var cls := " · " + u.class_title().to_lower() if hero else ""
+		lines.append("[b][color=%s]%s[/color][/b]%s  ур. %d" % ["#ecdfc2" if hero else "#e8806a", u.display_name, cls, u.level])
 		if not u.is_alive():
 			lines.append("Пал")
 			return "\n".join(lines)
@@ -775,7 +792,7 @@ func _world_tip() -> String:
 
 static func _element_name(el: String) -> String:
 	return str({"physical": "физический", "fire": "огонь", "water": "вода", "earth": "земля", "air": "воздух",
-		"poison": "яд", "": "физический"}.get(el, el))
+		"poison": "яд", "holy": "святой свет", "": "физический"}.get(el, el))
 
 
 # --- Ввод ---------------------------------------------------------------------------------
@@ -838,6 +855,9 @@ func _on_world_click() -> void:
 	if world.hover_uid != "":
 		hu = session.unit_by_uid(world.hover_uid)
 	if session.mode == "explore":
+		if selected_skill != "":
+			_cast_explore((hu.cell if hu != null else c))
+			return
 		if hu != null and session.heroes.has(hu) and session.owner_of(hu) == Net.my_id():
 			select_hero(hu.uid, false)
 			return
@@ -973,10 +993,10 @@ func _on_key(key: InputEventKey) -> void:
 		KEY_0:
 			_cancel_targeting()
 		_:
-			if k >= KEY_1 and k <= KEY_9 and is_my_turn():
-				var u := session.combat.current
+			if k >= KEY_1 and k <= KEY_9 and (is_my_turn() or (session != null and session.mode == "explore")):
+				var u := bar_unit()
 				var idx: int = k - KEY_1
-				if idx < u.skills.size():
+				if u != null and idx < u.skills.size():
 					select_skill(str(u.skills[idx]))
 
 
@@ -1033,6 +1053,9 @@ func select_hero(uid: String, open_sheet: bool) -> void:
 
 
 func select_skill(skill_id: String) -> void:
+	if session != null and session.mode == "explore":
+		_select_explore_skill(skill_id)
+		return
 	if not is_my_turn():
 		return
 	var u := session.combat.current
@@ -1056,11 +1079,61 @@ func select_skill(skill_id: String) -> void:
 	GameAudio.ui("ui_click")
 
 
+# --- Навыки вне боя -----------------------------------------------------------------------
+
+func _select_explore_skill(skill_id: String) -> void:
+	var u := bar_unit()
+	if u == null or not u.is_alive():
+		return
+	if u.cooldowns.has(skill_id):
+		_on_notice("перезарядка %d" % int(u.cooldowns[skill_id]))
+		return
+	selected_item = ""
+	if str(GameData.skill(skill_id).get("target", "")) == "self":
+		_cancel_targeting()
+		_queue_or_send({"type": "skill", "unit": u.uid, "skill": skill_id, "cell": [u.cell.x, u.cell.y]})
+		return
+	selected_skill = "" if selected_skill == skill_id else skill_id
+	GameAudio.ui("ui_click")
+
+
+func _cast_explore(cell: Vector2i) -> void:
+	var u := bar_unit()
+	if u == null:
+		return
+	var reason := SkillSystem.target_block_reason(session.explore_field(), u, GameData.skill(selected_skill), cell)
+	if reason != "":
+		_on_notice(reason)
+		return
+	_queue_or_send({"type": "skill", "unit": u.uid, "skill": selected_skill, "cell": [cell.x, cell.y]})
+	_cancel_targeting()
+
+
+## Подсветка прицела вне боя: дальность навыка и область под курсором.
+func _explore_aim_highlights() -> void:
+	var u := bar_unit()
+	if u == null:
+		return
+	var def := GameData.skill(selected_skill)
+	var field := session.explore_field()
+	for c in session.grid.cells_in_radius(u.cell, SkillSystem.skill_range(u, def)):
+		world.hl_range[c] = true
+	var hover := world.hover_cell
+	var hu := session.unit_by_uid(world.hover_uid)
+	if hu != null:
+		hover = hu.cell
+	if SkillSystem.target_block_reason(field, u, def, hover) == "":
+		for c in session.grid.cells_in_radius(hover, int(def.get("aoe_radius", 0))):
+			world.hl_aoe[c] = true
+			var t := field.unit_at(c)
+			if t != null:
+				world.target_uids[t.uid] = true
+
+
 func activate_slot(slot: Dictionary) -> void:
 	var id := str(slot.get("id", ""))
 	if str(slot.get("kind", "")) == "skill":
-		if session.mode != "combat":
-			_on_notice("навыки применяются в бою")
+		if session.mode != "combat" and session.mode != "explore":
 			return
 		select_skill(id)
 		return

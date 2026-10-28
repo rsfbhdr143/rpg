@@ -37,21 +37,21 @@
   },
 
   "risen": {
-    "name": "Восставший", "faction": "enemy", "level": 1, "xp_reward": 30,
+    "name": "Восставший", "faction": "enemy", "type": "undead", "level": 1, "xp_reward": 30,
     "attributes": {"strength": 6, "dexterity": 4, "intelligence": 3, "constitution": 5, "speed": 4, "perception": 4},
     "skills": ["attack"],
     "weapon": {"name": "Гнилые руки", "min": 3, "max": 5, "element": "physical"},
     "base_stats": {"armor": 4, "poison_res": 100, "fire_res": -25}
   },
   "skeleton": {
-    "name": "Скелет", "faction": "enemy", "level": 1, "xp_reward": 35,
+    "name": "Скелет", "faction": "enemy", "type": "undead", "level": 1, "xp_reward": 35,
     "attributes": {"strength": 6, "dexterity": 7, "intelligence": 3, "constitution": 4, "speed": 5, "perception": 5},
     "skills": ["attack"],
     "weapon": {"name": "Ржавый меч", "min": 4, "max": 6, "element": "physical"},
     "base_stats": {"armor": 8, "poison_res": 100, "tenacity_res": 30}
   },
   "drowned": {
-    "name": "Утопленник", "faction": "enemy", "level": 2, "xp_reward": 50,
+    "name": "Утопленник", "faction": "enemy", "type": "undead", "level": 2, "xp_reward": 50,
     "attributes": {"strength": 7, "dexterity": 4, "intelligence": 5, "constitution": 7, "speed": 4, "perception": 4},
     "abilities": {"hydrosophist": 1},
     "skills": ["attack", "rain"],
@@ -98,7 +98,7 @@
     "base_stats": {"armor": 10, "poison_res": 80, "max_hp": 50}
   },
   "lado_body": {
-    "name": "Тело Ладо", "faction": "enemy", "level": 3, "xp_reward": 150,
+    "name": "Тело Ладо", "faction": "enemy", "type": "undead", "level": 3, "xp_reward": 150,
     "attributes": {"strength": 8, "dexterity": 4, "intelligence": 3, "constitution": 9, "speed": 4, "perception": 4},
     "skills": ["attack"],
     "weapon": {"name": "Тяжёлые кулаки", "min": 6, "max": 9, "element": "physical"},

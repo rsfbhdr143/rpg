@@ -15,7 +15,7 @@ func _init() -> void:
 		"test_surface_reactions", "test_armor_and_resist", "test_progression",
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
-		"test_exploration", "test_events", "test_sprites", "test_balance",
+		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -415,10 +415,10 @@ func test_dialogue_engine() -> void:
 	GameData.dialogues.erase("_t")
 
 
-func _story_session(start := "village") -> GameSession:
+func _story_session(start := "village", classes: Array = ["knight", "wizard"]) -> GameSession:
 	var s := GameSession.new()
 	s.add_player(1, "Соло")
-	s.create_party({1: ["knight", "wizard"]})
+	s.create_party({1: classes})
 	s.flags["intro_done"] = true
 	s.quests["last_will"] = "prepare"
 	s.enter_location(start, "from_cemetery" if start == "village" else "from_village")
@@ -627,3 +627,79 @@ func test_sprites() -> void:
 		var sheet := str(SpriteLibrary.assets[aid].get("sheet", ""))
 		check(ResourceLoader.exists(sheet) or FileAccess.file_exists(sheet), "лист %s существует" % sheet)
 	check(SpriteLibrary.frame("units", "нет_такого").is_empty(), "без привязки — пустой кадр (рисуется заглушка)")
+
+
+func test_party_and_explore_skills() -> void:
+	print("same classes, hero names, skills outside combat, holy light vs undead")
+	var solo := GameSession.new()
+	solo.add_player(1, "Соло")
+	solo.create_party({1: ["knight", "knight"]})
+	check(solo.heroes.size() == 2 and solo.heroes.all(func(h): return h.template_id == "knight"), "два рыцаря в одном отряде")
+	var names: Array = (GameData.rule("hero_names", {}) as Dictionary).get("knight", [])
+	check(names.size() >= 2 and solo.heroes[0].display_name == str(names[0]) and solo.heroes[1].display_name == str(names[1]),
+		"у героев одного класса разные имена из списка")
+	var duo := GameSession.new()
+	duo.add_player(1, "Аня")
+	duo.add_player(2, "Борис")
+	duo.create_party({1: ["cleric"], 2: ["cleric"]})
+	check(duo.heroes.size() == 2 and duo.heroes.all(func(h): return h.template_id == "cleric"), "два игрока выбрали один класс")
+	check(duo.heroes[0].display_name != duo.heroes[1].display_name, "и у них разные имена")
+
+	var s := _story_session("village", ["cleric", "knight"])
+	var cl: Character = s.heroes[0]
+	var kn: Character = s.heroes[1]
+	kn.hp = 5
+	var ap := cl.ap
+	var heal := {"type": "skill", "unit": cl.uid, "skill": "minor_heal", "cell": [kn.cell.x, kn.cell.y]}
+	check(s.submit(1, heal) == "" and kn.hp > 5, "лечение вне боя")
+	check(s.mode == "explore" and cl.ap == ap, "лечение союзника не начинает бой и не тратит ОД")
+	check(cl.cooldowns.has("minor_heal") and s.submit(1, heal) != "", "навык ушёл на перезарядку")
+	check(s.submit(1, {"type": "skill", "unit": cl.uid, "skill": "battering_ram", "cell": [kn.cell.x, kn.cell.y]}) != "", "чужой навык нельзя")
+	var cd := int(cl.cooldowns["minor_heal"])
+	check(not s.pass_time(1.0) and int(cl.cooldowns["minor_heal"]) == cd, "время копится до «хода»")
+	check(s.pass_time(3.5) and int(cl.cooldowns.get("minor_heal", 0)) == cd - 1, "через несколько секунд перезарядка идёт")
+	for i in cd:
+		s.pass_time(float(GameData.rule("explore_turn_seconds", 4.0)))
+	check(not cl.cooldowns.has("minor_heal") and s.submit(1, heal) == "", "навык снова готов")
+
+	var bone := Character.from_template("skeleton")
+	check(bone.is_undead() and not kn.is_undead(), "скелет — нежить, рыцарь — нет")
+	bone.cell = _free_neighbor(s, cl.cell)
+	var field := s.explore_field()
+	field.units.append(bone)
+	var mend := GameData.skill("minor_heal")
+	check(SkillSystem.target_block_reason(field, cl, mend, bone.cell) == "", "лечение наводится на нежить")
+	var hp0 := bone.hp
+	SkillSystem.execute(field, cl, mend, bone.cell)
+	check(bone.hp < hp0, "лечение жжёт нежить")
+	var wolf := Character.from_template("wolf")
+	wolf.cell = bone.cell
+	bone.cell = Vector2i(-50, -50)
+	field.units.append(wolf)
+	check(SkillSystem.target_block_reason(field, cl, mend, wolf.cell) != "", "живого врага лечить нельзя")
+
+	var hit := {"damage": {"source": "skill", "element": "fire", "multiplier": 1.0}}
+	var zombie := Character.from_template("skeleton")
+	var paladin := Character.from_template("knight")
+	GameData.rng.seed = 77
+	var plain := float(DamageCalc.roll_attack(paladin, zombie, hit)["amount"])
+	StatusSystem.apply(paladin, "blessed")
+	GameData.rng.seed = 77
+	var holy := float(DamageCalc.roll_attack(paladin, zombie, hit)["amount"])
+	check(paladin.has_status("blessed") and holy > plain, "благословлённый бьёт нежить сильнее")
+
+	var f := _story_session("forest", ["wizard", "cleric"])
+	var wz: Character = f.heroes[0]
+	var prey: Character = null
+	for e in f.enemies:
+		if e.encounter_id == "forest_wolf_pack" and e.is_alive():
+			prey = e
+	check(prey != null, "стая в лесу")
+	var spot := wz.cell
+	for c in f.grid.cells_in_radius(prey.cell, 4):
+		if SurfaceGrid.distance(c, prey.cell) >= 3 and f.grid.is_walkable(c) and f.unit_at(c) == null:
+			spot = c
+			break
+	wz.cell = spot
+	check(f.submit(1, {"type": "skill", "unit": wz.uid, "skill": "ice_shard", "cell": [prey.cell.x, prey.cell.y]}) == "", "удар издалека вне боя")
+	check(f.mode == "combat", "удар по врагу начинает бой")

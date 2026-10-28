@@ -23,7 +23,8 @@
     "water",
     "earth",
     "air",
-    "poison"
+    "poison",
+    "holy"
   ],
   "resistances": [
     "fire",
@@ -153,6 +154,13 @@
   "menu_music": "theme_lado",
   "combat_music": "combat",
   "boss_music": "boss_lado",
+  "explore_turn_seconds": 4.0,
+  "hero_names": {
+    "knight": ["Андраш", "Элигор", "Саллон"],
+    "wizard": ["Гремора", "Ситрея", "Вапула"],
+    "ranger": ["Барбат", "Лерай", "Сталос"],
+    "cleric": ["Марба", "Бунэ", "Ороба"]
+  },
   "hero_info": {
     "knight": "Танк и боец ближнего боя: двуручный меч, таран, вихрь.",
     "wizard": "Стихии огня, воды и воздуха: поджигай масло, бей молнией по мокрым.",

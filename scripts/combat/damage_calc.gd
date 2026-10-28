@@ -69,6 +69,9 @@ static func roll_attack(attacker: Character, target: Character, skill_def: Dicti
 	var bonus_stat: String = "physical_damage_pct" if element == "physical" else "magic_damage_pct"
 	raw *= 1.0 + attacker.get_stat(bonus_stat) / 100.0
 	raw *= float(dmg.get("multiplier", 1.0))
+	if target.is_undead():   # благословлённые бьют нежить сильнее
+		for st in attacker.statuses:
+			raw *= 1.0 + float(GameData.status(str(st)).get("vs_undead_damage", 0)) / 100.0
 
 	if bool(skill_def.get("can_crit", false)) and GameData.rng.randf() * 100.0 < attacker.get_stat("crit_chance"):
 		result["crit"] = true

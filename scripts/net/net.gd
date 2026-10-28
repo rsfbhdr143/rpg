@@ -317,6 +317,9 @@ func _state(snap: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
+	# вне боя на сервере идёт время: остывают навыки, кончаются состояния
+	if is_authority() and session != null and session.pass_time(delta):
+		_broadcast_state()
 	# ИИ ходит только на сервере, с паузой, чтобы игроки успевали следить.
 	if not is_authority() or session == null or not session.is_ai_turn():
 		_ai_timer = 0.0

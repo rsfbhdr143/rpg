@@ -269,6 +269,12 @@ func after_external_action(u: Character) -> void:
 		end_turn()
 
 
+## После навыка вне боя (GameSession.explore_field): убрать павших, ходов и конца боя нет.
+func after_explore_action() -> void:
+	_cleanup_dead()
+	state_changed.emit()
+
+
 ## Эффекты поверхностей в клетке персонажа (вход в клетку или начало хода).
 func apply_cell_effects(u: Character) -> void:
 	if not u.is_alive():

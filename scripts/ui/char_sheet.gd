@@ -11,6 +11,8 @@ var _tabs: HBoxContainer
 var _body: HBoxContainer
 var _head: HBoxContainer
 
+const HEAD_W := 900.0   # ширина текста в шапке: длинные строки переносятся, окно не шире экрана
+
 
 func _ready() -> void:
 	theme = UiTheme.theme()
@@ -79,19 +81,20 @@ func _rebuild(s: GameSession, h: Character) -> void:
 	var pr := PortraitBox.new()
 	pr.template = h.template_id
 	pr.custom_minimum_size = Vector2(84, 84)
+	pr.size_flags_vertical = Control.SIZE_SHRINK_BEGIN   # квадрат, не тянется по высоте шапки
 	_head.add_child(pr)
 	var hv := UiTheme.vbox(2)
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_head.add_child(hv)
 	var info := str((GameData.rule("hero_info", {}) as Dictionary).get(h.template_id, ""))
-	hv.add_child(UiTheme.label("%s — уровень %d" % [h.display_name, h.level], 22, UiTheme.TEXT, "bold"))
+	hv.add_child(_wrap(UiTheme.label("%s — %s, уровень %d" % [h.display_name, h.class_title().to_lower(), h.level], 22, UiTheme.TEXT, "bold"), HEAD_W))
 	if info != "":
-		hv.add_child(UiTheme.label(info, 15, UiTheme.TEXT_DIM))
+		hv.add_child(_wrap(UiTheme.label(info, 15, UiTheme.TEXT_DIM), HEAD_W))
 	hv.add_child(UiTheme.label("Опыт: %d из %d до следующего уровня" % [h.xp, Progression.xp_to_next(h.level)], 16, UiTheme.XP))
 	var pts := "Свободные очки: атрибуты %d · способности %d · таланты %d" % [
 		h.unspent_attribute_points, h.unspent_ability_points, h.unspent_talent_points]
 	var any := h.unspent_attribute_points + h.unspent_ability_points + h.unspent_talent_points > 0
-	hv.add_child(UiTheme.label(pts, 17, UiTheme.GOLD if any else UiTheme.TEXT_DIM))
+	hv.add_child(_wrap(UiTheme.label(pts, 17, UiTheme.GOLD if any else UiTheme.TEXT_DIM), HEAD_W))
 	if not editable:
 		var why := "Во время боя прокачка закрыта." if s.mode == "combat" else "Этим героем управляет другой игрок."
 		hv.add_child(UiTheme.label(why, 15, UiTheme.TEXT_FAINT))
@@ -100,6 +103,13 @@ func _rebuild(s: GameSession, h: Character) -> void:
 	_body.add_child(_col_attributes(h, editable))
 	_body.add_child(_col_abilities(h, editable))
 	_body.add_child(_col_talents(s, h, editable))
+
+
+## Перенос по словам в пределах ширины: текст не раздвигает окно.
+static func _wrap(l: Label, width: float) -> Label:
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(width, 0)
+	return l
 
 
 func _column(title: String, width: float) -> Array:
@@ -119,6 +129,7 @@ func _row(parent: Control, text: String, color: Color, button_text: String, enab
 	var l := UiTheme.label(text, 17, color)
 	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(120, 0)   # перенос вместо расширения колонки
 	l.tooltip_text = tip
 	l.mouse_filter = Control.MOUSE_FILTER_PASS if tip != "" else Control.MOUSE_FILTER_IGNORE
 	r.add_child(l)
@@ -151,14 +162,15 @@ func _col_attributes(h: Character, editable: bool) -> Control:
 	if not w.is_empty():
 		lines.append("Оружие: %s, %d–%d" % [str(w.get("name", "")), int(w.get("min", 0)), int(w.get("max", 0))])
 	for line in lines:
-		v.add_child(UiTheme.label(str(line), 16, UiTheme.TEXT_DIM))
+		v.add_child(_wrap(UiTheme.label(str(line), 16, UiTheme.TEXT_DIM), v.custom_minimum_size.x))
 	var res := PackedStringArray()
 	var res_names := {"fire": "огонь", "water": "вода", "earth": "земля", "air": "воздух", "poison": "яд", "tenacity": "стойкость"}
 	for r in GameData.rule("resistances", []):
 		var val := roundi(h.get_resistance(str(r)))
 		if val != 0:
 			res.append("%s %d%%" % [res_names.get(r, r), val])
-	v.add_child(UiTheme.label("Сопротивления: " + (", ".join(res) if not res.is_empty() else "нет"), 16, UiTheme.TEXT_DIM))
+	v.add_child(_wrap(UiTheme.label("Сопротивления: " + (", ".join(res) if not res.is_empty() else "нет"), 16, UiTheme.TEXT_DIM),
+		v.custom_minimum_size.x))
 	return c[0]
 
 
@@ -231,6 +243,8 @@ static func _skill_tip(sk: String) -> String:
 	parts.append("ОД %d · дальность %d · перезарядка %d" % [int(def.get("ap", 0)), int(def.get("range", 1)), int(def.get("cooldown", 0))])
 	if def.has("description"):
 		parts.append(str(def["description"]))
+	if def.has("vs_undead"):
+		parts.append("По нежити: святой урон ×%.1f" % float(((def["vs_undead"] as Dictionary).get("damage", {}) as Dictionary).get("multiplier", 1.0)))
 	return "\n".join(parts)
 
 

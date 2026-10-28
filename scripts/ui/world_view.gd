@@ -32,6 +32,8 @@ var idle := true                   # GameScreen: события проигран
 var hover_cell := Vector2i(-99, -99)
 var hover_uid := ""
 var hover_object := ""
+var hover_point := Vector2(-9999, -9999)   # курсор в координатах мира: фигуры, за которыми он, просвечивают
+var pick_prefer := "foe"   # кого выбирать, когда фигуры перекрываются: "foe" — врагов и жителей, "ally" — своих
 var selected_uid := ""
 var current_uid := ""
 var target_uids: Dictionary = {}   # uid -> true: кого заденет навык под курсором
@@ -646,24 +648,46 @@ func world_to_viewport(p: Vector2) -> Vector2:
 
 
 ## Что под курсором: {"uid"} | {"object"} | {"cell"}. Фигурки и предметы выше клетки, поэтому сначала они.
+## Что под курсором. Фигуры высокие и заслоняют клетки позади, поэтому: нужная сторона (враги и жители,
+## а при союзном навыке — свои) выбирается по силуэту; иначе — тот, кто стоит на клетке под курсором;
+## свой герой, заслоняющий свободную клетку, её не перекрывает — туда можно встать.
 func pick(p: Vector2) -> Dictionary:
-	var best: UnitNode = null
+	hover_point = p
+	var c := world_to_cell(p)
+	var first: UnitNode = null     # по силуэту, нужная сторона
+	var on_cell: UnitNode = null   # стоит на клетке под курсором
+	var other: UnitNode = null     # по силуэту, остальные
 	for u in units.values():
 		var n: UnitNode = u
-		if not n.visible or n.appear < 0.5:
+		var ch := n.ch()
+		if ch == null or not n.visible or n.appear < 0.5:
 			continue
+		if ch.cell == c and ch.is_alive():
+			on_cell = n
 		var r := Rect2(n.position + n.rect.position, n.rect.size).grow(2.0)
-		if r.has_point(p) and (best == null or n.position.y > best.position.y):
-			best = n
+		if not r.has_point(p):
+			continue
+		var preferred := ch.is_alive() and session.heroes.has(ch) == (pick_prefer == "ally")
+		if preferred:
+			if first == null or n.position.y > first.position.y:
+				first = n
+		elif other == null or n.position.y > other.position.y:
+			other = n
+	var best := first if first != null else on_cell
+	if best == null and other != null and not _free_floor(c):
+		best = other
 	if best != null:
-		return {"uid": best.uid, "cell": world_to_cell(best.position)}
-	var c := world_to_cell(p)
+		return {"uid": best.uid, "cell": best.ch().cell}
 	for id in objects:
 		var o: PropNode = objects[id]
 		var r := Rect2(o.position + Vector2(0, o.base.y - o.position.y) + o.rect.position, o.rect.size)
 		if r.has_point(p) or (c.x >= o.cell.x and c.y >= o.cell.y and c.x < o.cell.x + o.size.x and c.y < o.cell.y + o.size.y):
 			return {"object": id, "cell": c}
 	return {"cell": c}
+
+
+func _free_floor(c: Vector2i) -> bool:
+	return session.grid.in_bounds(c) and session.grid.is_walkable(c) and session.unit_at(c) == null
 
 
 # --- Рисование поверх: облака, снаряды, частицы, цифры ----------------------------------------
@@ -935,6 +959,9 @@ class UnitNode extends Node2D:
 			tint.a = appear
 			if rising:
 				off.y += roundf((1.0 - appear) * 12.0)
+		# курсор за фигурой и метит не в неё: фигура просвечивает, видно клетку или цель позади
+		if view.hover_uid != uid and Rect2(position + rect.position, rect.size).has_point(view.hover_point):
+			tint.a *= 0.4
 		# тень
 		if not dead:
 			_shadow(Vector2(0, 0), 7.0 if not PixelArt.look(template).has("beast") else 9.0)

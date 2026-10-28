@@ -30,7 +30,8 @@
                     "surface": {"element": "frost", "radius": 0, "create": false}},
   "minor_heal":    {"name": "Малое исцеление", "ability": "hydrosophist", "ability_rank": 1, "ap": 3, "cooldown": 2, "range": 5, "target": "ally",
                     "heal": {"multiplier": 1.5},
-                    "statuses": [{"id": "wet", "chance": 100}]},
+                    "statuses": [{"id": "wet", "chance": 100}],
+                    "vs_undead": {"damage": {"source": "skill", "element": "holy", "multiplier": 2.0}}},
 
   "shocking_touch":{"name": "Шоковое касание", "ability": "aerotheurge", "ability_rank": 1, "ap": 2, "cooldown": 0, "range": 1, "target": "enemy",
                     "damage": {"source": "skill", "element": "air", "multiplier": 1.1},
@@ -50,7 +51,9 @@
                     "surface": {"element": "oil", "radius": 1, "create": true}},
 
   "bless":         {"name": "Благословение", "ability": "witchcraft", "ability_rank": 1, "ap": 3, "cooldown": 4, "range": 5, "target": "ally",
-                    "statuses": [{"id": "blessed", "chance": 100}]},
+                    "statuses": [{"id": "blessed", "chance": 100}],
+                    "vs_undead": {"damage": {"source": "skill", "element": "holy", "multiplier": 1.6},
+                                  "statuses": [{"id": "stunned", "chance": 40}]}},
   "curse":         {"name": "Проклятие", "ability": "witchcraft", "ability_rank": 1, "ap": 3, "cooldown": 4, "range": 5, "target": "enemy",
                     "statuses": [{"id": "cursed", "chance": 100}]}
 }

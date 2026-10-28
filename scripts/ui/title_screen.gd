@@ -24,6 +24,7 @@ var _status: Label
 var _picks: Array = []
 var _cards: Dictionary = {}
 var _go_btn: Button
+var _party_label: Label
 var _name_edit: LineEdit
 var _port_edit: LineEdit
 var _url_edit: LineEdit
@@ -153,7 +154,7 @@ func _build_new() -> void:
 	var v := UiTheme.vbox(10)
 	_new_panel.add_child(v)
 	v.add_child(UiTheme.label("Кого вести в путь?", 22, UiTheme.GOLD, "bold"))
-	var hint := UiTheme.label("В одиночной игре вы ведёте двоих героев, как в Divinity: Original Sin. Выберите двух.", 16, UiTheme.TEXT_DIM)
+	var hint := UiTheme.label("В одиночной игре вы ведёте двоих героев, как в Divinity: Original Sin. Выберите двух, можно одного класса: ЛКМ — добавить, ПКМ — убрать.", 16, UiTheme.TEXT_DIM)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	v.add_child(hint)
 	var row := UiTheme.hbox(12)
@@ -163,9 +164,12 @@ func _build_new() -> void:
 		var card := HeroCard.new()
 		card.template = str(t)
 		card.custom_minimum_size = Vector2(240, 300)
-		card.pressed.connect(_toggle_pick.bind(str(t)))
+		card.pressed.connect(_add_pick.bind(str(t)))
+		card.removed.connect(_remove_pick.bind(str(t)))
 		row.add_child(card)
 		_cards[str(t)] = card
+	_party_label = UiTheme.label("", 18, UiTheme.TEXT)
+	v.add_child(_party_label)
 	var buttons := UiTheme.hbox(10)
 	buttons.alignment = BoxContainer.ALIGNMENT_END
 	v.add_child(buttons)
@@ -315,22 +319,47 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # --- Одиночная игра -------------------------------------------------------------------------
 
-func _toggle_pick(t: String) -> void:
-	if _picks.has(t):
-		_picks.erase(t)
-	else:
-		_picks.append(t)
-		while _picks.size() > SOLO_PICKS:
-			_picks.pop_front()
+## Добавить героя в отряд (классы могут повторяться); лишний — самый ранний выбор.
+func _add_pick(t: String) -> void:
+	_picks.append(t)
+	while _picks.size() > SOLO_PICKS:
+		_picks.pop_front()
+	_update_picks()
+
+
+func _remove_pick(t: String) -> void:
+	var i := _picks.rfind(t)
+	if i >= 0:
+		_picks.remove_at(i)
 	_update_picks()
 
 
 func _update_picks() -> void:
 	for t in _cards:
-		(_cards[t] as HeroCard).selected = _picks.has(t)
-		(_cards[t] as HeroCard).queue_redraw()
+		var card := _cards[t] as HeroCard
+		card.count = _picks.count(t)
+		card.selected = card.count > 0
+		card.queue_redraw()
 	if _go_btn != null:
 		_go_btn.disabled = _picks.size() != SOLO_PICKS
+	if _party_label != null:
+		_party_label.text = "Отряд: " + (_party_preview() if not _picks.is_empty() else "никого") \
+			+ ("" if _picks.size() == SOLO_PICKS else "  (нужно двое)")
+
+
+## Имена героев так же, как их раздаст GameSession.hero_name: повтор класса берёт следующее имя из списка.
+func _party_preview() -> String:
+	var names: Dictionary = GameData.rule("hero_names", {})
+	var seen := {}
+	var out := PackedStringArray()
+	for t in _picks:
+		var n := int(seen.get(t, 0))
+		seen[t] = n + 1
+		var list: Array = names.get(t, [])
+		var cls := str(GameData.character(str(t)).get("name", t))
+		var nm := str(list[n % list.size()]) if not list.is_empty() else cls
+		out.append("%s (%s)" % [nm, cls.to_lower()])
+	return ", ".join(out)
 
 
 func _start_solo() -> void:
@@ -382,9 +411,7 @@ func _join() -> void:
 
 
 func _lobby_pick(t: String) -> void:
-	if _taken_by_other(t):
-		return
-	Net.choose_hero(t)
+	Net.choose_hero(t)   # классы в отряде могут повторяться
 	_refresh_lobby()
 
 
@@ -442,7 +469,7 @@ func _refresh_lobby() -> void:
 	for c in _lobby_heroes.get_children():
 		var card := c as HeroCard
 		card.selected = mine.has(card.template)
-		card.taken = _taken_by_other(card.template)
+		card.also = _taken_by_other(card.template)
 		card.queue_redraw()
 	var hint := "Игроков: %d из %d. " % [Net.lobby.size(), GameSession.max_players()]
 	if Net.mode == Net.Mode.HOST:
@@ -504,9 +531,12 @@ class TitleArt extends Control:
 ## Карточка героя: портрет, имя, роль. Клик — выбрать.
 class HeroCard extends Control:
 	signal pressed
+	signal removed
 
 	var template := ""
 	var selected := false
+	var count := 0          # сколько героев этого класса в отряде
+	var also := false       # этот класс выбрал и другой игрок (можно, классы повторяются)
 	var taken := false
 	var compact := false
 	var _hover := false
@@ -548,6 +578,10 @@ class HeroCard extends Control:
 				return
 			GameAudio.ui("ui_confirm")
 			pressed.emit()
+		elif mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT and count > 0:
+			accept_event()
+			GameAudio.ui("ui_click")
+			removed.emit()
 
 	func _draw() -> void:
 		var r := Rect2(Vector2.ZERO, size)
@@ -572,6 +606,15 @@ class HeroCard extends Control:
 		if info != "" and not compact:
 			draw_multiline_string(UiTheme.font("body"), Vector2(14, y + 24), info, HORIZONTAL_ALIGNMENT_CENTER,
 				size.x - 28, 15, 5, UiTheme.TEXT_DIM)
+		if also and not compact:
+			draw_string(UiTheme.font("body"), Vector2(0, size.y - 12), "его выбрал и другой игрок", HORIZONTAL_ALIGNMENT_CENTER, size.x, 14, UiTheme.TEXT_FAINT)
+		elif also:
+			draw_string(UiTheme.font("body"), Vector2(0, size.y - 8), "выбран другим", HORIZONTAL_ALIGNMENT_CENTER, size.x, 13, UiTheme.TEXT_FAINT)
 		if selected:
 			var a := 0.5 + 0.5 * sin(t * 4.0)
 			draw_rect(r.grow(-3), Color(UiTheme.GOLD, 0.25 + 0.2 * a), false, 2.0)
+		if count > 1:
+			var badge := Rect2(size.x - 46, 8, 38, 26)
+			draw_rect(badge, UiTheme.INK)
+			draw_rect(badge.grow(-2), UiTheme.GOLD)
+			draw_string(f, badge.position + Vector2(0, 20), "×%d" % count, HORIZONTAL_ALIGNMENT_CENTER, badge.size.x, 18, UiTheme.INK)

@@ -20,7 +20,8 @@ extends RefCounted
 ##   {"type": "talk", "unit": uid, "target": uid NPC | "object": id}   подойти и заговорить
 ##   {"type": "dialogue_next"} / {"type": "dialogue_choice", "index": i} / {"type": "dialogue_skip"}
 ##   {"type": "use_item", "unit": uid, "item": id}       зелья и прочее; в бою стоит ОД
-##   {"type": "skill", "skill": id, "cell": [x, y]}     только в бою
+##   {"type": "skill", "skill": id, "cell": [x, y]}     в бою — навык текущего героя;
+##   {"type": "skill", "unit": uid, "skill": id, "cell": [x, y]}  вне боя: без ОД, удар по врагу начинает бой
 ##   {"type": "end_turn"}
 ##   {"type": "raise_attribute", "unit": uid, "attribute": "strength"}   вне боя
 ##   {"type": "raise_ability",   "unit": uid, "ability": "pyrokinetic"}  вне боя
@@ -56,6 +57,7 @@ var dialogue: Dictionary = {}  # {"id", "node", "pid", "hero", "npc", "pending"}
 var _locations: Dictionary = {}    # id -> {"grid", "enemies", "defeated", "spawned", "npcs"}
 var _mirror_defeated: Array = []   # у клиента: побеждённые группы (все локации)
 var _mode_before_dialogue := "explore"
+var _explore_clock := 0.0          # секунды вне боя до следующего «хода» (перезарядка, состояния)
 
 
 static func max_players() -> int:
@@ -134,43 +136,51 @@ func create_party(choices: Dictionary = {}) -> void:
 	var size := clampi(maxi(players.size(), int(GameData.rule("min_party_size", 2))), 1, templates.size())
 	var ids := players.keys()
 	ids.sort()
-	var used := {}
 	var picks: Array = []   # [шаблон, владелец]
-	# сначала то, что выбрали игроки (по одному герою на игрока, одиночке — сколько выбрал)
+	# сначала то, что выбрали игроки (по одному герою на игрока, одиночке — сколько выбрал); классы могут повторяться
 	for pid in ids:
 		var want: Array = choices.get(pid, choices.get(str(pid), []))
 		var limit := 1 if ids.size() > 1 else size
 		for t in want:
-			var ts := str(t)
 			if picks.size() >= size or limit <= 0:
 				break
-			if templates.has(ts) and not used.has(ts):
-				used[ts] = true
-				picks.append([ts, int(pid)])
+			if templates.has(str(t)):
+				picks.append([str(t), int(pid)])
 				limit -= 1
-	# у кого нет героя — даём свободный шаблон
+	# у кого нет героя — даём класс, которого ещё нет в отряде
 	for pid in ids:
 		if picks.size() >= size:
 			break
 		if not picks.any(func(p): return p[1] == int(pid)):
-			for t in templates:
-				if not used.has(str(t)):
-					used[str(t)] = true
-					picks.append([str(t), int(pid)])
-					break
+			picks.append([_free_template(picks, templates), int(pid)])
 	# добиваем до минимального размера партии, раздавая по кругу
 	var i := 0
-	for t in templates:
-		if picks.size() >= size:
-			break
-		if not used.has(str(t)):
-			used[str(t)] = true
-			picks.append([str(t), int(ids[i % ids.size()]) if not ids.is_empty() else AI_OWNER])
-			i += 1
+	while picks.size() < size:
+		picks.append([_free_template(picks, templates), int(ids[i % ids.size()]) if not ids.is_empty() else AI_OWNER])
+		i += 1
 	for p in picks:
 		var h := Character.from_template(str(p[0]))
+		h.display_name = hero_name(str(p[0]), heroes)
 		heroes.append(h)
 		owners[h.uid] = int(p[1])
+
+
+## Класс, которого ещё нет в отряде (если все уже есть — первый).
+func _free_template(picks: Array, templates: Array) -> String:
+	for t in templates:
+		if not picks.any(func(p): return p[0] == str(t)):
+			return str(t)
+	return str(templates[0])
+
+
+## Имя героя: у каждого класса свой список (чуть изменённые имена духов Гоэтии, см. docs/story.md);
+## второй герой того же класса берёт следующее имя.
+static func hero_name(template: String, party: Array) -> String:
+	var names: Array = (GameData.rule("hero_names", {}) as Dictionary).get(template, [])
+	if names.is_empty():
+		return str(GameData.character(template).get("name", template))
+	var same := party.filter(func(h): return h.template_id == template).size()
+	return str(names[same % names.size()])
 
 
 ## Раздаёт героев игрокам по кругу (после загрузки сохранения).
@@ -907,7 +917,7 @@ func submit(pid: int, cmd: Dictionary) -> String:
 		"equip", "unequip":
 			err = _cmd_equip(pid, cmd, kind)
 		"skill", "end_turn":
-			err = _cmd_combat(pid, cmd, kind)
+			err = _cmd_explore_skill(pid, cmd) if kind == "skill" and mode == "explore" else _cmd_combat(pid, cmd, kind)
 		"raise_attribute", "raise_ability", "learn_talent", "learn_skill":
 			err = _cmd_progression(pid, cmd, kind)
 		"restart":
@@ -1226,6 +1236,89 @@ func _cmd_combat(pid: int, cmd: Dictionary, kind: String) -> String:
 		"end_turn":
 			combat.end_turn()
 	return ""
+
+
+## Навык вне боя, как в D:OS: лечение, благословение, дождь на огонь, масло под ноги. ОД не тратит,
+## перезарядка идёт по времени (pass_time). Жителей навыки не задевают; задели врага — начинается бой.
+func _cmd_explore_skill(pid: int, cmd: Dictionary) -> String:
+	var r: Variant = _my_hero(pid, cmd)
+	if typeof(r) == TYPE_STRING:
+		return r
+	var u: Character = r
+	var skill_id := str(cmd.get("skill", ""))
+	var def := GameData.skill(skill_id)
+	if def.is_empty() or not u.skills.has(skill_id):
+		return "навык не изучен"
+	if not u.can_act():
+		return "не может действовать"
+	if u.cooldowns.has(skill_id):
+		return "перезарядка %d" % int(u.cooldowns[skill_id])
+	var field := explore_field()
+	var target := u.cell if str(def.get("target", "")) == "self" else _cell(cmd)
+	var reason := SkillSystem.target_block_reason(field, u, def, target)
+	if reason != "":
+		return reason
+	var before := {}
+	for e in enemies:
+		var foe: Character = e
+		if foe.is_alive():
+			before[foe.uid] = [foe.hp, foe.statuses.size()]
+	if int(def.get("cooldown", 0)) > 0:
+		u.cooldowns[skill_id] = int(def.get("cooldown", 0))
+	GameLog.add("%s использует «%s»." % [u.display_name, def.get("name", skill_id)])
+	GameEvents.add("cast", {"unit": u.uid, "skill": skill_id, "cell": GameEvents.cell(target), "from": GameEvents.cell(u.cell)})
+	SkillSystem.execute(field, u, def, target)
+	field.after_explore_action()
+	var hit := ""
+	var killed := 0
+	for e in enemies:
+		var foe: Character = e
+		if before.has(foe.uid) and (not foe.is_alive() or foe.hp != float(before[foe.uid][0]) or foe.statuses.size() != int(before[foe.uid][1])):
+			hit = foe.encounter_id
+			if not foe.is_alive():
+				killed += foe.xp_reward
+	give_xp(killed)   # убитые до боя: в бою их уже не посчитают
+	if hit != "" and not defeated_encounters().has(hit):
+		if enemies.any(func(e): return e.encounter_id == hit and e.is_alive()):
+			flags["aggro:" + hit] = true
+			_start_combat(hit)
+		else:   # отряд перебит одним ударом, до боя дело не дошло
+			defeated_encounters().append(hit)
+			Story.apply(self, encounter_def(hit).get("do", []))
+	return ""
+
+
+## Поле для навыков вне боя: те же правила, что в бою; в нём герои и враги, жителей навыки обходят.
+func explore_field() -> CombatManager:
+	var field := CombatManager.new(grid)
+	field.units = heroes.filter(func(h): return h.is_alive()) + enemies.filter(func(e): return e.is_alive())
+	field.bystanders = npcs.duplicate()
+	return field
+
+
+## Время вне боя: каждые explore_turn_seconds проходит «ход» — остывают навыки, кончаются состояния
+## (без урона: горение и яд вне боя не тикают). true — что-то изменилось, надо разослать состояние.
+func pass_time(delta: float) -> bool:
+	if mode != "explore":
+		_explore_clock = 0.0
+		return false
+	_explore_clock += delta
+	var turn := float(GameData.rule("explore_turn_seconds", 4.0))
+	if _explore_clock < turn:
+		return false
+	_explore_clock -= turn
+	var changed := false
+	for h in heroes:
+		var hero: Character = h
+		if hero.cooldowns.is_empty() and hero.statuses.is_empty():
+			continue
+		changed = true
+		for sk in hero.cooldowns.keys():
+			hero.cooldowns[sk] = int(hero.cooldowns[sk]) - 1
+			if int(hero.cooldowns[sk]) <= 0:
+				hero.cooldowns.erase(sk)
+		StatusSystem.on_turn_end(hero)
+	return changed
 
 
 func _cmd_progression(pid: int, cmd: Dictionary, kind: String) -> String:

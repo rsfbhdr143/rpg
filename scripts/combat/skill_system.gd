@@ -6,7 +6,8 @@ extends RefCounted
 ##   aoe_radius, affects ("all" | "enemies" | "allies"),
 ##   damage {source: "weapon"|"skill", element, multiplier}, can_miss, can_crit,
 ##   heal {multiplier}, statuses [{id, chance, duration?, on: "target"|"self"}],
-##   surface {element, radius, create}
+##   surface {element, radius, create},
+##   vs_undead {damage, statuses} — что навык делает с нежитью вместо обычного (лечение и благословение жгут её)
 
 
 static func skill_range(u: Character, def: Dictionary) -> int:
@@ -30,7 +31,7 @@ static func target_block_reason(combat: CombatManager, u: Character, def: Dictio
 			if t == null or t.faction == u.faction:
 				return "нужна вражеская цель"
 		"ally":
-			if t == null or t.faction != u.faction:
+			if t == null or (t.faction != u.faction and not (def.has("vs_undead") and t.is_undead())):
 				return "нужна союзная цель"
 		"cell":
 			if combat.grid.blocked.has(target_cell):
@@ -44,6 +45,9 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 
 	for t in targets:
 		var target: Character = t
+		if def.has("vs_undead") and target.is_undead() and target.faction != caster.faction:
+			_smite_undead(caster, target, def["vs_undead"])
+			continue
 		if def.has("damage"):
 			var res := DamageCalc.roll_attack(caster, target, def)
 			if not bool(res["hit"]):
@@ -82,6 +86,17 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 			var u := combat.unit_at(c)
 			if u != null:
 				combat.apply_cell_effects(u)
+
+
+## Святой свет по нежити: урон без промаха и, если заданы, состояния.
+static func _smite_undead(caster: Character, target: Character, vs: Dictionary) -> void:
+	var res := DamageCalc.roll_attack(caster, target, vs)
+	var dealt := DamageCalc.apply_damage(target, float(res["amount"]), str(res["element"]))
+	GameEvents.add("hit", {"unit": target.uid, "src": caster.uid, "amount": int(dealt),
+		"element": str(res["element"]), "crit": bool(res["crit"])})
+	GameLog.add("Святой свет жжёт %s: %d урона." % [target.display_name, dealt])
+	if target.is_alive():
+		_apply_statuses(caster, target, vs, "target")
 
 
 static func _collect_targets(combat: CombatManager, caster: Character, def: Dictionary, center: Vector2i) -> Array:
