@@ -583,6 +583,21 @@ func walk(uid: String, cells: Array, speed_k := 1.0) -> float:
 	return dist / n.speed
 
 
+## Прыжок навыком (Отскок): фигурка летит дугой в клетку, тень остаётся на земле. Возвращает время полёта.
+func leap(uid: String, cells: Array) -> float:
+	var n := unit_node(uid)
+	if n == null or cells.is_empty():
+		return 0.0
+	var c: Array = cells[-1]
+	var p := cell_center(Vector2i(int(c[0]), int(c[1])))
+	var dist := n.position.distance_to(p)
+	n.path = [p]
+	n.hop_len = maxf(1.0, dist)
+	n.hop = clampf(dist * 0.35, 10.0, 40.0)
+	n.speed = maxf(WALK_SPEED, dist / 0.45)
+	return dist / n.speed
+
+
 ## Смена цели на ходу: сервер вернул героя на клетку cell. Фигурка доходит до неё и дальше идёт уже новым путём.
 func cut_walk(uid: String, cell: Vector2i) -> void:
 	var n := unit_node(uid)
@@ -1258,6 +1273,8 @@ class UnitNode extends Node2D:
 	var speed := 120.0
 	var lunge_t := -1.0
 	var lunge_dir := Vector2.ZERO
+	var hop := 0.0        # высота дуги прыжка (WorldView.leap), 0 — идёт ногами
+	var hop_len := 1.0
 	var hurt_t := 9.0
 	var dodge_t := 9.0
 	var flash_t := 9.0
@@ -1309,6 +1326,7 @@ class UnitNode extends Node2D:
 				position = target
 				path.pop_front()
 				if path.is_empty():
+					hop = 0.0
 					GameAudio.sfx("footstep", -4.0)
 				elif randf() < 0.35:
 					GameAudio.sfx("footstep", -8.0)
@@ -1349,7 +1367,9 @@ class UnitNode extends Node2D:
 		if dodge_t < 0.25:
 			off += Vector2(-facing * 4.0 * sin(dodge_t / 0.25 * PI), 0)
 		var walking := not path.is_empty()
-		if walking:
+		if walking and hop > 0.0:
+			off.y -= sin(clampf(1.0 - position.distance_to(path[-1]) / hop_len, 0.0, 1.0) * PI) * hop
+		elif walking:
 			off.y -= 1.0 if int(_walk_t * 10.0) % 2 == 0 else 0.0
 		off = off.round()
 		var tint := Color.WHITE

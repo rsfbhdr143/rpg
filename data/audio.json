@@ -143,7 +143,19 @@
     "poison_dart":    {"cast": "poison_cast", "hit": "poison_impact"},
     "oil_slick":      {"cast": "oil_cast"},
     "bless":          {"cast": "bless"},
-    "curse":          {"cast": "curse"}
+    "curse":          {"cast": "curse"},
+    "crippling_blow": {"cast": "slash", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "rush":           {"cast": "whoosh", "hit": "melee_crit", "miss": "melee_miss"},
+    "battle_cry":     {"cast": "enemy_alert"},
+    "defensive_stance": {"cast": "chest_open"},
+    "rage":           {"cast": "fire_cast"},
+    "ground_slam":    {"cast": "whoosh", "hit": "earth_rumble", "crit": "bone_crunch", "miss": "melee_miss"},
+    "pinning_shot":   {"cast": "bow_shot", "hit": "arrow_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "fire_arrow":     {"cast": "bow_shot", "hit": "fire_impact", "crit": "fire_impact", "miss": "melee_miss"},
+    "hunters_mark":   {"cast": "curse"},
+    "arrow_rain":     {"cast": "bow_shot", "hit": "arrow_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "tactical_retreat": {"cast": "whoosh"},
+    "dirty_trick":    {"cast": "slash", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"}
   },
 
   "statuses": {
@@ -157,7 +169,12 @@
     "knocked_down": "melee_crit",
     "blessed": "bless",
     "cursed": "curse",
-    "regenerating": "heal"
+    "regenerating": "heal",
+    "bleeding": "hurt",
+    "marked": "curse",
+    "rallied": "bless",
+    "fortified": "melee_hit",
+    "enraged": "fire_cast"
   },
 
   "surfaces": {

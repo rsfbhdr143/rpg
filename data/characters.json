@@ -4,7 +4,7 @@
     "attributes": {"strength": 8, "dexterity": 5, "intelligence": 5, "constitution": 7, "speed": 5, "perception": 5},
     "abilities": {"two_handed": 1, "man_at_arms": 1, "armour_specialist": 1, "body_building": 1},
     "talents": ["thick_skin"],
-    "skills": ["attack", "battering_ram"],
+    "skills": ["attack", "battering_ram", "rush", "crippling_blow", "battle_cry"],
     "weapon": {"name": "Двуручный меч", "min": 7, "max": 10, "element": "physical"},
     "base_stats": {"armor": 16}
   },
@@ -22,7 +22,7 @@
     "attributes": {"strength": 5, "dexterity": 8, "intelligence": 5, "constitution": 6, "speed": 6, "perception": 7},
     "abilities": {"bow": 1, "expert_marksman": 1, "geomancer": 1, "scoundrel": 1},
     "talents": [],
-    "skills": ["attack", "arrow_shot", "poison_dart"],
+    "skills": ["attack", "arrow_shot", "pinning_shot", "fire_arrow", "tactical_retreat", "poison_dart"],
     "weapon": {"name": "Лук", "min": 5, "max": 8, "element": "physical"},
     "base_stats": {"armor": 10}
   },

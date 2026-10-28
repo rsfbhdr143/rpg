@@ -29,7 +29,17 @@
                      "modifiers": {"accuracy": -10, "dodge": -10, "fire_res": -10, "water_res": -10, "earth_res": -10, "air_res": -10, "poison_res": -10},
                      "removes": ["blessed"]},
     "regenerating": {"name": "Регенерация", "duration": 3, "negative": false,
-                     "tick": {"element": "heal", "base": 4, "per_level": 2}}
+                     "tick": {"element": "heal", "base": 4, "per_level": 2}},
+    "bleeding":     {"name": "Кровотечение", "duration": 2, "negative": true,
+                     "tick": {"element": "physical", "base": 3, "per_level": 2}},
+    "marked":       {"name": "Помечен", "duration": 3, "negative": true,
+                     "modifiers": {"dodge": -20, "armor_bonus_pct": -30}},
+    "rallied":      {"name": "Воодушевлён", "duration": 3, "negative": false,
+                     "modifiers": {"accuracy": 10, "physical_damage_pct": 10, "tenacity_res": 20}},
+    "fortified":    {"name": "В обороне", "duration": 2, "negative": false,
+                     "modifiers": {"armor_bonus_pct": 50, "dodge": 10, "tenacity_res": 30}},
+    "enraged":      {"name": "В ярости", "duration": 2, "negative": false,
+                     "modifiers": {"physical_damage_pct": 30, "crit_chance": 10, "dodge": -15}}
   },
 
   "reactions": [

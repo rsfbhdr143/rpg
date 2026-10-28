@@ -63,7 +63,7 @@ static func _act(combat: CombatManager, unit: Character) -> bool:
 	var want_range := 1
 	for sk in unit.skills:
 		var def := GameData.skill(sk)
-		if def.has("damage") and int(def.get("ap", 0)) <= unit.ap:
+		if def.has("damage") and int(def.get("ap", 0)) <= unit.ap and not unit.cooldowns.has(sk):
 			want_range = maxi(want_range, SkillSystem.skill_range(unit, def))
 	var path := combat.grid.find_path(unit.cell, target.cell, combat.occupied_cells(unit), true)
 	if path.size() <= 1:

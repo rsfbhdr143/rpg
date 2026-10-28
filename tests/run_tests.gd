@@ -17,6 +17,7 @@ func _init() -> void:
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
 		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village", "test_join_combat",
+		"test_physical_skills",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -997,3 +998,57 @@ func test_join_combat() -> void:
 	for n in s.npcs:
 		npc_cell = (n as Character).cell
 	check(npc_cell.x < 0 or s.combat.unit_at(npc_cell) == null, "жители целями не становятся")
+
+
+func test_physical_skills() -> void:
+	print("knight and ranger: more than shooting and hitting — charge, leap, cries, stances, special arrows")
+	for cls in ["knight", "ranger"]:
+		var own: Array = GameData.character(cls).get("skills", [])
+		var learnable := GameData.skills.keys().filter(func(sk): return Progression.skill_block_reason(Character.from_template(cls), str(sk)) == "")
+		check(own.size() >= 5, "%s начинает с %d навыками" % [cls, own.size()])
+		check(learnable.size() >= 1, "%s может сразу выучить ещё %d" % [cls, learnable.size()])
+	for sk in GameData.skills:
+		for st in GameData.skill(str(sk)).get("statuses", []):
+			check(not GameData.status(str((st as Dictionary).get("id", ""))).is_empty(), "%s -> состояние %s есть" % [sk, (st as Dictionary).get("id", "")])
+
+	var g := SurfaceGrid.new(12, 8)
+	var k := Character.from_template("knight")
+	var r := Character.from_template("ranger")
+	var e := Character.from_template("goblin_warrior")
+	k.cell = Vector2i(1, 3)
+	r.cell = Vector2i(1, 5)
+	e.cell = Vector2i(5, 3)
+	var combat := CombatManager.new(g)
+	combat.start([k, r, e])
+	combat.current = k
+	k.ap = 10
+	GameEvents.clear()
+	check(combat.skill_block_reason(k, "rush", e.cell) == "", "рывок до врага в 4 клетках")
+	check(combat.use_skill(k, "rush", e.cell), "рывок выполнен")
+	check(SurfaceGrid.distance(k.cell, e.cell) == 1, "рыцарь добежал до врага: %s" % str(k.cell))
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "move" and not bool(ev.get("leap", true))), "фигурка бежит (событие move)")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) in ["hit", "miss"]), "удар с разбега")
+	e.cell = Vector2i(10, 3)
+	k.cooldowns.clear()
+	k.ap = 10
+	check(combat.skill_block_reason(k, "rush", Vector2i(11, 7)) != "", "рывок в пустую клетку нельзя")
+	check(combat.use_skill(k, "battle_cry", k.cell), "боевой клич")
+	check(k.has_status("rallied") and r.has_status("rallied") == (SurfaceGrid.distance(k.cell, r.cell) <= 3), "клич воодушевляет себя и союзников рядом")
+	var armor := DamageCalc.effective_armor(k)
+	check(combat.use_skill(k, "defensive_stance", k.cell) and DamageCalc.effective_armor(k) > armor, "глухая оборона крепит броню")
+
+	combat.current = r
+	r.ap = 10
+	var to := Vector2i(3, 7)
+	check(combat.skill_block_reason(r, "tactical_retreat", k.cell) != "", "прыгнуть на союзника нельзя")
+	check(combat.use_skill(r, "tactical_retreat", to) and r.cell == to, "следопыт отпрыгнул в клетку")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "move" and bool(ev.get("leap", false))), "прыжок дугой (move с leap)")
+	r.ap = 10
+	e.cell = Vector2i(6, 6)
+	check(combat.use_skill(r, "hunters_mark", e.cell) and e.has_status("marked"), "метка охотника")
+	check(e.get_stat("dodge") < Character.from_template("goblin_warrior").get_stat("dodge"), "помеченный хуже уклоняется")
+	r.ap = 10
+	GameEvents.clear()
+	check(combat.use_skill(r, "fire_arrow", e.cell), "огненная стрела")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) in ["hit", "miss"]), "стрела долетела")
+

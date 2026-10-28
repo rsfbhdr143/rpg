@@ -299,8 +299,9 @@ func _present(e: Dictionary) -> float:
 			var longest := 0.0
 			var k := 0.85 if session.mode == "combat" else 1.0
 			for u in paths:
-				longest = maxf(longest, world.walk(str(u), paths[u], k))
-			return longest if session.mode == "combat" else minf(longest, 0.6)
+				longest = maxf(longest, world.leap(str(u), paths[u]) if bool(e.get("leap", false)) else world.walk(str(u), paths[u], k))
+			# рывок и прыжок навыком (есть ключ leap) дожидаются и вне боя: удар — когда фигурка добежала
+			return longest if session.mode == "combat" or e.has("leap") else minf(longest, 0.6)
 		"cast":
 			return _present_cast(e)
 		"hit":
@@ -518,6 +519,12 @@ func _present_cast(e: Dictionary) -> float:
 	if tt == "self":
 		world.cast_glow(uid, col)
 		return 0.3
+	if def.has("move"):   # рывок и прыжок: дальше фигурку ведёт событие move
+		world.cast_glow(uid, col)
+		var mover := world.unit_node(uid)
+		if mover != null:
+			mover.face_to(target)
+		return 0.12
 	var rng := int(def.get("range", 1))
 	if rng <= 1 and tt == "enemy":
 		world.lunge(uid, target)

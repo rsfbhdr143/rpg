@@ -7,7 +7,9 @@ extends RefCounted
 ##   damage {source: "weapon"|"skill", element, multiplier}, can_miss, can_crit,
 ##   heal {multiplier}, statuses [{id, chance, duration?, on: "target"|"self"}],
 ##   surface {element, radius, create},
-##   vs_undead {damage, statuses} — что навык делает с нежитью вместо обычного (лечение и благословение жгут её)
+##   vs_undead {damage, statuses} — что навык делает с нежитью вместо обычного (лечение и благословение жгут её),
+##   move: "charge" — рывок: заклинатель бежит к цели (путь не длиннее дальности) и бьёт её с разбега;
+##         "leap" — прыжок в выбранную свободную клетку (target "cell")
 ## Навык с уроном или стихией, задевший клетку взведённой ловушки, подрывает её; найденную ловушку можно
 ## выбрать целью вместо врага.
 
@@ -40,10 +42,39 @@ static func target_block_reason(combat: CombatManager, u: Character, def: Dictio
 		"cell":
 			if combat.grid.blocked.has(target_cell):
 				return "клетка занята стеной"
+	match str(def.get("move", "")):
+		"leap":
+			if combat.occupied_cells(u).has(target_cell):
+				return "клетка занята"
+		"charge":
+			if SurfaceGrid.distance(u.cell, target_cell) > 1 and charge_path(combat, u, target_cell, skill_range(u, def)).is_empty():
+				return "не подобраться к цели"
 	return ""
 
 
+## Путь рывка к цели: до ближайшей свободной клетки рядом с ней, не длиннее max_steps. Уже рядом — пустой путь.
+## Найденные ловушки герои обходят, как и при обычной ходьбе.
+static func charge_path(combat: CombatManager, u: Character, target_cell: Vector2i, max_steps: int) -> Array:
+	if SurfaceGrid.distance(u.cell, target_cell) <= 1:
+		return []
+	var avoid := combat.occupied_cells(u)
+	if u.faction == "player":
+		avoid.merge(combat.grid.known_traps())
+	var best: Array = []
+	for c in combat.grid.cells_in_radius(target_cell, 1):
+		if c == target_cell or avoid.has(c):
+			continue
+		var p := combat.grid.find_path(u.cell, c, avoid)
+		if not p.is_empty() and p.size() <= max_steps and (best.is_empty() or p.size() < best.size()):
+			best = p
+	return best
+
+
 static func execute(combat: CombatManager, caster: Character, def: Dictionary, target_cell: Vector2i) -> void:
+	if def.has("move"):
+		_move_caster(combat, caster, def, target_cell)
+		if not caster.can_act():   # прыгнул в ловушку или в лёд: удар уже не состоится
+			return
 	var center: Vector2i = caster.cell if str(def.get("target", "")) == "self" else target_cell
 	var targets := _collect_targets(combat, caster, def, center)
 
@@ -81,6 +112,20 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 		for c in combat.grid.cells_in_radius(center, int(def.get("aoe_radius", 0))):
 			if not combat.grid.armed_trap(c).is_empty():
 				TrapSystem.spring(combat, c)
+
+
+## Рывок или прыжок: заклинатель переносится, фигурка бежит (или летит дугой), поверхность и ловушка в клетке
+## приземления срабатывают как при ходьбе.
+static func _move_caster(combat: CombatManager, caster: Character, def: Dictionary, target_cell: Vector2i) -> void:
+	var leap := str(def["move"]) == "leap"
+	var path: Array = [target_cell] if leap else charge_path(combat, caster, target_cell, skill_range(caster, def))
+	if path.is_empty():
+		return
+	caster.cell = path[-1]
+	GameEvents.add("move", {"paths": {caster.uid: path.map(func(c): return GameEvents.cell(c))}, "leap": leap})
+	if not combat.grid.armed_trap(caster.cell).is_empty():
+		TrapSystem.spring(combat, caster.cell)
+	combat.apply_cell_effects(caster)
 
 
 ## Стихия на клетки вокруг center (навык, ловушка): реакции поверхностей, взрывы, эффекты на стоящих.

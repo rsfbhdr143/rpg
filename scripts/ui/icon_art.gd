@@ -373,6 +373,10 @@ const SKILLS := {
 	"rain": ["rain", "5ab0ff"], "ice_shard": ["shard", "8adcff"], "minor_heal": ["cross", "82e870"],
 	"shocking_touch": ["bolt", "c8b8ff"], "lightning_bolt": ["bolt", "e8e0ff"], "poison_dart": ["skull", "8ad848"],
 	"oil_slick": ["oil", "8a6a2a"], "bless": ["sun", "f0d070"], "curse": ["eye", "a070d0"],
+	"crippling_blow": ["hourglass", "d8a070"], "rush": ["boot", "e8c060"], "battle_cry": ["sun", "e8a050"],
+	"defensive_stance": ["shield", "a8b8d0"], "rage": ["flame", "e04030"], "ground_slam": ["hammer", "c8a070"],
+	"pinning_shot": ["arrow", "a8a090"], "fire_arrow": ["arrow", "ff8a3a"], "hunters_mark": ["eye", "e0c060"],
+	"arrow_rain": ["rain", "c8a060"], "tactical_retreat": ["boot", "8ac8a0"], "dirty_trick": ["sword", "c84040"],
 }
 
 const STATUSES := {
@@ -380,6 +384,8 @@ const STATUSES := {
 	"chilled": ["snow", "8adcff"], "frozen": ["snow", "e8f8ff"], "shocked": ["bolt", "c8b8ff"],
 	"stunned": ["bolt", "f0e060"], "knocked_down": ["down", "d8a060"], "slowed": ["hourglass", "a8a090"],
 	"blessed": ["sun", "f0d070"], "cursed": ["eye", "a070d0"], "regenerating": ["plus", "82e870"],
+	"bleeding": ["drop", "c03030"], "marked": ["eye", "e0c060"], "rallied": ["sun", "e8a050"],
+	"fortified": ["shield", "a8b8d0"], "enraged": ["flame", "e04030"],
 }
 
 const ITEMS := {
