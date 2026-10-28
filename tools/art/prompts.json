@@ -1,5 +1,5 @@
 {
-  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"]. Картинки, которые генератор не осилил (могила, кости, письмо, «сбит с ног», следы Ладо), нарисованы пиксель-артом вручную в art/inbox/handmade и отсюда убраны.",
+  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"]. Картинки, которые генератор не осилил (могила, кости, письмо, «сбит с ног», следы Ладо, стойка таверны, алтарь, очаг), нарисованы пиксель-артом вручную в art/inbox/handmade и отсюда убраны.",
   "settings": {
     "style": "color",
     "variants": 2,
@@ -292,7 +292,12 @@
       ]
     },
     "goblin_camp/floor": "trampled mud of an ancient burial mound with dry grass, small bones and ash",
-    "goblin_camp/wall": "sharpened wooden logs standing side by side, bound with rope"
+    "goblin_camp/wall": "sharpened wooden logs standing side by side, bound with rope",
+    "planks": "worn dark wooden floor planks laid side by side, visible nails and wood grain",
+    "masonry": {
+      "kind": "wall",
+      "subject": "rough grey fieldstone masonry with dark mortar"
+    }
   },
   "surfaces": {
     "water": "small gentle blue water ripples",
@@ -589,6 +594,106 @@
         80
       ],
       "kind": "building"
+    },
+    "waystone": {
+      "subject": "a single tall standing stone menhir with a glowing pale blue carved rune on its face",
+      "px": [
+        14,
+        34
+      ],
+      "size": [
+        832,
+        1216
+      ],
+      "negative": "stone circle, several stones, landscape, field, sky"
+    },
+    "table": {
+      "subject": "a sturdy rough wooden table",
+      "px": [
+        28,
+        22
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, chairs, food"
+    },
+    "bench": {
+      "subject": "a long simple wooden bench without backrest",
+      "px": [
+        28,
+        16
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture"
+    },
+    "barrel": {
+      "subject": "a single wooden barrel with iron hoops",
+      "px": [
+        14,
+        18
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, several barrels"
+    },
+    "crate": {
+      "subject": "a single closed wooden crate",
+      "px": [
+        16,
+        16
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, stack of crates"
+    },
+    "bed": {
+      "subject": "a simple wooden bed with a straw mattress and a brown woollen blanket",
+      "px": [
+        30,
+        22
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, person sleeping"
+    },
+    "shelf": {
+      "subject": "a tall wooden shelf with clay jars and pots",
+      "px": [
+        20,
+        32
+      ],
+      "size": [
+        832,
+        1216
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture"
+    },
+    "anvil": {
+      "subject": "a blacksmith iron anvil on a wooden stump",
+      "px": [
+        18,
+        18
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, blacksmith, hammer in hand"
+    },
+    "pew": {
+      "subject": "a single wooden church pew bench with a backrest",
+      "px": [
+        28,
+        20
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, rows of pews"
     }
   },
   "images": {

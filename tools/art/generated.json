@@ -503,6 +503,69 @@
   "style": "color",
   "variant": "v01_color_1694486483.png"
  },
+ "props/anvil": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_anvil.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture, blacksmith, hammer in hand",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a blacksmith iron anvil on a wooden stump, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.2,
+  "seed": 105639339,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v04_color_105639339.png"
+ },
+ "props/barrel": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_barrel.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture, several barrels",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single wooden barrel with iron hoops, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 646818243,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_646818243.png"
+ },
+ "props/bed": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_bed.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture, person sleeping",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a simple wooden bed with a straw mattress and a brown woollen blanket, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.3,
+  "seed": 1564444915,
+  "size": [
+   1216,
+   832
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1564444915.png"
+ },
  "props/bell_tower": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -523,6 +586,27 @@
   "steps": 22,
   "style": "color",
   "variant": "v14_color_1827981806.png"
+ },
+ "props/bench": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_bench.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a long simple wooden bench without backrest, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 33.3,
+  "seed": 834864138,
+  "size": [
+   1216,
+   832
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_834864138.png"
  },
  "props/bone_throne": {
   "cfg": 6.5,
@@ -652,6 +736,27 @@
   "style": "color",
   "variant": "v06_color_439309557.png"
  },
+ "props/crate": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_crate.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture, stack of crates",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single closed wooden crate, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 36.2,
+  "seed": 894320221,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v06_color_894320221.png"
+ },
  "props/dead_tree": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -759,6 +864,27 @@
   "style": "color",
   "variant": "v06_color_236387882.png"
  },
+ "props/pew": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_pew.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture, rows of pews",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single wooden church pew bench with a backrest, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 637671022,
+  "size": [
+   1216,
+   832
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_637671022.png"
+ },
  "props/pyre": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -822,6 +948,29 @@
   "style": "color",
   "variant": "v01_color_376299572.png"
  },
+ "props/shelf": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_shelf.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture",
+  "problems": [
+   "фон не убрался"
+  ],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a tall wooden shelf with clay jars and pots, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 1399371226,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v01_color_1399371226.png"
+ },
  "props/smithy": {
   "cfg": 6.5,
   "checkpoint": "sd_xl_base_1.0.safetensors",
@@ -844,6 +993,27 @@
   "steps": 22,
   "style": "color",
   "variant": "v07_color_1770610226.png"
+ },
+ "props/table": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_table.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, room, interior, walls, floor, window, people, several pieces of furniture, chairs, food",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a sturdy rough wooden table, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 2070770136,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v05_color_2070770136.png"
  },
  "props/tavern": {
   "cfg": 6.5,
@@ -970,6 +1140,27 @@
   "steps": 22,
   "style": "color",
   "variant": "v07_color_17992017.png"
+ },
+ "props/waystone": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/props/prop_waystone.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.45,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette, stone circle, several stones, landscape, field, sky",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, a single tall standing stone menhir with a glowing pale blue carved rune on its face, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 31.2,
+  "seed": 267676644,
+  "size": [
+   832,
+   1216
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_267676644.png"
  },
  "props/well": {
   "cfg": 6.5,
@@ -1896,6 +2087,48 @@
   "steps": 22,
   "style": "color",
   "variant": "v01_color_932630137.png"
+ },
+ "tiles/masonry": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/masonry.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge, ship, sea, sun, sunset, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of rough grey fieldstone masonry with dark mortar, flat 2d game texture, straight-on view, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 31.4,
+  "seed": 2099618258,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v02_color_2099618258.png"
+ },
+ "tiles/planks": {
+  "cfg": 6.5,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "file": "art/inbox/generated/tiles/planks.webp",
+  "lora": "wdct.safetensors",
+  "lora_strength": 0.4,
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border, landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+  "problems": [],
+  "prompt": "wdct, hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors, seamless repeating pattern of worn dark wooden floor planks laid side by side, visible nails and wood grain, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seconds": 32.2,
+  "seed": 1695490535,
+  "size": [
+   1024,
+   1024
+  ],
+  "steps": 22,
+  "style": "color",
+  "variant": "v03_color_1695490535.png"
  },
  "tiles/village/floor": {
   "cfg": 6.5,
