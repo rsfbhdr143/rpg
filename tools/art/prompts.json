@@ -1,5 +1,5 @@
 {
-  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"]. Картинки, которые генератор не осилил (могила, кости, письмо, «сбит с ног», следы Ладо), нарисованы пиксель-артом вручную в art/inbox/handmade и отсюда убраны.",
+  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"]. Картинки, которые генератор не осилил (могила, кости, письмо, «сбит с ног», следы Ладо, стойка таверны, алтарь, очаг), нарисованы пиксель-артом вручную в art/inbox/handmade и отсюда убраны.",
   "settings": {
     "style": "color",
     "variants": 2,
@@ -673,28 +673,6 @@
       "lora_strength": 0.4,
       "negative": "room, interior, walls, floor, window, people, several pieces of furniture"
     },
-    "counter": {
-      "subject": "a long wooden tavern bar counter with a few mugs on top",
-      "px": [
-        32,
-        20
-      ],
-      "size": [
-        1216,
-        832
-      ],
-      "lora_strength": 0.4,
-      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, bartender, stools"
-    },
-    "hearth": {
-      "subject": "a small stone fireplace hearth with a burning fire and a hanging pot",
-      "px": [
-        28,
-        32
-      ],
-      "lora_strength": 0.4,
-      "negative": "room, interior, walls, floor, window, people, several pieces of furniture"
-    },
     "anvil": {
       "subject": "a blacksmith iron anvil on a wooden stump",
       "px": [
@@ -703,15 +681,6 @@
       ],
       "lora_strength": 0.4,
       "negative": "room, interior, walls, floor, window, people, several pieces of furniture, blacksmith, hammer in hand"
-    },
-    "altar": {
-      "subject": "a small stone church altar covered with a white cloth, two lit candles on top",
-      "px": [
-        26,
-        24
-      ],
-      "lora_strength": 0.4,
-      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, priest, cathedral"
     },
     "pew": {
       "subject": "a single wooden church pew bench with a backrest",

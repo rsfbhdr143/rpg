@@ -598,6 +598,78 @@
     }
    }
   },
+  "prop_anvil": {
+   "sheet": "res://art/sprites/prop_anvil.png",
+   "kind": "image",
+   "frame": [
+    20,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_anvil.webp"
+   ],
+   "scale": 0.0189,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_barrel": {
+   "sheet": "res://art/sprites/prop_barrel.png",
+   "kind": "image",
+   "frame": [
+    16,
+    19
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_barrel.webp"
+   ],
+   "scale": 0.0181,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bed": {
+   "sheet": "res://art/sprites/prop_bed.png",
+   "kind": "image",
+   "frame": [
+    32,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bed.webp"
+   ],
+   "scale": 0.025,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_bell_tower": {
    "sheet": "res://art/sprites/prop_bell_tower.png",
    "kind": "image",
@@ -613,6 +685,30 @@
     "generated/props/prop_bell_tower.webp"
    ],
    "scale": 0.0714,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bench": {
+   "sheet": "res://art/sprites/prop_bench.png",
+   "kind": "image",
+   "frame": [
+    26,
+    18
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bench.webp"
+   ],
+   "scale": 0.0224,
    "animations": {
     "idle": {
      "start": 0,
@@ -766,6 +862,30 @@
     }
    }
   },
+  "prop_crate": {
+   "sheet": "res://art/sprites/prop_crate.png",
+   "kind": "image",
+   "frame": [
+    18,
+    18
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_crate.webp"
+   ],
+   "scale": 0.0171,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_dead_tree": {
    "sheet": "res://art/sprites/prop_dead_tree.png",
    "kind": "image",
@@ -886,6 +1006,30 @@
     }
    }
   },
+  "prop_pew": {
+   "sheet": "res://art/sprites/prop_pew.png",
+   "kind": "image",
+   "frame": [
+    30,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_pew.webp"
+   ],
+   "scale": 0.0258,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_pyre": {
    "sheet": "res://art/sprites/prop_pyre.png",
    "kind": "image",
@@ -958,6 +1102,30 @@
     }
    }
   },
+  "prop_shelf": {
+   "sheet": "res://art/sprites/prop_shelf.png",
+   "kind": "image",
+   "frame": [
+    22,
+    31
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_shelf.webp"
+   ],
+   "scale": 0.0251,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_smithy": {
    "sheet": "res://art/sprites/prop_smithy.png",
    "kind": "image",
@@ -973,6 +1141,30 @@
     "generated/props/prop_smithy.webp"
    ],
    "scale": 0.0873,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_table": {
+   "sheet": "res://art/sprites/prop_table.png",
+   "kind": "image",
+   "frame": [
+    23,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_table.webp"
+   ],
+   "scale": 0.022,
    "animations": {
     "idle": {
      "start": 0,
@@ -1117,6 +1309,30 @@
     "generated/props/prop_vetla_hut.webp"
    ],
    "scale": 0.0795,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_waystone": {
+   "sheet": "res://art/sprites/prop_waystone.png",
+   "kind": "image",
+   "frame": [
+    16,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_waystone.webp"
+   ],
+   "scale": 0.0183,
    "animations": {
     "idle": {
      "start": 0,
@@ -2195,6 +2411,56 @@
     }
    }
   },
+  "masonry": {
+   "sheet": "res://art/sprites/masonry.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/masonry.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "planks": {
+   "sheet": "res://art/sprites/planks.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/planks.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "village_floor": {
    "sheet": "res://art/sprites/village_floor.png",
    "kind": "tile",
@@ -2843,6 +3109,29 @@
     }
    }
   },
+  "prop_altar": {
+   "sheet": "res://art/sprites/prop_altar.png",
+   "kind": "image",
+   "frame": [
+    25,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_altar.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_bones": {
    "sheet": "res://art/sprites/prop_bones.png",
    "kind": "image",
@@ -2866,6 +3155,29 @@
     }
    }
   },
+  "prop_counter": {
+   "sheet": "res://art/sprites/prop_counter.png",
+   "kind": "image",
+   "frame": [
+    28,
+    28
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_counter.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_grave": {
    "sheet": "res://art/sprites/prop_grave.png",
    "kind": "image",
@@ -2879,6 +3191,29 @@
    "pixel_art": true,
    "source": [
     "handmade/prop_grave.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_hearth": {
+   "sheet": "res://art/sprites/prop_hearth.png",
+   "kind": "image",
+   "frame": [
+    26,
+    41
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_hearth.png"
    ],
    "animations": {
     "idle": {
