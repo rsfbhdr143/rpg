@@ -941,6 +941,16 @@ func test_village() -> void:
 				bad.append(str(b["id"]))
 	check(bad.is_empty(), "до каждой двери можно дойти (не дойти: %s)" % ", ".join(bad))
 	check(sizes.size() >= 8, "дома разного размера (%d размеров)" % sizes.size())
+	var blds: Array = s.location_data().get("buildings", [])
+	var overlap := false
+	for i in blds.size():
+		for j in range(i + 1, blds.size()):
+			var a: Array = blds[i]["rect"]
+			var b2: Array = blds[j]["rect"]
+			if Rect2i(int(a[0]), int(a[1]), int(a[2]), int(a[3])).intersects(Rect2i(int(b2[0]), int(b2[1]), int(b2[2]), int(b2[3]))):
+				overlap = true
+	check(not overlap, "дома не налезают друг на друга (нет домов-призраков внутри других)")
+	check(blds.all(func(b): return not SpriteLibrary.frame("props", str(b.get("sprite", ""))).is_empty()), "у каждого дома свой рисунок снаружи")
 	var tavern: Dictionary = {}
 	for b in s.location_data().get("buildings", []):
 		if str(b["id"]) == "tavern":

@@ -96,8 +96,7 @@
         "material": "log",
         "roof": "thatch",
         "chimney": true,
-        "sprite": "house",
-        "flip": true
+        "sprite": "bld_lodge"
       },
       "C": {
         "building": "crypt",
@@ -107,7 +106,8 @@
         ],
         "name": "Старый склеп",
         "material": "stone",
-        "roof": "slate"
+        "roof": "slate",
+        "sprite": "bld_crypt"
       },
       "D": {
         "prop": "bed"
@@ -252,7 +252,7 @@
         "material": "stone",
         "roof": "slate",
         "cross": true,
-        "sprite": "church"
+        "sprite": "bld_church"
       },
       "E": {
         "building": "priest_house",
@@ -263,7 +263,7 @@
         "name": "Дом священника",
         "material": "timber",
         "roof": "thatch",
-        "sprite": "house_priest"
+        "sprite": "bld_priest_house"
       },
       "R": {
         "building": "tavern",
@@ -275,7 +275,7 @@
         "material": "timber",
         "roof": "shingle",
         "chimney": true,
-        "sprite": "tavern",
+        "sprite": "bld_tavern",
         "music": "tavern"
       },
       "F": {
@@ -288,7 +288,7 @@
         "material": "stone",
         "roof": "slate",
         "chimney": true,
-        "sprite": "smithy"
+        "sprite": "bld_smithy"
       },
       "5": {
         "object": "bell_tower",
@@ -423,7 +423,7 @@
         "name": "Дом старосты Яцека",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_8x7"
+        "sprite": "bld_house_headman"
       },
       "H": {
         "building": "house_cooper",
@@ -434,7 +434,7 @@
         "name": "Дом бондаря",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_6x6"
+        "sprite": "bld_house_cooper"
       },
       "L": {
         "building": "house_weaver",
@@ -445,7 +445,7 @@
         "name": "Дом ткачихи Ганны",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_5x5"
+        "sprite": "bld_house_weaver"
       },
       "N": {
         "building": "house_korn",
@@ -456,7 +456,7 @@
         "name": "Дом Корнов",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_7x6"
+        "sprite": "bld_house_korn"
       },
       "O": {
         "building": "house_fisher",
@@ -467,7 +467,7 @@
         "name": "Дом рыбака Савки",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_8x5"
+        "sprite": "bld_house_fisher"
       },
       "S": {
         "building": "house_shepherd",
@@ -478,7 +478,7 @@
         "name": "Дом пастуха",
         "material": "log",
         "roof": "thatch",
-        "sprite": "log_7x6"
+        "sprite": "bld_house_shepherd"
       },
       "d": {
         "building": "house_carpenter",
@@ -489,7 +489,7 @@
         "name": "Дом плотника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_6x6"
+        "sprite": "bld_house_carpenter"
       },
       "e": {
         "building": "house_widow",
@@ -500,7 +500,7 @@
         "name": "Дом вдовы Агаты",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_5x5"
+        "sprite": "bld_house_widow"
       },
       "g": {
         "building": "house_beekeeper",
@@ -511,7 +511,7 @@
         "name": "Дом пасечника",
         "material": "log",
         "roof": "thatch",
-        "sprite": "log_5x6"
+        "sprite": "bld_house_beekeeper"
       },
       "i": {
         "building": "house_chandler",
@@ -522,7 +522,7 @@
         "name": "Дом свечника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_6x6"
+        "sprite": "bld_house_chandler"
       },
       "l": {
         "building": "house_miller",
@@ -533,7 +533,7 @@
         "name": "Дом мельника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_7x6"
+        "sprite": "bld_house_miller"
       },
       "m": {
         "building": "house_potter",
@@ -544,7 +544,7 @@
         "name": "Дом гончара",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_6x5"
+        "sprite": "bld_house_potter"
       },
       "o": {
         "building": "house_shoemaker",
@@ -555,7 +555,7 @@
         "name": "Дом сапожника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_5x5"
+        "sprite": "bld_house_shoemaker"
       },
       "q": {
         "building": "house_midwife",
@@ -566,7 +566,7 @@
         "name": "Дом повитухи Божены",
         "material": "log",
         "roof": "thatch",
-        "sprite": "log_5x6"
+        "sprite": "bld_house_midwife"
       },
       "t": {
         "building": "house_boatman",
@@ -577,7 +577,7 @@
         "name": "Дом лодочника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_7x5"
+        "sprite": "bld_house_boatman"
       },
       "w": {
         "building": "house_hunter",
@@ -588,7 +588,7 @@
         "name": "Дом охотника",
         "material": "log",
         "roof": "thatch",
-        "sprite": "log_6x5"
+        "sprite": "bld_house_hunter"
       },
       "x": {
         "building": "house_healer",
@@ -599,7 +599,7 @@
         "name": "Дом знахаря",
         "material": "log",
         "roof": "thatch",
-        "sprite": "log_6x6"
+        "sprite": "bld_house_healer"
       },
       "y": {
         "building": "house_tanner",
@@ -610,7 +610,7 @@
         "name": "Дом кожевника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_5x5"
+        "sprite": "bld_house_tanner"
       },
       "z": {
         "building": "house_brzezinski",
@@ -621,7 +621,7 @@
         "name": "Дом семьи Бжезинских",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_5x8"
+        "sprite": "bld_house_brzezinski"
       },
       "0": {
         "building": "house_baker",
@@ -632,7 +632,7 @@
         "name": "Дом пекаря",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house_7x6"
+        "sprite": "bld_house_baker"
       },
       "3": {
         "building": "barn",
@@ -643,7 +643,7 @@
         "name": "Амбар",
         "material": "log",
         "roof": "thatch",
-        "sprite": "barn_9x7"
+        "sprite": "bld_barn"
       },
       "4": {
         "building": "shed",
@@ -654,7 +654,7 @@
         "name": "Сарай",
         "material": "log",
         "roof": "thatch",
-        "sprite": "barn_6x6"
+        "sprite": "bld_shed"
       },
       "6": {
         "object": "chest_baker",
@@ -824,7 +824,7 @@
         "material": "log",
         "roof": "moss",
         "chimney": true,
-        "sprite": "vetla_hut"
+        "sprite": "bld_vetla_hut"
       },
       "O": {
         "prop": "hearth"
@@ -1027,7 +1027,8 @@
         ],
         "name": "Шалаш Мухоглота",
         "material": "log",
-        "roof": "moss"
+        "roof": "moss",
+        "sprite": "bld_shaman_hut"
       },
       "U": {
         "prop": "barrel"

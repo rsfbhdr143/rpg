@@ -84,10 +84,15 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 				if _flag(e, "door"):
 					door_cells[Vector2i(x, y)] = true
 				if e.has("building"):
+					var bs: Array = e.get("size", [3, 3])
+					if not _walled(rows, legend, x, y, int(bs[0]), int(bs[1]), ch):
+						# та же буква в другом месте (например, мебель внутри другого дома) — это не дом:
+						# иначе посреди комнаты вырастают стены чужого дома
+						warnings.append("%s: буква дома «%s» в клетке [%d, %d] не в углу стен — не дом" % [id, ch, x, y])
+						continue
 					var b: Dictionary = e.duplicate()
 					b.erase("building")
 					b["id"] = str(e["building"])
-					var bs: Array = e.get("size", [3, 3])
 					b.erase("size")
 					b["rect"] = [x, y, int(bs[0]), int(bs[1])]
 					buildings.append(b)
@@ -202,6 +207,24 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 
 
 ## Ключ-признак легенды: только настоящее true (у домов, например, "material" — строка, и строки признаком не считаются).
+## Буква дома стоит в дальнем углу прямоугольника, весь край которого — стены "=" и двери (угол — сама буква).
+static func _walled(rows: Array, legend: Dictionary, x: int, y: int, w: int, h: int, corner: String) -> bool:
+	if y + h > rows.size():
+		return false
+	for yy in range(y, y + h):
+		var row := str(rows[yy])
+		if x + w > row.length():
+			return false
+		for xx in range(x, x + w):
+			if xx != x and xx != x + w - 1 and yy != y and yy != y + h - 1:
+				continue
+			var ch := row[xx]
+			var door := legend.has(ch) and _flag(legend[ch], "door")
+			if not (ch == "=" or door or (xx == x and yy == y and ch == corner)):
+				return false
+	return true
+
+
 static func _flag(e: Dictionary, key: String) -> bool:
 	return typeof(e.get(key)) == TYPE_BOOL and bool(e[key])
 

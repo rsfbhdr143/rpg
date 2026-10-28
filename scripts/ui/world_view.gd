@@ -12,7 +12,7 @@ extends Node2D
 const TW := 32
 const TH := 16
 const WALK_SPEED := 120.0         # пикселей мира в секунду
-const SHELL_FIT := 0.15           # насколько рисунок дома может не совпасть с домом по ширине (доля)
+const SHELL_FIT := 0.25           # насколько рисунок дома может быть шире или уже дома (доля; свесы крыши шире стен)
 const SURFACE_COLORS := {
 	"water": ["2f5a8a", 1], "blood": ["6e1a1a", 6], "oil": ["2e2618", 5], "poison": ["4f8a2e", 1],
 	"fire": ["e8641e", 2], "ice": ["a8d8e8", 3], "electrified_water": ["4a78b8", 4], "electrified_blood": ["8a2a5a", 4],
@@ -385,7 +385,7 @@ func _build_houses(data: Dictionary) -> void:
 
 ## Рисунок дома снаружи: первый из "sprite" (строка или список), что есть в data/sprites.json и подходит по размеру;
 ## "" — дом рисуется кодом. Рисунок не растягивается: его ширина в родном масштабе должна совпадать с шириной
-## дома на карте ((w + h) * TW / 2) с точностью 15%, иначе пиксели расплываются в кашу — тогда лучше стены кодом.
+## дома на карте ((w + h) * TW / 2) с точностью SHELL_FIT, иначе пиксели расплываются в кашу — тогда лучше стены кодом.
 func _house_sprite(b: Dictionary) -> String:
 	var v: Variant = b.get("sprite", "")
 	var ids: Array = v if typeof(v) == TYPE_ARRAY else [v]
