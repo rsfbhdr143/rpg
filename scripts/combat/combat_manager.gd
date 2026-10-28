@@ -196,7 +196,12 @@ func max_move_steps(u: Character) -> int:
 func move(u: Character, target_cell: Vector2i) -> bool:
 	if not active or u != current or not u.can_act():
 		return false
-	var path := grid.find_path(u.cell, target_cell, occupied_cells(u))
+	var avoid := occupied_cells(u)
+	if u.faction == "player":   # найденные ловушки герои обходят, если не идут на них нарочно
+		for c in grid.known_traps():
+			if c != target_cell:
+				avoid[c] = true
+	var path := grid.find_path(u.cell, target_cell, avoid)
 	if path.is_empty():
 		return false
 	var cost := move_cost(u, path.size())
@@ -204,14 +209,23 @@ func move(u: Character, target_cell: Vector2i) -> bool:
 		return false
 	u.ap -= cost
 	var walked: Array = []
+	var trap := Vector2i(-1, -1)
 	for step in path:
 		u.cell = step
 		walked.append(GameEvents.cell(step))
+		if not grid.armed_trap(step).is_empty():
+			trap = step
+			break
 		apply_cell_effects(u)
 		if not u.can_act():
 			GameLog.add("%s остановлен на %s." % [u.display_name, str(step)])
 			break
 	GameEvents.add("move", {"paths": {u.uid: walked}})
+	if trap.x >= 0:
+		TrapSystem.spring(self, trap)
+		apply_cell_effects(u)
+	elif u.faction == "player":
+		TrapSystem.announce(grid, u, TrapSystem.look_around(grid, u))
 	_cleanup_dead()
 	state_changed.emit()
 	if active and current == u and not u.can_act():

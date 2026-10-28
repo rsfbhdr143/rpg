@@ -17,11 +17,12 @@ extends RefCounted
 ##     "w": {"encounter": "forest_wolves", "template": "wolf"}   враг встречи (template можно не писать,
 ##                                                               если состав встречи задан в сюжете)
 ##     "A": {"anchor": "tavern"}             именованная точка: у неё сюжет ставит NPC и встречи ("anchor")
+##     "^": {"trap": "fire_rune"}            спрятанная ловушка (виды — data/traps.json)
 ##   }
 ## Буквы можно совмещать в одной записи: {"surface": "water", "spawn": "start"}.
 ## "#" — стена и "." — пол действуют без легенды.
 ## Всё это превращается в обычные поля: size, walls, solid, surfaces, spawns, exits, props, anchors, npcs, objects,
-## encounters.
+## encounters, traps.
 
 const DEFAULT_LEGEND := {"#": {"wall": true}, ".": {}, " ": {}}
 
@@ -36,6 +37,7 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	var anchors: Dictionary = loc.get("anchors", {})
 	var npcs: Array = loc.get("npcs", [])
 	var objects: Array = loc.get("objects", [])
+	var traps: Array = loc.get("traps", [])
 	var exit_cells := {}
 	var enc_cells := {}       # id встречи -> [[x, y], …]
 	var enc_templates := {}   # id встречи -> [шаблон или "", …]
@@ -73,6 +75,10 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 					surfaces.append({"id": str(e["surface"]), "cell": c, "radius": 0})
 				if e.has("anchor"):
 					anchors[str(e["anchor"])] = c
+				if e.has("trap"):
+					if not GameData.traps.has(str(e["trap"])):   # не GameData.trap(): данные ещё грузятся
+						warnings.append("%s: ловушки «%s» нет в data/traps.json" % [id, e["trap"]])
+					traps.append({"type": str(e["trap"]), "cell": c})
 				if e.has("spawn"):
 					var sp := str(e["spawn"])
 					if not spawns.has(sp):
@@ -159,6 +165,7 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	loc["npcs"] = npcs
 	loc["objects"] = objects
 	loc["encounters"] = encounters
+	loc["traps"] = traps
 	loc.erase("rows")
 	loc.erase("legend")
 	return loc

@@ -53,7 +53,7 @@
     "type": "consumable",
     "description": "Работы Гюнтера. Горит даже в болоте. Можно бросить в масло или яд.",
     "use": {
-      "skill": "flare"
+      "skill": "torch_throw"
     }
   },
   "funeral_bread": {

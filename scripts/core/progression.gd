@@ -139,6 +139,8 @@ static func skill_block_reason(c: Character, skill_id: String) -> String:
 		return "нет такого навыка"
 	if c.skills.has(skill_id):
 		return "уже изучен"
+	if bool(s.get("item_only", false)):
+		return "только из предмета"
 	var ab := str(s.get("ability", ""))
 	if ab != "" and c.ability_rank(ab) < int(s.get("ability_rank", 0)):
 		return "нужен ранг %d в %s" % [int(s.get("ability_rank", 0)), ab]

@@ -1819,6 +1819,11 @@
       "ce_back2": {
         "speaker": "shmyg",
         "text": "Тихо-тихо. Тут ловушка. И тут. Нет, тут не ловушка, тут Шмыг вчера...",
+        "do": [
+          {
+            "reveal_traps": true
+          }
+        ],
         "next": "ce_back3"
       },
       "ce_back3": {

@@ -155,6 +155,18 @@
   "combat_music": "combat",
   "boss_music": "boss_lado",
   "explore_turn_seconds": 4.0,
+  "traps": {
+    "_doc": "Ловушки: шанс заметить = detect_base + (Восприятие - attribute_base) * detect_per_perception - hide ловушки + стат trap_detect; каждый герой бросает раз за визит, когда подходит на detect_radius. Шанс обезвредить = disarm_base + (Ловкость - attribute_base) * disarm_per_dexterity + ранг Плута * disarm_per_scoundrel - difficulty + стат trap_disarm. Неудача: с шансом fail_spring_pct ловушка срабатывает. Вне боя ловушка не добивает: оставляет 1 ОЗ.",
+    "detect_radius": 2,
+    "detect_base": 45,
+    "detect_per_perception": 10,
+    "disarm_base": 55,
+    "disarm_per_dexterity": 6,
+    "disarm_per_scoundrel": 12,
+    "fail_spring_pct": 50,
+    "min_chance": 5,
+    "max_chance": 95
+  },
   "hero_names": {
     "knight": ["Андраш", "Элигор", "Саллон"],
     "wizard": ["Гремора", "Ситрея", "Вапула"],

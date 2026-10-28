@@ -259,6 +259,25 @@ func _present(e: Dictionary) -> float:
 		"heal":
 			world.heal_fx(uid, int(e.get("amount", 0)))
 			return 0.06
+		"trap_found":
+			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Ловушка!", Color("ff9a60"))
+			if uid != "":
+				world.float_text(world.unit_pos(uid) + Vector2(0, -44), "!", Color("ffd860"), 10)
+			GameAudio.sfx("trap_found")
+			return 0.25
+		"trap":
+			world.trap_fx(Vector2i(int(e["cell"][0]), int(e["cell"][1])), str(e.get("type", "")))
+			GameAudio.sfx("trap_spring")
+			world.update_cells()
+			return 0.3
+		"trap_disarmed":
+			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Обезврежена", Color("a8e070"))
+			GameAudio.sfx("trap_disarm")
+			return 0.2
+		"trap_fail":
+			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Не вышло", Color("e0a070"))
+			GameAudio.sfx("ui_error")
+			return 0.15
 		"explosion":
 			world.explosion_fx(Vector2i(int(e["cell"][0]), int(e["cell"][1])))
 			GameAudio.sfx("explosion")
@@ -467,7 +486,7 @@ func _update_selection() -> void:
 		cur = session.combat.current.uid
 	world.current_uid = cur
 	world.selected_uid = selected_uid if session.mode == "explore" else ""
-	var can_aim := is_my_turn() or (session.mode == "explore" and selected_item == "")
+	var can_aim := is_my_turn() or session.mode == "explore"
 	if not can_aim and (selected_skill != "" or selected_item != ""):
 		_cancel_targeting()
 
@@ -494,10 +513,14 @@ func _update_hover() -> void:
 
 ## Кого выбирать при перекрытии фигур: с союзным навыком — своих, иначе врагов и жителей.
 func _pick_prefer() -> String:
-	var sk := selected_skill
-	if sk == "" and selected_item != "":
-		sk = str((GameData.item(selected_item).get("use", {}) as Dictionary).get("skill", ""))
-	return "ally" if str(GameData.skill(sk).get("target", "")) == "ally" else "foe"
+	return "ally" if str(GameData.skill(_aim_skill()).get("target", "")) == "ally" else "foe"
+
+
+## Навык, которым сейчас целимся: выбранный навык или навык выбранного предмета ("" — не целимся).
+func _aim_skill() -> String:
+	if selected_skill == "" and selected_item != "":
+		return str((GameData.item(selected_item).get("use", {}) as Dictionary).get("skill", ""))
+	return selected_skill
 
 
 func _update_highlights() -> void:
@@ -508,7 +531,7 @@ func _update_highlights() -> void:
 	world.target_uids = {}
 	_preview_ap = 0
 	world.grid_lines = session.mode == "combat"
-	if session.mode == "explore" and selected_skill != "":
+	if session.mode == "explore" and _aim_skill() != "":
 		_explore_aim_highlights()
 		return
 	if not is_my_turn() or not world.idle or world.busy_fx():
@@ -717,7 +740,7 @@ func _slot_tip(slot: Dictionary) -> String:
 		out += "\n[color=#a89a80]%s[/color]" % str(idef["description"])
 	var use: Dictionary = idef.get("use", {})
 	if use.has("skill"):
-		out += "\nВ бою: выберите и укажите клетку · %d ОД" % int(idef.get("ap", GameData.skill(str(use["skill"])).get("ap", 2)))
+		out += "\nВыберите и укажите клетку · в бою %d ОД, вне боя даром" % int(idef.get("ap", GameData.skill(str(use["skill"])).get("ap", 2)))
 	elif use.has("heal"):
 		out += "\nЛечит %d" % int(use["heal"])
 	return out
@@ -775,6 +798,9 @@ func _world_tip() -> String:
 		return ""
 	var c := world.hover_cell
 	if session.grid.in_bounds(c):
+		var tr: Dictionary = session.grid.traps.get(c, {})
+		if str(tr.get("state", "hidden")) != "hidden":
+			return _trap_tip(tr)
 		var ex := session.exit_at(c)
 		if not ex.is_empty():
 			return "[b]%s[/b]\n[color=#a89a80]Выход[/color]" % str(ex.get("name", ex.get("to", "")))
@@ -788,6 +814,25 @@ func _world_tip() -> String:
 		if gs != "none" and session.mode == "combat":
 			return str(GameData.surface(gs).get("name", gs))
 	return ""
+
+
+func _trap_tip(tr: Dictionary) -> String:
+	var tt := str(tr["type"])
+	var d := GameData.trap(tt)
+	var lines := PackedStringArray(["[b][color=#ff9a60]%s[/color][/b]" % TrapSystem.name_of(tt)])
+	match str(tr["state"]):
+		"found":
+			if d.has("description"):
+				lines.append("[color=#a89a80]%s[/color]" % str(d["description"]))
+			var u := bar_unit()
+			if session.mode == "explore" and u != null and selected_skill == "" and selected_item == "":
+				lines.append("[color=#c8a060]ЛКМ — обезвредить: %s, шанс %d%%[/color]" % [u.display_name, roundi(TrapSystem.disarm_chance(u, tt))])
+			lines.append("[color=#6e6454]Можно подорвать издалека любым ударом[/color]")
+		"disarmed":
+			lines.append("Обезврежена")
+		_:
+			lines.append("Сработала")
+	return "\n".join(lines)
 
 
 static func _element_name(el: String) -> String:
@@ -855,7 +900,7 @@ func _on_world_click() -> void:
 	if world.hover_uid != "":
 		hu = session.unit_by_uid(world.hover_uid)
 	if session.mode == "explore":
-		if selected_skill != "":
+		if _aim_skill() != "":
 			_cast_explore((hu.cell if hu != null else c))
 			return
 		if hu != null and session.heroes.has(hu) and session.owner_of(hu) == Net.my_id():
@@ -871,6 +916,9 @@ func _on_world_click() -> void:
 			if vis:
 				_queue_or_send({"type": "talk", "unit": selected_uid, "object": world.hover_object})
 				return
+		if hu == null and str(session.grid.traps.get(c, {}).get("state", "")) == "found":
+			_queue_or_send({"type": "disarm", "unit": selected_uid, "cell": [c.x, c.y]})
+			return
 		if hu != null:
 			c = hu.cell
 		var target := _walk_target(c)
@@ -1101,11 +1149,14 @@ func _cast_explore(cell: Vector2i) -> void:
 	var u := bar_unit()
 	if u == null:
 		return
-	var reason := SkillSystem.target_block_reason(session.explore_field(), u, GameData.skill(selected_skill), cell)
+	var reason := SkillSystem.target_block_reason(session.explore_field(), u, GameData.skill(_aim_skill()), cell)
 	if reason != "":
 		_on_notice(reason)
 		return
-	_queue_or_send({"type": "skill", "unit": u.uid, "skill": selected_skill, "cell": [cell.x, cell.y]})
+	if selected_item != "":
+		_queue_or_send({"type": "use_item", "unit": u.uid, "item": selected_item, "cell": [cell.x, cell.y]})
+	else:
+		_queue_or_send({"type": "skill", "unit": u.uid, "skill": selected_skill, "cell": [cell.x, cell.y]})
 	_cancel_targeting()
 
 
@@ -1114,7 +1165,7 @@ func _explore_aim_highlights() -> void:
 	var u := bar_unit()
 	if u == null:
 		return
-	var def := GameData.skill(selected_skill)
+	var def := GameData.skill(_aim_skill())
 	var field := session.explore_field()
 	for c in session.grid.cells_in_radius(u.cell, SkillSystem.skill_range(u, def)):
 		world.hl_range[c] = true
@@ -1140,8 +1191,8 @@ func activate_slot(slot: Dictionary) -> void:
 	var def := GameData.item(id)
 	var use: Dictionary = def.get("use", {})
 	if use.has("skill"):
-		if not is_my_turn():
-			_on_notice("это пригодится в бою, в свой ход")
+		if not is_my_turn() and session.mode != "explore":
+			_on_notice("сейчас нельзя")
 			return
 		selected_skill = ""
 		selected_item = "" if selected_item == id else id

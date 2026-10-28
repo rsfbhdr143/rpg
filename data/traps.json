@@ -1,0 +1,53 @@
+{
+  "_doc": "Ловушки. hide — насколько трудно заметить (вычитается из шанса), difficulty — насколько трудно обезвредить, level — сила (урон растёт с уровнем), radius — сколько клеток вокруг задевает, damage — урон (как тики статусов: element, base, per_level), statuses — что вешает, surface — какую стихию выплёскивает (как у навыков), xp — опыт за обезвреживание, color — цвет значка на карте. Где стоят — буква с {\"trap\": \"вид\"} в легенде карты (data/locations.json).",
+  "spike_plate": {
+    "name": "Нажимная плита",
+    "description": "Старая плита с ржавыми шипами. Наступишь — пробьёт сапог.",
+    "hide": 10,
+    "difficulty": 0,
+    "level": 2,
+    "radius": 0,
+    "damage": {"element": "physical", "base": 9, "per_level": 3},
+    "statuses": [{"id": "slowed", "chance": 50, "duration": 2}],
+    "xp": 15,
+    "color": "#b0a490"
+  },
+  "fire_rune": {
+    "name": "Огненная руна",
+    "description": "Знак, выжженный в земле. Под ним тлеет жар.",
+    "hide": 20,
+    "difficulty": 10,
+    "level": 2,
+    "radius": 1,
+    "damage": {"element": "fire", "base": 8, "per_level": 3},
+    "statuses": [{"id": "burning", "chance": 60}],
+    "surface": {"element": "fire", "radius": 1, "create": true},
+    "xp": 25,
+    "color": "#ff8a30"
+  },
+  "poison_pot": {
+    "name": "Горшок с ядом",
+    "description": "Гоблинская шутка: закопанный горшок с болотной отравой и тонкой растяжкой.",
+    "hide": 15,
+    "difficulty": 5,
+    "level": 2,
+    "radius": 1,
+    "statuses": [{"id": "poisoned", "chance": 80}],
+    "surface": {"element": "poison", "radius": 1, "create": true},
+    "xp": 20,
+    "color": "#8acc5a"
+  },
+  "frost_glyph": {
+    "name": "Ледяной знак",
+    "description": "Иней на камне не тает даже днём.",
+    "hide": 25,
+    "difficulty": 15,
+    "level": 3,
+    "radius": 1,
+    "damage": {"element": "water", "base": 6, "per_level": 2},
+    "statuses": [{"id": "chilled", "chance": 80}],
+    "surface": {"element": "frost", "radius": 1, "create": true},
+    "xp": 25,
+    "color": "#a8d8e8"
+  }
+}

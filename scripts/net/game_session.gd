@@ -14,12 +14,15 @@ extends RefCounted
 ## Переход: герой встал на клетку выхода — вся партия переходит в другую локацию.
 ## Каждая посещённая локация помнит своё состояние (поверхности, павшие враги).
 ## Встречи с "respawn": true оживают при новом входе в локацию — на них можно качаться.
+## Ловушки (TrapSystem): герои замечают их по дороге, найденные обходят; наступил — сработала.
 ##
 ## Команды (Dictionary):
 ##   {"type": "move", "unit": uid, "cell": [x, y]}     в бою unit можно не указывать
 ##   {"type": "talk", "unit": uid, "target": uid NPC | "object": id}   подойти и заговорить
 ##   {"type": "dialogue_next"} / {"type": "dialogue_choice", "index": i} / {"type": "dialogue_skip"}
 ##   {"type": "use_item", "unit": uid, "item": id}       зелья и прочее; в бою стоит ОД
+##   {"type": "use_item", "unit": uid, "item": id, "cell": [x, y]}   масло, факел: в бою и вне боя, как навык
+##   {"type": "disarm", "unit": uid, "cell": [x, y]}     подойти к найденной ловушке и обезвредить
 ##   {"type": "skill", "skill": id, "cell": [x, y]}     в бою — навык текущего героя;
 ##   {"type": "skill", "unit": uid, "skill": id, "cell": [x, y]}  вне боя: без ОД, удар по врагу начинает бой
 ##   {"type": "end_turn"}
@@ -257,6 +260,8 @@ func enter_location(id: String, spawn: String) -> void:
 		mode = "explore"
 	refresh_world()
 	_place_heroes(spawn)
+	for h in heroes:
+		TrapSystem.announce(grid, h, TrapSystem.look_around(grid, h))
 	GameLog.add("Партия входит: %s." % data.get("name", id))
 	GameEvents.add("location", {"id": id, "first": first_visit})
 	if first_visit:
@@ -300,8 +305,14 @@ func _build_location(data: Dictionary) -> Dictionary:
 	var surfs: Array = data.get("surfaces", [])
 	for s in surfs:
 		var sc: Array = s["cell"]
+		var layer := str(GameData.surface(str(s["id"])).get("layer", "ground"))
 		for c in g.cells_in_radius(Vector2i(int(sc[0]), int(sc[1])), int(s.get("radius", 0))):
 			g.set_surface(c, str(s["id"]))
+			if (g.layers[layer] as Dictionary).has(c):
+				g.layers[layer][c]["turns"] = -1   # болото с картой не высыхает, пока его не сожгут или не заморозят
+	var trap_list: Array = data.get("traps", [])
+	for t in trap_list:
+		g.traps[_cell_of(t["cell"])] = {"type": str(t["type"]), "state": "hidden", "rolled": {}}
 	return {"grid": g, "enemies": [], "defeated": [], "spawned": [], "npcs": {}}
 
 
@@ -914,6 +925,8 @@ func submit(pid: int, cmd: Dictionary) -> String:
 			err = _cmd_dialogue(pid, cmd, kind)
 		"use_item":
 			err = _cmd_use_item(pid, cmd)
+		"disarm":
+			err = _cmd_disarm(pid, cmd)
 		"equip", "unequip":
 			err = _cmd_equip(pid, cmd, kind)
 		"skill", "end_turn":
@@ -961,16 +974,35 @@ func _cmd_move(pid: int, cmd: Dictionary) -> String:
 	if typeof(r) == TYPE_STRING:
 		return r
 	var u: Character = r
-	var path := grid.find_path(u.cell, _cell(cmd), _occupied(u))
+	var dest := _cell(cmd)
+	var path := grid.find_path(u.cell, dest, _avoid(u, dest))
 	if path.is_empty():
 		return "туда не дойти"
 	_walk_party(u, path)
 	return ""
 
 
+## Все спрятанные ловушки локации становятся видны (проводник показал, эффект сюжета "reveal_traps").
+func reveal_traps() -> void:
+	for c in grid.traps:
+		if str(grid.traps[c]["state"]) == "hidden":
+			grid.traps[c]["state"] = "found"
+			GameEvents.add("trap_found", {"cell": GameEvents.cell(c), "unit": "", "type": str(grid.traps[c]["type"])})
+
+
+## Куда герою не наступать по пути: занятые клетки и найденные ловушки (кроме цели — туда можно нарочно).
+func _avoid(u: Character, dest: Vector2i) -> Dictionary:
+	var out := _occupied(u)
+	for c in grid.known_traps():
+		if c != dest:
+			out[c] = true
+	return out
+
+
 ## Ведёт героя по пути, спутники того же игрока идут следом. По дороге враги могут заметить партию,
-## на клетке выхода вся партия переходит в другую локацию.
-## Возвращает "combat", "exit" или "" (дошли).
+## на клетке выхода вся партия переходит в другую локацию. Герои осматриваются: заметили ловушку на пути —
+## партия останавливается; наступили на взведённую — она срабатывает.
+## Возвращает "combat", "exit", "trap" (сработала), "trap_seen" (заметили на пути) или "" (дошли).
 func _walk_party(u: Character, path: Array) -> String:
 	var pid := owner_of(u)
 	var followers: Array = heroes.filter(func(h): return h != u and h.is_alive() and owner_of(h) == pid)
@@ -981,6 +1013,8 @@ func _walk_party(u: Character, path: Array) -> String:
 	for o in enemies + npcs:
 		if o.is_alive():
 			blockers[o.cell] = true
+	for c in grid.known_traps():
+		blockers[c] = true
 	for f in followers:
 		var fc: Character = f
 		var spot := _follow_spot(path, reserved, blockers)
@@ -993,6 +1027,9 @@ func _walk_party(u: Character, path: Array) -> String:
 		walked[f.uid] = []
 	var regen := float(GameData.rule("explore_regen_pct", 0)) / 100.0
 	var result := ""
+	var sprung := Vector2i(-1, -1)
+	var spotted: Array = []   # [герой, клетки найденных ловушек]
+	var party: Array = [u] + followers
 	var steps := path.size()
 	for k in fpaths:
 		steps = maxi(steps, (fpaths[k] as Array).size())
@@ -1010,8 +1047,25 @@ func _walk_party(u: Character, path: Array) -> String:
 				walked[fc.uid].append(GameEvents.cell(fc.cell))
 				if regen > 0.0:
 					fc.heal(fc.max_hp() * regen)
+		for h in party:
+			if not grid.armed_trap(h.cell).is_empty():
+				sprung = h.cell
+		if sprung.x >= 0:
+			result = "trap"
+			break
 		if mode == "explore" and _aggro_check() != "":
 			result = "combat"
+			break
+		var ahead: Array = path.slice(i + 1)
+		for k in fpaths:
+			ahead.append_array((fpaths[k] as Array).slice(i + 1))
+		for h in party:
+			var seen := TrapSystem.look_around(grid, h)
+			if not seen.is_empty():
+				spotted.append([h, seen])
+				if seen.any(func(c): return ahead.has(c)):
+					result = "trap_seen"
+		if result != "":
 			break
 		if i < path.size() and not exit_at(u.cell).is_empty():
 			result = "exit"
@@ -1022,7 +1076,17 @@ func _walk_party(u: Character, path: Array) -> String:
 			paths[k] = walked[k]
 	if not paths.is_empty():
 		GameEvents.add("move", {"paths": paths})
+	for sp in spotted:
+		TrapSystem.announce(grid, sp[0], sp[1])
 	match result:
+		"trap":
+			var field := explore_field()
+			var before := _enemy_marks()
+			TrapSystem.spring(field, sprung)
+			field.after_explore_action()
+			_explore_consequences(before)
+			if mode == "explore" and _aggro_check() != "":
+				_start_combat(_aggro_check())
 		"combat":
 			_start_combat(_aggro_check())
 		"exit":
@@ -1102,20 +1166,53 @@ func _cmd_talk(pid: int, cmd: Dictionary) -> String:
 	# подойти вплотную
 	var near := cells.any(func(c): return SurfaceGrid.distance(u.cell, c) <= 1)
 	if not near:
-		var best: Array = []
-		var occ := _occupied(u)
-		for c in cells:
-			for d in SurfaceGrid.DIRS:
-				var nb: Vector2i = c + d
-				if grid.is_walkable(nb) and not occ.has(nb):
-					var p := grid.find_path(u.cell, nb, occ)
-					if not p.is_empty() and (best.is_empty() or p.size() < best.size()):
-						best = p
+		var best := _path_next_to(u, cells)
 		if best.is_empty():
 			return "не подойти"
 		if _walk_party(u, best) != "":
-			return ""   # по дороге начался бой или переход
+			return ""   # по дороге начался бой, переход или ловушка
 	start_dialogue(dl, pid, u.uid, npc_id)
+	return ""
+
+
+## Кратчайший путь героя на клетку рядом с одной из cells (в обход найденных ловушек); [] — не подойти.
+func _path_next_to(u: Character, cells: Array) -> Array:
+	var best: Array = []
+	var occ := _avoid(u, Vector2i(-99, -99))
+	for c in cells:
+		for d in SurfaceGrid.DIRS:
+			var nb: Vector2i = c + d
+			if grid.is_walkable(nb) and not occ.has(nb) and not cells.has(nb):
+				var p := grid.find_path(u.cell, nb, occ)
+				if not p.is_empty() and (best.is_empty() or p.size() < best.size()):
+					best = p
+	return best
+
+
+## Подойти к найденной ловушке и обезвредить её (Ловкость, Плут). Неудача может её задеть.
+func _cmd_disarm(pid: int, cmd: Dictionary) -> String:
+	if mode != "explore":
+		return "сейчас нельзя" if mode != "combat" else "в бою не до этого"
+	var r: Variant = _my_hero(pid, cmd)
+	if typeof(r) == TYPE_STRING:
+		return r
+	var u: Character = r
+	var cell := _cell(cmd)
+	if str(grid.traps.get(cell, {}).get("state", "")) != "found":
+		return "здесь нет найденной ловушки"
+	if SurfaceGrid.distance(u.cell, cell) > 1:
+		var path := _path_next_to(u, [cell])
+		if path.is_empty():
+			return "не подойти"
+		if _walk_party(u, path) != "" or mode != "explore" or grid.armed_trap(cell).is_empty():
+			return ""   # по дороге что-то случилось
+	var tt := str(grid.traps[cell]["type"])
+	var field := explore_field()
+	var before := _enemy_marks()
+	if TrapSystem.try_disarm(field, u, cell) == "disarmed":
+		give_xp(int(GameData.trap(tt).get("xp", 0)))
+	field.after_explore_action()
+	_explore_consequences(before)
 	return ""
 
 
@@ -1154,10 +1251,12 @@ func _cmd_use_item(pid: int, cmd: Dictionary) -> String:
 	return ""
 
 
-## Предмет, который действует как навык (масло — масляное пятно, факел — вспышка). Только в бою.
+## Предмет, который действует как навык (масло — масляное пятно, факел — огонь). Вне боя — без ОД.
 func _use_item_skill(pid: int, cmd: Dictionary, item_id: String, skill_id: String) -> String:
+	if mode == "explore":
+		return _cmd_explore_skill(pid, cmd, item_id)
 	if mode != "combat" or combat == null or not combat.active:
-		return "это пригодится в бою"
+		return "сейчас нельзя"
 	var u := combat.current
 	if u == null or owner_of(u) != pid:
 		return "сейчас ходит не ваш персонаж"
@@ -1240,35 +1339,54 @@ func _cmd_combat(pid: int, cmd: Dictionary, kind: String) -> String:
 
 ## Навык вне боя, как в D:OS: лечение, благословение, дождь на огонь, масло под ноги. ОД не тратит,
 ## перезарядка идёт по времени (pass_time). Жителей навыки не задевают; задели врага — начинается бой.
-func _cmd_explore_skill(pid: int, cmd: Dictionary) -> String:
+## item_id — навык из предмета (масло, факел): тратится предмет, а не перезарядка.
+func _cmd_explore_skill(pid: int, cmd: Dictionary, item_id := "") -> String:
 	var r: Variant = _my_hero(pid, cmd)
 	if typeof(r) == TYPE_STRING:
 		return r
 	var u: Character = r
 	var skill_id := str(cmd.get("skill", ""))
+	if item_id != "":
+		skill_id = str((GameData.item(item_id).get("use", {}) as Dictionary).get("skill", ""))
 	var def := GameData.skill(skill_id)
-	if def.is_empty() or not u.skills.has(skill_id):
+	if def.is_empty() or (item_id == "" and not u.skills.has(skill_id)):
 		return "навык не изучен"
 	if not u.can_act():
 		return "не может действовать"
-	if u.cooldowns.has(skill_id):
+	if item_id == "" and u.cooldowns.has(skill_id):
 		return "перезарядка %d" % int(u.cooldowns[skill_id])
 	var field := explore_field()
 	var target := u.cell if str(def.get("target", "")) == "self" else _cell(cmd)
 	var reason := SkillSystem.target_block_reason(field, u, def, target)
 	if reason != "":
 		return reason
+	var before := _enemy_marks()
+	if item_id != "":
+		give_item(item_id, -1)
+	elif int(def.get("cooldown", 0)) > 0:
+		u.cooldowns[skill_id] = int(def.get("cooldown", 0))
+	var what: Variant = GameData.item(item_id).get("name", item_id) if item_id != "" else def.get("name", skill_id)
+	GameLog.add("%s использует «%s»." % [u.display_name, what])
+	GameEvents.add("cast", {"unit": u.uid, "skill": skill_id, "cell": GameEvents.cell(target), "from": GameEvents.cell(u.cell)})
+	SkillSystem.execute(field, u, def, target)
+	field.after_explore_action()
+	_explore_consequences(before)
+	return ""
+
+
+## Здоровье и число состояний живых врагов: потом видно, кого задело.
+func _enemy_marks() -> Dictionary:
 	var before := {}
 	for e in enemies:
 		var foe: Character = e
 		if foe.is_alive():
 			before[foe.uid] = [foe.hp, foe.statuses.size()]
-	if int(def.get("cooldown", 0)) > 0:
-		u.cooldowns[skill_id] = int(def.get("cooldown", 0))
-	GameLog.add("%s использует «%s»." % [u.display_name, def.get("name", skill_id)])
-	GameEvents.add("cast", {"unit": u.uid, "skill": skill_id, "cell": GameEvents.cell(target), "from": GameEvents.cell(u.cell)})
-	SkillSystem.execute(field, u, def, target)
-	field.after_explore_action()
+	return before
+
+
+## После навыка или ловушки вне боя: убитые враги дают опыт, задетая группа начинает бой
+## (или считается побеждённой, если её перебили сразу).
+func _explore_consequences(before: Dictionary) -> void:
 	var hit := ""
 	var killed := 0
 	for e in enemies:
@@ -1285,7 +1403,6 @@ func _cmd_explore_skill(pid: int, cmd: Dictionary) -> String:
 		else:   # отряд перебит одним ударом, до боя дело не дошло
 			defeated_encounters().append(hit)
 			Story.apply(self, encounter_def(hit).get("do", []))
-	return ""
 
 
 ## Поле для навыков вне боя: те же правила, что в бою; в нём герои и враги, жителей навыки обходят.
@@ -1297,7 +1414,7 @@ func explore_field() -> CombatManager:
 
 
 ## Время вне боя: каждые explore_turn_seconds проходит «ход» — остывают навыки, кончаются состояния
-## (без урона: горение и яд вне боя не тикают). true — что-то изменилось, надо разослать состояние.
+## (без урона: горение и яд вне боя не тикают), прогорают поверхности. true — что-то изменилось, надо разослать состояние.
 func pass_time(delta: float) -> bool:
 	if mode != "explore":
 		_explore_clock = 0.0
@@ -1307,7 +1424,9 @@ func pass_time(delta: float) -> bool:
 	if _explore_clock < turn:
 		return false
 	_explore_clock -= turn
-	var changed := false
+	var changed := grid != null and grid.has_timed_surfaces()
+	if changed:
+		grid.tick_round()   # огонь прогорает, пар рассеивается, лёд тает и вне боя
 	for h in heroes:
 		var hero: Character = h
 		if hero.cooldowns.is_empty() and hero.statuses.is_empty():

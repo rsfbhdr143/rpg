@@ -16,6 +16,7 @@ func _init() -> void:
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
+		"test_traps_and_surfaces",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -703,3 +704,103 @@ func test_party_and_explore_skills() -> void:
 	wz.cell = spot
 	check(f.submit(1, {"type": "skill", "unit": wz.uid, "skill": "ice_shard", "cell": [prey.cell.x, prey.cell.y]}) == "", "удар издалека вне боя")
 	check(f.mode == "combat", "удар по врагу начинает бой")
+
+
+## Свободная клетка пола на расстоянии dist от from (без людей, выходов, предметов, ловушек и поверхностей),
+## не ближе far к героям.
+func _floor_cell(s: GameSession, from: Vector2i, dist: int, far := 0) -> Vector2i:
+	for c in s.grid.cells_in_radius(from, dist):
+		if SurfaceGrid.distance(c, from) != dist or not s.grid.is_walkable(c) or s.unit_at(c) != null:
+			continue
+		if not s.exit_at(c).is_empty() or not s.object_at(c).is_empty() or s.grid.traps.has(c) or s.grid.get_ground(c) != "none":
+			continue
+		if s.heroes.any(func(h): return SurfaceGrid.distance(h.cell, c) < far):
+			continue
+		return c
+	return Vector2i(-1, -1)
+
+
+func test_traps_and_surfaces() -> void:
+	print("traps: spot, avoid, disarm, spring, blow up; surfaces outside combat")
+	var cfg: Dictionary = GameData.rules["traps"]
+	var saved := cfg.duplicate()
+	check(GameData.trap("fire_rune").has("surface") and (GameData.location("forest").get("traps", []) as Array).size() >= 2,
+		"виды ловушек загружены, в лесу они стоят")
+
+	var s := _story_session("village", ["ranger", "knight"])
+	var h: Character = s.heroes[0]
+	var k: Character = s.heroes[1]
+	var spot := _floor_cell(s, h.cell, 2)
+	s.grid.traps[spot] = {"type": "spike_plate", "state": "hidden", "rolled": {}}
+	cfg["max_chance"] = 100.0
+	h.base_stats["trap_detect"] = 200
+	check(TrapSystem.look_around(s.grid, h) == [spot] and str(s.grid.traps[spot]["state"]) == "found", "зоркий герой замечает ловушку")
+	check(TrapSystem.look_around(s.grid, h).is_empty(), "второй раз не бросает")
+	var beyond := _floor_cell(s, spot, 2, 3)
+	if beyond.x >= 0:
+		s.submit(1, {"type": "move", "unit": h.uid, "cell": [beyond.x, beyond.y]})
+		check(str(s.grid.traps[spot]["state"]) == "found", "найденную ловушку герои обходят")
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(str(mirror.grid.traps.get(spot, {}).get("state", "")) == "found", "клиент видит найденную ловушку")
+	h.base_stats["trap_disarm"] = 200
+	var xp := h.xp
+	check(s.submit(1, {"type": "disarm", "unit": h.uid, "cell": [spot.x, spot.y]}) == "", "команда обезвредить")
+	check(str(s.grid.traps[spot]["state"]) == "disarmed" and h.xp > xp, "ловушка обезврежена, за неё опыт")
+	check(SurfaceGrid.distance(h.cell, spot) <= 1 and h.cell != spot, "герой подошёл, но не наступил")
+	check(s.submit(1, {"type": "disarm", "unit": h.uid, "cell": [spot.x, spot.y]}) != "", "обезвреженную второй раз не трогают")
+
+	cfg["min_chance"] = 0.0
+	cfg["max_chance"] = 0.0
+	h.base_stats.erase("trap_detect")
+	k.base_stats["trap_detect"] = -500
+	var plate := _floor_cell(s, h.cell, 2)
+	s.grid.traps[plate] = {"type": "spike_plate", "state": "hidden", "rolled": {}}
+	h.hp = 2
+	s.submit(1, {"type": "move", "unit": h.uid, "cell": [plate.x, plate.y]})
+	check(str(s.grid.traps[plate]["state"]) == "sprung" and h.cell == plate, "наступил на спрятанную — сработала")
+	check(h.is_alive() and h.hp >= 1.0, "вне боя ловушка не добивает")
+	check(s.mode == "explore", "в деревне бой не начался")
+
+	cfg["max_chance"] = 100.0
+	var rune := _floor_cell(s, h.cell, 4, 3)
+	s.grid.traps[rune] = {"type": "fire_rune", "state": "found", "rolled": {}}
+	var shot := {"type": "skill", "unit": h.uid, "skill": "arrow_shot", "cell": [rune.x, rune.y]}
+	check(SkillSystem.target_block_reason(s.explore_field(), h, GameData.skill("arrow_shot"), rune) == "", "в найденную ловушку можно целиться")
+	check(s.submit(1, shot) == "" and str(s.grid.traps[rune]["state"]) == "sprung", "выстрел подрывает ловушку издалека")
+	check(s.grid.get_ground(rune) == "fire", "руна выплеснула огонь")
+	for i in 6:
+		s.pass_time(float(GameData.rule("explore_turn_seconds", 4.0)))
+	check(s.grid.get_ground(rune) != "fire", "огонь прогорает и вне боя")
+
+	cfg["max_chance"] = 0.0
+	cfg["fail_spring_pct"] = 100.0
+	var pot := _floor_cell(s, h.cell, 1)
+	s.grid.traps[pot] = {"type": "poison_pot", "state": "found", "rolled": {}}
+	check(TrapSystem.try_disarm(s.explore_field(), h, pot) == "sprung" and s.grid.get_ground(pot) == "poison", "неудача задевает механизм")
+
+	var oil_at := _floor_cell(s, h.cell, 3, 2)
+	s.give_item("lamp_oil", 1)
+	s.give_item("tar_torch", 1)
+	check(s.submit(1, {"type": "use_item", "unit": h.uid, "item": "lamp_oil", "cell": [oil_at.x, oil_at.y]}) == "" and s.grid.get_ground(oil_at) == "oil",
+		"масло разливается и вне боя")
+	check(s.submit(1, {"type": "use_item", "unit": h.uid, "item": "tar_torch", "cell": [oil_at.x, oil_at.y]}) == "" and s.grid.get_ground(oil_at) == "fire",
+		"брошенный факел поджигает масло")
+	check(not s.items.has("lamp_oil") and not s.items.has("tar_torch"), "масло и факел потрачены")
+
+	var restored := GameSession.new()
+	restored.add_player(1, "Соло")
+	restored.from_save(s.to_save())
+	check(str(restored.grid.traps.get(spot, {}).get("state", "")) == "disarmed" and str(restored.grid.traps.get(rune, {}).get("state", "")) == "sprung",
+		"ловушки сохраняются")
+
+	var f := _story_session("forest")
+	var swamp := Vector2i(15, 9)
+	check(f.grid.get_ground(swamp) == "poison" and int(f.grid.layers["ground"][swamp]["turns"]) == -1, "болото с карты не высыхает")
+	check(f.grid.traps.values().all(func(tr): return str(tr["state"]) in ["hidden", "found"]), "ловушки леса взведены")
+	var camp := _story_session("goblin_camp")
+	camp.reveal_traps()
+	check(camp.grid.traps.size() == 2 and camp.grid.traps.values().all(func(tr): return str(tr["state"]) == "found"), "Шмыг показывает ловушки лагеря")
+
+	cfg.clear()
+	cfg.merge(saved)

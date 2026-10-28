@@ -59,6 +59,7 @@ var _shake_t := 0.0
 var _shake_dur := 0.0
 var _shake_power := 0.0
 var _ground: Node2D
+var _traps: Node2D
 var _ground_mat: ShaderMaterial
 var _entities: Node2D
 var _over: Node2D
@@ -115,6 +116,10 @@ func _ready() -> void:
 	_ground_mat = ShaderMaterial.new()
 	_ground_mat.shader = load("res://shaders/ground.gdshader")
 	_ground.material = _ground_mat
+	_traps = Node2D.new()
+	_traps.z_index = -10
+	add_child(_traps)
+	_traps.draw.connect(_draw_traps)
 	_entities = Node2D.new()
 	_entities.y_sort_enabled = true
 	add_child(_entities)
@@ -493,6 +498,13 @@ func explosion_fx(c: Vector2i) -> void:
 	shake(3.0, 0.3)
 
 
+func trap_fx(c: Vector2i, trap_type: String) -> void:
+	var col := Color(str(GameData.trap(trap_type).get("color", "#d0c0a0")))
+	burst(cell_center(c) + Vector2(0, -4), col, 22, 70.0)
+	lights.append({"pos": cell_center(c), "radius": 50.0, "color": col, "until": time + 0.3})
+	shake(2.0, 0.25)
+
+
 func level_up_fx(uid: String, level := 0) -> void:
 	var n := unit_node(uid)
 	if n == null:
@@ -570,6 +582,7 @@ func _process(delta: float) -> void:
 	_update_camera(delta)
 	_over.queue_redraw()
 	_glow.queue_redraw()
+	_traps.queue_redraw()
 
 
 func _sort_buildings() -> void:
@@ -732,6 +745,35 @@ func _draw_over() -> void:
 		var pos := (p - Vector2(w * 0.5, 0)).round()
 		_over.draw_string_outline(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 2, Color(0.05, 0.03, 0.02, col.a))
 		_over.draw_string(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+
+
+## Найденные ловушки на земле: ромбик цвета ловушки с мерцающей рамкой; обезвреженные и сработавшие тусклые.
+func _draw_traps() -> void:
+	if session == null or session.grid == null:
+		return
+	for c in session.grid.traps:
+		var t: Dictionary = session.grid.traps[c]
+		var state := str(t["state"])
+		if state == "hidden":
+			continue
+		var p := cell_center(c).round()
+		var col := Color(str(GameData.trap(str(t["type"])).get("color", "#d0c0a0")))
+		var pts := PackedVector2Array([p + Vector2(0, -5), p + Vector2(10, 0), p + Vector2(0, 5), p + Vector2(-10, 0)])
+		var loop := pts.duplicate()
+		loop.append(pts[0])
+		match state:
+			"found":
+				var pulse := 0.55 + 0.4 * sin(time * 5.0 + float(c.x))
+				_traps.draw_colored_polygon(pts, Color(0.08, 0.06, 0.05, 0.85))
+				_traps.draw_polyline(loop, Color("ff6a40") if hover_cell == c else Color(col, pulse), 1.0)
+				for i in 3:
+					_traps.draw_rect(Rect2(p + Vector2(-4 + i * 3, -1), Vector2(1, 2)), col)
+			"disarmed":
+				_traps.draw_colored_polygon(pts, Color(0.1, 0.09, 0.08, 0.5))
+				_traps.draw_line(p + Vector2(-4, -2), p + Vector2(4, 2), Color(col, 0.45), 1.0)
+				_traps.draw_line(p + Vector2(-4, 2), p + Vector2(4, -2), Color(col, 0.45), 1.0)
+			_:
+				_traps.draw_colored_polygon(pts, Color(0.06, 0.05, 0.04, 0.45))
 
 
 func _draw_cloud(c: Vector2i, id: String) -> void:

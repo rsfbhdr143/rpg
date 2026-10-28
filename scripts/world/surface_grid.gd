@@ -14,6 +14,7 @@ var width: int
 var height: int
 var blocked: Dictionary = {}                  # Vector2i -> true (стены, препятствия)
 var layers: Dictionary = {"ground": {}, "cloud": {}}   # layer -> {Vector2i -> {"id","turns","level"}}
+var traps: Dictionary = {}                    # Vector2i -> {"type", "state": hidden|found|disarmed|sprung, "rolled": {uid: true}}
 
 
 func _init(w: int = 12, h: int = 10) -> void:
@@ -29,6 +30,21 @@ func in_bounds(c: Vector2i) -> bool:
 
 func is_walkable(c: Vector2i) -> bool:
 	return in_bounds(c) and not blocked.has(c)
+
+
+## Ловушка, которая ещё может сработать (спрятанная или найденная); иначе пустой словарь.
+func armed_trap(c: Vector2i) -> Dictionary:
+	var t: Dictionary = traps.get(c, {})
+	return t if str(t.get("state", "")) in ["hidden", "found"] else {}
+
+
+## Клетки найденных и ещё не обезвреженных ловушек: пути героев их обходят.
+func known_traps() -> Dictionary:
+	var out := {}
+	for c in traps:
+		if str(traps[c]["state"]) == "found":
+			out[c] = true
+	return out
 
 
 static func distance(a: Vector2i, b: Vector2i) -> int:
@@ -200,6 +216,15 @@ func tick_round() -> void:
 					d.erase(c)
 
 
+## Есть ли поверхности с конечным сроком (огонь, пар, лёд): им нужно время.
+func has_timed_surfaces() -> bool:
+	for layer in LAYERS:
+		for c in layers[layer]:
+			if int(layers[layer][c]["turns"]) >= 0:
+				return true
+	return false
+
+
 ## Статусы, которые накладывают поверхности клетки: [{"id","chance"}].
 func statuses_for_cell(c: Vector2i) -> Array:
 	var out: Array = []
@@ -226,7 +251,11 @@ func to_dict() -> Dictionary:
 			var s: Dictionary = d[c]
 			entries.append([c.x, c.y, s["id"], s["turns"], s["level"]])
 		out_layers[layer] = entries
-	return {"w": width, "h": height, "blocked": walls, "layers": out_layers}
+	var trap_list: Array = []
+	for c in traps:
+		var t: Dictionary = traps[c]
+		trap_list.append([c.x, c.y, t["type"], t["state"], (t.get("rolled", {}) as Dictionary).keys()])
+	return {"w": width, "h": height, "blocked": walls, "layers": out_layers, "traps": trap_list}
 
 
 static func from_dict(d: Dictionary) -> SurfaceGrid:
@@ -240,4 +269,10 @@ static func from_dict(d: Dictionary) -> SurfaceGrid:
 		var target: Dictionary = g.layers[layer]
 		for e in entries:
 			target[Vector2i(int(e[0]), int(e[1]))] = {"id": str(e[2]), "turns": int(e[3]), "level": int(e[4])}
+	var trap_list: Array = d.get("traps", [])
+	for e in trap_list:
+		var rolled := {}
+		for uid in (e[4] if e.size() > 4 else []):
+			rolled[str(uid)] = true
+		g.traps[Vector2i(int(e[0]), int(e[1]))] = {"type": str(e[2]), "state": str(e[3]), "rolled": rolled}
 	return g

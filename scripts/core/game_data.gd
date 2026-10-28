@@ -17,6 +17,7 @@ static var surfaces: Dictionary = {}
 static var surface_reactions: Dictionary = {}
 static var element_surfaces: Dictionary = {}
 static var skills: Dictionary = {}
+static var traps: Dictionary = {}
 static var characters: Dictionary = {}
 static var locations: Dictionary = {}
 static var dialogues: Dictionary = {}
@@ -50,6 +51,8 @@ static func reload_data() -> void:
 	surface_reactions = sf.get("reactions", {})
 	element_surfaces = sf.get("element_surfaces", {})
 	skills = _load_json("skills.json")
+	traps = _load_optional("traps.json", "traps")
+	traps.erase("_doc")
 	characters = _load_json("characters.json")
 	locations = _load_json("locations.json")
 	load_warnings = []
@@ -119,6 +122,11 @@ static func rule(key: String, default: Variant = null) -> Variant:
 static func skill(id: String) -> Dictionary:
 	ensure_loaded()
 	return skills.get(id, {})
+
+
+static func trap(id: String) -> Dictionary:
+	ensure_loaded()
+	return traps.get(id, {})
 
 
 static func status(id: String) -> Dictionary:

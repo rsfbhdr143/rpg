@@ -13,7 +13,7 @@ STORY = os.path.join(ROOT, "data", "story")
 HERO_TEMPLATES = {"knight", "wizard", "ranger", "cleric"}
 ATTRIBUTES = {"strength", "dexterity", "intelligence", "constitution", "speed", "perception"}
 EFFECT_KEYS = {"set_flag", "quest", "stage", "give_item", "take_item", "count", "to", "xp", "gold", "combat",
-               "heal_party", "status", "goto", "spawn", "music", "sfx", "stinger", "shake", "show_npc", "hide_npc",
+               "heal_party", "status", "goto", "spawn", "reveal_traps", "music", "sfx", "stinger", "shake", "show_npc", "hide_npc",
                "tip", "end_demo"}
 COND_KEYS = {"flag", "not_flag", "quest", "stage", "party_min", "hero", "has_item", "gold_min"}
 

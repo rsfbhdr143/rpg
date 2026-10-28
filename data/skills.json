@@ -49,6 +49,10 @@
   "oil_slick":     {"name": "Масляное пятно", "ability": "geomancer", "ability_rank": 1, "ap": 3, "cooldown": 3, "range": 6, "target": "cell",
                     "aoe_radius": 1, "affects": "all",
                     "surface": {"element": "oil", "radius": 1, "create": true}},
+  "torch_throw":   {"name": "Бросок факела", "item_only": true, "ap": 2, "cooldown": 0, "range": 5, "target": "cell",
+                    "damage": {"source": "skill", "element": "fire", "multiplier": 0.6},
+                    "statuses": [{"id": "burning", "chance": 50}],
+                    "surface": {"element": "fire", "radius": 0, "create": true}},
 
   "bless":         {"name": "Благословение", "ability": "witchcraft", "ability_rank": 1, "ap": 3, "cooldown": 4, "range": 5, "target": "ally",
                     "statuses": [{"id": "blessed", "chance": 100}],

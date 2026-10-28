@@ -108,6 +108,9 @@
   },
 
   "aliases": {
+    "trap_found": "enemy_alert",
+    "trap_disarm": "chest_open",
+    "trap_spring": "melee_crit",
     "menu": "theme_lado",
     "main_menu": "theme_lado",
     "intro": "funeral",

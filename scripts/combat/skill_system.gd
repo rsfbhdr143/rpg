@@ -8,6 +8,8 @@ extends RefCounted
 ##   heal {multiplier}, statuses [{id, chance, duration?, on: "target"|"self"}],
 ##   surface {element, radius, create},
 ##   vs_undead {damage, statuses} — что навык делает с нежитью вместо обычного (лечение и благословение жгут её)
+## Навык с уроном или стихией, задевший клетку взведённой ловушки, подрывает её; найденную ловушку можно
+## выбрать целью вместо врага.
 
 
 static func skill_range(u: Character, def: Dictionary) -> int:
@@ -28,6 +30,8 @@ static func target_block_reason(combat: CombatManager, u: Character, def: Dictio
 	var t := combat.unit_at(target_cell)
 	match tt:
 		"enemy":
+			if t == null and def.has("damage") and str(combat.grid.traps.get(target_cell, {}).get("state", "")) == "found":
+				return ""   # подорвать найденную ловушку издалека
 			if t == null or t.faction == u.faction:
 				return "нужна вражеская цель"
 		"ally":
@@ -71,21 +75,33 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 	_apply_statuses(caster, caster, def, "self")
 
 	if def.has("surface"):
-		var s: Dictionary = def["surface"]
-		var radius := int(s.get("radius", 0))
-		var explosions := combat.grid.apply_element(center, radius, str(s.get("element", "")), bool(s.get("create", false)), caster.level)
-		for e in explosions:
-			GameEvents.add("explosion", {"cell": GameEvents.cell(e["cell"])})
-			var victim := combat.unit_at(e["cell"])
-			if victim != null:
-				var dealt := DamageCalc.environment_damage(victim, e["damage"], int(e["level"]))
-				GameLog.add("%s получает %d урона от взрыва." % [victim.display_name, dealt])
-				GameEvents.add("hit", {"unit": victim.uid, "amount": int(dealt), "element": "fire", "crit": false})
-		# Персонажи в изменённых клетках сразу получают эффекты поверхности.
-		for c in combat.grid.cells_in_radius(center, radius):
-			var u := combat.unit_at(c)
-			if u != null:
-				combat.apply_cell_effects(u)
+		apply_surface(combat, center, def["surface"], caster.level)
+
+	if def.has("damage") or def.has("surface"):
+		for c in combat.grid.cells_in_radius(center, int(def.get("aoe_radius", 0))):
+			if not combat.grid.armed_trap(c).is_empty():
+				TrapSystem.spring(combat, c)
+
+
+## Стихия на клетки вокруг center (навык, ловушка): реакции поверхностей, взрывы, эффекты на стоящих.
+## Вне боя (поле не активно) взрывы никого не добивают.
+static func apply_surface(combat: CombatManager, center: Vector2i, s: Dictionary, level: int) -> void:
+	var radius := int(s.get("radius", 0))
+	var explosions := combat.grid.apply_element(center, radius, str(s.get("element", "")), bool(s.get("create", false)), level)
+	for e in explosions:
+		GameEvents.add("explosion", {"cell": GameEvents.cell(e["cell"])})
+		var victim := combat.unit_at(e["cell"])
+		if victim != null:
+			var dealt := DamageCalc.environment_damage(victim, e["damage"], int(e["level"]))
+			if not combat.active and victim.hp < 1.0:
+				victim.hp = 1.0
+			GameLog.add("%s получает %d урона от взрыва." % [victim.display_name, dealt])
+			GameEvents.add("hit", {"unit": victim.uid, "amount": int(dealt), "element": "fire", "crit": false})
+	# Персонажи в изменённых клетках сразу получают эффекты поверхности.
+	for c in combat.grid.cells_in_radius(center, radius):
+		var u := combat.unit_at(c)
+		if u != null:
+			combat.apply_cell_effects(u)
 
 
 ## Святой свет по нежити: урон без промаха и, если заданы, состояния.

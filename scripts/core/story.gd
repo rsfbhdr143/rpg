@@ -228,6 +228,8 @@ static func _apply_one(s: GameSession, e: Dictionary, hero: Character) -> void:
 				GameEvents.add("narrate", {"title": str(e.get("title", "")), "text": str(v)})
 			"tip":
 				GameEvents.add("tip", {"text": str(v)})
+			"reveal_traps":
+				s.reveal_traps()
 			"count", "stage", "spawn", "target", "duration", "title", "to":
 				pass   # параметры соседних эффектов
 			_:
