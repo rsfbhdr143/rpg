@@ -74,6 +74,10 @@ static func _load_story() -> void:
 		var t: Dictionary = enemies[id]
 		if not t.has("faction"):
 			t["faction"] = "enemy"
+		if characters.has(id):   # сюжет поверх шаблона: иначе теряется, например, "type": "undead" из characters.json
+			var merged: Dictionary = characters[id].duplicate(true)
+			merged.merge(t, true)
+			t = merged
 		characters[id] = t
 	for id in npcs:
 		var t: Dictionary = (npcs[id] as Dictionary).duplicate(true)

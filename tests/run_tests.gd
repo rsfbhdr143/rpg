@@ -809,7 +809,11 @@ func test_traps_and_surfaces() -> void:
 		"ловушки сохраняются")
 
 	var f := _story_session("forest")
-	var swamp := Vector2i(15, 9)
+	var swamp := Vector2i(-1, -1)   # клетка ядовитого болота — с карты: карты меняют размер
+	for sf in GameData.location("forest").get("surfaces", []):
+		if str(sf["id"]) == "poison":
+			swamp = GameSession._cell_of(sf["cell"])
+			break
 	check(f.grid.get_ground(swamp) == "poison" and int(f.grid.layers["ground"][swamp]["turns"]) == -1, "болото с карты не высыхает")
 	check(f.grid.traps.values().all(func(tr): return str(tr["state"]) in ["hidden", "found"]), "ловушки леса взведены")
 	var camp := _story_session("goblin_camp")

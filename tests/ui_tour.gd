@@ -48,7 +48,7 @@ func _run() -> void:
 	title.call("_open_new")
 	await _wait(0.5)
 	await _shot("02_heroes")
-	title.call("_toggle_pick", "ranger")
+	title.call("_add_pick", "ranger")   # к рыцарю и волшебнице по умолчанию: остаются волшебница и следопыт
 	title.call("_start_solo")
 	await _wait(0.5)
 	screen = current_scene
