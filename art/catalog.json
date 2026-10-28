@@ -818,8 +818,8 @@
    "sheet": "res://art/sprites/prop_house.png",
    "kind": "image",
    "frame": [
-    74,
-    69
+    86,
+    80
    ],
    "pad": 1,
    "cols": 1,
@@ -828,7 +828,7 @@
    "source": [
     "generated/props/prop_house.webp"
    ],
-   "scale": 0.0721,
+   "scale": 0.0841,
    "animations": {
     "idle": {
      "start": 0,
@@ -938,8 +938,8 @@
    "sheet": "res://art/sprites/prop_smithy.png",
    "kind": "image",
    "frame": [
-    74,
-    69
+    90,
+    84
    ],
    "pad": 1,
    "cols": 1,
@@ -948,7 +948,7 @@
    "source": [
     "generated/props/prop_smithy.webp"
    ],
-   "scale": 0.0717,
+   "scale": 0.0876,
    "animations": {
     "idle": {
      "start": 0,
@@ -962,8 +962,8 @@
    "sheet": "res://art/sprites/prop_tavern.png",
    "kind": "image",
    "frame": [
-    89,
-    86
+    97,
+    94
    ],
    "pad": 1,
    "cols": 1,
@@ -972,7 +972,7 @@
    "source": [
     "generated/props/prop_tavern.webp"
    ],
-   "scale": 0.0854,
+   "scale": 0.0935,
    "animations": {
     "idle": {
      "start": 0,
@@ -1082,8 +1082,8 @@
    "sheet": "res://art/sprites/prop_vetla_hut.png",
    "kind": "image",
    "frame": [
-    65,
-    66
+    81,
+    82
    ],
    "pad": 1,
    "cols": 1,
@@ -1092,7 +1092,7 @@
    "source": [
     "generated/props/prop_vetla_hut.webp"
    ],
-   "scale": 0.065,
+   "scale": 0.0813,
    "animations": {
     "idle": {
      "start": 0,

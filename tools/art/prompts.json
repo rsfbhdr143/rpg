@@ -73,14 +73,18 @@
         1024,
         1024
       ],
-      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, centered, isolated on a plain white background",
-      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette",
+      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
+      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile",
       "px": [
         72,
         72
       ],
       "lora_strength": 0.45,
-      "clear_holes": true
+      "clear_holes": true,
+      "tone": [
+        0.75,
+        1.35
+      ]
     },
     "icon": {
       "size": [
@@ -420,6 +424,15 @@
       ],
       "negative": "church, chapel, white walls, clouds, pink sky, town, city, village, pagoda, neighboring houses"
     },
+    "church": {
+      "subject": "a small dark wooden village church with a steep shingled roof, a small onion-domed belfry with a cross on top, weathered dark timber walls, narrow arched windows",
+      "kind": "building",
+      "px": [
+        128,
+        116
+      ],
+      "negative": "bell tower standing apart, stone cathedral, gothic, castle, town, neighboring houses, graveyard"
+    },
     "fence": {
       "subject": "a short straight section of an old wooden picket fence, five pickets and two rails, side view",
       "px": [
@@ -432,7 +445,7 @@
       ]
     },
     "dead_tree": {
-      "subject": "a dead leafless black tree with twisted branches",
+      "subject": "a dead leafless tree with gnarled dark grey-brown bark and bare twisted branches",
       "px": [
         40,
         68
@@ -440,21 +453,25 @@
       "size": [
         832,
         1216
+      ],
+      "tone": [
+        0.8,
+        1.2
       ]
     },
     "house": {
-      "subject": "a small timber-framed village house with a thatched roof",
+      "subject": "a small timber-framed village house with a dark thatched roof, dark weathered timber, rich warm colors",
       "px": [
-        72,
-        72
+        84,
+        84
       ],
       "kind": "building"
     },
     "tavern": {
       "subject": "a single two-storey timber-framed tavern standing alone, thatched roof, a wooden sign board hanging over the door, a barrel by the wall",
       "px": [
-        88,
-        84
+        96,
+        92
       ],
       "kind": "building",
       "lora_strength": 0.35,
@@ -463,8 +480,8 @@
     "smithy": {
       "subject": "a village smithy with an open forge, an anvil and a chimney",
       "px": [
-        72,
-        68
+        88,
+        88
       ],
       "kind": "building"
     },
@@ -566,8 +583,8 @@
     "vetla_hut": {
       "subject": "a crooked old herbalist hut with a mossy roof and drying herbs hanging by the door",
       "px": [
-        72,
-        64
+        80,
+        80
       ],
       "kind": "building"
     }

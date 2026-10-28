@@ -167,6 +167,26 @@ class ImportTest(unittest.TestCase):
         x0, y0, x1, y1 = import_art.bbox_union([figure((32, 32))])
         self.assertEqual(cat["goblin"]["frame"], [x1 - x0, y1 - y0])   # пиксельный спрайт как был, без обводки
 
+    def test_pixel_tone(self):
+        """pixel_tone из подсказки: та же картинка с яркостью 0.6 выходит темнее."""
+        (self.root / "data" / "sprites.json").write_text(json.dumps({"settings": {"pixelate": {"enabled": True}}}))
+        rng = np.random.default_rng(5)
+        img = np.zeros((300, 300, 4), np.uint8)
+        img[..., :3] = rng.integers(150, 250, (300, 300, 3))
+        img[40:280, 60:240, 3] = 255
+        for name, tone in (("hut", None), ("dark_hut", [0.6, 1.0])):
+            self.put(name + ".png", Image.fromarray(img))
+            hint = {"kind": "image", "cols": 1, "rows_count": 1, "pixel_box": [40, 40]}
+            if tone:
+                hint["pixel_tone"] = tone
+            (self.inbox / (name + ".art.json")).write_text(json.dumps(hint))
+        self.run_import()
+
+        def mean(name):
+            a = np.asarray(Image.open(self.root / "art" / "sprites" / (name + ".png")).convert("RGBA")).astype(int)
+            return a[a[..., 3] > 0][:, :3].mean()
+        self.assertLess(mean("dark_hut"), mean("hut") * 0.75)
+
     def test_magenta_key(self):
         rows = [[figure((32, 32))] * 3]
         img = sheet(rows, (32, 32), bg=(255, 0, 255, 255))

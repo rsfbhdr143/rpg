@@ -530,6 +530,9 @@ def pick(root: Path, item: Item, number: int, record: dict, prompts: dict) -> Pa
     colors = setting(prompts, item, "pixel_colors")
     if colors:
         hint["pixel_colors"] = colors
+    tone = setting(prompts, item, "tone")
+    if tone:    # [яркость, насыщенность] при пикселизации: 0.8 — темнее, 1.3 — сочнее
+        hint["pixel_tone"] = list(tone)
     import_art.write_text(dst.with_name(item.out_id + ".art.json"), json.dumps(hint, ensure_ascii=False) + "\n")
     params = json.loads(src.with_suffix(".json").read_text(encoding="utf-8")) if src.with_suffix(".json").exists() else {}
     record[item.key] = dict(params, variant=src.name, file=dst.relative_to(root).as_posix())
