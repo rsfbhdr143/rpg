@@ -272,6 +272,58 @@
         26,
         32
       ]
+    },
+    "jacek": {
+      "subject": "a portly middle-aged village headman with a short grey beard in a long dark green wool caftan with copper buttons, holding a small ledger book",
+      "negative": "interior, room, house, table, furniture"
+    },
+    "hanna": {
+      "subject": "a thin middle-aged village weaver woman in a plain grey dress and a white headscarf, holding a ball of grey wool yarn, a sewing needle tucked behind her ear",
+      "negative": "interior, room, house, table, furniture, loom, spinning wheel"
+    },
+    "savka": {
+      "subject": "a weathered fisherman in wet high leather boots and a patched brown tunic, a fishing net slung over his shoulder, squinting",
+      "negative": "interior, room, house, table, furniture, boat, river, water, fish"
+    },
+    "agata": {
+      "subject": "a tiny frail old widow in a black dress and a black headscarf, holding a small bouquet of dried yellow flowers",
+      "negative": "interior, room, house, table, furniture, garden, flowers field, plants"
+    },
+    "yurek": {
+      "subject": "a barefoot scruffy village boy with messy hair in a simple linen shirt and short brown trousers, holding a small wooden toy sword",
+      "px": [
+        28,
+        34
+      ],
+      "negative": "interior, room, house, table, furniture, adult, man, armor, real sword"
+    },
+    "bolek": {
+      "subject": "a scruffy village drunkard with a red nose in a crumpled brown felt hat and an untucked shirt, holding a wooden beer mug",
+      "negative": "interior, room, house, table, furniture, tavern, barrel, bottles"
+    },
+    "zbyszek": {
+      "subject": "a dandy young man in a burgundy velvet beret with a feather and a fitted burgundy velvet doublet, golden rings on his fingers, smug",
+      "negative": "interior, room, house, table, furniture, sword, armor"
+    },
+    "matey": {
+      "subject": "a grey-haired old veteran village guard in a worn padded gambeson and a dented iron kettle helmet, holding an old halberd upright",
+      "negative": "interior, room, house, table, furniture, shield, plate armor, knight"
+    },
+    "tomash": {
+      "subject": "a plump village baker covered in flour in a white shirt and a white apron, holding a round loaf of bread",
+      "negative": "interior, room, house, table, furniture, oven, kitchen, bread pile"
+    },
+    "vlasta": {
+      "subject": "a rosy-cheeked young peasant girl with a long blond braid in a simple embroidered linen dress, holding a thin willow switch",
+      "negative": "interior, room, house, table, furniture, geese, animals, farm"
+    },
+    "bozhena": {
+      "subject": "a plump calm middle-aged village midwife in a brown dress, a white apron and a white headscarf, holding a small bundle of chamomile flowers",
+      "negative": "interior, room, house, table, furniture, baby, child, garden"
+    },
+    "stefan": {
+      "subject": "a broad-shouldered young blacksmith apprentice in a scorched leather apron over a shirt with rolled sleeves, holding long iron tongs",
+      "negative": "interior, room, house, table, furniture, anvil, forge, hammer, bald"
     }
   },
   "tiles": {

@@ -782,6 +782,213 @@
     }
    }
   },
+  "prop_cauldron": {
+   "sheet": "res://art/sprites/prop_cauldron.png",
+   "kind": "image",
+   "frame": [
+    24,
+    26
+   ],
+   "pad": 1,
+   "cols": 4,
+   "count": 4,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_cauldron.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 4,
+     "fps": 6.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_hay": {
+   "sheet": "res://art/sprites/prop_hay.png",
+   "kind": "image",
+   "frame": [
+    24,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_hay.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_herbs": {
+   "sheet": "res://art/sprites/prop_herbs.png",
+   "kind": "image",
+   "frame": [
+    17,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_herbs.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_loom": {
+   "sheet": "res://art/sprites/prop_loom.png",
+   "kind": "image",
+   "frame": [
+    21,
+    39
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_loom.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_oven": {
+   "sheet": "res://art/sprites/prop_oven.png",
+   "kind": "image",
+   "frame": [
+    28,
+    37
+   ],
+   "pad": 1,
+   "cols": 4,
+   "count": 4,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_oven.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 4,
+     "fps": 6.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pots": {
+   "sheet": "res://art/sprites/prop_pots.png",
+   "kind": "image",
+   "frame": [
+    20,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_pots.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_rack": {
+   "sheet": "res://art/sprites/prop_rack.png",
+   "kind": "image",
+   "frame": [
+    18,
+    35
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_rack.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_sacks": {
+   "sheet": "res://art/sprites/prop_sacks.png",
+   "kind": "image",
+   "frame": [
+    16,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_sacks.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_workbench": {
+   "sheet": "res://art/sprites/prop_workbench.png",
+   "kind": "image",
+   "frame": [
+    24,
+    29
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_workbench.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "image_epilogue": {
    "sheet": "res://art/sprites/image_epilogue.png",
    "kind": "scene",
