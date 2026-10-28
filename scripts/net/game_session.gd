@@ -64,6 +64,7 @@ var _locations: Dictionary = {}    # id -> {"grid", "enemies", "defeated", "spaw
 var _mirror_defeated: Array = []   # у клиента: побеждённые группы (все локации)
 var _mode_before_dialogue := "explore"
 var _explore_clock := 0.0          # секунды вне боя до следующего «хода» (перезарядка, состояния)
+var _walks: Dictionary = {}        # pid -> {"loc", "cells": {uid: [Vector2i]}} — последний проход партии игрока
 
 
 static func max_players() -> int:
@@ -937,6 +938,7 @@ func submit(pid: int, cmd: Dictionary) -> String:
 		return "игра не начата"
 	var kind := str(cmd.get("type", ""))
 	var err := ""
+	var undo: Dictionary = _rewind(pid, cmd.get("from")) if cmd.has("from") else {}
 	match kind:
 		"move":
 			err = _cmd_move(pid, cmd)
@@ -971,8 +973,69 @@ func submit(pid: int, cmd: Dictionary) -> String:
 				GameLog.add("Игра загружена.")
 		_:
 			err = "неизвестная команда '%s'" % kind
+	if err != "" and not undo.is_empty():
+		_undo_rewind(undo)
 	_after_action()
 	return err
+
+
+## Смена цели на ходу. Сервер проводит партию сразу до конца пути, а клиент ещё показывает, как герои идут.
+## Новая команда приходит с from = {uid: [x, y]} — клетки, к которым герои идут на экране. Если эти клетки
+## лежат на последнем пути партии, герои возвращаются на них, и новая команда ведёт уже оттуда:
+## на экране партия просто сворачивает, без лишнего похода к старой цели и без рывков.
+## Возвращает данные для отмены ({"seq", "cells": {uid: прежняя клетка}}) или {}, если возвращать некого.
+func _rewind(pid: int, from: Variant) -> Dictionary:
+	var walk: Dictionary = _walks.get(pid, {})
+	if typeof(from) != TYPE_DICTIONARY or mode != "explore" or walk.get("loc", "") != location_id:
+		return {}
+	var trails: Dictionary = walk["cells"]
+	var movers := {}   # uid -> [герой, путь, индекс клетки from]
+	for key in from:
+		var h := unit_by_uid(str(key))
+		var tr: Array = trails.get(str(key), [])
+		var fc: Variant = from[key]
+		if h == null or not heroes.has(h) or owner_of(h) != pid or tr.is_empty() or h.cell != tr[-1] \
+				or typeof(fc) != TYPE_ARRAY or (fc as Array).size() < 2:
+			continue
+		var idx := tr.find(Vector2i(int(fc[0]), int(fc[1])))
+		if idx >= 0 and idx < tr.size() - 1:
+			movers[h.uid] = [h, tr, idx]
+	if movers.is_empty():
+		return {}
+	var taken := {}
+	for x in all_units():
+		var ch: Character = x
+		if ch.is_alive() and not movers.has(ch.uid):
+			taken[ch.cell] = true
+	var cells := {}
+	var shown := {}
+	for uid in movers:
+		var h: Character = movers[uid][0]
+		var tr: Array = movers[uid][1]
+		var idx: int = movers[uid][2]
+		while idx > 0 and taken.has(tr[idx]):
+			idx -= 1          # клетку уже занял другой: шаг назад по тому же пути
+		if taken.has(tr[idx]):
+			continue
+		taken[tr[idx]] = true
+		cells[uid] = h.cell
+		h.cell = tr[idx]
+		shown[uid] = GameEvents.cell(h.cell)
+	if shown.is_empty():
+		return {}
+	GameEvents.add("rewind", {"units": shown})
+	return {"seq": GameEvents.seq, "cells": cells}
+
+
+## Команда после возврата не прошла (например, «туда не дойти»): герои снова там, где их оставил прошлый путь.
+func _undo_rewind(undo: Dictionary) -> void:
+	var cells: Dictionary = undo["cells"]
+	for uid in cells:
+		var h := unit_by_uid(str(uid))
+		if h != null:
+			h.cell = cells[uid]
+	var s := int(undo["seq"])
+	GameEvents.list = GameEvents.list.filter(func(e): return int(e["seq"]) != s)
 
 
 func _my_hero(pid: int, cmd: Dictionary) -> Variant:
@@ -1050,8 +1113,12 @@ func _walk_party(u: Character, path: Array) -> String:
 		if not fp.is_empty():
 			fpaths[fc.uid] = fp
 	var walked := {u.uid: []}
+	var trail := {u.uid: [u.cell]}   # клетки каждого героя от старта: по ним сервер вернёт партию при смене цели на ходу
+	var fstep := {}                  # uid спутника -> сколько клеток своего пути он уже прошёл
 	for f in followers:
 		walked[f.uid] = []
+		trail[f.uid] = [f.cell]
+		fstep[f.uid] = 0
 	var regen := float(GameData.rule("explore_regen_pct", 0)) / 100.0
 	var result := ""
 	var sprung := Vector2i(-1, -1)
@@ -1060,20 +1127,30 @@ func _walk_party(u: Character, path: Array) -> String:
 	var steps := path.size()
 	for k in fpaths:
 		steps = maxi(steps, (fpaths[k] as Array).size())
+	steps += 4   # запас: спутник, которому на шаг загородили дорогу, подождёт и догонит, а не перепрыгнет клетку
 	for i in steps:
+		var moved := false
 		if i < path.size():
 			u.cell = path[i]
 			walked[u.uid].append(GameEvents.cell(u.cell))
+			trail[u.uid].append(u.cell)
+			moved = true
 			if regen > 0.0:
 				u.heal(u.max_hp() * regen)
 		for f in followers:
 			var fc: Character = f
 			var fp: Array = fpaths.get(fc.uid, [])
-			if i < fp.size() and not _occupied(fc).has(fp[i]):
-				fc.cell = fp[i]
+			var j := int(fstep[fc.uid])
+			if j < fp.size() and not _occupied(fc).has(fp[j]):
+				fc.cell = fp[j]
+				fstep[fc.uid] = j + 1
 				walked[fc.uid].append(GameEvents.cell(fc.cell))
+				trail[fc.uid].append(fc.cell)
+				moved = true
 				if regen > 0.0:
 					fc.heal(fc.max_hp() * regen)
+		if not moved:
+			break
 		for h in party:
 			if not grid.armed_trap(h.cell).is_empty():
 				sprung = h.cell
@@ -1085,7 +1162,7 @@ func _walk_party(u: Character, path: Array) -> String:
 			break
 		var ahead: Array = path.slice(i + 1)
 		for k in fpaths:
-			ahead.append_array((fpaths[k] as Array).slice(i + 1))
+			ahead.append_array((fpaths[k] as Array).slice(int(fstep[k])))
 		for h in party:
 			var seen := TrapSystem.look_around(grid, h)
 			if not seen.is_empty():
@@ -1104,6 +1181,7 @@ func _walk_party(u: Character, path: Array) -> String:
 			paths[k] = walked[k]
 	if not paths.is_empty():
 		GameEvents.add("move", {"paths": paths})
+	_walks[pid] = {"loc": location_id, "cells": trail}
 	for sp in spotted:
 		TrapSystem.announce(grid, sp[0], sp[1])
 	match result:

@@ -12,12 +12,15 @@ extends Node2D
 const TW := 32
 const TH := 16
 const WALK_SPEED := 120.0         # пикселей мира в секунду
+const SHELL_FIT := 0.15           # насколько рисунок дома может не совпасть с домом по ширине (доля)
 const SURFACE_COLORS := {
 	"water": ["2f5a8a", 1], "blood": ["6e1a1a", 6], "oil": ["2e2618", 5], "poison": ["4f8a2e", 1],
 	"fire": ["e8641e", 2], "ice": ["a8d8e8", 3], "electrified_water": ["4a78b8", 4], "electrified_blood": ["8a2a5a", 4],
 }
 const CLOUD_COLORS := {"steam": "d8dce0", "electrified_steam": "d0d4ff", "poison_cloud": "8acc5a"}
 const LIGHT_PROPS := {"funeral_candles": [26.0, "ffb050"], "campfire": [44.0, "ff8a30"], "pyre": [56.0, "ff8a30"]}
+
+static var _images := {}          # Texture2D -> Image (image_of)
 
 var session: GameSession
 var loc_id := ""
@@ -102,6 +105,18 @@ static func world_to_cell(p: Vector2) -> Vector2i:
 static func corners(c: Vector2i, size := Vector2i.ONE) -> PackedVector2Array:
 	return PackedVector2Array([grid_point(c.x, c.y), grid_point(c.x + size.x, c.y),
 		grid_point(c.x + size.x, c.y + size.y), grid_point(c.x, c.y + size.y)])
+
+
+## Картинка текстуры в памяти (для проверки прозрачности под курсором), с кэшем.
+static func image_of(tex: Texture2D) -> Image:
+	if tex == null:
+		return null
+	if not _images.has(tex):
+		var img := tex.get_image()
+		if img != null and img.is_compressed():
+			img.decompress()
+		_images[tex] = img
+	return _images[tex]
 
 
 static func variant_of(c: Vector2i) -> int:
@@ -366,12 +381,20 @@ func _build_houses(data: Dictionary) -> void:
 		houses.append(house)
 
 
-## Рисунок дома снаружи: первый из "sprite" (строка или список), что есть в data/sprites.json; "" — дом рисуется кодом.
+## Рисунок дома снаружи: первый из "sprite" (строка или список), что есть в data/sprites.json и подходит по размеру;
+## "" — дом рисуется кодом. Рисунок не растягивается: его ширина в родном масштабе должна совпадать с шириной
+## дома на карте ((w + h) * TW / 2) с точностью 15%, иначе пиксели расплываются в кашу — тогда лучше стены кодом.
 func _house_sprite(b: Dictionary) -> String:
 	var v: Variant = b.get("sprite", "")
 	var ids: Array = v if typeof(v) == TYPE_ARRAY else [v]
+	var size: Array = b.get("size", [b["rect"][2], b["rect"][3]])
+	var want := (float(size[0]) + float(size[1])) * TW * 0.5
 	for id in ids:
-		if str(id) != "" and not SpriteLibrary.frame("props", str(id)).is_empty():
+		var fr := SpriteLibrary.frame("props", str(id)) if str(id) != "" else {}
+		if fr.is_empty():
+			continue
+		var w := (fr["region"] as Rect2).size.x * float(fr["scale"])
+		if absf(w / want - 1.0) <= SHELL_FIT:
 			return str(id)
 	return ""
 
@@ -553,6 +576,55 @@ func walk(uid: String, cells: Array, speed_k := 1.0) -> float:
 		n.path.append(p)
 	n.speed = WALK_SPEED * speed_k
 	return dist / n.speed
+
+
+## Смена цели на ходу: сервер вернул героя на клетку cell. Фигурка доходит до неё и дальше идёт уже новым путём.
+func cut_walk(uid: String, cell: Vector2i) -> void:
+	var n := unit_node(uid)
+	if n == null:
+		return
+	var p := cell_center(cell)
+	var i := n.path.find(p)
+	if i >= 0:
+		n.path.resize(i + 1)
+	elif n.position.distance_to(p) > 0.5:
+		n.path = [p]   # ответ по сети опоздал и фигурка уже прошла эту клетку: вернётся к ней
+
+
+## Клетки, к которым сейчас идут фигурки героев uids: {uid: [x, y]} (для смены цели на ходу).
+func walk_heads(uids: Array) -> Dictionary:
+	var out := {}
+	for uid in uids:
+		var n := unit_node(str(uid))
+		if n != null and not n.path.is_empty():
+			var c := world_to_cell(n.path[0])
+			out[str(uid)] = [c.x, c.y]
+	return out
+
+
+## Сколько ещё секунд фигуркам идти.
+func walk_time_left() -> float:
+	var t := 0.0
+	for u in units.values():
+		var n: UnitNode = u
+		var d := 0.0
+		var last := n.position
+		for p in n.path:
+			d += last.distance_to(p)
+			last = p
+		t = maxf(t, d / maxf(1.0, n.speed))
+	return t
+
+
+## Заняты только ходьбой (нет снарядов и выпадов): новую команду можно слать сразу, со сменой цели.
+func only_walking() -> bool:
+	if not projectiles.is_empty():
+		return false
+	for u in units.values():
+		var n: UnitNode = u
+		if n.lunge_t >= 0.0 and n.lunge_t < 0.3:
+			return false
+	return true
 
 
 func lunge(uid: String, toward: Vector2) -> void:
@@ -796,7 +868,9 @@ func _update_camera(delta: float) -> void:
 	target.x = clampf(target.x, minf(lo.x, hi.x), maxf(lo.x, hi.x)) if lo.x <= hi.x else _bounds.get_center().x
 	target.y = clampf(target.y, minf(lo.y, hi.y), maxf(lo.y, hi.y)) if lo.y <= hi.y else _bounds.get_center().y
 	_cam_pos = _cam_pos.lerp(target, 1.0 - exp(-delta * 7.0))
-	camera.position = _cam_pos.round()
+	# камера и фигурка, за которой она следит, округляются до пикселя одинаково (округляется отставание камеры,
+	# а не её место): иначе на ходу герой дрожит на пиксель взад-вперёд относительно земли
+	camera.position = target.round() + (_cam_pos - target).round()
 	camera.zoom = Vector2(zoom, zoom)
 	if _shake_t < _shake_dur:
 		_shake_t += delta
@@ -856,14 +930,21 @@ func pick(p: Vector2) -> Dictionary:
 		var r := Rect2(o.position + Vector2(0, o.base.y - o.position.y) + o.rect.position, o.rect.size)
 		if r.has_point(p) or (c.x >= o.cell.x and c.y >= o.cell.y and c.x < o.cell.x + o.size.x and c.y < o.cell.y + o.size.y):
 			return {"object": id, "cell": c}
-	# закрытый дом с рисунком: курсор на стене или крыше — значит, к его двери
+	# закрытый дом с рисунком: курсор на самом рисунке — значит, к его двери. Улица за домом остаётся улицей
+	# (герой зайдёт за дом, дом просветит), а из перекрывающихся рисунков берётся передний.
+	if session.grid.is_walkable(c) and session.building_at(c).is_empty():
+		return {"cell": c}
+	var hit: Dictionary = {}
+	var hit_y := -1e9
 	for h in houses:
-		if not bool(h["shell"]) or float(h["open"]) > 0.5 or float(h["ghost"]) > 0.5:
+		if not bool(h["shell"]) or float(h["open"]) > 0.5 or float(h["ghost"]) > 0.5 or house_door(h).x < -90:
 			continue
 		var top: PropNode = (h["nodes"] as Array)[-1]
-		var r := Rect2(top.position + Vector2(0, top.base.y - top.position.y) + top.rect.position, top.rect.size)
-		if r.has_point(p) and house_door(h).x > -90:
-			return {"house": str(h["def"]["id"]), "cell": house_door(h)}
+		if top.base.y > hit_y and top.shell_hit(p):
+			hit = h
+			hit_y = top.base.y
+	if not hit.is_empty():
+		return {"house": str(hit["def"]["id"]), "cell": house_door(hit)}
 	return {"cell": c}
 
 
@@ -1098,7 +1179,7 @@ class PropNode extends Node2D:
 		if fr.is_empty():
 			return Rect2()
 		var region: Rect2 = fr["region"]
-		var sc := maxf(float(fr["scale"]), (size.x + size.y) * WorldView.TW * 0.5 / maxf(1.0, region.size.x))
+		var sc := float(fr["scale"])   # родной масштаб: рисунок подобран по размеру дома (_house_sprite)
 		var sz: Vector2 = region.size * sc
 		var dest := Rect2(Vector2(-sz.x * 0.5, -sz.y) + (fr["offset"] as Vector2), sz)
 		if bool((house.get("def", {}) as Dictionary).get("flip", false)):
@@ -1113,6 +1194,24 @@ class PropNode extends Node2D:
 					c[i] -= base
 				BuildingArt.draw_shell_door(self, house, dc, c, t)
 		return dest
+
+	## Курсор (точка мира p) на непрозрачной части рисунка дома, а не на пустом месте вокруг.
+	func shell_hit(p: Vector2) -> bool:
+		var q := p - Vector2(position.x, base.y)
+		if bool((house.get("def", {}) as Dictionary).get("flip", false)):
+			q.x = -q.x
+		if not rect.has_point(q):
+			return false
+		var fr := SpriteLibrary.frame("props", id, "idle", view.time, "", variant)
+		if fr.is_empty():
+			return false
+		var img := WorldView.image_of(fr["texture"])
+		if img == null:
+			return true
+		var region: Rect2 = fr["region"]
+		var px := Vector2i(region.position + (q - rect.position) / maxf(0.01, float(fr["scale"])))
+		px = px.clamp(Vector2i.ZERO, img.get_size() - Vector2i.ONE)
+		return img.get_pixelv(px).a > 0.3
 
 	func _interactive() -> bool:
 		for o in view.session.visible_objects():

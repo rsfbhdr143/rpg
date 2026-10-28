@@ -16,7 +16,7 @@ func _init() -> void:
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
-		"test_traps_and_surfaces", "test_houses_and_travel",
+		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -873,3 +873,54 @@ func test_houses_and_travel() -> void:
 
 func _cell_of_any(v: Variant) -> Vector2i:
 	return Vector2i(int(v[0]), int(v[1]))
+
+
+func test_walking() -> void:
+	print("walking: followers never skip cells, new orders turn the party around mid-walk")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var f: Character = s.heroes[1]
+	var start_h := h.cell
+	var start_f := f.cell
+	GameEvents.clear()
+	var far := _free_neighbor(s, Vector2i(44, 31))
+	check(_walk(s, h, far) == "" and h.cell == far, "партия дошла до площади")
+	var mv: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "move")
+	check(mv.size() == 1, "одно событие ходьбы")
+	var smooth := true
+	for uid in mv[0]["paths"]:
+		var prev := start_h if str(uid) == h.uid else start_f
+		for c in mv[0]["paths"][uid]:
+			var cell := _cell_of_any(c)
+			if SurfaceGrid.distance(prev, cell) > 1:
+				smooth = false
+			prev = cell
+	check(smooth, "каждый шаг — на соседнюю клетку, без прыжков у спутника")
+	check(SurfaceGrid.distance(h.cell, f.cell) <= 2, "спутник дошёл до ведущего")
+
+	var trail_h: Array = s._walks[1]["cells"][h.uid]
+	var trail_f: Array = s._walks[1]["cells"][f.uid]
+	var turn: Vector2i = trail_h[4]
+	var turn_f: Vector2i = trail_f[mini(4, trail_f.size() - 1)]
+	var back := turn
+	for d in SurfaceGrid.DIRS:
+		var n: Vector2i = turn + d
+		if back == turn and s.grid.is_walkable(n) and n != turn_f and s.unit_at(n) == null:
+			back = n
+	GameEvents.clear()
+	var err := s.submit(1, {"type": "move", "unit": h.uid, "cell": [back.x, back.y],
+		"from": {h.uid: [turn.x, turn.y], f.uid: [turn_f.x, turn_f.y]}})
+	check(err == "" and h.cell == back, "новый приказ на ходу выполнен")
+	var rw: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "rewind")
+	check(rw.size() == 1 and rw[0]["units"].has(h.uid), "сервер вернул героя на клетку, к которой он шёл")
+	var mv2: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "move")
+	check(mv2.size() == 1 and SurfaceGrid.distance(turn, _cell_of_any(mv2[0]["paths"][h.uid][0])) <= 1,
+		"новый путь начинается оттуда, а не от старой цели")
+
+	var before_h := h.cell
+	GameEvents.clear()
+	var trail2: Array = s._walks[1]["cells"][h.uid]
+	err = s.submit(1, {"type": "move", "unit": h.uid, "cell": [0, 0], "from": {h.uid: [trail2[0].x, trail2[0].y]}})
+	check(err != "" and h.cell == before_h and GameEvents.list.is_empty(), "приказ не прошёл — возврат отменён")
+	check(s.submit(1, {"type": "move", "unit": h.uid, "cell": [far.x, far.y], "from": {h.uid: [99, 99]}}) == "" and h.cell == far,
+		"чужая клетка в from просто не учитывается")

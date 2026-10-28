@@ -41,6 +41,7 @@ var _fade := 0.0
 var _fade_target := 0.0
 var _last_skill := ""
 var _music_back_at := -1.0
+var _house_music := ""            # музыка дома, в котором стоит герой (или "", если своей нет)
 var _reach: Dictionary = {}
 var _reach_key := ""
 var _preview_ap := 0
@@ -166,6 +167,9 @@ func _process(delta: float) -> void:
 		_music_back_at = -1.0
 		if session.mode != "combat":
 			_location_audio()
+	# вошли в дом со своей музыкой (таверна) или вышли из него — сменить музыку
+	if idle and session.mode == "explore" and _music_back_at < 0.0 and _building_music() != _house_music:
+		_location_audio()
 
 
 func _pull_events() -> void:
@@ -208,8 +212,17 @@ func _location_audio() -> void:
 	var data := session.location_data()
 	_bg.color = world.bg_color
 	if session.mode != "combat":
-		GameAudio.music(str(data.get("music", "")))
+		_house_music = _building_music()
+		GameAudio.music(_house_music if _house_music != "" else str(data.get("music", "")))
 	GameAudio.ambient(str(data.get("ambient", "")))
+
+
+## Своя музыка дома ("music" у дома в locations.json, например в таверне), в котором на экране стоит выбранный герой.
+func _building_music() -> String:
+	if session == null or world.loc_id != session.location_id or selected_uid == "":
+		return ""
+	var b := session.building_at(WorldView.world_to_cell(world.unit_pos(selected_uid)))
+	return str(b.get("music", ""))
 
 
 # --- События -> анимации, звуки, сообщения --------------------------------------------------
@@ -239,6 +252,11 @@ func _present(e: Dictionary) -> float:
 			return 0.3
 		"transition":
 			GameAudio.sfx("transition")
+			return world.walk_time_left()   # сначала партия доходит до края карты, потом смена локации
+		"rewind":
+			var back: Dictionary = e.get("units", {})
+			for u in back:
+				world.cut_walk(str(u), Vector2i(int(back[u][0]), int(back[u][1])))
 			return 0.0
 		"narrate":
 			var title := str(e.get("title", ""))
@@ -1026,14 +1044,20 @@ func _explore_attack(foe: Character) -> void:
 		return
 	var def := GameData.skill(atk)
 	var cmd := {"type": "skill", "unit": me.uid, "skill": atk, "cell": [foe.cell.x, foe.cell.y]}
-	var reason := SkillSystem.target_block_reason(session.explore_field(), me, def, foe.cell)
+	var from := _shown_cell(me)
+	var reach := SkillSystem.skill_range(me, def)
+	var reason := ""
+	if from == me.cell:
+		reason = SkillSystem.target_block_reason(session.explore_field(), me, def, foe.cell)
+	elif SurfaceGrid.distance(from, foe.cell) > reach:
+		reason = "слишком далеко"   # герой ещё идёт: дальность считаем от клетки, к которой он идёт
 	if reason == "":
 		_queue_or_send(cmd)
 		return
 	if reason != "слишком далеко":
 		_on_notice(reason)
 		return
-	var spot := _strike_spot(me, foe.cell, SkillSystem.skill_range(me, def))
+	var spot := _strike_spot(me, foe.cell, reach, from)
 	if spot.x < -90:
 		_on_notice("не подойти")
 		return
@@ -1044,7 +1068,7 @@ func _explore_attack(foe: Character) -> void:
 
 
 ## Ближайшая по пути свободная клетка, откуда герой достаёт цель навыком с дальностью reach.
-func _strike_spot(me: Character, target: Vector2i, reach: int) -> Vector2i:
+func _strike_spot(me: Character, target: Vector2i, reach: int, from: Vector2i) -> Vector2i:
 	var g := session.grid
 	var occ := {}
 	for u in session.all_units():
@@ -1055,11 +1079,11 @@ func _strike_spot(me: Character, target: Vector2i, reach: int) -> Vector2i:
 		var cell: Vector2i = n
 		if cell != target and g.is_walkable(cell) and not occ.has(cell):
 			cand.append(cell)
-	cand.sort_custom(func(a, b): return SurfaceGrid.distance(a, me.cell) < SurfaceGrid.distance(b, me.cell))
+	cand.sort_custom(func(a, b): return SurfaceGrid.distance(a, from) < SurfaceGrid.distance(b, from))
 	var best := Vector2i(-99, -99)
 	var best_len := 99999
 	for i in mini(cand.size(), 12):
-		var path := g.find_path(me.cell, cand[i], occ)
+		var path := g.find_path(from, cand[i], occ)
 		if not path.is_empty() and path.size() < best_len:
 			best_len = path.size()
 			best = cand[i]
@@ -1076,10 +1100,11 @@ func _walk_target(c: Vector2i) -> Vector2i:
 	var b := session.building_at(c)
 	if not b.is_empty() and (house.is_empty() or float(house.get("open", 0.0)) < 0.5):
 		var me0 := session.unit_by_uid(selected_uid)
+		var at := _shown_cell(me0) if me0 != null else c
 		var door := Vector2i(-99, -99)
 		for d in b.get("doors", []):
 			var dc := Vector2i(int(d[0]), int(d[1]))
-			if door.x < -90 or (me0 != null and SurfaceGrid.distance(dc, me0.cell) < SurfaceGrid.distance(door, me0.cell)):
+			if door.x < -90 or SurfaceGrid.distance(dc, at) < SurfaceGrid.distance(door, at):
 				door = dc
 		var inside_now := false
 		for h in session.heroes_of(Net.my_id()):
@@ -1101,7 +1126,7 @@ func _walk_target(c: Vector2i) -> Vector2i:
 			var cell: Vector2i = n
 			if occ.has(cell) or not g.is_walkable(cell):
 				continue
-			var d := SurfaceGrid.distance(cell, me.cell) if me != null else 0
+			var d := SurfaceGrid.distance(cell, _shown_cell(me)) if me != null else 0
 			if d < best_d:
 				best_d = d
 				best = cell
@@ -1130,8 +1155,23 @@ func _draw_world_labels() -> void:
 func _queue_or_send(cmd: Dictionary) -> void:
 	if world.idle and not world.busy_fx():
 		send(cmd)
+	elif world.idle and session.mode == "explore" and world.only_walking():
+		# смена цели на ходу: сервер вернёт героев на клетки, к которым они сейчас идут, и поведёт оттуда
+		var from := world.walk_heads(session.heroes_of(Net.my_id()).map(func(h): return (h as Character).uid))
+		if not from.is_empty():
+			cmd["from"] = from
+		_pending.clear()
+		send(cmd)
 	else:
 		_pending = [cmd]
+
+
+## Клетка, откуда герой на экране сейчас продолжит путь: куда он идёт, если идёт, иначе где стоит.
+func _shown_cell(u: Character) -> Vector2i:
+	var n := world.unit_node(u.uid)
+	if n != null and not n.path.is_empty():
+		return WorldView.world_to_cell(n.path[0])
+	return u.cell
 
 
 func _on_key(key: InputEventKey) -> void:
