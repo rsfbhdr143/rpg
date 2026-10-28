@@ -7,6 +7,7 @@ extends Control
 const FRAME_SIZE := Vector2(244, 66)
 const TOAST_W := 290.0   # шире сообщения переносятся, чтобы не залезать на середину экрана
 const SLOT := 46.0
+const Hotbar := preload("res://scripts/ui/hotbar.gd")
 
 var screen: Node                    # GameScreen
 var party_box: VBoxContainer
@@ -208,8 +209,11 @@ func _build_help() -> void:
 	v.add_child(UiTheme.label("Управление", 20, UiTheme.GOLD, "bold"))
 	var text := UiTheme.label("""ЛКМ по земле — идти, по герою — выбрать, по жителю или предмету — поговорить, осмотреть
 ЛКМ по найденной ловушке — обезвредить; подорвать её можно и ударом издалека
-ЛКМ по врагу — подойти и ударить; вне боя так можно напасть первым, пока враги не заметили
-1–9 — навык (вне боя тоже: лечение, масло, факел), ПКМ или Esc — отменить, Пробел — конец хода
+ЛКМ по врагу — подойти и ударить; вне боя так можно напасть первым, пока враги не заметили,
+а в бою — ударить и того, кто ещё не в бою: его отряд вступит в бой
+1–9, 0 — ячейка панели умений (вне боя тоже: лечение, масло, факел), ПКМ или Esc — отменить, Пробел — конец хода
+Панель умений: три линейки (стрелки слева или колесо мыши), ячейки перетаскиваются, за панель — убрать,
+навык из листа героя (C) — перетащить на панель
 Tab — следующий герой, колесо — приблизить, ПКМ с перетаскиванием или WASD — сдвинуть камеру, Z — вернуть
 C — герой и прокачка, J — журнал заданий, I — сумка
 K — сохранить, L — загрузить, Esc — меню, H — эта справка
@@ -590,11 +594,15 @@ class TurnBar extends Control:
 			x += sz + 6.0
 
 
-## Панель действий: навыки (1–9) и расходники. В бою — ОД и стоимость; вне боя навыки только для справки.
+## Панель действий, как в D:OS: Hotbar.ROWS линеек по Hotbar.COLS ячеек (клавиши 1–0), в ячейках навыки и расходники.
+## Линейку листают стрелки слева или колесо мыши над панелью. Ячейки перетаскиваются: на другую ячейку — поменять
+## местами, за панель — убрать; навык можно притащить из листа героя. В бою — ОД и стоимость.
 class ActionBar extends Control:
 	var hud: Hud
-	var slots: Array = []     # [{"rect", "kind": "skill"|"item"|"move", "id"}]
+	var slots: Array = []     # [{"rect", "kind": "skill"|"item"|"empty"|"row_up"|"row_down", "id", "index"}]
 	var hover_index := -1
+	var _press := -1          # ячейка, на которой нажали (действие — когда отпустят на ней же)
+	var _drag_from := -1      # ячейка всей раскладки, которую тащат с панели
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_STOP
@@ -603,26 +611,87 @@ class ActionBar extends Control:
 		var mm := event as InputEventMouseMotion
 		if mm != null:
 			hover_index = _slot_at(mm.position)
-			hud.screen.call("set_bar_hover", slots[hover_index] if hover_index >= 0 else {})
+			var sl: Dictionary = slots[hover_index] if hover_index >= 0 else {}
+			hud.screen.call("set_bar_hover", sl if str(sl.get("kind", "")) in ["skill", "item"] else {})
 			return
 		var mb := event as InputEventMouseButton
-		if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
-			var i := _slot_at(mb.position)
-			if i >= 0:
-				hud.screen.call("activate_slot", slots[i])
+		if mb == null:
+			return
+		var u: Character = hud.screen.call("bar_unit")
+		if mb.pressed and mb.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and u != null:
+			Hotbar.set_row(u, Hotbar.row(u) + (-1 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1))
+			queue_redraw()
 			accept_event()
+			return
+		if mb.button_index != MOUSE_BUTTON_LEFT:
+			return
+		var i := _slot_at(mb.position)
+		if mb.pressed:
+			_press = i
+		elif i >= 0 and i == _press:
+			var kind := str(slots[i]["kind"])
+			if kind == "row_up" or kind == "row_down":
+				if u != null:
+					Hotbar.set_row(u, Hotbar.row(u) + (-1 if kind == "row_up" else 1))
+			elif kind == "skill" or kind == "item":
+				hud.screen.call("activate_slot", slots[i])
+			_press = -1
+		accept_event()
 
 	func _notification(what: int) -> void:
 		if what == NOTIFICATION_MOUSE_EXIT:
 			hover_index = -1
 			if hud != null:
 				hud.screen.call("set_bar_hover", {})
+		elif what == NOTIFICATION_DRAG_END:
+			# ячейку утащили за панель — убрать её с панели (навык остаётся изученным)
+			if _drag_from >= 0 and not get_viewport().gui_is_drag_successful():
+				var u: Character = hud.screen.call("bar_unit")
+				if u != null:
+					Hotbar.clear(u, _drag_from)
+			_drag_from = -1
+			queue_redraw()
+
+	func _get_drag_data(at_position: Vector2) -> Variant:
+		var i := _slot_at(at_position)
+		var u: Character = hud.screen.call("bar_unit")
+		if i < 0 or u == null or not str(slots[i]["kind"]) in ["skill", "item"]:
+			return null
+		_press = -1
+		_drag_from = Hotbar.row(u) * Hotbar.COLS + int(slots[i]["index"])
+		set_drag_preview(Hud.drag_icon(str(slots[i]["slot_id"])))
+		return {"hotbar_id": str(slots[i]["slot_id"]), "from": _drag_from, "uid": u.uid}
+
+	func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+		var i := _slot_at(at_position)
+		var u: Character = hud.screen.call("bar_unit")
+		return typeof(data) == TYPE_DICTIONARY and data.has("hotbar_id") and u != null and str(data.get("uid", "")) == u.uid \
+			and i >= 0 and str(slots[i]["kind"]) in ["skill", "item", "empty"]
+
+	func _drop_data(at_position: Vector2, data: Variant) -> void:
+		var i := _slot_at(at_position)
+		var u: Character = hud.screen.call("bar_unit")
+		if i < 0 or u == null:
+			return
+		Hotbar.put(u, int(slots[i]["index"]), str(data["hotbar_id"]), int(data.get("from", -1)))
+		_drag_from = -1   # переложили внутри панели — не убирать
+		queue_redraw()
 
 	func _slot_at(p: Vector2) -> int:
 		for i in slots.size():
 			if Rect2(slots[i]["rect"]).has_point(p):
 				return i
 		return -1
+
+	## Что в ячейке index (0..COLS-1) текущей линейки героя, для клавиш 1–0: {"kind", "id"} или {}.
+	func slot_for_key(index: int) -> Dictionary:
+		var u: Character = hud.screen.call("bar_unit")
+		if u == null:
+			return {}
+		var id := Hotbar.skill_at(u, index)
+		if id == "":
+			return {}
+		return {"kind": "item", "id": id.substr(5)} if id.begins_with("item:") else {"kind": "skill", "id": id}
 
 	func _draw() -> void:
 		slots.clear()
@@ -638,14 +707,9 @@ class ActionBar extends Control:
 		var sel_item := str(hud.screen.get("selected_item"))
 		var preview_ap := int(hud.screen.call("preview_ap_cost"))
 		var t := float(Time.get_ticks_msec()) / 1000.0
-		var items: Array = []
-		for it in s.items:
-			var def := GameData.item(str(it))
-			if def.has("use") or def.has("effect"):
-				items.append(str(it))
-		var n_sk := mini(u.skills.size(), 9)
-		var total := n_sk + items.size()
-		var w := total * (Hud.SLOT + 4) + (12 if not items.is_empty() else 0)
+		var row := Hotbar.row(u)
+		var cols := Hotbar.COLS
+		var w := cols * (Hud.SLOT + 4) + 30.0
 		var x0 := roundf((size.x - w) * 0.5)
 		var y0 := 24.0
 		# фон
@@ -665,38 +729,55 @@ class ActionBar extends Control:
 			if my_turn and preview_ap > u.ap:
 				draw_string(UiTheme.font("body"), Vector2(ax + max_ap * 14.0 + 10.0, 15.0), "не хватает ОД",
 					HORIZONTAL_ALIGNMENT_LEFT, -1, 14, UiTheme.RED)
-		var x := x0
 		var body := UiTheme.font("body")
 		var bold := UiTheme.font("bold")
-		for i in n_sk:
-			var sk := str(u.skills[i])
-			var def := GameData.skill(sk)
+		# переключатель линеек: ▲ номер ▼
+		var sw := Rect2(x0, y0, 24, Hud.SLOT)
+		var up := Rect2(sw.position, Vector2(24, 14))
+		var down := Rect2(sw.position + Vector2(0, Hud.SLOT - 14), Vector2(24, 14))
+		for pair in [[up, "row_up", -1.0], [down, "row_down", 1.0]]:
+			var r: Rect2 = pair[0]
+			var hot := slots.size() == hover_index
+			var c := r.get_center()
+			var d: float = pair[2]
+			draw_colored_polygon(PackedVector2Array([c + Vector2(-6, -3 * d), c + Vector2(6, -3 * d), c + Vector2(0, 4 * d)]),
+				UiTheme.GOLD if hot else UiTheme.GOLD_DIM)
+			slots.append({"rect": r, "kind": pair[1], "id": "", "index": -1})
+		draw_string(bold, Vector2(sw.position.x, sw.get_center().y + 7), str(row + 1), HORIZONTAL_ALIGNMENT_CENTER, sw.size.x, 18, UiTheme.TEXT)
+		var x := x0 + 30.0
+		for i in cols:
+			var id := Hotbar.skill_at(u, i)
 			var r := Rect2(x, y0, Hud.SLOT, Hud.SLOT)
-			var cd := int(u.cooldowns.get(sk, 0))
-			var cost := int(def.get("ap", 0))
-			var usable := cd <= 0 and ((in_combat and my_turn and cost <= u.ap) or s.mode == "explore")
-			var active := sel_skill == sk
-			_slot(r, active, i == hover_index)
-			IconArt.skill_icon(self, sk, r.grow(-6), not usable)
-			draw_string(bold, r.position + Vector2(4, 14), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, UiTheme.TEXT_DIM)
-			if in_combat:   # вне боя навыки ОД не тратят
-				draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(cost), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14,
-					UiTheme.AP if cost <= u.ap else UiTheme.RED)
-			if cd > 0:
-				draw_rect(r.grow(-3), Color(0, 0, 0, 0.55))
-				draw_string(bold, r.get_center() + Vector2(-r.size.x * 0.5, 8), str(cd), HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 24, UiTheme.TEXT)
-			slots.append({"rect": r, "kind": "skill", "id": sk, "index": i})
+			var key := str((i + 1) % 10)
+			var hovered := slots.size() == hover_index
+			if id == "":
+				draw_style_box(UiTheme.slot_box(UiTheme.GOLD if hovered else Color("3a2e22")), r)
+				draw_rect(r.grow(-3), Color(0, 0, 0, 0.35))
+				draw_string(bold, r.position + Vector2(4, 14), key, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(UiTheme.TEXT_DIM, 0.5))
+				slots.append({"rect": r, "kind": "empty", "id": "", "slot_id": "", "index": i})
+			elif id.begins_with("item:"):
+				var it := id.substr(5)
+				_slot(r, sel_item == it, hovered)
+				IconArt.item_icon(self, it, r.grow(-7))
+				draw_string(bold, r.position + Vector2(4, 14), key, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, UiTheme.TEXT_DIM)
+				draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(int(s.items.get(it, 0))), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14, UiTheme.TEXT)
+				slots.append({"rect": r, "kind": "item", "id": it, "slot_id": id, "index": i})
+			else:
+				var def := GameData.skill(id)
+				var cd := int(u.cooldowns.get(id, 0))
+				var cost := int(def.get("ap", 0))
+				var usable := cd <= 0 and ((in_combat and my_turn and cost <= u.ap) or s.mode == "explore")
+				_slot(r, sel_skill == id, hovered)
+				IconArt.skill_icon(self, id, r.grow(-6), not usable)
+				draw_string(bold, r.position + Vector2(4, 14), key, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, UiTheme.TEXT_DIM)
+				if in_combat:   # вне боя навыки ОД не тратят
+					draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(cost), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14,
+						UiTheme.AP if cost <= u.ap else UiTheme.RED)
+				if cd > 0:
+					draw_rect(r.grow(-3), Color(0, 0, 0, 0.55))
+					draw_string(bold, r.get_center() + Vector2(-r.size.x * 0.5, 8), str(cd), HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 24, UiTheme.TEXT)
+				slots.append({"rect": r, "kind": "skill", "id": id, "slot_id": id, "index": i})
 			x += Hud.SLOT + 4
-		if not items.is_empty():
-			x += 12
-			draw_rect(Rect2(x - 9, y0 + 4, 2, Hud.SLOT - 8), UiTheme.GOLD_DIM)
-			for it in items:
-				var r := Rect2(x, y0, Hud.SLOT, Hud.SLOT)
-				_slot(r, sel_item == it, slots.size() == hover_index)
-				IconArt.item_icon(self, str(it), r.grow(-7))
-				draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(int(s.items[it])), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14, UiTheme.TEXT)
-				slots.append({"rect": r, "kind": "item", "id": str(it)})
-				x += Hud.SLOT + 4
 		if in_combat and not my_turn and s.combat != null and s.combat.current != null:
 			var cur := s.combat.current
 			var who := cur.display_name
@@ -716,3 +797,23 @@ class ActionBar extends Control:
 		draw_colored_polygon(pts, Color("0b0807"))
 		var inner := PackedVector2Array([c + Vector2(0, -3), c + Vector2(3, 0), c + Vector2(0, 3), c + Vector2(-3, 0)])
 		draw_colored_polygon(inner, col)
+
+
+## Значок под курсором, пока навык или расходник тащат на панель.
+static func drag_icon(slot_id: String) -> Control:
+	var c := DragIcon.new()
+	c.slot_id = slot_id
+	c.size = Vector2(SLOT, SLOT)
+	return c
+
+
+class DragIcon extends Control:
+	var slot_id := ""
+
+	func _draw() -> void:
+		var r := Rect2(Vector2(-SLOT * 0.5, -SLOT * 0.5), Vector2(SLOT, SLOT))
+		draw_style_box(UiTheme.slot_box(UiTheme.GOLD), r)
+		if slot_id.begins_with("item:"):
+			IconArt.item_icon(self, slot_id.substr(5), r.grow(-7))
+		else:
+			IconArt.skill_icon(self, slot_id, r.grow(-6))

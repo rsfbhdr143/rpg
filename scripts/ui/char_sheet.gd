@@ -16,7 +16,7 @@ const HEAD_W := 900.0   # ширина текста в шапке: длинны�
 
 func _ready() -> void:
 	theme = UiTheme.theme()
-	custom_minimum_size = Vector2(1080, 650)
+	custom_minimum_size = Vector2(1080, 590)   # панель умений внизу остаётся видна: на неё перетаскивают навыки
 	UiTheme.center(self, custom_minimum_size)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
@@ -191,7 +191,19 @@ func _col_abilities(h: Character, editable: bool) -> Control:
 	v.add_child(UiTheme.label("Навыки", 19, UiTheme.GOLD, "bold"))
 	for sk in h.skills:
 		var def := GameData.skill(str(sk))
-		_row(v, "• %s — %d ОД" % [def.get("name", sk), int(def.get("ap", 0))], UiTheme.GREEN, "", false, {}, _skill_tip(str(sk)))
+		var l := SkillLabel.new()
+		l.skill_id = str(sk)
+		l.uid = h.uid
+		l.text = "• %s — %d ОД" % [def.get("name", sk), int(def.get("ap", 0))]
+		l.add_theme_font_override("font", UiTheme.font("body"))
+		l.add_theme_font_size_override("font_size", 17)
+		l.add_theme_color_override("font_color", UiTheme.GREEN)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(120, 0)
+		l.tooltip_text = _skill_tip(str(sk)) + "\n\nПеретащите на панель умений внизу."
+		l.mouse_filter = Control.MOUSE_FILTER_STOP
+		l.mouse_default_cursor_shape = Control.CURSOR_DRAG
+		v.add_child(l)
 	for sk in GameData.skills:
 		if h.skills.has(sk):
 			continue
@@ -272,3 +284,13 @@ class PortraitBox extends Control:
 
 	func _draw() -> void:
 		draw_style_box(UiTheme.slot_box(UiTheme.GOLD_DIM), Rect2(Vector2.ZERO, size))
+
+
+## Изученный навык в листе героя: его можно перетащить на панель умений (ActionBar примет, если там тот же герой).
+class SkillLabel extends Label:
+	var skill_id := ""
+	var uid := ""
+
+	func _get_drag_data(_at_position: Vector2) -> Variant:
+		set_drag_preview(Hud.drag_icon(skill_id))
+		return {"hotbar_id": skill_id, "from": -1, "uid": uid}

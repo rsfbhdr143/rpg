@@ -1277,14 +1277,13 @@ func _on_key(key: InputEventKey) -> void:
 			_next_hero()
 		KEY_SPACE:
 			end_turn()
-		KEY_0:
-			_cancel_targeting()
 		_:
-			if k >= KEY_1 and k <= KEY_9 and (is_my_turn() or (session != null and session.mode == "explore")):
-				var u := bar_unit()
-				var idx: int = k - KEY_1
-				if u != null and idx < u.skills.size():
-					select_skill(str(u.skills[idx]))
+			# 1–9 и 0 — ячейки текущей линейки панели умений
+			if k >= KEY_0 and k <= KEY_9 and (is_my_turn() or (session != null and session.mode == "explore")):
+				var idx: int = 9 if k == KEY_0 else k - KEY_1
+				var slot: Dictionary = hud.action_bar.slot_for_key(idx)
+				if not slot.is_empty():
+					activate_slot(slot)
 
 
 func _on_escape() -> void:
