@@ -33,6 +33,7 @@ var _queue: Array = []
 var _last_seq := 0
 var _wait := 0.0
 var _pending: Array = []
+var _labels: Control   # надписи над миром (цифры урона, выходы) в полном разрешении
 var _mouse_on_world := false
 var _drag := false
 var _drag_last := Vector2.ZERO
@@ -84,6 +85,11 @@ func _ready() -> void:
 	bg_layer.add_child(_bg)
 	world = WorldView.new()
 	viewport.add_child(world)
+	_labels = Control.new()
+	UiTheme.fill_parent(_labels)
+	_labels.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_labels.draw.connect(_draw_world_labels)
+	add_child(_labels)
 
 	hud = Hud.new()
 	hud.screen = self
@@ -140,6 +146,7 @@ func _process(delta: float) -> void:
 		world.sync_units()
 		if idle:
 			world.update_cells()
+	_labels.queue_redraw()
 	_update_selection()
 	_update_hover()
 	_update_highlights()
@@ -150,7 +157,11 @@ func _process(delta: float) -> void:
 	hud.refresh(session)
 	_update_tooltip()
 	if idle and not world.busy_fx() and not _pending.is_empty():
-		send(_pending.pop_front())
+		var next: Dictionary = _pending.pop_front()
+		# удар после подхода вне боя: если враги заметили раньше и начался бой, он не нужен
+		if not next.has("explore") or session.mode == "explore":
+			next.erase("explore")
+			send(next)
 	if _music_back_at > 0.0 and _time > _music_back_at:
 		_music_back_at = -1.0
 		if session.mode != "combat":
@@ -524,12 +535,14 @@ func _update_hover() -> void:
 		world.hover_object = ""
 		world.hover_cell = Vector2i(-99, -99)
 		world.hover_point = Vector2(-9999, -9999)
+		world.hover_house = ""
 		return
 	var vp := (get_global_mouse_position() - container.global_position) / float(_pixel_scale)
 	world.pick_prefer = _pick_prefer()
 	var pk := world.pick(world.viewport_to_world(vp))
 	world.hover_uid = str(pk.get("uid", ""))
 	world.hover_object = str(pk.get("object", ""))
+	world.hover_house = str(pk.get("house", ""))
 	world.hover_cell = pk.get("cell", Vector2i(-99, -99))
 
 
@@ -808,6 +821,8 @@ func _world_tip() -> String:
 					lines.append("[color=#d8573f]Нельзя: %s[/color]" % reason)
 		elif hero and session.mode == "explore" and session.owner_of(u) == Net.my_id() and u.uid != selected_uid:
 			lines.append("[color=#c8a060]ЛКМ — выбрать[/color]")
+		elif not hero and session.mode == "explore" and session.enemies.has(u):
+			lines.append("[color=#c8a060]ЛКМ — напасть первым[/color]")
 		return "\n".join(lines)
 	if world.hover_object != "":
 		for o in session.location_data().get("objects", []):
@@ -940,6 +955,9 @@ func _on_world_click() -> void:
 			return
 		if selected_uid == "":
 			return
+		if hu != null and hu.is_alive() and session.enemies.has(hu):
+			_explore_attack(hu)
+			return
 		if hu != null and session.is_npc(hu):
 			_queue_or_send({"type": "talk", "unit": selected_uid, "target": hu.uid})
 			return
@@ -997,6 +1015,57 @@ func _on_world_click() -> void:
 		send({"type": "move", "unit": cur.uid, "cell": [c.x, c.y]})
 
 
+## Удар по врагу вне боя, как в D:OS: герой подходит на расстояние удара и бьёт первым — с этого начинается бой.
+## Так можно напасть и на тех, кто ещё не заметил партию.
+func _explore_attack(foe: Character) -> void:
+	var me := session.unit_by_uid(selected_uid)
+	if me == null:
+		return
+	var atk := _attack_skill(me)
+	if atk == "":
+		return
+	var def := GameData.skill(atk)
+	var cmd := {"type": "skill", "unit": me.uid, "skill": atk, "cell": [foe.cell.x, foe.cell.y]}
+	var reason := SkillSystem.target_block_reason(session.explore_field(), me, def, foe.cell)
+	if reason == "":
+		_queue_or_send(cmd)
+		return
+	if reason != "слишком далеко":
+		_on_notice(reason)
+		return
+	var spot := _strike_spot(me, foe.cell, SkillSystem.skill_range(me, def))
+	if spot.x < -90:
+		_on_notice("не подойти")
+		return
+	world.pan = Vector2.ZERO
+	_queue_or_send({"type": "move", "unit": me.uid, "cell": [spot.x, spot.y]})
+	cmd["explore"] = true
+	_pending.append(cmd)
+
+
+## Ближайшая по пути свободная клетка, откуда герой достаёт цель навыком с дальностью reach.
+func _strike_spot(me: Character, target: Vector2i, reach: int) -> Vector2i:
+	var g := session.grid
+	var occ := {}
+	for u in session.all_units():
+		if (u as Character).is_alive() and u != me:
+			occ[(u as Character).cell] = true
+	var cand: Array = []
+	for n in g.cells_in_radius(target, maxi(1, reach)):
+		var cell: Vector2i = n
+		if cell != target and g.is_walkable(cell) and not occ.has(cell):
+			cand.append(cell)
+	cand.sort_custom(func(a, b): return SurfaceGrid.distance(a, me.cell) < SurfaceGrid.distance(b, me.cell))
+	var best := Vector2i(-99, -99)
+	var best_len := 99999
+	for i in mini(cand.size(), 12):
+		var path := g.find_path(me.cell, cand[i], occ)
+		if not path.is_empty() and path.size() < best_len:
+			best_len = path.size()
+			best = cand[i]
+	return best
+
+
 ## Куда идти, если кликнули по занятой клетке: на ближайшую свободную рядом.
 func _walk_target(c: Vector2i) -> Vector2i:
 	var g := session.grid
@@ -1039,6 +1108,23 @@ func _walk_target(c: Vector2i) -> Vector2i:
 		if best.x > -90:
 			break
 	return best
+
+
+## Надписи мира поверх увеличенной картинки: чёткий текст того же шрифта, что и интерфейс.
+func _draw_world_labels() -> void:
+	if session == null or world.session != session or world.loc_id != session.location_id:
+		return
+	var f := UiTheme.font("bold")
+	var k := float(_pixel_scale) * float(world.zoom)
+	for lb in world.labels():
+		var size := maxi(14, roundi(float(lb["size"]) * k))
+		var text := str(lb["text"])
+		var col: Color = lb["col"]
+		var p: Vector2 = container.position + world.world_to_viewport(lb["pos"]) * float(_pixel_scale)
+		var w := f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+		var pos := (p - Vector2(w * 0.5, 0)).round()
+		_labels.draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, maxi(3, size / 5), Color(0.05, 0.03, 0.02, col.a))
+		_labels.draw_string(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
 
 
 func _queue_or_send(cmd: Dictionary) -> void:

@@ -2544,5 +2544,279 @@
         ]
       }
     }
+  },
+  "chest_headman": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_headman"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Тяжёлый окованный сундук. Под парадным кафтаном лежит кошель с медью и бутыль лампадного масла.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "gold": 15
+          },
+          {
+            "give_item": "lamp_oil",
+            "count": 1
+          },
+          {
+            "set_flag": "looted:chest_headman"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
+  },
+  "chest_korn": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_korn"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Деревянные мечи, вырезанные для мальчишки, аккуратно сложены на дне. Рядом в холстине поминальный хлеб, приготовленный на всех, кто придёт помянуть Ладо.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "give_item": "funeral_bread",
+            "count": 2
+          },
+          {
+            "set_flag": "looted:chest_korn"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
+  },
+  "chest_fisher": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_fisher"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Сети, крючки и просмолённая верёвка. На самом дне дёгтевый факел и пара монет.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "gold": 6
+          },
+          {
+            "give_item": "tar_torch",
+            "count": 1
+          },
+          {
+            "set_flag": "looted:chest_fisher"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
+  },
+  "chest_potter": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_potter"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Солома и битые черепки, а среди них целая глиняная копилка. Внутри звенит.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "gold": 12
+          },
+          {
+            "set_flag": "looted:chest_potter"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
+  },
+  "chest_family": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_family"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Праздничная скатерть, пряжа и узелок с сухарями и сыром.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "gold": 4
+          },
+          {
+            "give_item": "funeral_bread",
+            "count": 1
+          },
+          {
+            "set_flag": "looted:chest_family"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
+  },
+  "chest_baker": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_baker"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Мешки с мукой и каравай, ещё тёплый с вечерней выпечки.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "give_item": "funeral_bread",
+            "count": 2
+          },
+          {
+            "set_flag": "looted:chest_baker"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
+  },
+  "chest_barn": {
+    "start": "c0",
+    "nodes": {
+      "c0": {
+        "next": [
+          {
+            "if": {
+              "flag": "looted:chest_barn"
+            },
+            "id": "c_empty"
+          },
+          {
+            "id": "c_open"
+          }
+        ]
+      },
+      "c_open": {
+        "speaker": "narrator",
+        "text": "Вилы, мешки с зерном и две бутыли масла для фонарей.",
+        "do": [
+          {
+            "sfx": "chest_open"
+          },
+          {
+            "give_item": "lamp_oil",
+            "count": 2
+          },
+          {
+            "set_flag": "looted:chest_barn"
+          }
+        ]
+      },
+      "c_empty": {
+        "speaker": "narrator",
+        "text": "Пусто: всё нужное отсюда вы уже забрали."
+      }
+    }
   }
 }

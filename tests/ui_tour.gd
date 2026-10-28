@@ -15,7 +15,7 @@ var _tried := {}   # уже выбранные ответы ("диалог/уз�
 
 func _initialize() -> void:
 	# сторож: если внутри прогона случится ошибка скрипта, корутина встанет — не висеть вечно
-	create_timer(420.0).timeout.connect(_on_watchdog)
+	create_timer(600.0).timeout.connect(_on_watchdog)
 	_run()
 
 
@@ -85,8 +85,11 @@ func _run() -> void:
 	await _shot("08_bag")
 	screen.call("open_panel", "")
 
-	# деревня и разговор с жителем
-	await _goto("village", "from_cemetery", "10_village")
+	# деревня: туда идём по-настоящему, через выход с погоста; потом разговор с жителем
+	await _walk_exit("village", "09_to_village", "10_village")
+	s = net.get("session")
+	if s.location_id != "village":
+		await _goto("village", "from_cemetery", "10_village")
 	s = net.get("session")
 	if not s.npcs.is_empty():
 		var npc: Character = s.npcs[0]
@@ -94,7 +97,9 @@ func _run() -> void:
 			if (n as Character).template_id == "marta":
 				npc = n
 		net.call("send_command", {"type": "talk", "unit": str(screen.get("selected_uid")), "target": npc.uid})
-		await _wait(3.0)
+		await _wait(4.0)
+		await _shot("11_village_walk")
+		await _wait(6.0)
 		await _shot("11_talk")
 		_dialogue_step()
 		await _wait(2.0)
@@ -104,12 +109,17 @@ func _run() -> void:
 		await _shot("13_tavern_inside")
 		# путевой камень на площади: список камней
 		net.call("send_command", {"type": "talk", "unit": str(screen.get("selected_uid")), "object": "waystone_village"})
-		await _wait(5.0)
+		await _wait(7.0)
 		await _shot("14_waystone")
 		(screen.get("travel_panel") as Control).visible = false
+		await _wait(0.5)
+		await _shot("15_village_square")
 
-	# лес с боем, курган
-	await _goto("forest", "from_village", "20_forest")
+	# лес: через брод и выход на краю деревни, потом бой; курган
+	await _walk_exit("forest", "16_village_ford", "20_forest")
+	s = net.get("session")
+	if s.location_id != "forest":
+		await _goto("forest", "from_village", "20_forest")
 	s = net.get("session")
 	for e in s.location_data().get("encounters", []):
 		if s.mode == "explore" and not s.encounter_defeated(str(e.get("id", ""))) and not bool(e.get("script", false)):
@@ -150,6 +160,35 @@ func _goto(loc: String, spawn: String, shot: String) -> void:
 	await _shot(shot)
 	await _finish_dialogue()
 	await _wait(1.0)
+
+
+## Переход как в игре: партия идёт к выходу на карте; снимок по дороге и после того, как экран показал новую локацию.
+func _walk_exit(to_loc: String, mid: String, after: String) -> void:
+	await _finish_dialogue()
+	var s: GameSession = net.get("session")
+	var cell := Vector2i(-1, -1)
+	for ex in s.location_data().get("exits", []):
+		if str(ex.get("to", "")) == to_loc and not (ex.get("cells", []) as Array).is_empty():
+			cell = Vector2i(int(ex["cells"][0][0]), int(ex["cells"][0][1]))
+	if cell.x < 0:
+		printerr("UI TOUR: нет выхода в ", to_loc)
+		return
+	net.call("send_command", {"type": "move", "unit": str(screen.get("selected_uid")), "cell": [cell.x, cell.y]})
+	await _wait(6.0)
+	await _shot(mid)
+	var world: Node = screen.get("world")
+	var guard := 0
+	while str(world.get("loc_id")) != to_loc and guard < 80:
+		guard += 1
+		await _wait(0.5)
+	await _wait(2.0)
+	await _shot(after)
+	s = net.get("session")
+	if s.location_id != to_loc:
+		print("UI TOUR: партия не перешла в ", to_loc, " пешком (", s.location_id, "), переносим")
+	else:
+		print("UI TOUR: переход пешком в ", to_loc, " OK")
+	await _finish_dialogue()
 
 
 func _hero_names() -> String:

@@ -1,7 +1,7 @@
 class_name BuildingArt
 extends RefCounted
 ## Дома, в которые можно войти (как в D:OS1): стены по клеткам, двери, крыша над всем домом, дощатый пол.
-## Рисуется кодом в пиксельном стиле; вид задают поля дома в data/locations.json: "wall" (timber | stone | log)
+## Рисуется кодом в пиксельном стиле; вид задают поля дома в data/locations.json: "material" (timber | stone | log)
 ## и "roof" (thatch | shingle | slate | moss). Стены выше роста героя, чтобы жители не казались выше домов.
 ## Когда внутри герой, крыша тает, а ближние стены срезаются почти до пола — видно комнату.
 ## house — словарь дома из WorldView.houses: "rect" (Rect2i), "open" (0..1), "def" (данные дома).
@@ -20,7 +20,7 @@ const ROOFS := {"thatch": "a88a48", "shingle": "7a3a28", "slate": "4a4a5a", "mos
 
 static func style_of(house: Dictionary) -> Dictionary:
 	var d: Dictionary = house.get("def", {})
-	return STYLES.get(str(d.get("wall", "timber")), STYLES["timber"])
+	return STYLES.get(str(d.get("material", "timber")), STYLES["timber"])
 
 
 static func _rect(house: Dictionary) -> Rect2i:
@@ -227,9 +227,42 @@ static func draw_roof(ci: CanvasItem, house: Dictionary, c: PackedVector2Array, 
 	return Rect2(Vector2(w.x, top), Vector2(e.x - w.x, s.y - top))
 
 
+## Дверь поверх рисунка дома снаружи, там, где она на карте (сам рисунок про двери карты не знает): проём, створка,
+## порог и фонарь над входом. c — ромб клетки двери относительно точки опоры рисунка.
+static func draw_shell_door(ci: CanvasItem, house: Dictionary, cell: Vector2i, c: PackedVector2Array, t: float) -> void:
+	var r := _rect(house)
+	var along_x := cell.y == r.end.y - 1   # нижний ряд — грань +y (влево-вниз), иначе правый столбец — грань +x
+	var a: Vector2 = c[3] if along_x else c[2]
+	var b: Vector2 = c[2] if along_x else c[1]
+	var dark := 0.28 if along_x else 0.08
+	var da := a.lerp(b, 0.18)
+	var db := a.lerp(b, 0.82)
+	var dh := Vector2(0, -DOOR_H)
+	var lift := Vector2(0, -3)
+	ci.draw_colored_polygon(PackedVector2Array([da, db, db + dh + lift, da + dh + lift]), Color("24170e"))
+	var ia := da.lerp(db, 0.12)
+	var ib := da.lerp(db, 0.88)
+	var wood := Color("7a5030").darkened(dark)
+	ci.draw_colored_polygon(PackedVector2Array([ia, ib, ib + dh, ia + dh]), wood)
+	for k in [0.33, 0.66]:
+		ci.draw_line(ia.lerp(ib, k), ia.lerp(ib, k) + dh, wood.darkened(0.35), 1.0)
+	ci.draw_line(ia + dh * 0.3, ib + dh * 0.3, wood.darkened(0.45), 1.0)
+	ci.draw_line(ia + dh * 0.75, ib + dh * 0.75, wood.darkened(0.45), 1.0)
+	var knob := ia.lerp(ib, 0.8) + dh * 0.45
+	ci.draw_rect(Rect2(knob.round(), Vector2(2, 2)), Color("d8b860"))
+	ci.draw_line(da + Vector2(0, 1), db + Vector2(0, 1), Color("8a8070"), 2.0)
+	ci.draw_polyline(PackedVector2Array([da, da + dh + lift, db + dh + lift, db]), OUTLINE, 1.0)
+	var lamp := da.lerp(db, 0.5) + dh + Vector2(0, -9)
+	var fl := 0.75 + 0.25 * sin(t * 5.0 + float(cell.x * 7 + cell.y))
+	ci.draw_circle(lamp, 9.0, Color(1.0, 0.7, 0.3, 0.16 * fl))
+	ci.draw_rect(Rect2(lamp - Vector2(2, 3), Vector2(4, 5)), Color("2a2018"))
+	ci.draw_rect(Rect2(lamp - Vector2(1, 2), Vector2(2, 3)), Color(1.0, 0.82, 0.42, fl))
+
+
 ## Дощатый пол комнаты. c — ромб клетки в координатах мира.
-static func draw_floor(ci: CanvasItem, c: PackedVector2Array, variant: int) -> void:
+static func draw_floor(ci: CanvasItem, c: PackedVector2Array, variant: int, alpha := 1.0) -> void:
 	var wood := Color("5a3e26") if variant % 2 else Color("624430")
+	wood.a = alpha
 	ci.draw_colored_polygon(c, wood)
 	for k in [0.25, 0.5, 0.75]:
 		ci.draw_line(c[3].lerp(c[0], k), c[2].lerp(c[1], k), wood.darkened(0.3), 1.0)

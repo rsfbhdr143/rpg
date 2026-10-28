@@ -1,12 +1,14 @@
 class_name UiTheme
 extends RefCounted
-## Пиксельная тема интерфейса: шрифты, цвета, рамки окон и кнопок.
+## Тема интерфейса: шрифты, цвета, рамки окон и кнопок.
 ## Рамки рисуются кодом в маленькую картинку и увеличиваются без сглаживания,
 ## поэтому для интерфейса не нужны файлы картинок. Поменять вид — правь цвета ниже.
 
-const FONT_BODY := "res://assets/fonts/PixelifySans-Regular.ttf"
-const FONT_BOLD := "res://assets/fonts/PixelifySans-Bold.ttf"
-const FONT_TITLE := "res://assets/fonts/PressStart2P-Regular.ttf"
+const FONT_BODY := "res://assets/fonts/AlegreyaSans-Regular.ttf"
+const FONT_BOLD := "res://assets/fonts/AlegreyaSans-Bold.ttf"
+const FONT_TITLE := "res://assets/fonts/AlegreyaSC-Bold.ttf"
+## Заголовочный шрифт ниже прежнего пиксельного при том же размере: размеры заголовков умножаются на это число.
+const TITLE_SCALE := 1.35
 const PX := 2   # во сколько раз увеличены пиксели рамок (как пиксели мира)
 
 const BG := Color("15110e")
@@ -52,11 +54,10 @@ static func font(kind: String = "body") -> Font:
 		f = ThemeDB.fallback_font
 	if f is FontFile:
 		var ffile := f as FontFile
-		# Press Start 2P нарисован по сетке 8 px: без сглаживания он чёткий на размерах, кратных 8.
-		# Pixelify Sans не по сетке, со сглаживанием он читается лучше.
-		ffile.antialiasing = TextServer.FONT_ANTIALIASING_NONE if kind == "title" else TextServer.FONT_ANTIALIASING_GRAY
-		ffile.hinting = TextServer.HINTING_NONE
-		ffile.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_DISABLED
+		# обычный векторный шрифт: сглаживание и лёгкий хинтинг, чтобы мелкий текст был чётким
+		ffile.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
+		ffile.hinting = TextServer.HINTING_LIGHT
+		ffile.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_AUTO
 		ffile.generate_mipmaps = false
 	_fonts[kind] = f
 	return f
@@ -279,7 +280,7 @@ static func label(text: String, size := 18, color := TEXT, kind := "body") -> La
 	var l := Label.new()
 	l.text = text
 	l.add_theme_font_override("font", font(kind))
-	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_font_size_override("font_size", roundi(size * TITLE_SCALE) if kind == "title" else size)
 	l.add_theme_color_override("font_color", color)
 	return l
 

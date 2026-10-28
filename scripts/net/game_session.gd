@@ -1458,6 +1458,8 @@ func _cmd_explore_skill(pid: int, cmd: Dictionary, item_id := "") -> String:
 	if reason != "":
 		return reason
 	var before := _enemy_marks()
+	var aimed := field.unit_at(target)   # в кого целились: промах по врагу тоже начинает бой
+	var provoked := aimed.encounter_id if aimed != null and enemies.has(aimed) and def.has("damage") else ""
 	if item_id != "":
 		give_item(item_id, -1)
 	elif int(def.get("cooldown", 0)) > 0:
@@ -1467,7 +1469,7 @@ func _cmd_explore_skill(pid: int, cmd: Dictionary, item_id := "") -> String:
 	GameEvents.add("cast", {"unit": u.uid, "skill": skill_id, "cell": GameEvents.cell(target), "from": GameEvents.cell(u.cell)})
 	SkillSystem.execute(field, u, def, target)
 	field.after_explore_action()
-	_explore_consequences(before)
+	_explore_consequences(before, provoked)
 	return ""
 
 
@@ -1482,9 +1484,9 @@ func _enemy_marks() -> Dictionary:
 
 
 ## После навыка или ловушки вне боя: убитые враги дают опыт, задетая группа начинает бой
-## (или считается побеждённой, если её перебили сразу).
-func _explore_consequences(before: Dictionary) -> void:
-	var hit := ""
+## (или считается побеждённой, если её перебили сразу). provoked — группа того, в кого целились (даже если промах).
+func _explore_consequences(before: Dictionary, provoked := "") -> void:
+	var hit := provoked
 	var killed := 0
 	for e in enemies:
 		var foe: Character = e

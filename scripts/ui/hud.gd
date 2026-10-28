@@ -208,7 +208,7 @@ func _build_help() -> void:
 	v.add_child(UiTheme.label("Управление", 20, UiTheme.GOLD, "bold"))
 	var text := UiTheme.label("""ЛКМ по земле — идти, по герою — выбрать, по жителю или предмету — поговорить, осмотреть
 ЛКМ по найденной ловушке — обезвредить; подорвать её можно и ударом издалека
-ЛКМ по врагу в бою — атаковать оружием
+ЛКМ по врагу — подойти и ударить; вне боя так можно напасть первым, пока враги не заметили
 1–9 — навык (вне боя тоже: лечение, масло, факел), ПКМ или Esc — отменить, Пробел — конец хода
 Tab — следующий герой, колесо — приблизить, ПКМ с перетаскиванием или WASD — сдвинуть камеру, Z — вернуть
 C — герой и прокачка, J — журнал заданий, I — сумка
@@ -497,7 +497,7 @@ class PartyFrame extends Control:
 			var pulse := 0.5 + 0.5 * sin(t * 4.0)
 			draw_rect(badge, Color("120c0a"))
 			draw_rect(badge.grow(-2), Color("c8a040").lerp(Color("fff0a0"), pulse))
-			draw_string(UiTheme.font("title"), badge.position + Vector2(5, 13), "+", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("120c0a"))
+			draw_string(UiTheme.font("bold"), badge.position + Vector2(0, 15), "+", HORIZONTAL_ALIGNMENT_CENTER, badge.size.x, 18, Color("120c0a"))
 		if not mine and s.players.size() > 1:
 			draw_string(body, Vector2(66, size.y - 4), s.player_name(s.owner_of(h)), HORIZONTAL_ALIGNMENT_LEFT, 160, 12, UiTheme.TEXT_FAINT)
 
@@ -667,7 +667,7 @@ class ActionBar extends Control:
 					HORIZONTAL_ALIGNMENT_LEFT, -1, 14, UiTheme.RED)
 		var x := x0
 		var body := UiTheme.font("body")
-		var title := UiTheme.font("title")
+		var bold := UiTheme.font("bold")
 		for i in n_sk:
 			var sk := str(u.skills[i])
 			var def := GameData.skill(sk)
@@ -678,13 +678,13 @@ class ActionBar extends Control:
 			var active := sel_skill == sk
 			_slot(r, active, i == hover_index)
 			IconArt.skill_icon(self, sk, r.grow(-6), not usable)
-			draw_string(title, r.position + Vector2(4, 12), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 8, UiTheme.TEXT_DIM)
+			draw_string(bold, r.position + Vector2(4, 14), str(i + 1), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, UiTheme.TEXT_DIM)
 			if in_combat:   # вне боя навыки ОД не тратят
 				draw_string(body, Vector2(r.end.x - 4, r.end.y - 3), str(cost), HORIZONTAL_ALIGNMENT_RIGHT, -1, 14,
 					UiTheme.AP if cost <= u.ap else UiTheme.RED)
 			if cd > 0:
 				draw_rect(r.grow(-3), Color(0, 0, 0, 0.55))
-				draw_string(title, r.get_center() + Vector2(-4, 6), str(cd), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, UiTheme.TEXT)
+				draw_string(bold, r.get_center() + Vector2(-r.size.x * 0.5, 8), str(cd), HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 24, UiTheme.TEXT)
 			slots.append({"rect": r, "kind": "skill", "id": sk, "index": i})
 			x += Hud.SLOT + 4
 		if not items.is_empty():

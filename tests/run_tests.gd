@@ -707,6 +707,18 @@ func test_party_and_explore_skills() -> void:
 	check(f.submit(1, {"type": "skill", "unit": wz.uid, "skill": "ice_shard", "cell": [prey.cell.x, prey.cell.y]}) == "", "удар издалека вне боя")
 	check(f.mode == "combat", "удар по врагу начинает бой")
 
+	# напасть первым можно и вплотную, обычным ударом, пока враги ещё не заметили партию
+	var g2 := _story_session("forest", ["knight", "cleric"])
+	var kn2: Character = g2.heroes[0]
+	var wolf2: Character = null
+	for e in g2.enemies:
+		if e.encounter_id == "forest_wolf_pack" and e.is_alive():
+			wolf2 = e
+	kn2.cell = _free_neighbor(g2, wolf2.cell)
+	check(g2.mode == "explore" and g2.submit(1, {"type": "skill", "unit": kn2.uid, "skill": "attack",
+		"cell": [wolf2.cell.x, wolf2.cell.y]}) == "", "удар мечом по волку, который ещё не заметил партию")
+	check(g2.mode == "combat" and g2.combat != null and g2.combat.active, "первым ударом начат бой")
+
 
 ## Свободная клетка пола на расстоянии dist от from (без людей, выходов, предметов, ловушек и поверхностей),
 ## не ближе far к героям.

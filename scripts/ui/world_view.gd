@@ -33,6 +33,7 @@ var hover_cell := Vector2i(-99, -99)
 var hover_uid := ""
 var hover_object := ""
 var hover_point := Vector2(-9999, -9999)   # курсор в координатах мира: фигуры, за которыми он, просвечивают
+var hover_house := ""                      # дом с рисунком снаружи под курсором: подсвечивается
 var pick_prefer := "foe"   # кого выбирать, когда фигуры перекрываются: "foe" — врагов и жителей, "ally" — своих
 var selected_uid := ""
 var current_uid := ""
@@ -48,7 +49,7 @@ var units: Dictionary = {}         # uid -> UnitNode
 var props: Array = []              # PropNode
 var objects: Dictionary = {}       # id предмета -> PropNode
 var buildings: Array = []          # PropNode размером больше клетки (порядок рисования считается каждый кадр)
-var houses: Array = []             # дома, в которые можно войти: {"def", "rect", "doors", "open", "ghost", "nodes"}
+var houses: Array = []             # дома, в которые можно войти: {"def", "rect", "doors", "open", "ghost", "nodes", "shell"}
 var floaters: Array = []
 var projectiles: Array = []
 var particles: Array = []
@@ -77,6 +78,7 @@ var _cells_key := ""
 var _hl_key := ""
 var _anim_acc := 0.0
 var _font: Font
+var _labels: Array = []   # надписи над миром за этот кадр: их рисует экран игры в полном разрешении (labels())
 var _bounds := Rect2()
 var _building := false
 
@@ -110,7 +112,7 @@ static func variant_of(c: Vector2i) -> int:
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_font = UiTheme.font("title")
+	_font = UiTheme.font("bold")
 	_ground = Node2D.new()
 	_ground.z_index = -20
 	add_child(_ground)
@@ -328,10 +330,12 @@ func _build_props(data: Dictionary) -> void:
 		var c := Vector2i(int(od["cell"][0]), int(od["cell"][1]))
 		var size_a: Array = od.get("size", [1, 1])
 		var p := _add_prop("object", str(od.get("id", "")), c, Vector2i(int(size_a[0]), int(size_a[1])))
+		p.look = str(od.get("look", ""))
 		objects[p.id] = p
 
 
 ## Дома, в которые можно войти: по узлу на клетку стены и двери (сортируются с фигурками) и крыша над домом.
+## Если у дома есть рисунок (props/<sprite>), снаружи виден он, а стены и пол комнат появляются, когда внутри герой.
 func _build_houses(data: Dictionary) -> void:
 	var list: Array = data.get("buildings", [])
 	for b in list:
@@ -340,19 +344,46 @@ func _build_houses(data: Dictionary) -> void:
 		var doors := {}
 		for d in b.get("doors", []):
 			doors[Vector2i(int(d[0]), int(d[1]))] = true
-		var house := {"def": b, "rect": rect, "doors": doors, "open": 0.0, "ghost": 0.0, "nodes": []}
+		var sprite := _house_sprite(b)
+		var house := {"def": b, "rect": rect, "doors": doors, "open": 0.0, "ghost": 0.0, "nodes": [], "shell": sprite != ""}
 		for cell in LocationData.building_perimeter(r):
 			var c := Vector2i(int(cell[0]), int(cell[1]))
 			var p := _add_prop("hdoor" if doors.has(c) else "hwall", "house:" + str(b["id"]), c, Vector2i.ONE)
 			p.house = house
 			p.animated = false
+			p.visible = sprite == ""
 			house["nodes"].append(p)
-		var roof := _add_prop("roof", "roof:" + str(b["id"]), rect.position, rect.size)
-		buildings.erase(roof)   # крыша выше роста героев и стоящих перед домом не закрывает: порядок постоянный
-		roof.house = house
-		roof.animated = bool(b.get("chimney", false))
-		house["nodes"].append(roof)
+		var top: PropNode
+		if sprite != "":
+			top = _add_prop("hshell", sprite, rect.position, rect.size)
+			top.animated = doors.keys().any(func(dc): return BuildingArt.is_front(house, dc))   # фонарь у двери мерцает
+		else:
+			top = _add_prop("roof", "roof:" + str(b["id"]), rect.position, rect.size)
+			buildings.erase(top)   # крыша выше роста героев и стоящих перед домом не закрывает: порядок постоянный
+			top.animated = bool(b.get("chimney", false))
+		top.house = house
+		house["nodes"].append(top)
 		houses.append(house)
+
+
+## Рисунок дома снаружи: первый из "sprite" (строка или список), что есть в data/sprites.json; "" — дом рисуется кодом.
+func _house_sprite(b: Dictionary) -> String:
+	var v: Variant = b.get("sprite", "")
+	var ids: Array = v if typeof(v) == TYPE_ARRAY else [v]
+	for id in ids:
+		if str(id) != "" and not SpriteLibrary.frame("props", str(id)).is_empty():
+			return str(id)
+	return ""
+
+
+## Дверь дома, к которой идти по клику на дом: сначала дверь на видимой стороне.
+func house_door(h: Dictionary) -> Vector2i:
+	var best := Vector2i(-99, -99)
+	for d in h["doors"]:
+		var dc: Vector2i = d
+		if best.x < -90 or (BuildingArt.is_front(h, dc) and not BuildingArt.is_front(h, best)):
+			best = dc
+	return best
 
 
 ## Дом, в котором клетка (комната или дверь), или пустой словарь.
@@ -364,6 +395,7 @@ func house_at(c: Vector2i) -> Dictionary:
 
 
 ## Крыша тает, когда в доме герой; дом просвечивает, когда за ним стоит герой; жителей под крышей не видно.
+## У дома с рисунком снаружи тает рисунок, а стены комнат и пол проявляются.
 func _update_houses(delta: float) -> void:
 	if houses.is_empty() or session == null:
 		return
@@ -372,8 +404,8 @@ func _update_houses(delta: float) -> void:
 		var rect: Rect2i = house["rect"]
 		var inside := false
 		var behind := false
-		var roof: PropNode = (house["nodes"] as Array)[-1]
-		var shape := Rect2(roof.position + Vector2(0, roof.base.y - roof.position.y) + roof.rect.position, roof.rect.size)
+		var top: PropNode = (house["nodes"] as Array)[-1]
+		var shape := Rect2(top.position + Vector2(0, top.base.y - top.position.y) + top.rect.position, top.rect.size)
 		for hero in session.heroes:
 			var hc: Character = hero
 			if BuildingArt.is_room(house, hc.cell) or (house["doors"] as Dictionary).has(hc.cell):
@@ -383,13 +415,25 @@ func _update_houses(delta: float) -> void:
 				behind = true
 		var open := move_toward(float(house["open"]), 1.0 if inside else 0.0, delta * 5.0)
 		var ghost := move_toward(float(house["ghost"]), 1.0 if behind and not inside else 0.0, delta * 4.0)
-		if open != float(house["open"]) or ghost != float(house["ghost"]):
-			house["open"] = open
-			house["ghost"] = ghost
-			for n in house["nodes"]:
-				var pn: PropNode = n
+		var shell := bool(house["shell"])
+		var changed := open != float(house["open"]) or ghost != float(house["ghost"])
+		house["open"] = open
+		house["ghost"] = ghost
+		for n in house["nodes"]:
+			var pn: PropNode = n
+			if pn.kind == "hshell":
+				var lit := 1.15 if hover_house == str(house["def"]["id"]) else 1.0
+				pn.modulate = Color(lit, lit, lit * 0.95, (1.0 - open) * (1.0 - 0.55 * ghost))
+				pn.visible = pn.modulate.a > 0.01
+			elif shell:
+				pn.modulate.a = open
+				pn.visible = open > 0.01
+			else:
 				pn.modulate.a = 1.0 - 0.5 * ghost
+			if changed:
 				pn.queue_redraw()
+		if changed and shell:
+			_floors.queue_redraw()
 	for u in units.values():
 		var n: UnitNode = u
 		var c := n.ch()
@@ -399,25 +443,30 @@ func _update_houses(delta: float) -> void:
 		n.visible = hs.is_empty() or float(hs["open"]) > 0.5 or session.heroes.has(c)
 
 
+## Пол комнат: доски (tiles/planks), в каменных домах кладка (tiles/masonry); без картинок — рисованные доски.
 func _draw_floors() -> void:
-	var planks := SpriteLibrary.frame("tiles", "planks")   # бесшовная текстура на 3×3 клетки, если нарисована
 	for h in houses:
+		var alpha := float(h["open"]) if bool(h["shell"]) else 1.0
+		if alpha <= 0.01:
+			continue
+		var stone := str((h["def"] as Dictionary).get("material", "")) == "stone"
+		var fr := SpriteLibrary.frame("tiles", "masonry" if stone else "planks")
 		var rect: Rect2i = h["rect"]
 		for y in range(rect.position.y, rect.end.y):
 			for x in range(rect.position.x, rect.end.x):
 				var c := Vector2i(x, y)
 				if not (BuildingArt.is_room(h, c) or (h["doors"] as Dictionary).has(c)):
 					continue
-				if planks.is_empty():
-					BuildingArt.draw_floor(_floors, corners(c), variant_of(c))
+				if fr.is_empty():
+					BuildingArt.draw_floor(_floors, corners(c), variant_of(c), alpha)
 					continue
-				var tex: Texture2D = planks["texture"]
-				var reg: Rect2 = planks["region"]
+				var tex: Texture2D = fr["texture"]
+				var reg: Rect2 = fr["region"]
 				var u0 := Vector2(posmod(x, 3), posmod(y, 3)) / 3.0
 				var uvs := PackedVector2Array()
 				for k in [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]:
 					uvs.append((reg.position + (u0 + k / 3.0) * reg.size) / tex.get_size())
-				_floors.draw_polygon(corners(c), PackedColorArray([Color(0.85, 0.8, 0.75)]), uvs, tex)
+				_floors.draw_polygon(corners(c), PackedColorArray([Color(0.85, 0.8, 0.75, alpha)]), uvs, tex)
 
 
 func _add_prop(kind: String, id: String, c: Vector2i, size: Vector2i) -> PropNode:
@@ -623,9 +672,20 @@ func burst(p: Vector2, col: Color, count: int, speed: float) -> void:
 			"col": col.lightened(randf() * 0.2), "life": 0.0, "max": randf_range(0.25, 0.5), "size": 1.0, "grav": 160.0})
 
 
+## Надписи над миром (цифры урона, названия выходов): [{"pos" — точка мира, "text", "col", "size" — в пикселях мира}].
+## Мир рисуется мелко и увеличивается, а текст так расплывается, поэтому его рисует экран игры поверх, в полном разрешении.
+func labels() -> Array:
+	return _labels
+
+
+## Ширина надписи в пикселях мира (на экране она в pixel_scale × zoom раз крупнее).
+func _label_width(text: String, size: int) -> float:
+	return _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size * 2).x * 0.5
+
+
 func float_text(p: Vector2, text: String, col: Color, size := 8) -> void:
 	# свежие надписи не накладываются: если задевает соседнюю, встаёт выше, пока не найдёт свободное место
-	var w := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var w := _label_width(text, size)
 	for _i in 8:
 		var moved := false
 		for f in floaters:
@@ -796,6 +856,14 @@ func pick(p: Vector2) -> Dictionary:
 		var r := Rect2(o.position + Vector2(0, o.base.y - o.position.y) + o.rect.position, o.rect.size)
 		if r.has_point(p) or (c.x >= o.cell.x and c.y >= o.cell.y and c.x < o.cell.x + o.size.x and c.y < o.cell.y + o.size.y):
 			return {"object": id, "cell": c}
+	# закрытый дом с рисунком: курсор на стене или крыше — значит, к его двери
+	for h in houses:
+		if not bool(h["shell"]) or float(h["open"]) > 0.5 or float(h["ghost"]) > 0.5:
+			continue
+		var top: PropNode = (h["nodes"] as Array)[-1]
+		var r := Rect2(top.position + Vector2(0, top.base.y - top.position.y) + top.rect.position, top.rect.size)
+		if r.has_point(p) and house_door(h).x > -90:
+			return {"house": str(h["def"]["id"]), "cell": house_door(h)}
 	return {"cell": c}
 
 
@@ -806,6 +874,7 @@ func _free_floor(c: Vector2i) -> bool:
 # --- Рисование поверх: облака, снаряды, частицы, цифры ----------------------------------------
 
 func _draw_over() -> void:
+	_labels = []
 	if session == null or session.grid == null:
 		return
 	var g := session.grid
@@ -840,12 +909,7 @@ func _draw_over() -> void:
 		var p: Vector2 = (f["pos"] as Vector2) + _float_rise(f)
 		var col: Color = f["col"]
 		col.a = 1.0 if k < 0.7 else (1.0 - k) / 0.3
-		var size := int(f["size"])
-		var text := str(f["text"])
-		var w := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-		var pos := (p - Vector2(w * 0.5, 0)).round()
-		_over.draw_string_outline(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 2, Color(0.05, 0.03, 0.02, col.a))
-		_over.draw_string(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+		_labels.append({"pos": p, "text": str(f["text"]), "col": col, "size": int(f["size"])})
 
 
 ## Выходы: стрелка наружу и название места, куда ведёт дорога (видно издалека, как указатели в D:OS).
@@ -867,10 +931,7 @@ func _draw_exits() -> void:
 		_over.draw_colored_polygon(PackedVector2Array([tip + dir * 5.0, tip + side, tip - side]), col)
 		_over.draw_polyline(PackedVector2Array([tip + dir * 5.0, tip + side, tip - side, tip + dir * 5.0]), Color("120c0a"), 1.0)
 		var dest := str(GameData.location(str(ex.get("to", ""))).get("name", ex.get("to", "")))
-		var w := _font.get_string_size(dest, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
-		var pos := (p + Vector2(-w * 0.5, -14)).round()
-		_over.draw_string_outline(_font, pos, dest, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, 2, Color(0.05, 0.03, 0.02, 0.9))
-		_over.draw_string(_font, pos, dest, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("ecdfc2"))
+		_labels.append({"pos": p + Vector2(0, -14), "text": dest, "col": Color("ecdfc2"), "size": 8})
 
 
 ## Найденные ловушки на земле: ромбик цвета ловушки с мерцающей рамкой; обезвреженные и сработавшие тусклые.
@@ -949,8 +1010,9 @@ func _draw_glow() -> void:
 ## Декорация, стена, дом или предмет на карте.
 class PropNode extends Node2D:
 	var view: WorldView
-	var kind := "prop"        # wall | prop | object
+	var kind := "prop"        # wall | prop | object | hwall | hdoor | roof | hshell (дом снаружи рисунком)
 	var id := ""
+	var look := ""            # как выглядит предмет, если не по своему id (сундуки в домах — "chest")
 	var style := ""
 	var cell := Vector2i.ZERO
 	var size := Vector2i.ONE
@@ -980,6 +1042,11 @@ class PropNode extends Node2D:
 			rect = Rect2(-16, -40, 32, 44)
 			draw_set_transform(Vector2.ZERO)
 			return
+		if kind == "hshell":
+			draw_set_transform(off)
+			rect = _draw_shell(off, t)
+			draw_set_transform(Vector2.ZERO)
+			return
 		if kind in ["hwall", "hdoor", "roof"]:
 			draw_set_transform(off)
 			match kind:
@@ -991,7 +1058,8 @@ class PropNode extends Node2D:
 					rect = BuildingArt.draw_roof(self, house, corners, t)
 			draw_set_transform(Vector2.ZERO)
 			return
-		var fr := SpriteLibrary.frame("props", "waystone" if id.begins_with("waystone") else id, "idle", t, "", variant)
+		var art := look if look != "" else ("waystone" if id.begins_with("waystone") else id)
+		var fr := SpriteLibrary.frame("props", art, "idle", t, "", variant)
 		if hovered:
 			modulate = Color(1.35, 1.3, 1.1)
 		else:
@@ -1007,9 +1075,9 @@ class PropNode extends Node2D:
 			draw_texture_rect_region(fr["texture"], dest, region)
 			rect = dest
 		elif size.x > 1 or size.y > 1:
-			rect = PixelArt.draw_prop(self, id, Vector2.ZERO, 1.0, t, variant, corners, is_lit())
+			rect = PixelArt.draw_prop(self, art, Vector2.ZERO, 1.0, t, variant, corners, is_lit())
 		else:
-			rect = PixelArt.draw_prop(self, id, Vector2.ZERO, 1.0, t, variant, PackedVector2Array(), is_lit())
+			rect = PixelArt.draw_prop(self, art, Vector2.ZERO, 1.0, t, variant, PackedVector2Array(), is_lit())
 		if kind == "object" and view.session != null and _interactive():
 			# маркер «здесь есть что посмотреть»
 			var bob := roundf(sin(t * 3.0) * 1.5)
@@ -1023,6 +1091,28 @@ class PropNode extends Node2D:
 			draw_rect(Rect2(0, top, 1, 1), gold.darkened(0.2))
 			draw_rect(Rect2(0, top + 2, 1, 1), gold.darkened(0.2))
 		draw_set_transform(Vector2.ZERO)
+
+	## Дом снаружи: рисунок на всё место дома (не уже, иначе жители выше домов) и двери поверх — там, где они на карте.
+	func _draw_shell(off: Vector2, t: float) -> Rect2:
+		var fr := SpriteLibrary.frame("props", id, "idle", t, "", variant)
+		if fr.is_empty():
+			return Rect2()
+		var region: Rect2 = fr["region"]
+		var sc := maxf(float(fr["scale"]), (size.x + size.y) * WorldView.TW * 0.5 / maxf(1.0, region.size.x))
+		var sz: Vector2 = region.size * sc
+		var dest := Rect2(Vector2(-sz.x * 0.5, -sz.y) + (fr["offset"] as Vector2), sz)
+		if bool((house.get("def", {}) as Dictionary).get("flip", false)):
+			draw_set_transform(off, 0.0, Vector2(-1, 1))
+		draw_texture_rect_region(fr["texture"], dest, region)
+		draw_set_transform(off)
+		for d in house.get("doors", {}):
+			var dc: Vector2i = d
+			if BuildingArt.is_front(house, dc):
+				var c := WorldView.corners(dc)
+				for i in c.size():
+					c[i] -= base
+				BuildingArt.draw_shell_door(self, house, dc, c, t)
+		return dest
 
 	func _interactive() -> bool:
 		for o in view.session.visible_objects():

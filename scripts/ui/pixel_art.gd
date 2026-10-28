@@ -518,6 +518,12 @@ static func draw_prop(ci: CanvasItem, id: String, base: Vector2, s: float, t: fl
 			if lit:
 				ci.draw_circle(o + Vector2(0, -20) * s, 9.0 * s, Color(0.45, 0.8, 1.0, 0.12))
 			return Rect2(o + Vector2(-7, -34) * s, Vector2(14, 34) * s)
+		"chest":
+			_box(ci, o, -7, -9, 14, 9, Color("6a4426"), s)
+			_px(ci, o, -7, -9, Color("8a6038"), s, 14, 3)
+			_px(ci, o, -7, -6, Color("3a3638"), s, 14, 1)
+			_px(ci, o, -1, -6, Color("d8b860"), s, 2, 2)
+			return Rect2(o + Vector2(-8, -10) * s, Vector2(16, 10) * s)
 		"church_door", "tavern_door":
 			var pulse := 0.5 + 0.5 * sin(t * 3.0)
 			ci.draw_circle(o + Vector2(0, -2) * s, 5.0 * s, Color(1.0, 0.85, 0.4, 0.15 + 0.15 * pulse))

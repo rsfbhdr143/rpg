@@ -1,7 +1,8 @@
 # Шрифты
 
-- **Pixelify Sans** (Regular, Bold) — основной шрифт интерфейса. SIL Open Font License 1.1, см. `OFL-PixelifySans.txt`.
-  В таблицу символов добавлены кириллические «О» и «П» (в исходном файле их нет, взяты формы латинской O и греческой Π).
-- **Press Start 2P** — заголовки. SIL Open Font License 1.1, см. `OFL-PressStart2P.txt`.
+- **Alegreya Sans** (Regular, Bold) — основной шрифт интерфейса, диалогов и надписей над миром: книжный, с полной
+  кириллицей, хорошо читается мелко. SIL Open Font License 1.1, см. `OFL-AlegreyaSans.txt`.
+- **Alegreya SC** (Bold) — заголовки (название игры, баннеры, крупные надписи). SIL Open Font License 1.1, см. `OFL-AlegreyaSC.txt`.
 
-Оба шрифта скачаны с Google Fonts.
+Оба шрифта — Huerta Tipográfica, скачаны из репозитория Google Fonts. Пиксельные шрифты (Pixelify Sans, Press Start 2P)
+убраны по просьбе автора игры и больше не используются.

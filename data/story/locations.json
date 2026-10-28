@@ -109,6 +109,41 @@
         "if": {
           "flag": "epilogue_open"
         }
+      },
+      {
+        "id": "chest_headman",
+        "name": "Сундук старосты",
+        "dialogue": "chest_headman"
+      },
+      {
+        "id": "chest_korn",
+        "name": "Сундук Корнов",
+        "dialogue": "chest_korn"
+      },
+      {
+        "id": "chest_fisher",
+        "name": "Короб рыбака",
+        "dialogue": "chest_fisher"
+      },
+      {
+        "id": "chest_potter",
+        "name": "Сундук гончара",
+        "dialogue": "chest_potter"
+      },
+      {
+        "id": "chest_family",
+        "name": "Сундук Бжезинских",
+        "dialogue": "chest_family"
+      },
+      {
+        "id": "chest_baker",
+        "name": "Ларь пекаря",
+        "dialogue": "chest_baker"
+      },
+      {
+        "id": "chest_barn",
+        "name": "Ящик в амбаре",
+        "dialogue": "chest_barn"
       }
     ],
     "encounters": []

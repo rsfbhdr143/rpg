@@ -18,9 +18,10 @@ extends RefCounted
 ##                                                               если состав встречи задан в сюжете)
 ##     "A": {"anchor": "tavern"}             именованная точка: у неё сюжет ставит NPC и встречи ("anchor")
 ##     "^": {"trap": "fire_rune"}            спрятанная ловушка (виды — data/traps.json)
-##     "R": {"building": "tavern", "size": [7, 6], "name": "Таверна", "wall": "timber", "roof": "shingle"}
-##                                           дом, в который можно войти: буква в дальнем углу, по краю прямоугольника
-##                                           стены (рисуй "="), "+" — дверь, внутри "_" — дощатый пол, мебель, жители
+##     "R": {"building": "tavern", "size": [7, 6], "name": "Таверна", "material": "timber", "roof": "shingle",
+##           "sprite": "tavern"}           дом, в который можно войти: буква в дальнем углу, по краю прямоугольника
+##                                           стены (рисуй "="), "+" — дверь, внутри "_" — пол, мебель, жители;
+##                                           sprite — рисунок дома снаружи (props/<id>), без него дом рисуется кодом
 ##   }
 ## Буквы можно совмещать в одной записи: {"surface": "water", "spawn": "start"}.
 ## "#" — стена и "." — пол действуют без легенды.
@@ -66,9 +67,9 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 					continue
 				var e: Dictionary = legend[ch]
 				var c := [x, y]
-				if bool(e.get("wall", false)):
+				if _flag(e, "wall"):
 					walls.append(c)
-				if bool(e.get("solid", false)):
+				if _flag(e, "solid"):
 					solid.append(c)
 				if e.has("prop"):
 					var p: Dictionary = e.duplicate()
@@ -80,7 +81,7 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 					surfaces.append({"id": str(e["surface"]), "cell": c, "radius": 0})
 				if e.has("anchor"):
 					anchors[str(e["anchor"])] = c
-				if bool(e.get("door", false)):
+				if _flag(e, "door"):
 					door_cells[Vector2i(x, y)] = true
 				if e.has("building"):
 					var b: Dictionary = e.duplicate()
@@ -198,6 +199,11 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	loc.erase("rows")
 	loc.erase("legend")
 	return loc
+
+
+## Ключ-признак легенды: только настоящее true (у домов, например, "material" — строка, и строки признаком не считаются).
+static func _flag(e: Dictionary, key: String) -> bool:
+	return typeof(e.get(key)) == TYPE_BOOL and bool(e[key])
 
 
 ## Клетки стен дома [x, y, w, h]: край прямоугольника.
