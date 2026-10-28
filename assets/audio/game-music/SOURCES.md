@@ -1,8 +1,10 @@
 # Музыка через /game-music: исходники
 
-Сами mp3 (35 файлов, около 100 МБ) в git не лежат. Они есть на ПК в `Desktop\сайты\РПГ\audio\game-music\`
-и в приватном артефакте https://claude.ai/artifact/Ez15v82syiCz9KbFYaPKmJ (пути `drop/<id>.mp3`, `drop/<id>__alt.mp3`).
-Чтобы пересобрать OGG, положи их сюда и запусти `python3 tools/audio/import_tracks.py`.
+Сами mp3 (около 115 МБ) в git не лежат. Они есть на ПК в `Desktop\сайты\РПГ\audio\game-music\`
+и в приватных артефактах: https://claude.ai/artifact/Ez15v82syiCz9KbFYaPKmJ (`drop/<id>.mp3`, `drop/<id>__alt.mp3`)
+и https://claude.ai/artifact/Vj5hkBmGKu8vDmCzoBwjjo (`drop/<id>__v3.mp3`, `drop/<id>__v4.mp3`, вторая попытка).
+Чтобы пересобрать OGG, положи их сюда и запусти `python3 tools/audio/import_tracks.py`; какой вариант идёт
+в игру, задаёт таблица `USE` в этом скрипте.
 
 ## Источник
 
@@ -111,3 +113,63 @@ Producer переписывал каждый промпт в карточку «
 - **level_up:** Instrumental only, no vocals. A very short level-up jingle, about 3 seconds, for the same medieval folk RPG: a harp glissando, bright bells and a bright major chord. Keep it as short as possible, not a full song.
 - **quest:** Instrumental only, no vocals. A very short 'new quest' jingle, about 4 seconds, for the same dark medieval folk RPG: harp and flute, mysterious, D minor. Keep it as short as possible, not a full song.
 - **quest_done:** Instrumental only, no vocals. A very short 'quest completed' jingle, about 4 seconds, for the same medieval folk RPG: brass, harp and glockenspiel, D major, bright and satisfying. Keep it as short as possible, not a full song.
+
+## Вторая попытка (2026-10-28)
+
+Переделаны 4 трека, которые не понравились: funeral, combat_undead, tavern, combat. Сервис, модель, аккаунт и сессия те же: Google Flow Music, Lyria 3.5, https://www.flowmusic.app/session/3c1d8022-7611-4e68-92d5-430899f4b6f9. Старые файлы (`<id>.mp3`, `<id>__alt.mp3`) не тронуты. Новые лежат рядом как `<id>__v3.mp3` и `<id>__v4.mp3`.
+
+- **Потрачено:** 40 кредитов (было 9655, стало 9615). Cover по образцу стоит 5 кредитов и даёт **1** трек, поэтому на funeral, combat_undead и combat ушло по два cover (2 × 5 = 10). Обычная генерация tavern (2 варианта) стоила 10.
+- **Образцы.** У Flow Music есть загрузка своего аудио (кнопка `+` → «Upload audio file» у поля чата). С загруженным файлом Producer сам выбирает режим **Cover**: переигрывает трек, сохраняя его длину и структуру. Для funeral, combat_undead и combat образцом служили мои прежние версии, написанные кодом: приватный артефакт https://claude.ai/artifact/7PedHKKYYcqviMy4eNPwJp, файлы `music/funeral.mp3` (72.0 с, sha256 `8a1affffc80e923dfe8e06afcba991e22a5731ae6e8d0d09fd231878a0262836`), `music/combat_undead.mp3` (66.2 с, `08b09c5e6e08aeffe7cd766f17db70931c7db7ac0a2d41545f70f68d41c59346`) и `music/combat.mp3` (55.7 с, `307aa5ed6d17310f1df60dc237df94363d79d5dabede565c2aca977e4b9d8930`). Для v4 файл загружался заново и отправлялся тот же промпт. Таверна сделана без образца, обычной генерацией. Загруженные образцы остались в аккаунте Flow Music.
+- **Длительность.** Cover повторяет длину образца, поэтому funeral, combat_undead и combat получились по 56–72 с, а не ~2 минуты, как в промпте. Таверна вышла 178 с.
+- **Слушать я не мог** (звук на ПК был выключен). Проверял декодированием в браузере без воспроизведения.
+
+### Треки
+
+| файл | Title во Flow Music | ссылка | длит., с | образец | громкость и петля (по огибающей) |
+|---|---|---|---|---|---|
+| funeral__v3.mp3 | Authentic Acoustic Funeral Waltz | https://www.flowmusic.app/song/45f9ad8f-942d-41d8-9b28-39df6b2f168f | 72.0 | да, cover | звучит с 0 с, к концу затухание около 2 с |
+| funeral__v4.mp3 | acoustic cover | https://www.flowmusic.app/song/7b32ef85-5036-40ad-aca6-0c24ce0a876f | 72.0 | да, cover | звучит с 0 с, к концу затухание около 6 с |
+| combat_undead__v3.mp3 | combat_undead_acoustic | https://www.flowmusic.app/song/32d651cd-0759-467c-958e-24347c4d1e4d | 65.4 | да, cover | ровно от начала до конца, затухания нет |
+| combat_undead__v4.mp3 | acoustic combat_undead | https://www.flowmusic.app/song/e2e3c3b5-cbad-47f0-896b-f520b77aa219 | 66.2 | да, cover | ровно, в последние 1.5 с громче (−15 дБ при медиане −20) |
+| combat__v3.mp3 | combat (Acoustic Folk Re-performance) | https://www.flowmusic.app/song/226b0c81-bcc5-49ca-abd4-3c77ef849330 | 55.7 | да, cover | ровно от начала до конца, затухания нет |
+| combat__v4.mp3 | combat (acoustic cover) | https://www.flowmusic.app/song/3d010271-2f29-4d7b-9d42-ee4dfb0f5c8b | 55.7 | да, cover | ровно от начала до конца, затухания нет |
+| tavern__v3.mp3 | Evening at the Drunken Raven | https://www.flowmusic.app/song/d768078e-8d74-41d4-8611-e0a0c86c41c9 | 178.4 | нет | ровно до ~171.5 с, дальше затухание; для петли резать около 171 с |
+| tavern__v4.mp3 | Evening at the Drunken Raven (Variation) | https://www.flowmusic.app/song/0b28c7b8-8ccd-485b-85b5-fe424603873e | 178.1 | нет | ровно до ~172.5 с, дальше затухание; для петли резать около 172 с |
+
+Все MP3 скачаны через меню трека Download → MP3, 128 кбит/с.
+
+### Насколько cover похож на образец
+
+Сравнивал хромаграммы (какие ноты звучат в каждые 0.25 с) и огибающую атак. «Синхронно» значит сходство кадр в кадр с образцом. «Перемешано» значит то же, но со сдвигом на полтрека, это базовый уровень одной тональности без общей мелодии. Чем больше разница, тем точнее cover идёт за гармонией образца во времени.
+
+| трек | синхронно | перемешано | тональность | ритм (атаки) |
+|---|---|---|---|---|
+| funeral v3 | 0.82 | 0.59 | совпадает (r = 0.99) | у медленной легатной музыки атаки слабые, оценка не информативна |
+| funeral v4 | 0.79 | 0.59 | совпадает (r = 0.95) | то же |
+| combat_undead v3 | 0.79 | 0.76 | близкая (r = 0.82, лучший сдвиг на 7 полутонов) | с образцом не совпадает (r = 0.06), темп не определился |
+| combat_undead v4 | 0.84 | 0.79 | совпадает (r = 0.83) | с образцом не совпадает (r = 0.04), темп не определился |
+| combat v3 | 0.82 | 0.80 | совпадает (r = 0.81) | совпадает с образцом (r = 0.46 без сдвига), темп ≈139, как у образца |
+| combat v4 | 0.74 | 0.71 | ушла (r = 0.63, лучший сдвиг на 5 полутонов) | темп ≈139, но рисунок другой (r = 0.08) |
+
+Вывод: оба funeral явно повторяют гармонию образца, combat v3 повторяет и темп, и ритм. combat v4 и оба combat_undead обращаются с образцом свободнее. Оценка грубая, окончательно выбирать на слух.
+
+### Промпты (отправлены Producer дословно)
+
+Общий хвост S (в конце каждого промпта):
+
+> Style: like a classic late-90s isometric CRPG soundtrack: one clear, simple, memorable melody on a solo instrument over a modest ensemble; plain and honest, close to folk; not a cinematic trailer, no epic wall of sound, no booming hits, no modern production; acoustic and orchestral instruments only, no synths, no electric guitars, no modern drum kit. Even energy throughout, no long intro and no ending, so it loops seamlessly. About 2 minutes long.
+
+Для v3 и v4 отправлялся один и тот же текст.
+
+- **funeral** (+ образец funeral.mp3): Use the attached audio as the reference: keep its mood, melody, harmony and instruments, but re-perform it as a real acoustic recording by live musicians, more alive, richer and more expressive, at the same slow tempo. Instrumental, wordless choir only, no lyrics. Funeral of the hero's friend Lado at an old village graveyard at sunset, the opening scene of a dark medieval folk RPG. Slow 3/4 waltz, 60 BPM, D minor. A solo cello plays a plain, sorrowful folk waltz melody (Lado's theme from the main menu waltz) over a soft reed organ and a low string pad with a double bass on the roots; in the second half a soft wordless 'ooh' choir takes the melody and the cello moves to a low countermelody; one deep church bell tolls rarely. Quiet and hymn-like, like a village lament, leaving space for dialogue. No percussion. + S
+- **combat_undead** (+ образец combat_undead.mp3): Use the attached audio as the reference: keep its mood, melody, harmony and instruments, but re-perform it as a real acoustic recording by live musicians, more alive, richer and more expressive, at the same tempo. Instrumental only. Fight against the undead rising from a cursed village graveyard in the same dark medieval folk RPG. 4/4, 116 BPM, D phrygian. A relentless low string ostinato built on the minor second (D and E-flat), a church organ holding dark chords, trombones stating a short grim motif, tubular bells on the downbeats, tense tremolo violins on top. Dark and driving but clear and readable, like a classic RPG battle theme, not a horror soundscape. + S
+- **tavern** (без образца): Instrumental only. Background music for the Drunken Raven, a small backwater village tavern on the evening after a funeral, in the same dark medieval folk RPG. Relaxed and modest, a little weary and wistful but warm; not festive, not cheerful, not childish, and not sad either. Slow walking pace, about 90 BPM, 3/4, D dorian. A plucked lute keeps simple chords, a fiddle and a low whistle trade a calm, plain folk tune, a frame drum taps softly, an accordion adds a quiet drone now and then. A small band of three or four players in the corner of a quiet tavern. + S
+- **combat** (+ образец combat.mp3): Use the attached audio as the reference: keep its mood, melody, harmony and instruments, but re-perform it as a real acoustic recording by live musicians, more alive, richer and more expressive, at the same tempo. Instrumental only. Battle music for ordinary fights against wolves, drowned dead and goblins in the same dark medieval folk RPG. 4/4, 138 BPM, E dorian. Taiko and low toms keep a steady pounding pattern, staccato strings drive an ostinato, a fiddle and French horns carry a heroic folk melody in call and response, short brass hits only at phrase peaks. Energetic and catchy like a classic RPG battle theme, but grounded and folk, not bombastic Hollywood. + S
+
+### Как Producer переписал промпты
+
+- **funeral v3:** Re-perform this track as an authentic, organic acoustic recording by live musicians. Funeral music for Lado at an old village graveyard at sunset, opening scene of a dark medieval folk RPG. Slow 3/4 waltz, 60 BPM, D minor. Solo cello plays the sorrowful folk waltz melody (Lado's theme) over soft reed organ and low string pad with double bass. In the second half, a soft wordless ooh choir takes the lead melody while cello moves to low countermelody, with a rare deep church bell tolling. Quiet, hymn-like, classic late-90s isometric CRPG soundtrack style, warm and expressive folk ensemble, no percussion, no synths, no electric guitars. Seamless looping atmosphere.
+- **funeral v4:** то же, но без упоминания Lado.
+- **combat_undead v3 и v4:** Re-perform this track as an authentic, organic acoustic recording by live musicians. Undead battle theme for a dark medieval folk RPG in D phrygian at 116 BPM. Relentless low string ostinato on D and E-flat, church organ holding dark chords, trombones stating a short grim motif, tubular bells on downbeats, tense tremolo violins on top. Pounding timpani and frame drums. Classic late-90s isometric CRPG soundtrack style, clear and readable battle theme, no synths, no electric guitars, no modern drum kit. Seamless looping atmosphere. Литавры и рамочные барабаны Producer добавил сам, в промпте их не было.
+- **combat v3 и v4:** Re-perform this track as an authentic, organic acoustic recording by live musicians. Standard battle theme for a dark medieval folk RPG in E dorian at 138 BPM. Taiko and frame drums keep a steady pounding pattern, staccato strings drive an ostinato, fiddle and French horns carry a heroic folk melody in call-and-response, short brass hits accent phrase peaks. Classic late-90s isometric CRPG soundtrack style, grounded folk feel, no synths, no electric guitars, no modern drum kit. Seamless looping atmosphere.
+- **tavern (карточка Sound):** dark medieval folk RPG tavern background theme, Drunken Raven inn on a quiet evening after a funeral, relaxed weary wistful warm atmosphere, slow walking 3/4 waltz, 90 bpm, D dorian, plucked lute simple chords, fiddle and low whistle trading a calm plain folk tune, soft frame drum taps, subtle accordion drone, small modest ensemble of live acoustic players, classic late-90s isometric CRPG soundtrack style, clear memorable folk melody, seamless looping, no electric guitars, no synths, no modern drum kit

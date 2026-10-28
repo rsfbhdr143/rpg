@@ -30,7 +30,8 @@ SRC = os.path.join(OUT, "game-music")
 EXTS = (".mp3", ".wav", ".ogg", ".flac", ".m4a", ".opus")
 # Какой вариант записи идёт в игру: <id>.mp3 — первый, <id>__alt.mp3 — второй, <id>__v3/__v4 — следующие.
 # Выбор пользователя 2026-10-28. Треки без "source": "game-music" в data/audio.json играют процедурную версию.
-USE = {"farewell": "farewell__alt", "defeat": "defeat__alt"}
+USE = {"farewell": "farewell__alt", "defeat": "defeat__alt", "funeral": "funeral__v4", "combat_undead": "combat_undead__v4",
+       "combat": "combat__v3", "tavern": "tavern__v3"}
 # Стингеры: генератор делает длинные треки, берём первую фразу не короче min и не длиннее max секунд.
 STINGER_LEN = {"omen": (9.0, 12.5), "victory": (2.5, 6.0), "defeat": (4.0, 9.0),
                "level_up": (2.0, 5.0), "quest": (2.0, 5.0), "quest_done": (2.0, 5.0)}
@@ -38,7 +39,10 @@ HOP = 0.05  # шаг поиска стыка, с
 WIN = 3.0  # сколько секунд после стыка должно совпасть
 MIN_LOOP = 50.0  # петля не короче, с
 # Треки, где важно развитие: прощание нарастает к полному оркестру, короткая петля его бы потеряла.
-MIN_LOOP_FOR = {"farewell": 100.0}
+# В combat_undead__v3 в конце затухание, зато внутри ровно повторяются 40 с.
+MIN_LOOP_FOR = {"farewell": 100.0, "combat_undead__v3": 40.0}
+# Cover по моей процедурной петле повторяет её длину и строение, поэтому крутится целиком, от начала до конца.
+FULL_LOOP = {"combat__v3", "combat__v4", "combat_undead__v4"}
 
 
 def decode(path):
@@ -134,13 +138,18 @@ def refine(x, a, b):
     return a, b + best_d * step
 
 
-def make_music_loop(x, min_loop=MIN_LOOP, xfade=0.35):
-    found = find_loop(x, min_loop)
-    if found is None:
-        print("    стык не найден, обычная петля с перекрытием")
-        return dsp.make_loop(x[: body_end(x)], 3.0), None
-    (a, b), sim = found
-    n = int(xfade * SR)
+def make_music_loop(x, min_loop=MIN_LOOP, xfade=0.35, full=False):
+    if full:
+        # перекрытие короткое: длинное съело бы долю такта на стыке
+        n = int(0.01 * SR)
+        (a, b), sim = (0, len(x) - n), 1.0
+    else:
+        n = int(xfade * SR)
+        found = find_loop(x, min_loop)
+        if found is None:
+            print("    стык не найден, обычная петля с перекрытием")
+            return dsp.make_loop(x[: body_end(x)], 3.0), None
+        (a, b), sim = found
     out = x[a:b].copy()
     k = np.linspace(0, np.pi / 2, n)[:, None]
     # в начале петли продолжение после b плавно переходит в музыку после a
@@ -186,7 +195,9 @@ def import_one(path, out_root=None, name=None):
         return None
     x = trim_silence(decode(path))
     if section == "music":
-        x, info = make_music_loop(x, MIN_LOOP_FOR.get(base, MIN_LOOP))
+        src = os.path.splitext(os.path.basename(path))[0]
+        min_loop = MIN_LOOP_FOR.get(src, MIN_LOOP_FOR.get(base, MIN_LOOP))
+        x, info = make_music_loop(x, min_loop, full=src in FULL_LOOP)
         audio = dsp.master(x, target_db=TARGET[section], loop=True)
         where = f"стык {info[0]:.1f}→{info[1]:.1f} с, похожесть {info[2]:.2f}" if info else ""
     else:
