@@ -17,7 +17,7 @@ func _init() -> void:
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
 		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village", "test_join_combat",
-		"test_physical_skills",
+		"test_physical_skills", "test_notice_board",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -1051,4 +1051,21 @@ func test_physical_skills() -> void:
 	GameEvents.clear()
 	check(combat.use_skill(r, "fire_arrow", e.cell), "огненная стрела")
 	check(GameEvents.list.any(func(ev): return str(ev["type"]) in ["hit", "miss"]), "стрела долетела")
+
+
+func test_notice_board() -> void:
+	print("notice board: a drawn board with pages, not plain text")
+	var s := _story_session()
+	check(s.start_dialogue("notice_board", 1), "доска открылась")
+	var v := Story.view(s)
+	var board: Dictionary = v.get("board", {})
+	check(str(v["style"]) == "board" and not board.is_empty(), "стиль доски и её описание приходят в интерфейс")
+	check((board.get("pages", []) as Array).size() == (board.get("notes", []) as Array).size(), "на каждом месте доски свой листок")
+	check(SpriteLibrary.frame("images", str(board.get("image", ""))).size() > 0, "картинка доски есть")
+	var seen := []
+	while s.mode == "dialogue":
+		seen.append(int(Story.view(s).get("page", -1)))
+		s.submit(1, {"type": "dialogue_next"})
+	check(seen.has(0) and seen.has(1) and seen.has(2), "листки читаются по очереди: %s" % str(seen))
+	check(s.quests.get("goat_zaraza", "") == "active", "объявление о козе даёт задание")
 

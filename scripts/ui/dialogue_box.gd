@@ -4,6 +4,7 @@ extends Control
 ## ответы — кнопками и клавишами 1–9. Стиль "cinematic" с картинкой — во весь экран с чёрными
 ## полосами; картинка держится, пока говорит рассказчик, а реплики персонажей идут поверх мира.
 ## Отвечает только тот игрок, кто начал разговор; остальные видят текст и имя отвечающего.
+## Стиль "board" — доска объявлений: нарисованная доска с листками, реплики рассказчика идут в обычном окне под ней.
 
 var screen: Node
 var view: Dictionary = {}
@@ -19,6 +20,7 @@ var _blip := 0.0
 var _choice_buttons: Array = []
 
 var _cine: CineLayer
+var _board: BoardLayer
 var _box: PanelContainer
 var _portrait: PortraitRect
 var _name: Label
@@ -46,6 +48,12 @@ func _ready() -> void:
 	cv.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	cv.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cine.add_child(cv)
+	_board = BoardLayer.new()
+	_board.box = self
+	UiTheme.fill_parent(_board)
+	_board.mouse_filter = Control.MOUSE_FILTER_STOP
+	_board.visible = false
+	add_child(_board)
 	_cine_name = UiTheme.label("", 18, UiTheme.GOLD, "bold")
 	_cine_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	cv.add_child(_cine_name)
@@ -114,6 +122,7 @@ func present(v: Dictionary, answer_ok: bool, who: String) -> void:
 
 func close() -> void:
 	visible = false
+	_board.visible = false
 	_key = ""
 	_image = ""
 	view = {}
@@ -129,6 +138,11 @@ func _on_new_line() -> void:
 	cinematic = str(view.get("style", "box")) == "cinematic" and _image != ""
 	_cine.visible = cinematic
 	_box.visible = not cinematic
+	var board := not cinematic and str(view.get("style", "")) == "board" and not (view.get("board", {}) as Dictionary).is_empty()
+	if board and (not _board.visible or int(view.get("page", -1)) >= 0):
+		GameAudio.sfx("page", -6.0)
+	_board.visible = board
+	_board.queue_redraw()
 	var name := str(view.get("name", ""))
 	var text := _format(str(view.get("text", "")), speaker)
 	var label := _cine_text if cinematic else _text
@@ -266,6 +280,104 @@ class CineLayer extends Control:
 		draw_rect(Rect2(0, size.y - bottom, size.x, bottom), Color(0.02, 0.015, 0.02))
 		draw_rect(Rect2(0, top, size.x, 2), Color("3a2c1e"))
 		draw_rect(Rect2(0, size.y - bottom - 2, size.x, 2), Color("3a2c1e"))
+
+
+## Доска объявлений: картинка images/<board.image> (нет картинки — простая доска), на местах board.pages —
+## листки board.notes: текст, подпись, приписка другой рукой или размокшая бумажка. Читаемый листок
+## (поле page реплики) обведён, на остальных чернила бледнее. sign_align "left" — подпись слева (справа печать).
+class BoardLayer extends Control:
+	const INK := Color("2b1d14")
+	var box: DialogueBox
+
+	func _gui_input(event: InputEvent) -> void:
+		var mb := event as InputEventMouseButton
+		if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+			box.advance()
+			accept_event()
+
+	func _draw() -> void:
+		var b: Dictionary = box.view.get("board", {})
+		var sz: Array = b.get("size", [400, 280])
+		var src := Vector2(float(sz[0]), float(sz[1]))
+		draw_rect(Rect2(Vector2.ZERO, size), Color(0.02, 0.015, 0.02, 0.62))
+		var top_h := size.y - 214.0   # ниже — окно реплики
+		var k := maxf(1.0, floorf(minf((size.x - 40.0) / src.x, (top_h - 10.0) / src.y) * 4.0) / 4.0)
+		var area := Rect2(((Vector2(size.x, top_h) - src * k) * 0.5).floor(), src * k)
+		var pages: Array = b.get("pages", [])
+		var fr := SpriteLibrary.frame("images", str(b.get("image", "")))
+		if fr.is_empty():
+			draw_rect(area, Color("5a3c24"))
+			draw_rect(area, Color("2a1a10"), false, 3.0)
+			for pr in pages:
+				draw_rect(_at(pr, area, k).grow(7.0 * k), Color("e8dcc0"))
+		else:
+			draw_texture_rect_region(fr["texture"], area, fr["region"])
+		if b.has("title_rect"):
+			var tr := _at(b["title_rect"], area, k)
+			var fs := int(tr.size.y * 0.8)
+			var base := Vector2(tr.position.x, tr.position.y + (tr.size.y + fs * 0.7) * 0.5).round()
+			var title := str(b.get("title", ""))
+			draw_string(UiTheme.font("bold"), base + Vector2(1, 1), title, HORIZONTAL_ALIGNMENT_CENTER, tr.size.x, fs, Color("1a0f08"))
+			draw_string(UiTheme.font("bold"), base, title, HORIZONTAL_ALIGNMENT_CENTER, tr.size.x, fs, Color("f0dcb0"))
+		var notes: Array = b.get("notes", [])
+		var cur := int(box.view.get("page", -1))
+		for i in pages.size():
+			var r := _at(pages[i], area, k)
+			var note: Dictionary = notes[i] if i < notes.size() else {}
+			if bool(note.get("soaked", false)):
+				_soaked(r, k)
+			else:
+				_note(r, note, k, INK if cur < 0 or cur == i else Color(INK, 0.38))
+		if cur >= 0 and cur < pages.size():
+			draw_rect(_at(pages[cur], area, k).grow(9.0 * k), Color(UiTheme.GOLD, 0.9), false, 2.0)
+
+	func _at(v: Variant, area: Rect2, k: float) -> Rect2:
+		var a: Array = v
+		return Rect2(area.position + Vector2(float(a[0]), float(a[1])) * k, Vector2(float(a[2]), float(a[3])) * k)
+
+	## Объявление: текст подбирается по размеру листка, подпись справа внизу, приписка — наискось другой рукой.
+	func _note(r: Rect2, note: Dictionary, k: float, ink: Color) -> void:
+		var font := UiTheme.font("body")
+		var bold := UiTheme.font("bold")
+		var text := str(note.get("text", ""))
+		var sign := str(note.get("sign", ""))
+		var ps := str(note.get("postscript", ""))
+		var inner := r.grow(-2.0 * k)
+		var fs := int(12.0 * k)
+		while fs > 9:
+			var foot := (fs + 4) if sign != "" or ps != "" else 0
+			if font.get_multiline_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, inner.size.x, fs).y + foot <= inner.size.y:
+				break
+			fs -= 1
+		draw_multiline_string(font, inner.position + Vector2(0, font.get_ascent(fs)), text, HORIZONTAL_ALIGNMENT_LEFT, inner.size.x, fs, -1, ink)
+		var foot_y := inner.end.y - font.get_descent(fs)
+		if sign != "":
+			var align := HORIZONTAL_ALIGNMENT_LEFT if str(note.get("sign_align", "")) == "left" else HORIZONTAL_ALIGNMENT_RIGHT
+			draw_string(bold, Vector2(inner.position.x, foot_y), "— " + sign, align, inner.size.x, fs, ink)
+		if ps != "":
+			draw_set_transform(Vector2(inner.position.x + 4.0 * k, foot_y), -0.12)
+			draw_string(bold, Vector2.ZERO, ps, HORIZONTAL_ALIGNMENT_LEFT, -1, fs + 3, Color(Color("8a2c18"), ink.a))
+			draw_set_transform(Vector2.ZERO)
+
+	## Размокшая бумажка: разводы и расплывшиеся строки, прочесть нельзя.
+	func _soaked(r: Rect2, k: float) -> void:
+		var c := r.get_center()
+		draw_circle(c + Vector2(-r.size.x * 0.12, r.size.y * 0.06), r.size.y * 0.36, Color(0.45, 0.33, 0.2, 0.16))
+		draw_circle(c + Vector2(r.size.x * 0.2, -r.size.y * 0.1), r.size.y * 0.26, Color(0.4, 0.3, 0.2, 0.13))
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 7
+		var y := r.position.y + 8.0 * k
+		while y < r.end.y - 6.0 * k:
+			var x := r.position.x + 3.0 * k
+			var end := r.end.x - rng.randf_range(4.0, 34.0) * k
+			while x < end:
+				var w := rng.randf_range(6.0, 22.0) * k
+				var a := Vector2(x, y + rng.randf_range(-1.0, 1.0))
+				var e := Vector2(minf(x + w, end), y + rng.randf_range(-1.5, 1.5))
+				draw_line(a, e, Color(0.32, 0.25, 0.22, 0.12), maxf(4.0, 4.5 * k))   # расплылось
+				draw_line(a, e, Color(0.28, 0.22, 0.22, 0.2), maxf(2.0, 1.8 * k))
+				x += w + rng.randf_range(3.0, 7.0) * k
+			y += 10.0 * k
 
 
 class PortraitRect extends Control:

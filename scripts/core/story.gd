@@ -329,6 +329,8 @@ static func view(s: GameSession) -> Dictionary:
 		"text": substitute(s, text, hero),
 		"image": str(node.get("image", "")),
 		"style": str(node.get("style", def.get("style", "box"))),
+		"board": def.get("board", {}),      # style "board": доска с листками (DialogueBox.BoardLayer)
+		"page": int(node.get("page", -1)),  # какой листок доски сейчас читают
 		"choices": visible_choices(s),
 		"pid": int(s.dialogue.get("pid", 0)),
 	}

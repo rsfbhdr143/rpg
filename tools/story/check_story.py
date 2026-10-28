@@ -115,6 +115,12 @@ for did, dlg in dialogues.items():
     nodes = dlg.get("nodes", {})
     if dlg.get("start") not in nodes:
         errors.append(f"{did}: нет стартового узла '{dlg.get('start')}'")
+    board = dlg.get("board", {})
+    if dlg.get("style") == "board" and len(board.get("notes", [])) != len(board.get("pages", [])):
+        errors.append(f"{did}: листков доски ({len(board.get('notes', []))}) не столько, сколько мест под них ({len(board.get('pages', []))})")
+    for nid, node in nodes.items():
+        if "page" in node and not 0 <= node["page"] < len(board.get("pages", [])):
+            errors.append(f"{did}.{nid}: нет листка {node['page']} на доске")
     for nid, node in nodes.items():
         where = f"{did}.{nid}"
         if "text" in node:
