@@ -152,7 +152,8 @@ def check_dialogue_ref(ref, where):
 
 
 for nid, n in npcs.items():
-    check_dialogue_ref(n.get("dialogue"), f"npc {nid}")
+    if "dialogue" in n or not n.get("barks"):   # житель без разговора отвечает репликой из "barks"
+        check_dialogue_ref(n.get("dialogue"), f"npc {nid}")
     for entry in as_list(n.get("location")):
         loc = entry.get("id") if isinstance(entry, dict) else entry
         if isinstance(entry, dict) and "if" in entry:

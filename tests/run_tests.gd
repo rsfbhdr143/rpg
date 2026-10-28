@@ -16,7 +16,7 @@ func _init() -> void:
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
-		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking",
+		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -924,3 +924,33 @@ func test_walking() -> void:
 	check(err != "" and h.cell == before_h and GameEvents.list.is_empty(), "приказ не прошёл — возврат отменён")
 	check(s.submit(1, {"type": "move", "unit": h.uid, "cell": [far.x, far.y], "from": {h.uid: [99, 99]}}) == "" and h.cell == far,
 		"чужая клетка в from просто не учитывается")
+
+
+func test_village() -> void:
+	print("village: every door reachable, houses differ, villagers out and about")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var bad: Array = []
+	var sizes := {}
+	for b in s.location_data().get("buildings", []):
+		var r: Array = b["rect"]
+		sizes["%dx%d" % [int(r[2]), int(r[3])]] = true
+		for d in b.get("doors", []):
+			var dc := Vector2i(int(d[0]), int(d[1]))
+			if s.grid.find_path(h.cell, dc, s._occupied(h)).is_empty():
+				bad.append(str(b["id"]))
+	check(bad.is_empty(), "до каждой двери можно дойти (не дойти: %s)" % ", ".join(bad))
+	check(sizes.size() >= 8, "дома разного размера (%d размеров)" % sizes.size())
+	var tavern: Dictionary = {}
+	for b in s.location_data().get("buildings", []):
+		if str(b["id"]) == "tavern":
+			tavern = b
+	check(int(tavern["rect"][2]) * int(tavern["rect"][3]) >= 150 and str(tavern.get("music", "")) == "tavern",
+		"таверна большая, в ней своя музыка")
+	var villagers := s.npcs.filter(func(n): return bool(GameData.npc((n as Character).template_id).get("villager", false)))
+	check(villagers.size() >= 10, "по деревне ходят жители (%d)" % villagers.size())
+	var talker: Character = villagers[0]
+	GameEvents.clear()
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": talker.uid}) == "" and s.mode == "explore", "житель отвечает, не открывая разговор")
+	check(GameEvents.list.any(func(e): return str(e["type"]) == "bark" and str(e["unit"]) == talker.uid), "реплика жителя")
+	check(SurfaceGrid.distance(h.cell, talker.cell) <= 1, "герой подошёл к жителю")

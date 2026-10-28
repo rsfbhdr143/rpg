@@ -29,6 +29,18 @@ const LOOKS := {
 	"sych": {"cloth": "4a3a2a", "trim": "2a2018", "pants": "3a2e20", "skin": "d0a080", "hair": "5a5a5a", "weapon": "shovel", "hunch": true},
 	"gunter": {"cloth": "5a4030", "trim": "2a1e16", "pants": "3a2a20", "skin": "d89870", "hair": "2a1a10", "weapon": "hammer", "big": true, "apron": true},
 	"vetla": {"cloth": "5a6a3a", "trim": "a87a40", "pants": "3a4428", "skin": "e0b898", "hair": "c8c8a8", "hat": "hood", "hood": "4a5830", "robe": true, "long_hair": true, "weapon": "staff"},
+	"jacek": {"cloth": "6a3a2a", "trim": "c8a040", "pants": "3a2a20", "skin": "e0a888", "hair": "5a4a3a", "big": true, "hat": "cap"},
+	"hanna": {"cloth": "6a6a7a", "trim": "d8d0c0", "pants": "4a4a58", "skin": "f0c8a8", "hair": "3a2a1a", "robe": true, "long_hair": true},
+	"savka": {"cloth": "4a5a6a", "trim": "a8a090", "pants": "3a3a3a", "skin": "d8a880", "hair": "8a6a40", "hat": "hood", "hood": "5a6a5a"},
+	"agata": {"cloth": "2a2a2e", "trim": "5a5a60", "pants": "1a1a1e", "skin": "e8c8b0", "hair": "d8d8d8", "robe": true, "hat": "hood", "hood": "2a2a2e", "hunch": true},
+	"yurek": {"cloth": "8a6a3a", "trim": "c8b890", "pants": "5a4a30", "skin": "f0c8a8", "hair": "c89040", "small": true, "weapon": "sword"},
+	"bolek": {"cloth": "7a4a3a", "trim": "a8783a", "pants": "4a3a2a", "skin": "e8a088", "hair": "6a5a4a", "hat": "tall", "hunch": true},
+	"zbyszek": {"cloth": "5a2a5a", "trim": "e0c060", "pants": "2a2a3a", "skin": "f0c8a8", "hair": "2a1a10", "hat": "cap"},
+	"matey": {"cloth": "5a5a5a", "trim": "8a7a5a", "pants": "3a3a3a", "skin": "d8a880", "hair": "c8c8c8", "hat": "helm", "weapon": "spear"},
+	"tomash": {"cloth": "d8d0c0", "trim": "a89a80", "pants": "6a5a4a", "skin": "f0c0a0", "hair": "8a6a40", "apron": true, "big": true},
+	"vlasta": {"cloth": "8a3a3a", "trim": "e8d8b0", "pants": "5a2a2a", "skin": "f8d0b0", "hair": "d8b060", "robe": true, "long_hair": true, "apron": true},
+	"bozhena": {"cloth": "5a7a5a", "trim": "e8e0c8", "pants": "3a4a3a", "skin": "f0c8a8", "hair": "8a4a2a", "robe": true, "apron": true, "big": true},
+	"stefan": {"cloth": "6a5040", "trim": "3a2a1e", "pants": "3a3028", "skin": "e0a070", "hair": "3a2a10", "apron": true, "weapon": "hammer"},
 	"zaraza": {"beast": "goat", "fur": "e0d8c4", "dark": "8a8270"},
 	"wolf": {"beast": "wolf", "fur": "6e6e70", "dark": "3e3e42"},
 }
@@ -214,6 +226,9 @@ static func _draw_humanoid(ci: CanvasItem, lk: Dictionary, o: Vector2, f: int, t
 		"hammer":
 			_box(ci, o, hand.x, hand.y - 8, 1.5, 10, Color("6a4a2a"), k, true, tint)
 			_box(ci, o, hand.x - 2.5, hand.y - 11, 6.5, 3.5, Color("5a5a62"), k, true, tint)
+		"spear":
+			_box(ci, o, hand.x, hand.y - 24, 1.5, 30, Color("7a5230"), k, true, tint)
+			_box(ci, o, hand.x - 1, hand.y - 29, 3.5, 5, Color("a8a8b0"), k, true, tint)
 	if bool(lk.get("drip", false)):
 		var dy := fmod(t * 14.0, 12.0)
 		_px(ci, o, -3 + hx, top + 8 + dy, Color(0.5, 0.8, 1.0, 0.8) * tint, k)
@@ -459,6 +474,77 @@ static func draw_prop(ci: CanvasItem, id: String, base: Vector2, s: float, t: fl
 			_px(ci, o, -5, -4, Color("3a2a1a"), s, 10, 1)
 			_px(ci, o, -4, -13, Color("9a7248"), s, 8, 1)
 			return Rect2(o + Vector2(-6, -14) * s, Vector2(12, 14) * s)
+		"sacks":
+			for i in 3:
+				var sx := -8.0 + i * 5.0
+				var sy := -1.0 - float(i % 2) * 2.0
+				_box(ci, o, sx, sy - 9, 6, 9, Color("c8b48a") if i != 1 else Color("b8a47a"), s)
+				_px(ci, o, sx + 1, sy - 10, Color("8a7650"), s, 4, 1)
+			return Rect2(o + Vector2(-9, -14) * s, Vector2(18, 14) * s)
+		"hay":
+			_box(ci, o, -10, -9, 20, 9, Color("c8a848"), s)
+			_box(ci, o, -7, -14, 14, 5, Color("d8b858"), s)
+			for i in 6:
+				_px(ci, o, -9 + i * 3, -9 + (i % 2), Color("a88a30"), s, 1, 4)
+			return Rect2(o + Vector2(-11, -15) * s, Vector2(22, 15) * s)
+		"workbench":
+			_box(ci, o, -10, -10, 20, 3, Color("8a6440"), s)
+			_box(ci, o, -9, -7, 2, 7, Color("5a3a20"), s)
+			_box(ci, o, 7, -7, 2, 7, Color("5a3a20"), s)
+			_px(ci, o, -6, -12, Color("9a9aa0"), s, 5, 1)
+			_px(ci, o, 1, -13, Color("6a4a2a"), s, 1, 3)
+			_px(ci, o, 0, -14, Color("9a9aa0"), s, 3, 1)
+			return Rect2(o + Vector2(-11, -15) * s, Vector2(22, 15) * s)
+		"pots":
+			for i in 3:
+				var px := -8.0 + i * 6.0
+				var ph := 6.0 + float((variant + i) % 3) * 2.0
+				_box(ci, o, px, -ph, 5, ph, Color("a8603a") if i % 2 == 0 else Color("8a5030"), s)
+				_px(ci, o, px + 1, -ph - 1, Color("5a3020"), s, 3, 1)
+			return Rect2(o + Vector2(-9, -12) * s, Vector2(18, 12) * s)
+		"loom":
+			_box(ci, o, -9, -22, 2, 22, Color("6a4628"), s)
+			_box(ci, o, 7, -22, 2, 22, Color("6a4628"), s)
+			_box(ci, o, -9, -23, 18, 2, Color("7a5230"), s)
+			_box(ci, o, -7, -18, 14, 10, Color("a89a80"), s)
+			for i in 4:
+				_px(ci, o, -6 + i * 4, -18, Color("7a3a4a"), s, 1, 10)
+			_box(ci, o, -9, -6, 18, 2, Color("7a5230"), s)
+			return Rect2(o + Vector2(-10, -24) * s, Vector2(20, 24) * s)
+		"cauldron":
+			_blob(ci, o + Vector2(0, -5) * s, 7.0 * s, 5.0 * s, Color("2a2a2e"))
+			_px(ci, o, -6, -9, Color("3a3a40"), s, 12, 1)
+			_px(ci, o, -5, -10, Color("5a8a3a"), s, 10, 1)
+			var bub := 0.5 + 0.5 * sin(t * 4.0 + variant)
+			_px(ci, o, -2 + bub * 3.0, -12 - bub * 2.0, Color(0.6, 0.85, 0.4, 0.7), s, 1, 1)
+			return Rect2(o + Vector2(-8, -13) * s, Vector2(16, 13) * s)
+		"rack":
+			_box(ci, o, -9, -22, 2, 22, Color("6a4628"), s)
+			_box(ci, o, 7, -22, 2, 22, Color("6a4628"), s)
+			_box(ci, o, -9, -22, 18, 2, Color("7a5230"), s)
+			if variant % 2 == 0:   # шкуры
+				_box(ci, o, -7, -20, 6, 11, Color("8a6a4a"), s)
+				_box(ci, o, 1, -20, 6, 9, Color("6e5a48"), s)
+			else:                  # сети
+				for i in 5:
+					_px(ci, o, -7 + i * 3, -20, Color("a8a090"), s, 1, 12)
+				for i in 4:
+					_px(ci, o, -7, -18 + i * 3, Color("a8a090"), s, 14, 1)
+			return Rect2(o + Vector2(-10, -23) * s, Vector2(20, 23) * s)
+		"oven":
+			_box(ci, o, -9, -14, 18, 14, Color("8a7a6a"), s)
+			_blob(ci, o + Vector2(0, -14) * s, 9.0 * s, 4.0 * s, Color("8a7a6a"))
+			_box(ci, o, -4, -9, 8, 7, Color("1a1210"), s)
+			var glow := 0.6 + 0.4 * sin(t * 6.0 + variant)
+			_px(ci, o, -3, -5, Color(1.0, 0.55, 0.2, glow), s, 6, 3)
+			return Rect2(o + Vector2(-10, -19) * s, Vector2(20, 19) * s)
+		"herbs":
+			_box(ci, o, -8, -20, 16, 2, Color("6a4628"), s)
+			for i in 4:
+				var hx := -7.0 + i * 4.0
+				var col := [Color("6a8a3a"), Color("8a7a3a"), Color("5a7a4a"), Color("9a6a7a")][(variant + i) % 4]
+				_box(ci, o, hx, -18, 3, 7 + (i % 2) * 2, col, s)
+			return Rect2(o + Vector2(-9, -21) * s, Vector2(18, 21) * s)
 		"crate":
 			_box(ci, o, -6, -10, 12, 10, Color("8a6a40"), s)
 			ci.draw_line(o + Vector2(-6, -10) * s, o + Vector2(6, 0) * s, Color("5a4228"), s)

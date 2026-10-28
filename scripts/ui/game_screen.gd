@@ -42,6 +42,7 @@ var _fade_target := 0.0
 var _last_skill := ""
 var _music_back_at := -1.0
 var _house_music := ""            # музыка дома, в котором стоит герой (или "", если своей нет)
+var _bark_at := 5.0                # когда кто-нибудь из жителей рядом скажет реплику
 var _reach: Dictionary = {}
 var _reach_key := ""
 var _preview_ap := 0
@@ -167,6 +168,10 @@ func _process(delta: float) -> void:
 		_music_back_at = -1.0
 		if session.mode != "combat":
 			_location_audio()
+	# жители рядом с партией иногда что-то говорят сами
+	if idle and session.mode == "explore" and _time > _bark_at:
+		_bark_at = _time + randf_range(6.0, 11.0)
+		_ambient_bark()
 	# вошли в дом со своей музыкой (таверна) или вышли из него — сменить музыку
 	if idle and session.mode == "explore" and _music_back_at < 0.0 and _building_music() != _house_music:
 		_location_audio()
@@ -217,6 +222,26 @@ func _location_audio() -> void:
 	GameAudio.ambient(str(data.get("ambient", "")))
 
 
+## Реплика случайного жителя рядом с выбранным героем (из "barks" в data/story/npcs.json), видна только на этом экране.
+func _ambient_bark() -> void:
+	var me := session.unit_by_uid(selected_uid)
+	if me == null:
+		return
+	var near: Array = []
+	for n in session.npcs:
+		var ch: Character = n
+		var node := world.unit_node(ch.uid)
+		if node == null or not node.visible or world.speech.has(ch.uid) or SurfaceGrid.distance(ch.cell, _shown_cell(me)) > 7:
+			continue
+		if not (GameData.npc(ch.template_id).get("barks", []) as Array).is_empty():
+			near.append(ch)
+	if near.is_empty():
+		return
+	var who: Character = near[randi() % near.size()]
+	var barks: Array = GameData.npc(who.template_id).get("barks", [])
+	world.say(who.uid, str(barks[randi() % barks.size()]))
+
+
 ## Своя музыка дома ("music" у дома в locations.json, например в таверне), в котором на экране стоит выбранный герой.
 func _building_music() -> String:
 	if session == null or world.loc_id != session.location_id or selected_uid == "":
@@ -253,6 +278,9 @@ func _present(e: Dictionary) -> float:
 		"transition":
 			GameAudio.sfx("transition")
 			return world.walk_time_left()   # сначала партия доходит до края карты, потом смена локации
+		"bark":
+			world.say(uid, str(e.get("text", "")))
+			return 0.0
 		"rewind":
 			var back: Dictionary = e.get("units", {})
 			for u in back:
@@ -1148,8 +1176,41 @@ func _draw_world_labels() -> void:
 		var p: Vector2 = container.position + world.world_to_viewport(lb["pos"]) * float(_pixel_scale)
 		var w := f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
 		var pos := (p - Vector2(w * 0.5, 0)).round()
+		if bool(lb.get("bubble", false)):
+			_draw_bubble(f, p, text, size, col)
+			continue
 		_labels.draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, maxi(3, size / 5), Color(0.05, 0.03, 0.02, col.a))
 		_labels.draw_string(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+
+
+## Облачко реплики: светлый пергамент с тёмной рамкой и хвостиком к голове, длинная фраза в две строки.
+func _draw_bubble(f: Font, tip: Vector2, text: String, size: int, col: Color) -> void:
+	var max_w := 360.0
+	var lines: Array = [text]
+	if f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > max_w:
+		var cut := text.rfind(" ", text.length() / 2 + 6)
+		if cut > 0:
+			lines = [text.substr(0, cut), text.substr(cut + 1)]
+	var lh := f.get_height(size)
+	var w := 0.0
+	for ln in lines:
+		w = maxf(w, f.get_string_size(str(ln), HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+	var pad := Vector2(12, 7)
+	var box := Rect2(tip - Vector2(w * 0.5 + pad.x, lh * lines.size() + pad.y * 2.0 + 8.0), Vector2(w + pad.x * 2.0, lh * lines.size() + pad.y * 2.0)).abs()
+	box.position = box.position.round()
+	var a := col.a
+	var paper := Color(0.94, 0.89, 0.77, 0.96 * a)
+	var ink := Color(0.23, 0.16, 0.09, a)
+	_labels.draw_rect(box.grow(2.0), ink)
+	_labels.draw_rect(box, paper)
+	var t0 := Vector2(tip.x - 7.0, box.end.y)
+	_labels.draw_colored_polygon(PackedVector2Array([t0 + Vector2(-2, 0), t0 + Vector2(16, 0), tip + Vector2(0, -2)]), ink)
+	_labels.draw_colored_polygon(PackedVector2Array([t0 + Vector2(0, -1), t0 + Vector2(13, -1), tip + Vector2(0, -5)]), paper)
+	for i in lines.size():
+		var ln := str(lines[i])
+		var lw := f.get_string_size(ln, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+		var pos := Vector2(box.position.x + (box.size.x - lw) * 0.5, box.position.y + pad.y + f.get_ascent(size) + lh * i).round()
+		_labels.draw_string(f, pos, ln, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
 
 
 func _queue_or_send(cmd: Dictionary) -> void:

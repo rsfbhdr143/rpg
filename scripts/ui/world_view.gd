@@ -54,6 +54,7 @@ var objects: Dictionary = {}       # id предмета -> PropNode
 var buildings: Array = []          # PropNode размером больше клетки (порядок рисования считается каждый кадр)
 var houses: Array = []             # дома, в которые можно войти: {"def", "rect", "doors", "open", "ghost", "nodes", "shell"}
 var floaters: Array = []
+var speech: Dictionary = {}        # uid -> {"text", "t", "dur"}: реплика над головой (облачко)
 var projectiles: Array = []
 var particles: Array = []
 var lights: Array = []             # [{"pos", "radius", "color", "node"}]
@@ -200,6 +201,7 @@ func build(s: GameSession) -> void:
 	houses.clear()
 	lights.clear()
 	floaters.clear()
+	speech.clear()
 	projectiles.clear()
 	particles.clear()
 	if s.grid == null:
@@ -431,7 +433,9 @@ func _update_houses(delta: float) -> void:
 		var shape := Rect2(top.position + Vector2(0, top.base.y - top.position.y) + top.rect.position, top.rect.size)
 		for hero in session.heroes:
 			var hc: Character = hero
-			if BuildingArt.is_room(house, hc.cell) or (house["doors"] as Dictionary).has(hc.cell):
+			# где герой на экране (сервер уже довёл его до цели, а фигурка ещё идёт): крыша тает, когда он у двери
+			var at := world_to_cell((units[hc.uid] as UnitNode).position) if units.has(hc.uid) else hc.cell
+			if BuildingArt.is_room(house, at) or (house["doors"] as Dictionary).has(at):
 				inside = true
 			elif (hc.cell.x < rect.position.x or hc.cell.y < rect.position.y) and units.has(hc.uid) \
 					and shape.has_point((units[hc.uid] as UnitNode).position + Vector2(0, -16)):
@@ -512,7 +516,8 @@ func _add_prop(kind: String, id: String, c: Vector2i, size: Vector2i) -> PropNod
 		p.corners[i] -= p.base
 	p.position = Vector2(p.base.x, p.sort_key)
 	p.animated = LIGHT_PROPS.has(id) or id.begins_with("waystone") \
-		or id in ["smithy", "tavern", "church", "house", "bell_tower", "tree", "reeds", "bush", "goat_stump", "hearth", "altar"]
+		or id in ["smithy", "tavern", "church", "house", "bell_tower", "tree", "reeds", "bush", "goat_stump", "hearth", "altar",
+			"oven", "cauldron"]
 	if LIGHT_PROPS.has(id):
 		var lp: Array = LIGHT_PROPS[id]
 		lights.append({"pos": p.base + Vector2(0, -8), "radius": float(lp[0]), "color": Color(str(lp[1])), "node": p})
@@ -839,6 +844,10 @@ func _update_fx(delta: float) -> void:
 	for f in floaters:
 		f["t"] = float(f["t"]) + delta
 	floaters = floaters.filter(func(f): return float(f["t"]) < float(f["dur"]))
+	for uid in speech.keys():
+		speech[uid]["t"] = float(speech[uid]["t"]) + delta
+		if float(speech[uid]["t"]) >= float(speech[uid]["dur"]) or unit_node(uid) == null:
+			speech.erase(uid)
 	for pr in projectiles:
 		pr["t"] = float(pr["t"]) + delta
 		if float(pr["t"]) >= float(pr["dur"]):
@@ -991,6 +1000,22 @@ func _draw_over() -> void:
 		var col: Color = f["col"]
 		col.a = 1.0 if k < 0.7 else (1.0 - k) / 0.3
 		_labels.append({"pos": p, "text": str(f["text"]), "col": col, "size": int(f["size"])})
+	for uid in speech:
+		var n := unit_node(uid)
+		if n == null or not n.visible or n.modulate.a < 0.5:
+			continue
+		var sp: Dictionary = speech[uid]
+		var k := float(sp["t"]) / float(sp["dur"])
+		var a := clampf(float(sp["t"]) * 6.0, 0.0, 1.0) * (1.0 if k < 0.85 else (1.0 - k) / 0.15)
+		_labels.append({"pos": n.head() + Vector2(0, -10), "text": str(sp["text"]), "col": Color(0.17, 0.11, 0.06, a),
+			"size": 7, "bubble": true})
+
+
+## Реплика над головой персонажа (облачко с текстом).
+func say(uid: String, text: String, dur := -1.0) -> void:
+	if unit_node(uid) == null or text == "":
+		return
+	speech[uid] = {"text": text, "t": 0.0, "dur": dur if dur > 0.0 else clampf(2.0 + text.length() * 0.06, 3.0, 6.5)}
 
 
 ## Выходы: стрелка наружу и название места, куда ведёт дорога (видно издалека, как указатели в D:OS).
@@ -1181,7 +1206,9 @@ class PropNode extends Node2D:
 		var region: Rect2 = fr["region"]
 		var sc := float(fr["scale"])   # родной масштаб: рисунок подобран по размеру дома (_house_sprite)
 		var sz: Vector2 = region.size * sc
-		var dest := Rect2(Vector2(-sz.x * 0.5, -sz.y) + (fr["offset"] as Vector2), sz)
+		# низ рисунка — ближний угол дома, середина по ширине — середина ромба дома (у вытянутого дома она сбоку от угла)
+		var mid := float(size.y - size.x) * WorldView.TW * 0.25
+		var dest := Rect2(Vector2(mid - sz.x * 0.5, -sz.y) + (fr["offset"] as Vector2), sz)
 		if bool((house.get("def", {}) as Dictionary).get("flip", false)):
 			draw_set_transform(off, 0.0, Vector2(-1, 1))
 		draw_texture_rect_region(fr["texture"], dest, region)

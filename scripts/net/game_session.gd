@@ -1280,7 +1280,7 @@ func _cmd_talk(pid: int, cmd: Dictionary) -> String:
 		npc_id = n.template_id
 		dl = npc_dialogue(npc_id)
 		cells = [n.cell]
-		if dl == "":
+		if dl == "" and (GameData.npc(npc_id).get("barks", []) as Array).is_empty():
 			return "%s молчит" % n.display_name
 	# подойти вплотную
 	var near := cells.any(func(c): return SurfaceGrid.distance(u.cell, c) <= 1)
@@ -1290,6 +1290,10 @@ func _cmd_talk(pid: int, cmd: Dictionary) -> String:
 			return "не подойти"
 		if _walk_party(u, best) != "":
 			return ""   # по дороге начался бой, переход или ловушка
+	if dl == "":   # житель без разговора отвечает одной из своих реплик
+		var barks: Array = GameData.npc(npc_id).get("barks", [])
+		GameEvents.add("bark", {"unit": str(cmd.get("target", "")), "text": str(barks[randi() % barks.size()])})
+		return ""
 	start_dialogue(dl, pid, u.uid, npc_id)
 	return ""
 

@@ -327,5 +327,209 @@
     "barks": [],
     "anchor": "pyre",
     "hidden": true
+  },
+  "jacek": {
+    "name": "Яцек",
+    "title": "староста Вороньего Брода",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Грузный, в суконном кафтане с медными пуговицами. Считает всё: овец, налоги, покойников.",
+    "location": "village",
+    "barks": [
+      "Похороны похоронами, а налог в Сольгард сам себя не соберёт.",
+      "Ладо был шалопай, но наш шалопай.",
+      "Если опять нежить — я в погребе."
+    ],
+    "villager": true
+  },
+  "hanna": {
+    "name": "Ганна",
+    "title": "ткачиха",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Худая, с иглой за ухом и мотком серой шерсти в руках.",
+    "location": "village",
+    "barks": [
+      "Говорят, в лесу опять видели огни.",
+      "Не стой столбом, проходи.",
+      "Нитка тонкая, а держит крепко. Как обещание."
+    ],
+    "villager": true
+  },
+  "savka": {
+    "name": "Савка",
+    "title": "рыбак",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Мокрые сапоги, сеть через плечо, глаза вечно щурятся на воду.",
+    "location": "village",
+    "barks": [
+      "Ворожея нынче мутная — к беде.",
+      "Брод держит, если не зевать.",
+      "Рыба ушла на дно. Чует что-то."
+    ],
+    "villager": true
+  },
+  "agata": {
+    "name": "Агата",
+    "title": "вдова",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Сухонькая старушка в чёрном платке, с букетиком бессмертника.",
+    "location": "village",
+    "barks": [
+      "Каждый день хожу к мужу на погост. Он не жалуется.",
+      "Свечку за Ладо поставила.",
+      "Мёртвые должны лежать спокойно."
+    ],
+    "villager": true
+  },
+  "yurek": {
+    "name": "Юрек",
+    "title": "мальчишка",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Вихрастый, босой, с деревянным мечом.",
+    "location": "village",
+    "barks": [
+      "А вы правда рыцари?",
+      "Я видел гоблина! Ну, почти.",
+      "Мамка не велит к речке ходить."
+    ],
+    "villager": true
+  },
+  "bolek": {
+    "name": "Болек",
+    "title": "завсегдатай таверны",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Красный нос, мятая шляпа, кружка всегда при нём.",
+    "location": "village",
+    "barks": [
+      "За Ладо! …И за пиво.",
+      "Я не пьяный, я скорблю.",
+      "Марта, ещё кружечку!"
+    ],
+    "villager": true
+  },
+  "zbyszek": {
+    "name": "Збышек",
+    "title": "торговец из Сольгарда",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Щеголеватый, в бархатном берете, пальцы в перстнях.",
+    "location": "village",
+    "barks": [
+      "Товар отличный, цены — грабёж. Мой грабёж.",
+      "Дороги нынче опасные. Наценка за риск.",
+      "В Сольгарде о вашей деревне уже судачат."
+    ],
+    "villager": true
+  },
+  "matey": {
+    "name": "Матей",
+    "title": "сторож у ворот",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Седой ветеран с алебардой, которую давно не точил.",
+    "location": "village",
+    "barks": [
+      "От погоста ночью лучше держаться подальше.",
+      "Ворота закрываем на закате.",
+      "Ходят тут всякие… А, это вы."
+    ],
+    "villager": true
+  },
+  "tomash": {
+    "name": "Томаш",
+    "title": "пекарь",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Весь в муке, пахнет тёплым хлебом.",
+    "location": "village",
+    "barks": [
+      "Свежий хлеб к утру!",
+      "Мука отсырела — к дождю.",
+      "Для поминок испёк лучшие караваи."
+    ],
+    "villager": true
+  },
+  "vlasta": {
+    "name": "Власта",
+    "title": "гусятница",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Румяная девушка с хворостиной.",
+    "location": "village",
+    "barks": [
+      "Гуси шипят на лес — не к добру.",
+      "Не наступи на гусёнка!",
+      "Зараза опять сбежала? Ветла с ума сойдёт."
+    ],
+    "villager": true
+  },
+  "bozhena": {
+    "name": "Божена",
+    "title": "повитуха",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Полная, спокойная, руки пахнут ромашкой.",
+    "location": "village",
+    "barks": [
+      "Половину деревни я на свет приняла.",
+      "Ладо тоже я принимала. Орал громче всех.",
+      "Береги себя, касатик."
+    ],
+    "villager": true
+  },
+  "stefan": {
+    "name": "Стефан",
+    "title": "подмастерье кузнеца",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Широкоплечий парень в прожжённом фартуке.",
+    "location": "village",
+    "barks": [
+      "Гюнтер говорит, меч надо слушать.",
+      "Жар в горне не гасим ни днём, ни ночью.",
+      "Подковать кого?"
+    ],
+    "villager": true
   }
 }
