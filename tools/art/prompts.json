@@ -392,7 +392,67 @@
       "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands, fire, water"
     },
     "bless": "a radiant golden sun with rays",
-    "curse": "a dark purple skull under a crescent moon"
+    "curse": "a dark purple skull under a crescent moon",
+    "crippling_blow": {
+      "subject": "a sword blade striking a dented iron leg greave, small impact sparks",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "rush": {
+      "subject": "a charging bull's horns and a speeding steel sword with long motion streaks",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "battle_cry": {
+      "subject": "a curved war horn blowing golden sound waves",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "defensive_stance": {
+      "subject": "a big round iron-rimmed shield in front of a crossed sword, glowing steel outline",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "rage": {
+      "subject": "a red-hot glowing battle axe wreathed in angry red flames",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "ground_slam": {
+      "subject": "a heavy warhammer slamming into cracked ground, rocks and dust flying",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "pinning_shot": {
+      "subject": "an arrow pinning a piece of torn cloth to a wooden plank",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "fire_arrow": {
+      "subject": "a flying arrow with a burning flaming arrowhead",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "hunters_mark": {
+      "subject": "a red hunter's target mark with a feather and an arrowhead",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "arrow_rain": {
+      "subject": "many arrows falling from the sky in a dense volley",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "tactical_retreat": {
+      "subject": "a leather boot leaping with a curved motion arc and dust puff",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "dirty_trick": {
+      "subject": "a curved dagger dripping red blood drops",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    }
   },
   "statuses": {
     "wet": "a blue water droplet",
@@ -409,7 +469,12 @@
     "slowed": "a snail shell",
     "blessed": "a golden halo",
     "cursed": "a purple evil eye",
-    "regenerating": "a green leaf with a small heart"
+    "regenerating": "a green leaf with a small heart",
+    "bleeding": "dark red blood drops",
+    "marked": "a red target crosshair mark",
+    "rallied": "a golden war banner",
+    "fortified": "a small iron shield with a glowing rim",
+    "enraged": "an angry red flame shaped like a fist"
   },
   "portraits": {
     "knight": "a stern medieval knight with short grey hair and a scar, plate armor and a deep blue tabard",
