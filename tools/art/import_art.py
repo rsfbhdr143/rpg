@@ -550,6 +550,7 @@ class Asset:
     pixel_box: tuple[int, int] | None = None         # из подсказки: размер в игровых пикселях при пикселизации
     pixel_colors: int = 0
     pixel_tone: tuple[float, float] = (1.0, 1.0)     # из подсказки: [яркость, насыщенность] при пикселизации
+    pixel_trim: bool = False                         # из подсказки: срезать светлую бумагу снизу и мелкие обрывки
 
     def add_anim(self, anim: Anim) -> None:
         names = {a.name for a in self.anims}
@@ -717,6 +718,7 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             asset.pixel_colors = int(ov.get("pixel_colors", 0))
             if ov.get("pixel_tone"):
                 asset.pixel_tone = (float(ov["pixel_tone"][0]), float(ov["pixel_tone"][1]))
+            asset.pixel_trim = bool(ov.get("pixel_trim", False))
             frames = open_frames(path)
             if len(frames) > 1:                       # анимированный GIF / WebP
                 asset.kind = "effect" if "effect" in own | around else "unit"
@@ -925,8 +927,63 @@ def add_outline(a: np.ndarray) -> np.ndarray:
     return a
 
 
+def islands(mask: np.ndarray) -> list[list[tuple[int, int]]]:
+    """Связные куски маски (соседи по стороне)."""
+    seen = np.zeros_like(mask)
+    out = []
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if seen[y0, x0]:
+            continue
+        seen[y0, x0] = True
+        stack, part = [(y0, x0)], []
+        while stack:
+            y, x = stack.pop()
+            part.append((y, x))
+            for ny, nx in ((y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)):
+                if 0 <= ny < mask.shape[0] and 0 <= nx < mask.shape[1] and mask[ny, nx] and not seen[ny, nx]:
+                    seen[ny, nx] = True
+                    stack.append((ny, nx))
+        out.append(part)
+    return out
+
+
+def trim_paper(rgb: np.ndarray, alpha: np.ndarray, band: float = 0.35, steps: int = 12) -> np.ndarray:
+    """Постройки из генератора стоят на лоскуте светлой бумаги: снизу снаружи внутрь снимаем светлые
+    блёклые пиксели (до тёмной стены не доходит), потом убираем мелкие оторванные обрывки."""
+    vis = alpha > 0
+    rows = np.nonzero(vis.any(axis=1))[0]
+    if len(rows) == 0:
+        return alpha
+    c = rgb.astype(float)
+    hi, lo = c.max(axis=2), c.min(axis=2)
+    light = max(110.0, float(np.percentile(hi[vis], 65)))      # «светлое» — относительно самой картинки
+    pale = (hi >= light) & ((hi - lo) <= 0.45 * hi)
+    pale[: rows[0] + int((1 - band) * (rows[-1] - rows[0] + 1))] = False
+    for _ in range(steps):
+        out = ~vis
+        edge = np.zeros_like(vis)
+        edge[1:] |= out[:-1]
+        edge[:-1] |= out[1:]
+        edge[:, 1:] |= out[:, :-1]
+        edge[:, :-1] |= out[:, 1:]
+        edge[0] = edge[-1] = True
+        edge[:, 0] = edge[:, -1] = True
+        peel = vis & pale & edge
+        if not peel.any():
+            break
+        vis &= ~peel
+    parts = islands(vis)
+    if parts:
+        big = max(len(p) for p in parts)
+        for p in parts:
+            if len(p) < 0.08 * big:
+                ys, xs = zip(*p)
+                vis[list(ys), list(xs)] = False
+    return np.where(vis, alpha, 0).astype(np.uint8)
+
+
 def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, seamless: bool,
-             soft_alpha: bool, tone: tuple[float, float] = (1.0, 1.0)) -> list:
+             soft_alpha: bool, tone: tuple[float, float] = (1.0, 1.0), trim: bool = False) -> list:
     """Кадры -> пиксель-арт одного размера с общей палитрой на все кадры.
     tone — [яркость, насыщенность]: бледные постройки на бумаге можно сделать темнее и сочнее."""
     w, h = size
@@ -964,7 +1021,10 @@ def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, se
             alpha = (np.round(a[..., 3] / 85.0) * 85).astype(np.uint8)
         else:
             alpha = np.where(a[..., 3] >= PIXEL_ALPHA, 255, 0).astype(np.uint8)
-        px = np.dstack([np.asarray(rgb.convert("RGB")), alpha])
+        rgb = np.asarray(rgb.convert("RGB"))
+        if trim:
+            alpha = trim_paper(rgb, alpha)
+        px = np.dstack([rgb, alpha])
         out.append(Image.fromarray(add_outline(px) if outline else px, "RGBA"))
     return out
 
@@ -1020,7 +1080,7 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None
         pieces = pixelize(pieces, (tw, th), asset.pixel_colors or pixelate["tile_colors" if tile else "colors"],
                           pixelate["outline"] and asset.kind not in ("tile", "effect", "scene"),
                           tile and tw == th and all((np.asarray(f)[..., 3] >= 250).mean() >= 0.97 for f in flat),
-                          asset.kind == "effect", asset.pixel_tone)
+                          asset.kind == "effect", asset.pixel_tone, asset.pixel_trim)
         tw, th = next(f for f in pieces if f is not None).size
         pixel = True
     elif (tw, th) != (fw, fh):

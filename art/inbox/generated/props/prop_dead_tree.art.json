@@ -1,1 +1,1 @@
-{"id": "prop_dead_tree", "bind": "props/dead_tree", "kind": "image", "cols": 1, "rows_count": 1, "pixel_box": [40, 68], "pixel_tone": [0.6, 1.2]}
+{"id": "prop_dead_tree", "bind": "props/dead_tree", "kind": "image", "cols": 1, "rows_count": 1, "pixel_box": [40, 68], "pixel_tone": [0.65, 1.2], "pixel_trim": true}

@@ -84,7 +84,8 @@
       "tone": [
         0.75,
         1.35
-      ]
+      ],
+      "trim": true
     },
     "icon": {
       "size": [
@@ -455,9 +456,10 @@
         1216
       ],
       "tone": [
-        0.8,
+        0.65,
         1.2
-      ]
+      ],
+      "trim": true
     },
     "house": {
       "subject": "a small timber-framed village house with a dark thatched roof, dark weathered timber, rich warm colors",

@@ -150,6 +150,7 @@
     "props/bush",
     "props/campfire",
     "props/chest",
+    "props/church",
     "props/coffin",
     "props/dead_tree",
     "props/fence",
@@ -278,7 +279,8 @@
     "bush": "prop_bush",
     "reeds": "prop_reeds",
     "tavern": "prop_tavern",
-    "well": "prop_well"
+    "well": "prop_well",
+    "church": "prop_church"
   },
   "images": {
     "epilogue": "image_epilogue",
