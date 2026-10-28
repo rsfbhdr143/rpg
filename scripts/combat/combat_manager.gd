@@ -162,10 +162,16 @@ func allies_of(u: Character) -> Array:
 	return living_units().filter(func(o): return o.faction == u.faction)
 
 
+## Кто стоит на клетке: участник боя, а если нет — враг вне боя (по нему можно ударить, и его отряд
+## вступит в бой, см. GameSession._pull_into_combat). Жители-NPC целями не бывают.
 func unit_at(c: Vector2i) -> Character:
 	for u in living_units():
 		if u.cell == c:
 			return u
+	for b in bystanders:
+		var o: Character = b
+		if o.cell == c and o.is_alive() and o.faction == "enemy":
+			return o
 	return null
 
 
@@ -178,6 +184,28 @@ func occupied_cells(except: Character = null) -> Dictionary:
 		if b.is_alive():
 			out[b.cell] = true
 	return out
+
+
+## Новые участники посреди боя (по ним ударили или их задело): ходят уже в этом раунде, в конце очереди,
+## с ОД начала боя.
+func join(new_units: Array) -> void:
+	for u in new_units:
+		var c: Character = u
+		if units.has(c):
+			continue
+		units.append(c)
+		bystanders.erase(c)
+		c.ap = mini(c.get_int("start_ap"), c.get_int("max_ap"))
+		c.cooldowns.clear()
+		if c.is_alive():
+			turn_order.append(c)
+	state_changed.emit()
+
+
+## Убрать павших (например, вступивших в бой уже убитыми) без проверки конца хода.
+func refresh() -> void:
+	_cleanup_dead()
+	state_changed.emit()
 
 
 func move_cost(u: Character, steps: int) -> int:

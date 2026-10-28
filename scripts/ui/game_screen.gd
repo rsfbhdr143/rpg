@@ -404,6 +404,10 @@ func _present(e: Dictionary) -> float:
 			_cancel_targeting()
 			world.pan = Vector2.ZERO
 			return 1.0
+		"combat_join":
+			hud.toast("В бой вступают новые враги!", Color("ff8a5a"), 3.0)
+			GameAudio.sfx("enemy_alert")
+			return 0.5
 		"combat_end":
 			if str(e.get("winner", "")) == "player":
 				hud.show_banner("ПОБЕДА!", "", UiTheme.GOLD, 1.1)

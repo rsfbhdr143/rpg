@@ -16,7 +16,7 @@ func _init() -> void:
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
-		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village",
+		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village", "test_join_combat",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -964,3 +964,36 @@ func test_village() -> void:
 	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": talker.uid}) == "" and s.mode == "explore", "житель отвечает, не открывая разговор")
 	check(GameEvents.list.any(func(e): return str(e["type"]) == "bark" and str(e["unit"]) == talker.uid), "реплика жителя")
 	check(SurfaceGrid.distance(h.cell, talker.cell) <= 1, "герой подошёл к жителю")
+
+
+func test_join_combat() -> void:
+	print("joining a fight: hit an enemy outside the combat and its group joins")
+	var s := _story_session("forest")
+	s.dialogue = {}
+	s.mode = "explore"
+	var groups := {}
+	for e in s.enemies:
+		if (e as Character).is_alive():
+			groups[(e as Character).encounter_id] = true
+	check(groups.size() >= 2, "в лесу несколько отрядов")
+	var first := str(groups.keys()[0])
+	var second := str(groups.keys()[1])
+	s._start_combat(first)
+	check(s.mode == "combat" and s.combat.active, "бой с первым отрядом")
+	var other: Character = null
+	for e in s.enemies:
+		if (e as Character).encounter_id == second and (e as Character).is_alive():
+			other = e
+	check(not s.combat.units.has(other) and s.combat.unit_at(other.cell) == other, "враг вне боя — допустимая цель")
+	var hero: Character = s.heroes[0]
+	check(s.combat.skill_block_reason(hero, "attack", other.cell) in ["", "не ваш ход", "слишком далеко"], "по нему можно целиться")
+	GameEvents.clear()
+	s._pull_into_combat(hero, GameData.skill("attack"), other.cell)
+	var joined := s.enemies.filter(func(e): return (e as Character).encounter_id == second and (e as Character).is_alive())
+	check(joined.all(func(e): return s.combat.units.has(e)), "весь его отряд вступил в бой")
+	check(GameEvents.list.any(func(e): return str(e["type"]) == "combat_join"), "событие о вступлении в бой")
+	check(s.combat.turn_order.has(other), "новички ходят уже в этом раунде")
+	var npc_cell := Vector2i(-5, -5)
+	for n in s.npcs:
+		npc_cell = (n as Character).cell
+	check(npc_cell.x < 0 or s.combat.unit_at(npc_cell) == null, "жители целями не становятся")

@@ -1510,10 +1510,62 @@ func _cmd_combat(pid: int, cmd: Dictionary, kind: String) -> String:
 			var reason := combat.skill_block_reason(u, skill_id, _cell(cmd))
 			if reason != "":
 				return reason
+			var before := _enemy_marks()
+			_pull_into_combat(u, GameData.skill(skill_id), _cell(cmd))
 			combat.use_skill(u, skill_id, _cell(cmd))
+			_join_hurt(before)
 		"end_turn":
 			combat.end_turn()
 	return ""
+
+
+## Как в D:OS, бой общий: ударил по врагу вне боя или задел его навыком — его отряд вступает в идущий бой.
+## Вызывается до навыка: отряд цели и всех врагов в зоне навыка становятся участниками и получают удар как все.
+func _pull_into_combat(u: Character, def: Dictionary, cell: Vector2i) -> void:
+	if combat == null or not combat.active or not (def.has("damage") or def.has("statuses") or def.has("surface")):
+		return
+	var tt := str(def.get("target", "enemy"))
+	if tt == "ally" or tt == "self" and not def.has("damage"):
+		return
+	var center := u.cell if tt == "self" else cell
+	var radius := maxi(int(def.get("aoe_radius", 0)), int((def.get("surface", {}) as Dictionary).get("radius", 0)))
+	var groups := {}
+	for e in enemies:
+		var foe: Character = e
+		if foe.is_alive() and not combat.units.has(foe) and SurfaceGrid.distance(foe.cell, center) <= radius:
+			groups[foe.encounter_id] = true
+	for g in groups:
+		_join_combat(str(g))
+
+
+## После действия в бою: враги вне боя, которых задело (огонь растёкся, взрыв), тоже вступают в бой.
+func _join_hurt(before: Dictionary) -> void:
+	if combat == null:
+		return
+	var groups := {}
+	for e in enemies:
+		var foe: Character = e
+		if before.has(foe.uid) and not combat.units.has(foe) \
+				and (not foe.is_alive() or foe.hp != float(before[foe.uid][0]) or foe.statuses.size() != int(before[foe.uid][1])):
+			groups[foe.encounter_id] = true
+	for g in groups:
+		_join_combat(str(g))
+	if not groups.is_empty() and combat != null:
+		combat.refresh()
+
+
+## Отряд врагов encounter вступает в идущий бой.
+func _join_combat(encounter: String) -> void:
+	if combat == null or not combat.active:
+		return
+	var fresh: Array = enemies.filter(func(e): return e.encounter_id == encounter and not combat.units.has(e) \
+		and (e.is_alive() or not e.death_handled))
+	if fresh.is_empty():
+		return
+	flags["aggro:" + encounter] = true
+	combat.join(fresh)
+	GameLog.add("В бой вступают: %s." % ", ".join(fresh.map(func(e): return e.display_name)))
+	GameEvents.add("combat_join", {"encounter": encounter, "units": fresh.map(func(e): return e.uid)})
 
 
 ## Навык вне боя, как в D:OS: лечение, благословение, дождь на огонь, масло под ноги. ОД не тратит,
@@ -1568,19 +1620,26 @@ func _enemy_marks() -> Dictionary:
 ## После навыка или ловушки вне боя: убитые враги дают опыт, задетая группа начинает бой
 ## (или считается побеждённой, если её перебили сразу). provoked — группа того, в кого целились (даже если промах).
 func _explore_consequences(before: Dictionary, provoked := "") -> void:
-	var hit := provoked
+	var hits: Array = [provoked] if provoked != "" else []
 	var killed := 0
 	for e in enemies:
 		var foe: Character = e
 		if before.has(foe.uid) and (not foe.is_alive() or foe.hp != float(before[foe.uid][0]) or foe.statuses.size() != int(before[foe.uid][1])):
-			hit = foe.encounter_id
+			if not hits.has(foe.encounter_id):
+				hits.append(foe.encounter_id)
 			if not foe.is_alive():
 				killed += foe.xp_reward
 	give_xp(killed)   # убитые до боя: в бою их уже не посчитают
-	if hit != "" and not defeated_encounters().has(hit):
+	# задело несколько отрядов — бой начинает первый, остальные вступают в тот же бой
+	for hit in hits:
+		if hit == "" or defeated_encounters().has(hit):
+			continue
 		if enemies.any(func(e): return e.encounter_id == hit and e.is_alive()):
 			flags["aggro:" + hit] = true
-			_start_combat(hit)
+			if mode == "combat" and combat != null and combat.active:
+				_join_combat(hit)
+			else:
+				_start_combat(hit)
 		else:   # отряд перебит одним ударом, до боя дело не дошло
 			defeated_encounters().append(hit)
 			Story.apply(self, encounter_def(hit).get("do", []))
@@ -1824,6 +1883,8 @@ func load_snapshot(s: Dictionary) -> void:
 	heroes = _mirror_units(s.get("heroes", []), by_uid)
 	enemies = _mirror_units(s.get("enemies", []), by_uid)
 	npcs = _mirror_units(s.get("npcs", []), by_uid)
+	if combat != null:   # у клиента: кто не в бою, тот рядом (по врагам вне боя можно ударить)
+		combat.bystanders = npcs + enemies.filter(func(e): return not combat.units.has(e))
 	var lines: Array = s.get("log", [])
 	GameLog.lines = lines.duplicate()
 	GameEvents.load_tail(s.get("events", []))
