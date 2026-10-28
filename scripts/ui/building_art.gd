@@ -8,6 +8,7 @@ extends RefCounted
 
 const WALL_H := 52.0     # высота стены в пикселях мира (герой — около 40)
 const CUT_H := 8.0       # ближняя стена, срезанная, когда внутри герой
+const INNER_H := 40.0    # дальние стены, когда внутри герой: ниже, чтобы комната читалась
 const DOOR_H := 36.0
 const OUTLINE := Color("120c0a")
 const STYLES := {
@@ -50,7 +51,7 @@ static func is_wall(house: Dictionary, c: Vector2i) -> bool:
 static func draw_wall(ci: CanvasItem, house: Dictionary, cell: Vector2i, c: PackedVector2Array, variant: int, t: float) -> Rect2:
 	var st := style_of(house)
 	var front := is_front(house, cell)
-	var h := lerpf(WALL_H, CUT_H, float(house.get("open", 0.0))) if front else WALL_H
+	var h := lerpf(WALL_H, CUT_H if front else INNER_H, float(house.get("open", 0.0)))
 	var hv := Vector2(0, -h)
 	var below := cell + Vector2i(0, 1)
 	var right := cell + Vector2i(1, 0)
@@ -80,9 +81,19 @@ static func _face(ci: CanvasItem, a: Vector2, b: Vector2, hv: Vector2, st: Dicti
 	var plinth := Vector2(0, -minf(5.0, hgt))
 	ci.draw_colored_polygon(PackedVector2Array([a, b, b + plinth, a + plinth]), Color(str(st["base"])).darkened(dark))
 	if inner:
-		# панель по низу комнаты
+		# комната: тёмная панель понизу, балка под потолком, стойки по краям, кое-где окно в ночь
 		var wain := Vector2(0, -minf(14.0, hgt))
+		ci.draw_colored_polygon(PackedVector2Array([a, b, b + wain, a + wain]), Color("5a4430").darkened(dark))
 		ci.draw_line(a + wain, b + wain, beam, 1.0)
+		ci.draw_line(a + hv, b + hv, beam, 3.0)
+		ci.draw_line(a, a + hv, beam, 2.0)
+		if hgt > 30.0 and variant % 4 == 1:
+			var wa := a.lerp(b, 0.32) + hv * 0.5
+			var wb := a.lerp(b, 0.68) + hv * 0.5
+			var up := hv * 0.28
+			ci.draw_colored_polygon(PackedVector2Array([wa, wb, wb + up, wa + up]), Color("1c2638"))
+			ci.draw_polyline(PackedVector2Array([wa, wb, wb + up, wa + up, wa]), beam, 1.0)
+			ci.draw_line(wa.lerp(wb, 0.5), (wa + up).lerp(wb + up, 0.5), beam, 1.0)
 	elif hgt > 12.0:
 		if str(st["wall"]) == str(STYLES["stone"]["wall"]):
 			var rows := int(hgt / 7.0)
@@ -121,7 +132,7 @@ static func draw_door(ci: CanvasItem, house: Dictionary, cell: Vector2i, c: Pack
 	var r := _rect(house)
 	var front := is_front(house, cell)
 	var open := float(house.get("open", 0.0))
-	var h := lerpf(WALL_H, CUT_H, open) if front else WALL_H
+	var h := lerpf(WALL_H, CUT_H if front else INNER_H, open)
 	var hv := Vector2(0, -h)
 	# стена вдоль x (верхний или нижний ряд) — проём на грани +y, иначе на грани +x
 	var along_x := cell.y == r.position.y or cell.y == r.end.y - 1
