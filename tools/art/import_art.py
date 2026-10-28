@@ -549,6 +549,7 @@ class Asset:
     bind: list[str] = field(default_factory=list)   # явные привязки из подсказки: "units/knight", "locations/forest/wall"
     pixel_box: tuple[int, int] | None = None         # из подсказки: размер в игровых пикселях при пикселизации
     pixel_colors: int = 0
+    pixel_tone: tuple[float, float] = (1.0, 1.0)     # из подсказки: [яркость, насыщенность] при пикселизации
 
     def add_anim(self, anim: Anim) -> None:
         names = {a.name for a in self.anims}
@@ -714,6 +715,8 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             if ov.get("pixel_box"):
                 asset.pixel_box = (int(ov["pixel_box"][0]), int(ov["pixel_box"][1]))
             asset.pixel_colors = int(ov.get("pixel_colors", 0))
+            if ov.get("pixel_tone"):
+                asset.pixel_tone = (float(ov["pixel_tone"][0]), float(ov["pixel_tone"][1]))
             frames = open_frames(path)
             if len(frames) > 1:                       # анимированный GIF / WebP
                 asset.kind = "effect" if "effect" in own | around else "unit"
@@ -923,13 +926,17 @@ def add_outline(a: np.ndarray) -> np.ndarray:
 
 
 def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, seamless: bool,
-             soft_alpha: bool) -> list:
-    """Кадры -> пиксель-арт одного размера с общей палитрой на все кадры."""
+             soft_alpha: bool, tone: tuple[float, float] = (1.0, 1.0)) -> list:
+    """Кадры -> пиксель-арт одного размера с общей палитрой на все кадры.
+    tone — [яркость, насыщенность]: бледные постройки на бумаге можно сделать темнее и сочнее."""
     w, h = size
+    brightness, saturation = tone
 
     def shrink(f: Image.Image) -> Image.Image:
         # штриховка при уменьшении усредняется в серое — чуть поднимаем цвет и контраст
-        rgb = ImageEnhance.Contrast(ImageEnhance.Color(f.convert("RGB")).enhance(1.2)).enhance(1.1)
+        rgb = ImageEnhance.Contrast(ImageEnhance.Color(f.convert("RGB")).enhance(1.2 * saturation)).enhance(1.1)
+        if brightness != 1.0:
+            rgb = ImageEnhance.Brightness(rgb).enhance(brightness)
         rgb.putalpha(f.getchannel("A"))
         if not seamless:
             return resize_rgba(rgb, size, False)
@@ -1013,7 +1020,7 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None
         pieces = pixelize(pieces, (tw, th), asset.pixel_colors or pixelate["tile_colors" if tile else "colors"],
                           pixelate["outline"] and asset.kind not in ("tile", "effect", "scene"),
                           tile and tw == th and all((np.asarray(f)[..., 3] >= 250).mean() >= 0.97 for f in flat),
-                          asset.kind == "effect")
+                          asset.kind == "effect", asset.pixel_tone)
         tw, th = next(f for f in pieces if f is not None).size
         pixel = True
     elif (tw, th) != (fw, fh):

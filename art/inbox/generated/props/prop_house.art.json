@@ -1,1 +1,1 @@
-{"id": "prop_house", "bind": "props/house", "kind": "image", "cols": 1, "rows_count": 1, "pixel_box": [72, 72]}
+{"id": "prop_house", "bind": "props/house", "kind": "image", "cols": 1, "rows_count": 1, "pixel_box": [84, 84], "pixel_tone": [0.72, 1.4]}
