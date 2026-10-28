@@ -101,6 +101,12 @@ func _run() -> void:
 		await _shot("12_talk")
 		await _finish_dialogue()
 		await _wait(1.0)
+		await _shot("13_tavern_inside")
+		# путевой камень на площади: список камней
+		net.call("send_command", {"type": "talk", "unit": str(screen.get("selected_uid")), "object": "waystone_village"})
+		await _wait(5.0)
+		await _shot("14_waystone")
+		(screen.get("travel_panel") as Control).visible = false
 
 	# лес с боем, курган
 	await _goto("forest", "from_village", "20_forest")
@@ -113,6 +119,10 @@ func _run() -> void:
 		await _combat("21_forest")
 	await _finish_dialogue()
 	await _goto("goblin_camp", "from_forest", "30_goblin_camp")
+	s = net.get("session")
+	s.reveal_traps()
+	await _wait(0.6)
+	await _shot("31_camp_traps")
 
 	# настройки и пауза
 	(screen.get("settings") as Control).visible = true

@@ -18,13 +18,16 @@ extends RefCounted
 ##                                                               если состав встречи задан в сюжете)
 ##     "A": {"anchor": "tavern"}             именованная точка: у неё сюжет ставит NPC и встречи ("anchor")
 ##     "^": {"trap": "fire_rune"}            спрятанная ловушка (виды — data/traps.json)
+##     "R": {"building": "tavern", "size": [7, 6], "name": "Таверна", "wall": "timber", "roof": "shingle"}
+##                                           дом, в который можно войти: буква в дальнем углу, по краю прямоугольника
+##                                           стены (рисуй "="), "+" — дверь, внутри "_" — дощатый пол, мебель, жители
 ##   }
 ## Буквы можно совмещать в одной записи: {"surface": "water", "spawn": "start"}.
 ## "#" — стена и "." — пол действуют без легенды.
 ## Всё это превращается в обычные поля: size, walls, solid, surfaces, spawns, exits, props, anchors, npcs, objects,
 ## encounters, traps.
 
-const DEFAULT_LEGEND := {"#": {"wall": true}, ".": {}, " ": {}}
+const DEFAULT_LEGEND := {"#": {"wall": true}, ".": {}, " ": {}, "=": {}, "_": {}, "+": {"door": true}}
 
 
 static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
@@ -38,6 +41,8 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	var npcs: Array = loc.get("npcs", [])
 	var objects: Array = loc.get("objects", [])
 	var traps: Array = loc.get("traps", [])
+	var buildings: Array = loc.get("buildings", [])
+	var door_cells := {}
 	var exit_cells := {}
 	var enc_cells := {}       # id встречи -> [[x, y], …]
 	var enc_templates := {}   # id встречи -> [шаблон или "", …]
@@ -75,6 +80,16 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 					surfaces.append({"id": str(e["surface"]), "cell": c, "radius": 0})
 				if e.has("anchor"):
 					anchors[str(e["anchor"])] = c
+				if bool(e.get("door", false)):
+					door_cells[Vector2i(x, y)] = true
+				if e.has("building"):
+					var b: Dictionary = e.duplicate()
+					b.erase("building")
+					b["id"] = str(e["building"])
+					var bs: Array = e.get("size", [3, 3])
+					b.erase("size")
+					b["rect"] = [x, y, int(bs[0]), int(bs[1])]
+					buildings.append(b)
 				if e.has("trap"):
 					if not GameData.traps.has(str(e["trap"])):   # не GameData.trap(): данные ещё грузятся
 						warnings.append("%s: ловушки «%s» нет в data/traps.json" % [id, e["trap"]])
@@ -165,10 +180,38 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	loc["npcs"] = npcs
 	loc["objects"] = objects
 	loc["encounters"] = encounters
+	# Дома: стены по краю прямоугольника (непроходимы, рисуются домом), двери — проходы в стене.
+	for b in buildings:
+		var r: Array = b["rect"]
+		var doors: Array = b.get("doors", [])
+		for c in building_perimeter(r):
+			var cell := Vector2i(int(c[0]), int(c[1]))
+			if door_cells.has(cell):
+				doors.append(c)
+			else:
+				solid.append(c)
+		if doors.is_empty():
+			warnings.append("%s: у дома «%s» нет двери (+ на стене)" % [id, b["id"]])
+		b["doors"] = doors
+	loc["buildings"] = buildings
 	loc["traps"] = traps
 	loc.erase("rows")
 	loc.erase("legend")
 	return loc
+
+
+## Клетки стен дома [x, y, w, h]: край прямоугольника.
+static func building_perimeter(r: Array) -> Array:
+	var out: Array = []
+	var x0 := int(r[0])
+	var y0 := int(r[1])
+	var w := int(r[2])
+	var h := int(r[3])
+	for y in range(y0, y0 + h):
+		for x in range(x0, x0 + w):
+			if x == x0 or y == y0 or x == x0 + w - 1 or y == y0 + h - 1:
+				out.append([x, y])
+	return out
 
 
 ## Врагам без клетки раздаёт клетки встречи по порядку.

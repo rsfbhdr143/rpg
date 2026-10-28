@@ -16,7 +16,7 @@ func _init() -> void:
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
-		"test_traps_and_surfaces",
+		"test_traps_and_surfaces", "test_houses_and_travel",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -520,7 +520,9 @@ func test_exploration() -> void:
 	for e in s.enemies:
 		if e.encounter_id == "forest_wolf_pack":
 			foe = e
-	_walk(s, h0, foe.cell + Vector2i(-1, 1))
+	for i in 3:   # путь может прервать замеченная ловушка — тогда идём дальше
+		if s.mode == "explore":
+			_walk(s, h0, foe.cell + Vector2i(-1, 1))
 	check(s.mode == "combat" and s.combat != null and s.combat.active, "враги заметили партию, начался бой")
 	check(SurfaceGrid.distance(h0.cell, foe.cell) > 1, "движение остановилось, когда враги заметили")
 	var guard := 0
@@ -804,3 +806,54 @@ func test_traps_and_surfaces() -> void:
 
 	cfg.clear()
 	cfg.merge(saved)
+
+
+func test_houses_and_travel() -> void:
+	print("houses you can enter, waystones, exits")
+	var v := GameData.location("village")
+	var tavern: Dictionary = {}
+	for b in v.get("buildings", []):
+		if str(b["id"]) == "tavern":
+			tavern = b
+	check(not tavern.is_empty() and not (tavern.get("doors", []) as Array).is_empty(), "в таверну есть дверь")
+	var s := _story_session()
+	var r: Array = tavern["rect"]
+	var door := Vector2i(int(tavern["doors"][0][0]), int(tavern["doors"][0][1]))
+	check(s.grid.is_walkable(door) and not s.grid.is_walkable(Vector2i(int(r[0]), int(r[1]))), "дверь проходима, стена нет")
+	check(s.grid.is_walkable(Vector2i(int(r[0]) + 2, int(r[1]) + 2)) or s.building_at(Vector2i(int(r[0]) + 2, int(r[1]) + 2)) == tavern,
+		"внутри таверны комната")
+	var marta: Character = null
+	for n in s.npcs:
+		if n.template_id == "marta":
+			marta = n
+	check(marta != null and s.building_at(marta.cell) == tavern, "Марта стоит в таверне")
+	var h: Character = s.heroes[0]
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": marta.uid}) == "" and s.mode == "dialogue", "к Марте можно подойти через дверь")
+	check(s.building_at(h.cell) == tavern, "герой вошёл в таверну")
+	s.mode = "explore"
+	s.dialogue = {}
+
+	var ex: Dictionary = s.location_data()["exits"][0]
+	var ec := Vector2i(int(ex["cells"][0][0]), int(ex["cells"][0][1]))
+	check(s._avoid(h, Vector2i(10, 10)).has(ec) and not s._avoid(h, ec).has(ec), "пути обходят выходы, если идти не к ним")
+
+	check(s.known_waypoints().is_empty() or s.known_waypoints().size() == 1, "камни находятся по дороге")
+	check(s.submit(1, {"type": "travel", "to": "waystone_forest"}) != "", "к ненайденному камню нельзя")
+	var stone := s.waypoint("waystone_village")
+	check(not stone.is_empty(), "камень деревни на карте")
+	GameEvents.clear()
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "object": "waystone_village"}) == "", "подойти к камню")
+	check(s.flags.has("wp:waystone_village") and GameEvents.list.any(func(e): return str(e["type"]) == "waypoint_menu"),
+		"камень найден, открылся список камней")
+	s.flags["wp:waystone_forest"] = true
+	check(s.known_waypoints().size() >= 2, "найденные камни в списке")
+	check(s.submit(1, {"type": "travel", "to": "waystone_forest"}) == "" and s.location_id == "forest", "перенос в лес")
+	var fs := s.waypoint("waystone_forest")
+	check(SurfaceGrid.distance(h.cell, _cell_of_any(fs["cell"])) <= 2, "партия у камня в лесу")
+	s.mode = "explore"
+	s.dialogue = {}
+	check(s.submit(1, {"type": "travel", "to": "waystone_village"}) == "" and s.location_id == "village", "и обратно в деревню")
+
+
+func _cell_of_any(v: Variant) -> Vector2i:
+	return Vector2i(int(v[0]), int(v[1]))

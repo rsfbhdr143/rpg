@@ -11,7 +11,9 @@ extends RefCounted
 ##   "combat"   — пошаговый бой прямо на карте локации;
 ##   "defeat"   — партия пала, ждём команду restart.
 ## Бой начинается, когда герой подходит к группе врагов ближе trigger_radius, или эффектом сюжета.
-## Переход: герой встал на клетку выхода — вся партия переходит в другую локацию.
+## Переход: герой встал на клетку выхода — вся партия переходит в другую локацию (мимо выходов пути не ведут).
+## Путевые камни (предметы с "waypoint": true), как в D:OS: найденный камень переносит партию к любому другому
+## найденному камню, в том числе в другой локации.
 ## Каждая посещённая локация помнит своё состояние (поверхности, павшие враги).
 ## Встречи с "respawn": true оживают при новом входе в локацию — на них можно качаться.
 ## Ловушки (TrapSystem): герои замечают их по дороге, найденные обходят; наступил — сработала.
@@ -23,6 +25,7 @@ extends RefCounted
 ##   {"type": "use_item", "unit": uid, "item": id}       зелья и прочее; в бою стоит ОД
 ##   {"type": "use_item", "unit": uid, "item": id, "cell": [x, y]}   масло, факел: в бою и вне боя, как навык
 ##   {"type": "disarm", "unit": uid, "cell": [x, y]}     подойти к найденной ловушке и обезвредить
+##   {"type": "travel", "to": id камня}                  перенестись к найденному путевому камню
 ##   {"type": "skill", "skill": id, "cell": [x, y]}     в бою — навык текущего героя;
 ##   {"type": "skill", "unit": uid, "skill": id, "cell": [x, y]}  вне боя: без ОД, удар по врагу начинает бой
 ##   {"type": "end_turn"}
@@ -262,6 +265,7 @@ func enter_location(id: String, spawn: String) -> void:
 	_place_heroes(spawn)
 	for h in heroes:
 		TrapSystem.announce(grid, h, TrapSystem.look_around(grid, h))
+	_discover_waypoints()
 	GameLog.add("Партия входит: %s." % data.get("name", id))
 	GameEvents.add("location", {"id": id, "first": first_visit})
 	if first_visit:
@@ -477,6 +481,14 @@ func object_at(c: Vector2i) -> Dictionary:
 func _place_heroes(spawn: String) -> void:
 	var spawns: Dictionary = location_data().get("spawns", {})
 	var cells: Array = spawns.get(spawn, [])
+	if spawn.begins_with("wp:"):   # у путевого камня: на клетках вокруг него
+		var stone := waypoint(spawn.substr(3))
+		if not stone.is_empty():
+			cells = []
+			for d in SurfaceGrid.DIRS:
+				var nb: Vector2i = _cell_of(stone["cell"]) + d
+				if grid.is_walkable(nb) and exit_at(nb).is_empty():
+					cells.append([nb.x, nb.y])
 	if cells.is_empty() and not spawns.is_empty():
 		cells = spawns.values()[0]
 	var taken := {}
@@ -530,6 +542,15 @@ func _occupied(except: Character) -> Dictionary:
 		if u != except and u.is_alive():
 			out[u.cell] = true
 	return out
+
+
+## Дом, в прямоугольнике которого клетка (стены, двери, комнаты), или пустой словарь.
+func building_at(c: Vector2i) -> Dictionary:
+	for b in location_data().get("buildings", []):
+		var r: Array = b["rect"]
+		if c.x >= int(r[0]) and c.y >= int(r[1]) and c.x < int(r[0]) + int(r[2]) and c.y < int(r[1]) + int(r[3]):
+			return b
+	return {}
 
 
 func exit_at(c: Vector2i) -> Dictionary:
@@ -927,6 +948,8 @@ func submit(pid: int, cmd: Dictionary) -> String:
 			err = _cmd_use_item(pid, cmd)
 		"disarm":
 			err = _cmd_disarm(pid, cmd)
+		"travel":
+			err = _cmd_travel(pid, cmd)
 		"equip", "unequip":
 			err = _cmd_equip(pid, cmd, kind)
 		"skill", "end_turn":
@@ -990,12 +1013,16 @@ func reveal_traps() -> void:
 			GameEvents.add("trap_found", {"cell": GameEvents.cell(c), "unit": "", "type": str(grid.traps[c]["type"])})
 
 
-## Куда герою не наступать по пути: занятые клетки и найденные ловушки (кроме цели — туда можно нарочно).
+## Куда герою не наступать по пути: занятые клетки, найденные ловушки и выходы (кроме цели — туда можно нарочно).
 func _avoid(u: Character, dest: Vector2i) -> Dictionary:
 	var out := _occupied(u)
 	for c in grid.known_traps():
 		if c != dest:
 			out[c] = true
+	if exit_at(dest).is_empty():
+		for ex in location_data().get("exits", []):
+			for ec in ex.get("cells", []):
+				out[_cell_of(ec)] = true
 	return out
 
 
@@ -1067,6 +1094,7 @@ func _walk_party(u: Character, path: Array) -> String:
 					result = "trap_seen"
 		if result != "":
 			break
+		_discover_waypoints()
 		if i < path.size() and not exit_at(u.cell).is_empty():
 			result = "exit"
 			break
@@ -1103,6 +1131,7 @@ func _follow_spot(path: Array, reserved: Dictionary, blockers: Dictionary) -> Ve
 	var dest: Vector2i = path[-1]
 	var best := dest
 	var best_score := 1e9
+	var dest_house := building_at(dest)
 	for r in [1, 2, 3]:
 		for c in grid.cells_in_radius(dest, r):
 			var cell: Vector2i = c
@@ -1119,6 +1148,8 @@ func _follow_spot(path: Array, reserved: Dictionary, blockers: Dictionary) -> Ve
 			elif sx == 1 and sy < 0:
 				score += 6.0             # наискосок за спиной — наполовину спрятан
 			score -= float(mini(sx, 2)) * 2.0   # чем дальше вбок, тем лучше видно обоих
+			if building_at(cell) != dest_house:
+				score += 60.0                    # за стену дома (внутрь или наружу) спутник не встаёт
 			if score < best_score:
 				best_score = score
 				best = cell
@@ -1151,6 +1182,16 @@ func _cmd_talk(pid: int, cmd: Dictionary) -> String:
 		for dx in int(size[0]):
 			for dy in int(size[1]):
 				cells.append(oc + Vector2i(dx, dy))
+		if bool(obj.get("waypoint", false)):
+			if not cells.any(func(c): return SurfaceGrid.distance(u.cell, c) <= 1):
+				var path := _path_next_to(u, cells)
+				if path.is_empty():
+					return "не подойти"
+				if _walk_party(u, path) != "":
+					return ""
+			flags["wp:" + oid] = true
+			GameEvents.add("waypoint_menu", {"pid": pid, "from": oid})
+			return ""
 		if dl == "":
 			GameEvents.add("narrate", {"title": "", "text": str(obj.get("name", oid)), "short": true})
 			return ""
@@ -1187,6 +1228,62 @@ func _path_next_to(u: Character, cells: Array) -> Array:
 				if not p.is_empty() and (best.is_empty() or p.size() < best.size()):
 					best = p
 	return best
+
+
+## Путевой камень по id (из любой локации): запись предмета и "location", или пустой словарь.
+func waypoint(id: String) -> Dictionary:
+	for loc in GameData.locations:
+		for o in (GameData.locations[loc] as Dictionary).get("objects", []):
+			if str(o.get("id", "")) == id and bool(o.get("waypoint", false)):
+				var out: Dictionary = (o as Dictionary).duplicate()
+				out["location"] = str(loc)
+				return out
+	return {}
+
+
+## Найденные путевые камни всех локаций: [{"id", "name", "location", "location_name"}] в порядке локаций.
+func known_waypoints() -> Array:
+	var out: Array = []
+	for loc in GameData.locations:
+		var data: Dictionary = GameData.locations[loc]
+		for o in data.get("objects", []):
+			var id := str(o.get("id", ""))
+			if bool(o.get("waypoint", false)) and flags.has("wp:" + id):
+				out.append({"id": id, "name": str(o.get("name", id)), "location": str(loc), "location_name": str(data.get("name", loc))})
+	return out
+
+
+## Камень замечен, когда герой подошёл на 3 клетки: с этого момента к нему можно переноситься.
+func _discover_waypoints() -> void:
+	for o in visible_objects():
+		var id := str(o.get("id", ""))
+		if not bool(o.get("waypoint", false)) or flags.has("wp:" + id):
+			continue
+		var oc := _cell_of(o["cell"])
+		if heroes.any(func(h): return h.is_alive() and SurfaceGrid.distance(h.cell, oc) <= 3):
+			flags["wp:" + id] = true
+			GameLog.add("Найден путевой камень: %s." % o.get("name", id))
+			GameEvents.add("waypoint_found", {"id": id, "name": str(o.get("name", id))})
+
+
+## Перенос партии к найденному путевому камню (как путевые святилища D:OS).
+func _cmd_travel(pid: int, cmd: Dictionary) -> String:
+	if mode != "explore":
+		return "сейчас нельзя" if mode != "combat" else "в бою не до этого"
+	if not players.has(pid):
+		return "нет такого игрока"
+	var id := str(cmd.get("to", ""))
+	var stone := waypoint(id)
+	if stone.is_empty() or not flags.has("wp:" + id):
+		return "этот камень ещё не найден"
+	GameEvents.add("transition", {"to": str(stone["location"])})
+	GameLog.add("Партия переносится: %s." % stone.get("name", id))
+	if str(stone["location"]) == location_id:
+		_place_heroes("wp:" + id)
+		GameEvents.add("teleport", {"heroes": heroes.map(func(h): return h.uid)})
+	else:
+		enter_location(str(stone["location"]), "wp:" + id)
+	return ""
 
 
 ## Подойти к найденной ловушке и обезвредить её (Ловкость, Плут). Неудача может её задеть.

@@ -48,6 +48,7 @@ var units: Dictionary = {}         # uid -> UnitNode
 var props: Array = []              # PropNode
 var objects: Dictionary = {}       # id предмета -> PropNode
 var buildings: Array = []          # PropNode размером больше клетки (порядок рисования считается каждый кадр)
+var houses: Array = []             # дома, в которые можно войти: {"def", "rect", "doors", "open", "ghost", "nodes"}
 var floaters: Array = []
 var projectiles: Array = []
 var particles: Array = []
@@ -59,6 +60,7 @@ var _shake_t := 0.0
 var _shake_dur := 0.0
 var _shake_power := 0.0
 var _ground: Node2D
+var _floors: Node2D
 var _traps: Node2D
 var _ground_mat: ShaderMaterial
 var _entities: Node2D
@@ -116,6 +118,10 @@ func _ready() -> void:
 	_ground_mat = ShaderMaterial.new()
 	_ground_mat.shader = load("res://shaders/ground.gdshader")
 	_ground.material = _ground_mat
+	_floors = Node2D.new()
+	_floors.z_index = -15
+	add_child(_floors)
+	_floors.draw.connect(_draw_floors)
 	_traps = Node2D.new()
 	_traps.z_index = -10
 	add_child(_traps)
@@ -174,6 +180,7 @@ func build(s: GameSession) -> void:
 	props.clear()
 	objects.clear()
 	buildings.clear()
+	houses.clear()
 	lights.clear()
 	floaters.clear()
 	projectiles.clear()
@@ -186,6 +193,8 @@ func build(s: GameSession) -> void:
 	_bounds = Rect2(-grid_h * TW * 0.5, 0, (grid_w + grid_h) * TW * 0.5, (grid_w + grid_h) * TH * 0.5)
 	_setup_ground(data)
 	_build_props(data)
+	_build_houses(data)
+	_floors.queue_redraw()
 	_building = true
 	sync_units()
 	_building = false
@@ -322,6 +331,95 @@ func _build_props(data: Dictionary) -> void:
 		objects[p.id] = p
 
 
+## Дома, в которые можно войти: по узлу на клетку стены и двери (сортируются с фигурками) и крыша над домом.
+func _build_houses(data: Dictionary) -> void:
+	var list: Array = data.get("buildings", [])
+	for b in list:
+		var r: Array = b["rect"]
+		var rect := Rect2i(int(r[0]), int(r[1]), int(r[2]), int(r[3]))
+		var doors := {}
+		for d in b.get("doors", []):
+			doors[Vector2i(int(d[0]), int(d[1]))] = true
+		var house := {"def": b, "rect": rect, "doors": doors, "open": 0.0, "ghost": 0.0, "nodes": []}
+		for cell in LocationData.building_perimeter(r):
+			var c := Vector2i(int(cell[0]), int(cell[1]))
+			var p := _add_prop("hdoor" if doors.has(c) else "hwall", "house:" + str(b["id"]), c, Vector2i.ONE)
+			p.house = house
+			p.animated = false
+			house["nodes"].append(p)
+		var roof := _add_prop("roof", "roof:" + str(b["id"]), rect.position, rect.size)
+		buildings.erase(roof)   # крыша выше роста героев и стоящих перед домом не закрывает: порядок постоянный
+		roof.house = house
+		roof.animated = bool(b.get("chimney", false))
+		house["nodes"].append(roof)
+		houses.append(house)
+
+
+## Дом, в котором клетка (комната или дверь), или пустой словарь.
+func house_at(c: Vector2i) -> Dictionary:
+	for h in houses:
+		if BuildingArt.is_room(h, c) or (h["doors"] as Dictionary).has(c):
+			return h
+	return {}
+
+
+## Крыша тает, когда в доме герой; дом просвечивает, когда за ним стоит герой; жителей под крышей не видно.
+func _update_houses(delta: float) -> void:
+	if houses.is_empty() or session == null:
+		return
+	for h in houses:
+		var house: Dictionary = h
+		var rect: Rect2i = house["rect"]
+		var inside := false
+		var behind := false
+		var roof: PropNode = (house["nodes"] as Array)[-1]
+		var shape := Rect2(roof.position + Vector2(0, roof.base.y - roof.position.y) + roof.rect.position, roof.rect.size)
+		for hero in session.heroes:
+			var hc: Character = hero
+			if BuildingArt.is_room(house, hc.cell) or (house["doors"] as Dictionary).has(hc.cell):
+				inside = true
+			elif (hc.cell.x < rect.position.x or hc.cell.y < rect.position.y) and units.has(hc.uid) \
+					and shape.has_point((units[hc.uid] as UnitNode).position + Vector2(0, -16)):
+				behind = true
+		var open := move_toward(float(house["open"]), 1.0 if inside else 0.0, delta * 5.0)
+		var ghost := move_toward(float(house["ghost"]), 1.0 if behind and not inside else 0.0, delta * 4.0)
+		if open != float(house["open"]) or ghost != float(house["ghost"]):
+			house["open"] = open
+			house["ghost"] = ghost
+			for n in house["nodes"]:
+				var pn: PropNode = n
+				pn.modulate.a = 1.0 - 0.5 * ghost
+				pn.queue_redraw()
+	for u in units.values():
+		var n: UnitNode = u
+		var c := n.ch()
+		if c == null:
+			continue
+		var hs := house_at(c.cell)
+		n.visible = hs.is_empty() or float(hs["open"]) > 0.5 or session.heroes.has(c)
+
+
+func _draw_floors() -> void:
+	var planks := SpriteLibrary.frame("tiles", "planks")   # бесшовная текстура на 3×3 клетки, если нарисована
+	for h in houses:
+		var rect: Rect2i = h["rect"]
+		for y in range(rect.position.y, rect.end.y):
+			for x in range(rect.position.x, rect.end.x):
+				var c := Vector2i(x, y)
+				if not (BuildingArt.is_room(h, c) or (h["doors"] as Dictionary).has(c)):
+					continue
+				if planks.is_empty():
+					BuildingArt.draw_floor(_floors, corners(c), variant_of(c))
+					continue
+				var tex: Texture2D = planks["texture"]
+				var reg: Rect2 = planks["region"]
+				var u0 := Vector2(posmod(x, 3), posmod(y, 3)) / 3.0
+				var uvs := PackedVector2Array()
+				for k in [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]:
+					uvs.append((reg.position + (u0 + k / 3.0) * reg.size) / tex.get_size())
+				_floors.draw_polygon(corners(c), PackedColorArray([Color(0.85, 0.8, 0.75)]), uvs, tex)
+
+
 func _add_prop(kind: String, id: String, c: Vector2i, size: Vector2i) -> PropNode:
 	var p := PropNode.new()
 	p.view = self
@@ -341,7 +439,8 @@ func _add_prop(kind: String, id: String, c: Vector2i, size: Vector2i) -> PropNod
 	for i in p.corners.size():
 		p.corners[i] -= p.base
 	p.position = Vector2(p.base.x, p.sort_key)
-	p.animated = LIGHT_PROPS.has(id) or id in ["smithy", "tavern", "church", "house", "bell_tower", "tree", "reeds", "bush", "goat_stump"]
+	p.animated = LIGHT_PROPS.has(id) or id.begins_with("waystone") \
+		or id in ["smithy", "tavern", "church", "house", "bell_tower", "tree", "reeds", "bush", "goat_stump", "hearth", "altar"]
 	if LIGHT_PROPS.has(id):
 		var lp: Array = LIGHT_PROPS[id]
 		lights.append({"pos": p.base + Vector2(0, -8), "radius": float(lp[0]), "color": Color(str(lp[1])), "node": p})
@@ -576,6 +675,7 @@ func _process(delta: float) -> void:
 		for p in props:
 			if (p as PropNode).animated:
 				(p as PropNode).queue_redraw()
+	_update_houses(delta)
 	_sort_buildings()
 	_update_fx(delta)
 	_update_highlights()
@@ -713,6 +813,7 @@ func _draw_over() -> void:
 		var cl := g.get_cloud(c)
 		if cl != "none":
 			_draw_cloud(c, cl)
+	_draw_exits()
 	for pr in projectiles:
 		var k := float(pr["t"]) / float(pr["dur"])
 		var a: Vector2 = pr["from"]
@@ -745,6 +846,31 @@ func _draw_over() -> void:
 		var pos := (p - Vector2(w * 0.5, 0)).round()
 		_over.draw_string_outline(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 2, Color(0.05, 0.03, 0.02, col.a))
 		_over.draw_string(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+
+
+## Выходы: стрелка наружу и название места, куда ведёт дорога (видно издалека, как указатели в D:OS).
+func _draw_exits() -> void:
+	var center := grid_point(grid_w * 0.5, grid_h * 0.5)
+	for ex in session.location_data().get("exits", []):
+		var cells: Array = ex.get("cells", [])
+		if cells.is_empty() or session.exit_at(Vector2i(int(cells[0][0]), int(cells[0][1]))).is_empty():
+			continue
+		var p := Vector2.ZERO
+		for c in cells:
+			p += cell_center(Vector2i(int(c[0]), int(c[1])))
+		p /= float(cells.size())
+		var dir := (p - center).normalized()
+		var bob := sin(time * 3.0) * 1.5
+		var tip := p + dir * (6.0 + bob)
+		var side := Vector2(-dir.y, dir.x) * 4.0
+		var col := Color("f0c860")
+		_over.draw_colored_polygon(PackedVector2Array([tip + dir * 5.0, tip + side, tip - side]), col)
+		_over.draw_polyline(PackedVector2Array([tip + dir * 5.0, tip + side, tip - side, tip + dir * 5.0]), Color("120c0a"), 1.0)
+		var dest := str(GameData.location(str(ex.get("to", ""))).get("name", ex.get("to", "")))
+		var w := _font.get_string_size(dest, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
+		var pos := (p + Vector2(-w * 0.5, -14)).round()
+		_over.draw_string_outline(_font, pos, dest, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, 2, Color(0.05, 0.03, 0.02, 0.9))
+		_over.draw_string(_font, pos, dest, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("ecdfc2"))
 
 
 ## Найденные ловушки на земле: ромбик цвета ловушки с мерцающей рамкой; обезвреженные и сработавшие тусклые.
@@ -834,8 +960,11 @@ class PropNode extends Node2D:
 	var corners := PackedVector2Array()
 	var animated := false
 	var rect := Rect2()
+	var house: Dictionary = {}   # для частей дома (hwall, hdoor, roof): общий словарь дома из WorldView.houses
 
 	func is_lit() -> bool:
+		if id.begins_with("waystone"):
+			return view.session != null and view.session.flags.has("wp:" + id)
 		if id == "pyre":
 			return view.session != null and (view.session.flags.has("pyre_lit") or view.session.flags.has("lado_farewell") \
 				or view.lit_flags.has(id))
@@ -851,7 +980,18 @@ class PropNode extends Node2D:
 			rect = Rect2(-16, -40, 32, 44)
 			draw_set_transform(Vector2.ZERO)
 			return
-		var fr := SpriteLibrary.frame("props", id, "idle", t, "", variant)
+		if kind in ["hwall", "hdoor", "roof"]:
+			draw_set_transform(off)
+			match kind:
+				"hwall":
+					rect = BuildingArt.draw_wall(self, house, cell, corners, variant, t)
+				"hdoor":
+					rect = BuildingArt.draw_door(self, house, cell, corners, t)
+				_:
+					rect = BuildingArt.draw_roof(self, house, corners, t)
+			draw_set_transform(Vector2.ZERO)
+			return
+		var fr := SpriteLibrary.frame("props", "waystone" if id.begins_with("waystone") else id, "idle", t, "", variant)
 		if hovered:
 			modulate = Color(1.35, 1.3, 1.1)
 		else:
@@ -859,7 +999,10 @@ class PropNode extends Node2D:
 		draw_set_transform(off)
 		if not fr.is_empty():
 			var region: Rect2 = fr["region"]
-			var sz: Vector2 = region.size * float(fr["scale"])
+			var sc := float(fr["scale"])
+			if size.x > 1 or size.y > 1:   # постройка не уже своего места на карте, иначе жители выше домов
+				sc = maxf(sc, (size.x + size.y) * WorldView.TW * 0.5 * 0.95 / maxf(1.0, region.size.x))
+			var sz: Vector2 = region.size * sc
 			var dest := Rect2(Vector2(-sz.x * 0.5, -sz.y) + (fr["offset"] as Vector2), sz)
 			draw_texture_rect_region(fr["texture"], dest, region)
 			rect = dest

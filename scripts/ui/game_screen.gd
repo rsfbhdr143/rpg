@@ -17,6 +17,7 @@ var journal: Journal
 var settings: SettingsPanel
 var pause_panel: PanelContainer
 var defeat_panel: PanelContainer
+var travel_panel: PanelContainer
 var end_panel: Control
 var container: SubViewportContainer
 var viewport: SubViewport
@@ -99,6 +100,10 @@ func _ready() -> void:
 	_build_pause()
 	_build_defeat()
 	_build_end()
+	travel_panel = UiTheme.panel(Vector2(460, 0))
+	UiTheme.center(travel_panel, Vector2(460, 300))
+	travel_panel.visible = false
+	add_child(travel_panel)
 	settings = SettingsPanel.new()
 	settings.visible = false
 	settings.closed.connect(func() -> void: settings.visible = false)
@@ -259,6 +264,23 @@ func _present(e: Dictionary) -> float:
 		"heal":
 			world.heal_fx(uid, int(e.get("amount", 0)))
 			return 0.06
+		"waypoint_found":
+			hud.toast("Путевой камень: %s" % str(e.get("name", "")), UiTheme.GOLD, 3.0)
+			GameAudio.sfx("bell")
+			return 0.1
+		"waypoint_menu":
+			if int(e.get("pid", -1)) == Net.my_id():
+				_open_travel(str(e.get("from", "")))
+			return 0.0
+		"teleport":
+			for h in e.get("heroes", []):
+				var n := world.unit_node(str(h))
+				if n != null:
+					n.snap()
+			world.snap_camera()
+			_fade = 1.0
+			_fade_target = 0.0
+			return 0.2
 		"trap_found":
 			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Ловушка!", Color("ff9a60"))
 			if uid != "":
@@ -492,7 +514,7 @@ func _update_selection() -> void:
 
 
 func _modal_open() -> bool:
-	return sheet.visible or journal.visible or pause_panel.visible or settings.visible or end_panel.visible \
+	return sheet.visible or journal.visible or pause_panel.visible or settings.visible or end_panel.visible or travel_panel.visible \
 		or hud.help_panel.visible
 
 
@@ -793,7 +815,10 @@ func _world_tip() -> String:
 				var t := "[b]%s[/b]" % str(o.get("name", world.hover_object))
 				var vis: bool = session.visible_objects().any(func(v): return str(v.get("id", "")) == world.hover_object)
 				if vis and session.mode == "explore":
-					t += "\n[color=#c8a060]ЛКМ — осмотреть[/color]"
+					if bool(o.get("waypoint", false)):
+						t += "\n[color=#a89a80]Путевой камень[/color]\n[color=#c8a060]ЛКМ — перенестись к другому камню[/color]"
+					else:
+						t += "\n[color=#c8a060]ЛКМ — осмотреть[/color]"
 				return t
 		return ""
 	var c := world.hover_cell
@@ -801,9 +826,16 @@ func _world_tip() -> String:
 		var tr: Dictionary = session.grid.traps.get(c, {})
 		if str(tr.get("state", "hidden")) != "hidden":
 			return _trap_tip(tr)
+		var bld := session.building_at(c)
+		if not bld.is_empty() and not session.heroes_of(Net.my_id()).any(func(h): return session.building_at(h.cell) == bld):
+			var tip := "[b]%s[/b]" % str(bld.get("name", bld.get("id", "")))
+			if session.mode == "explore":
+				tip += "\n[color=#c8a060]ЛКМ — войти[/color]"
+			return tip
 		var ex := session.exit_at(c)
 		if not ex.is_empty():
-			return "[b]%s[/b]\n[color=#a89a80]Выход[/color]" % str(ex.get("name", ex.get("to", "")))
+			var dest := str(GameData.location(str(ex.get("to", ""))).get("name", ex.get("to", "")))
+			return "[b]%s[/b]\n[color=#a89a80]Выход: %s[/color]\n[color=#c8a060]ЛКМ — перейти всей партией[/color]" % [str(ex.get("name", dest)), dest]
 		if is_my_turn() and selected_skill == "" and selected_item == "" and not world.hl_path.is_empty():
 			var t := "Идти: %d ОД" % _preview_ap
 			var g := session.grid.get_ground(c)
@@ -970,6 +1002,22 @@ func _walk_target(c: Vector2i) -> Vector2i:
 	var g := session.grid
 	if not g.in_bounds(c):
 		return Vector2i(-99, -99)
+	# клик по закрытому дому (стена, крыша) — идти к ближайшей двери
+	var house := world.house_at(c) if not g.is_walkable(c) else {}
+	var b := session.building_at(c)
+	if not b.is_empty() and (house.is_empty() or float(house.get("open", 0.0)) < 0.5):
+		var me0 := session.unit_by_uid(selected_uid)
+		var door := Vector2i(-99, -99)
+		for d in b.get("doors", []):
+			var dc := Vector2i(int(d[0]), int(d[1]))
+			if door.x < -90 or (me0 != null and SurfaceGrid.distance(dc, me0.cell) < SurfaceGrid.distance(door, me0.cell)):
+				door = dc
+		var inside_now := false
+		for h in session.heroes_of(Net.my_id()):
+			if session.building_at((h as Character).cell) == b:
+				inside_now = true
+		if door.x > -90 and not inside_now:
+			return door
 	var occ := {}
 	for u in session.all_units():
 		if (u as Character).is_alive() and (u as Character).uid != selected_uid:
@@ -1051,6 +1099,8 @@ func _on_key(key: InputEventKey) -> void:
 func _on_escape() -> void:
 	if settings.visible:
 		settings.visible = false
+	elif travel_panel.visible:
+		travel_panel.visible = false
 	elif hud.help_panel.visible:
 		hud.help_panel.visible = false
 	elif sheet.visible or journal.visible:
@@ -1342,6 +1392,41 @@ func _build_end() -> void:
 	end_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	end_panel.visible = false
 	add_child(end_panel)
+
+
+## Путевые камни: куда можно перенестись (все найденные, кроме того, у которого стоим).
+func _open_travel(from_id: String) -> void:
+	for c in travel_panel.get_children():
+		c.queue_free()
+	var v := UiTheme.vbox(8)
+	travel_panel.add_child(v)
+	var t := UiTheme.label("Путевые камни", 22, UiTheme.GOLD, "title")
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	var any := false
+	var last_loc := ""
+	for wp in session.known_waypoints():
+		if str(wp["id"]) == from_id:
+			continue
+		if str(wp["location"]) != last_loc:
+			last_loc = str(wp["location"])
+			v.add_child(UiTheme.label(str(wp["location_name"]), 16, UiTheme.TEXT_DIM))
+		any = true
+		var id := str(wp["id"])
+		v.add_child(UiTheme.button(str(wp["name"]), _travel_to.bind(id), 18))
+	if not any:
+		var l := UiTheme.label("Других камней вы пока не нашли. Камень запоминается, когда герой подходит к нему.", 17, UiTheme.TEXT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(420, 0)
+		v.add_child(l)
+	v.add_child(UiTheme.button("Закрыть", func() -> void: travel_panel.visible = false, 16))
+	travel_panel.visible = true
+	GameAudio.ui("ui_open")
+
+
+func _travel_to(id: String) -> void:
+	travel_panel.visible = false
+	send({"type": "travel", "to": id})
 
 
 func _show_end() -> void:

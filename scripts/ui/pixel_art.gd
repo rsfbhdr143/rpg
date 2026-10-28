@@ -290,6 +290,8 @@ static func draw_portrait(ci: CanvasItem, id: String, rect: Rect2, t := 0.0) -> 
 static func draw_prop(ci: CanvasItem, id: String, base: Vector2, s: float, t: float, variant: int,
 		corners: PackedVector2Array = PackedVector2Array(), lit := false) -> Rect2:
 	var o := base.round()
+	if id.begins_with("waystone"):
+		id = "waystone"
 	match id:
 		"grave", "open_grave", "fresh_grave":
 			var fresh := id != "grave"
@@ -438,6 +440,84 @@ static func draw_prop(ci: CanvasItem, id: String, base: Vector2, s: float, t: fl
 			_box(ci, o, 5, -7, 2, 7, Color("5a3a20"), s)
 			_px(ci, o, -3, -12, Color("f0e8d0"), s, 6, 2)
 			return Rect2(o + Vector2(-9, -13) * s, Vector2(18, 13) * s)
+		"table":
+			_box(ci, o, -9, -9, 18, 3, Color("7a5230"), s)
+			_box(ci, o, -8, -6, 2, 6, Color("5a3a20"), s)
+			_box(ci, o, 6, -6, 2, 6, Color("5a3a20"), s)
+			if variant % 2 == 0:
+				_px(ci, o, -4, -11, Color("c8b890"), s, 3, 2)
+				_px(ci, o, 2, -11, Color("8a6a40"), s, 2, 2)
+			return Rect2(o + Vector2(-10, -12) * s, Vector2(20, 12) * s)
+		"bench":
+			_box(ci, o, -8, -5, 16, 2, Color("6a4628"), s)
+			_box(ci, o, -7, -3, 2, 3, Color("4a3018"), s)
+			_box(ci, o, 5, -3, 2, 3, Color("4a3018"), s)
+			return Rect2(o + Vector2(-9, -6) * s, Vector2(18, 6) * s)
+		"barrel":
+			_box(ci, o, -5, -13, 10, 13, Color("7a5230"), s)
+			_px(ci, o, -5, -10, Color("3a2a1a"), s, 10, 1)
+			_px(ci, o, -5, -4, Color("3a2a1a"), s, 10, 1)
+			_px(ci, o, -4, -13, Color("9a7248"), s, 8, 1)
+			return Rect2(o + Vector2(-6, -14) * s, Vector2(12, 14) * s)
+		"crate":
+			_box(ci, o, -6, -10, 12, 10, Color("8a6a40"), s)
+			ci.draw_line(o + Vector2(-6, -10) * s, o + Vector2(6, 0) * s, Color("5a4228"), s)
+			return Rect2(o + Vector2(-7, -11) * s, Vector2(14, 11) * s)
+		"bed":
+			_box(ci, o, -10, -7, 20, 6, Color("6a4628"), s)
+			_box(ci, o, -9, -9, 14, 3, Color("8a3a2a"), s)
+			_box(ci, o, 5, -10, 4, 4, Color("e0d8c0"), s)
+			return Rect2(o + Vector2(-11, -11) * s, Vector2(22, 11) * s)
+		"shelf":
+			_box(ci, o, -7, -26, 14, 26, Color("5a3a20"), s)
+			for i in 3:
+				_px(ci, o, -6, -22 + i * 8, Color("3a2614"), s, 12, 1)
+				_px(ci, o, -5 + (variant + i) % 4, -25 + i * 8, Color("b08a50"), s, 3, 3)
+				_px(ci, o, 1 + (variant * 3 + i) % 4, -25 + i * 8, Color("6a8a9a"), s, 2, 3)
+			return Rect2(o + Vector2(-8, -27) * s, Vector2(16, 27) * s)
+		"counter":
+			_box(ci, o, -11, -12, 22, 12, Color("6a4426"), s)
+			_px(ci, o, -11, -12, Color("8a6038"), s, 22, 2)
+			_px(ci, o, -6, -15, Color("c8a050"), s, 3, 3)
+			_px(ci, o, 3, -14, Color("7a9aa8"), s, 2, 2)
+			return Rect2(o + Vector2(-12, -16) * s, Vector2(24, 16) * s)
+		"hearth":
+			_box(ci, o, -9, -16, 18, 16, Color("6a6460"), s)
+			_box(ci, o, -6, -10, 12, 9, Color("1a1210"), s)
+			var fl := 0.6 + 0.4 * sin(t * 9.0 + variant)
+			_px(ci, o, -4, -6, Color(1.0, 0.6, 0.2, fl), s, 8, 4)
+			_px(ci, o, -2, -9, Color(1.0, 0.85, 0.4, fl), s, 4, 3)
+			return Rect2(o + Vector2(-10, -17) * s, Vector2(20, 17) * s)
+		"anvil":
+			_box(ci, o, -3, -6, 6, 6, Color("3a3638"), s)
+			_box(ci, o, -7, -10, 14, 4, Color("5a5658"), s)
+			_px(ci, o, 7, -9, Color("5a5658"), s, 3, 2)
+			return Rect2(o + Vector2(-8, -11) * s, Vector2(18, 11) * s)
+		"altar":
+			_box(ci, o, -9, -12, 18, 12, Color("8a8478"), s)
+			_px(ci, o, -9, -12, Color("e0d8c0"), s, 18, 2)
+			_px(ci, o, -6, -17, Color("f0e0a0"), s, 1, 5)
+			_px(ci, o, 5, -17, Color("f0e0a0"), s, 1, 5)
+			var cf := 0.7 + 0.3 * sin(t * 7.0)
+			_px(ci, o, -6, -18, Color(1.0, 0.8, 0.3, cf), s)
+			_px(ci, o, 5, -18, Color(1.0, 0.8, 0.3, cf), s)
+			return Rect2(o + Vector2(-10, -19) * s, Vector2(20, 19) * s)
+		"pew":
+			_box(ci, o, -10, -6, 20, 2, Color("5a3a20"), s)
+			_box(ci, o, -10, -12, 20, 2, Color("5a3a20"), s)
+			_px(ci, o, -10, -12, Color("4a2e18"), s, 2, 12)
+			_px(ci, o, 8, -12, Color("4a2e18"), s, 2, 12)
+			return Rect2(o + Vector2(-11, -13) * s, Vector2(22, 13) * s)
+		"waystone":
+			_box(ci, o, -5, -30, 10, 30, Color("6a6a72"), s)
+			_px(ci, o, -4, -33, Color("6a6a72"), s, 8, 3)
+			_px(ci, o, -6, -3, Color("4a5a3a"), s, 12, 3)
+			var glow := Color(0.45, 0.8, 1.0, 0.65 + 0.35 * sin(t * 2.5)) if lit else Color("3a3a44")
+			_px(ci, o, -1, -26, glow, s, 2, 14)
+			_px(ci, o, -3, -20, glow, s, 6, 2)
+			if lit:
+				ci.draw_circle(o + Vector2(0, -20) * s, 9.0 * s, Color(0.45, 0.8, 1.0, 0.12))
+			return Rect2(o + Vector2(-7, -34) * s, Vector2(14, 34) * s)
 		"church_door", "tavern_door":
 			var pulse := 0.5 + 0.5 * sin(t * 3.0)
 			ci.draw_circle(o + Vector2(0, -2) * s, 5.0 * s, Color(1.0, 0.85, 0.4, 0.15 + 0.15 * pulse))
@@ -495,11 +575,11 @@ static func _iso_mound(ci: CanvasItem, o: Vector2, s: float, col: Color) -> void
 # --- Здания ------------------------------------------------------------------------------
 
 const BUILDINGS := {
-	"house":      {"wall": "8a6a48", "roof": "b89040", "height": 22, "roof_h": 16},
-	"tavern":     {"wall": "7a5232", "roof": "8a2e22", "height": 26, "roof_h": 18, "sign": true},
-	"smithy":     {"wall": "5e5e62", "roof": "3a3238", "height": 22, "roof_h": 12, "chimney": true},
-	"church":     {"wall": "8a8478", "roof": "4a4a58", "height": 30, "roof_h": 20, "cross": true},
-	"vetla_hut":  {"wall": "6a5034", "roof": "8a8a3a", "height": 18, "roof_h": 14},
+	"house":      {"wall": "8a6a48", "roof": "b89040", "height": 44, "roof_h": 22},
+	"tavern":     {"wall": "7a5232", "roof": "8a2e22", "height": 48, "roof_h": 24, "sign": true},
+	"smithy":     {"wall": "5e5e62", "roof": "3a3238", "height": 44, "roof_h": 16, "chimney": true},
+	"church":     {"wall": "8a8478", "roof": "4a4a58", "height": 56, "roof_h": 28, "cross": true},
+	"vetla_hut":  {"wall": "6a5034", "roof": "8a8a3a", "height": 38, "roof_h": 18},
 	"bell_tower": {"wall": "8a8478", "roof": "4a4a58", "height": 58, "roof_h": 22, "bell": true},
 }
 
