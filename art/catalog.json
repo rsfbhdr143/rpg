@@ -718,6 +718,30 @@
     }
    }
   },
+  "prop_church": {
+   "sheet": "res://art/sprites/prop_church.png",
+   "kind": "image",
+   "frame": [
+    124,
+    118
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_church.webp"
+   ],
+   "scale": 0.1195,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
   "prop_coffin": {
    "sheet": "res://art/sprites/prop_coffin.png",
    "kind": "image",
@@ -747,7 +771,7 @@
    "kind": "image",
    "frame": [
     42,
-    63
+    61
    ],
    "pad": 1,
    "cols": 1,
@@ -756,7 +780,7 @@
    "source": [
     "generated/props/prop_dead_tree.webp"
    ],
-   "scale": 0.0509,
+   "scale": 0.0488,
    "animations": {
     "idle": {
      "start": 0,
@@ -819,7 +843,7 @@
    "kind": "image",
    "frame": [
     86,
-    80
+    86
    ],
    "pad": 1,
    "cols": 1,
@@ -828,7 +852,7 @@
    "source": [
     "generated/props/prop_house.webp"
    ],
-   "scale": 0.0841,
+   "scale": 0.0821,
    "animations": {
     "idle": {
      "start": 0,
@@ -939,7 +963,7 @@
    "kind": "image",
    "frame": [
     90,
-    84
+    89
    ],
    "pad": 1,
    "cols": 1,
@@ -948,7 +972,7 @@
    "source": [
     "generated/props/prop_smithy.webp"
    ],
-   "scale": 0.0876,
+   "scale": 0.0873,
    "animations": {
     "idle": {
      "start": 0,
@@ -962,7 +986,7 @@
    "sheet": "res://art/sprites/prop_tavern.png",
    "kind": "image",
    "frame": [
-    97,
+    96,
     94
    ],
    "pad": 1,
@@ -972,7 +996,7 @@
    "source": [
     "generated/props/prop_tavern.webp"
    ],
-   "scale": 0.0935,
+   "scale": 0.0945,
    "animations": {
     "idle": {
      "start": 0,
@@ -1082,7 +1106,7 @@
    "sheet": "res://art/sprites/prop_vetla_hut.png",
    "kind": "image",
    "frame": [
-    81,
+    79,
     82
    ],
    "pad": 1,
@@ -1092,7 +1116,7 @@
    "source": [
     "generated/props/prop_vetla_hut.webp"
    ],
-   "scale": 0.0813,
+   "scale": 0.0795,
    "animations": {
     "idle": {
      "start": 0,

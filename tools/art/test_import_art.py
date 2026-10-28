@@ -187,6 +187,21 @@ class ImportTest(unittest.TestCase):
             return a[a[..., 3] > 0][:, :3].mean()
         self.assertLess(mean("dark_hut"), mean("hut") * 0.75)
 
+    def test_trim_paper(self):
+        """Светлая бумага под постройкой и мелкий обрывок срезаются, тёмная стена остаётся."""
+        rgb = np.zeros((40, 40, 3), np.uint8)
+        alpha = np.zeros((40, 40), np.uint8)
+        rgb[5:30, 10:30] = (70, 50, 35)          # стена
+        alpha[5:30, 10:30] = 255
+        rgb[30:36, 4:36] = (225, 215, 190)       # бумажный лоскут снизу
+        alpha[30:36, 4:36] = 255
+        rgb[2:4, 36:38] = (70, 50, 35)           # оторванный кусочек
+        alpha[2:4, 36:38] = 255
+        out = import_art.trim_paper(rgb, alpha)
+        self.assertTrue((out[5:30, 10:30] == 255).all())
+        self.assertEqual(int(out[30:36].sum()), 0)
+        self.assertEqual(int(out[2:4, 36:38].sum()), 0)
+
     def test_magenta_key(self):
         rows = [[figure((32, 32))] * 3]
         img = sheet(rows, (32, 32), bg=(255, 0, 255, 255))
