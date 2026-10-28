@@ -412,7 +412,10 @@
         "name": "Дом бондаря",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house",
+        "sprite": [
+          "house_b",
+          "house"
+        ],
         "flip": true
       },
       "L": {
@@ -424,7 +427,10 @@
         "name": "Дом ткачихи Ганны",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house"
+        "sprite": [
+          "house_c",
+          "house"
+        ]
       },
       "N": {
         "building": "house_N",
@@ -447,7 +453,10 @@
         "name": "Дом рыбака Савки",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house"
+        "sprite": [
+          "house_b",
+          "house"
+        ]
       },
       "S": {
         "building": "house_S",
@@ -458,7 +467,10 @@
         "name": "Дом пастуха",
         "material": "log",
         "roof": "thatch",
-        "sprite": "house"
+        "sprite": [
+          "house_log",
+          "house"
+        ]
       },
       "d": {
         "building": "house_d",
@@ -469,7 +481,10 @@
         "name": "Дом вдовы Агаты",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house"
+        "sprite": [
+          "house_b",
+          "house"
+        ]
       },
       "e": {
         "building": "house_e",
@@ -480,7 +495,10 @@
         "name": "Дом пасечника",
         "material": "log",
         "roof": "thatch",
-        "sprite": "house",
+        "sprite": [
+          "house_log",
+          "house"
+        ],
         "flip": true
       },
       "y": {
@@ -504,7 +522,10 @@
         "name": "Дом мельника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house",
+        "sprite": [
+          "house_b",
+          "house"
+        ],
         "flip": true
       },
       "i": {
@@ -516,7 +537,10 @@
         "name": "Дом гончара",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house"
+        "sprite": [
+          "house_c",
+          "house"
+        ]
       },
       "l": {
         "building": "house_l",
@@ -539,7 +563,10 @@
         "name": "Дом лодочника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house"
+        "sprite": [
+          "house_b",
+          "house"
+        ]
       },
       "w": {
         "building": "house_w",
@@ -550,7 +577,10 @@
         "name": "Дом охотника",
         "material": "log",
         "roof": "thatch",
-        "sprite": "house",
+        "sprite": [
+          "house_log",
+          "house"
+        ],
         "flip": true
       },
       "o": {
@@ -562,7 +592,10 @@
         "name": "Дом знахаря",
         "material": "log",
         "roof": "thatch",
-        "sprite": "house"
+        "sprite": [
+          "house_log",
+          "house"
+        ]
       },
       "q": {
         "building": "house_q",
@@ -573,7 +606,10 @@
         "name": "Дом кожевника",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house",
+        "sprite": [
+          "house_b",
+          "house"
+        ],
         "flip": true
       },
       "t": {
@@ -585,7 +621,10 @@
         "name": "Дом семьи Бжезинских",
         "material": "timber",
         "roof": "shingle",
-        "sprite": "house"
+        "sprite": [
+          "house_c",
+          "house"
+        ]
       },
       "x": {
         "building": "house_x",
@@ -606,7 +645,8 @@
         ],
         "name": "Амбар",
         "material": "log",
-        "roof": "thatch"
+        "roof": "thatch",
+        "sprite": "barn"
       },
       "3": {
         "building": "barn_3",
@@ -616,7 +656,8 @@
         ],
         "name": "Сарай",
         "material": "log",
-        "roof": "thatch"
+        "roof": "thatch",
+        "sprite": "barn"
       },
       "6": {
         "object": "chest_headman",
