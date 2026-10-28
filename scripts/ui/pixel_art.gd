@@ -484,9 +484,9 @@ static func draw_prop(ci: CanvasItem, id: String, base: Vector2, s: float, t: fl
 		"hearth":
 			_box(ci, o, -9, -16, 18, 16, Color("6a6460"), s)
 			_box(ci, o, -6, -10, 12, 9, Color("1a1210"), s)
-			var fl := 0.6 + 0.4 * sin(t * 9.0 + variant)
-			_px(ci, o, -4, -6, Color(1.0, 0.6, 0.2, fl), s, 8, 4)
-			_px(ci, o, -2, -9, Color(1.0, 0.85, 0.4, fl), s, 4, 3)
+			var flick := 0.6 + 0.4 * sin(t * 9.0 + variant)
+			_px(ci, o, -4, -6, Color(1.0, 0.6, 0.2, flick), s, 8, 4)
+			_px(ci, o, -2, -9, Color(1.0, 0.85, 0.4, flick), s, 4, 3)
 			return Rect2(o + Vector2(-10, -17) * s, Vector2(20, 17) * s)
 		"anvil":
 			_box(ci, o, -3, -6, 6, 6, Color("3a3638"), s)
