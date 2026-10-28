@@ -542,7 +542,7 @@ static func draw_prop(ci: CanvasItem, id: String, base: Vector2, s: float, t: fl
 			_box(ci, o, -8, -20, 16, 2, Color("6a4628"), s)
 			for i in 4:
 				var hx := -7.0 + i * 4.0
-				var col := [Color("6a8a3a"), Color("8a7a3a"), Color("5a7a4a"), Color("9a6a7a")][(variant + i) % 4]
+				var col: Color = [Color("6a8a3a"), Color("8a7a3a"), Color("5a7a4a"), Color("9a6a7a")][(variant + i) % 4]
 				_box(ci, o, hx, -18, 3, 7 + (i % 2) * 2, col, s)
 			return Rect2(o + Vector2(-9, -21) * s, Vector2(18, 21) * s)
 		"crate":

@@ -1034,6 +1034,7 @@ func test_physical_skills() -> void:
 	check(combat.skill_block_reason(k, "rush", Vector2i(11, 7)) != "", "рывок в пустую клетку нельзя")
 	check(combat.use_skill(k, "battle_cry", k.cell), "боевой клич")
 	check(k.has_status("rallied") and r.has_status("rallied") == (SurfaceGrid.distance(k.cell, r.cell) <= 3), "клич воодушевляет себя и союзников рядом")
+	k.skills.append("defensive_stance")   # учится в листе героя, с начала его нет
 	var armor := DamageCalc.effective_armor(k)
 	check(combat.use_skill(k, "defensive_stance", k.cell) and DamageCalc.effective_armor(k) > armor, "глухая оборона крепит броню")
 
@@ -1045,6 +1046,7 @@ func test_physical_skills() -> void:
 	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "move" and bool(ev.get("leap", false))), "прыжок дугой (move с leap)")
 	r.ap = 10
 	e.cell = Vector2i(6, 6)
+	r.skills.append("hunters_mark")
 	check(combat.use_skill(r, "hunters_mark", e.cell) and e.has_status("marked"), "метка охотника")
 	check(e.get_stat("dodge") < Character.from_template("goblin_warrior").get_stat("dodge"), "помеченный хуже уклоняется")
 	r.ap = 10
