@@ -46,11 +46,13 @@ class BuildingsTest(unittest.TestCase):
         a = np.asarray(img)[..., 3] > 0
         cols = np.nonzero(a.any(axis=0))[0]
         left, right = img.width / 2 - cols[0], cols[-1] + 1 - img.width / 2
-        self.assertLessEqual(abs((left - right) - 16 * (6 - 4)), 4)               # середина холста — ближний угол
+        self.assertLessEqual(abs(left - right), 4)                                   # середина холста — середина ромба
         bottom = np.nonzero(a.any(axis=1))[0][-1]
-        self.assertGreaterEqual(bottom, img.height - 2)                              # угол дома у нижнего края
-        self.assertTrue(a[bottom - 1, img.width // 2 - 1: img.width // 2 + 1].any())
-        self.assertGreaterEqual(img.width, (6 + 4) * 16)                             # не уже места дома
+        self.assertGreaterEqual(bottom, img.height - 2)                              # ближний угол у нижнего края
+        corner = img.width // 2 + 8 * (6 - 4)                                        # он правее середины на 8(w - h)
+        self.assertTrue(a[bottom - 1, corner - 1: corner + 2].any())
+        want = (6 + 4) * 16                                                          # игра берёт рисунок, если ширина
+        self.assertLessEqual(abs(img.width / want - 1), 0.15)                        # совпала с местом дома на 15%
 
     def test_import_keeps_canvas(self):
         root = Path(tempfile.mkdtemp())

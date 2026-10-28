@@ -175,7 +175,7 @@ class Look:
     roof_col: tuple = ROOF["shingle"][0]
     wall_h: float = WALL_H
     pitch: float = 14.0           # подъём крыши на клетку (px)
-    eave: float = 0.35            # свес крыши в клетках
+    eave: float = 0.25            # свес крыши в клетках (шире — картинка шире места дома больше чем на 15%)
     floors: int = 1
     chimney: bool = False
     braces: bool = True
@@ -330,11 +330,12 @@ def flat(color):
 # --- Дом ---------------------------------------------------------------------------------------------------
 
 def footprint_scene(w: float, h: float, top: float) -> Scene:
-    """Холст, где ближний угол места (w, h, 0) — посередине нижнего края; top — запас высоты в пикселях."""
-    cw = int(2 * max(w, h) * 16 + 28)
+    """Холст под место w×h: ближний угол (w, h, 0) — на нижнем крае, середина ромба места — посередине по ширине
+    (так рисунок ставит игра: _draw_shell); top — запас высоты в пикселях."""
+    cw = int((w + h) * 16 + 80)
     oy = int(math.ceil(top)) + 4
     ch = int(oy + 8 * (w + h) + 2)
-    return Scene(cw, ch, oy, cw / 2 - 16 * (w - h))
+    return Scene(cw, ch, oy, cw / 2 - 8 * (w - h))
 
 
 def house_scene(w: int, h: int, look: Look, extra_top: float = 0.0) -> Scene:
@@ -674,10 +675,12 @@ def look_for(b: dict) -> tuple[Look, str]:
     special = ""
     look.flowers = material in ("timber", "plaster") and noise(2, 2, seed) > 0.55
     look.cross_ridge = noise(3, 3, seed) > 0.62
-    if "house_b" in hints:
+    w, h = (int(v) for v in b.get("rect", [0, 0, 6, 5])[2:])
+    style = noise(5, 5, seed)
+    if "house_b" in hints or (material == "timber" and not hints[0].startswith("house_c") and 0.42 < style < 0.72):
         look.wall, look.braces, look.plaster = "plaster", False, (214, 206, 186)
-    elif "house_c" in hints:
-        look.floors, look.wall_h, look.pitch = 2, 68.0, 17.0
+    elif "house_c" in hints or (material == "timber" and style >= 0.72 and w * h >= 30):
+        look.floors, look.wall_h, look.pitch = 2, 68.0, 17.0       # двухэтажный
     elif "house_log" in hints:
         look.wall = "log"
     if bid == "church":
@@ -698,7 +701,12 @@ def look_for(b: dict) -> tuple[Look, str]:
     elif bid == "crypt":
         special = "crypt"
         look.wall_h, look.lit, look.chimney, look.pitch, look.win = 40.0, 0.0, False, 16.0, "none"
-    elif bid.startswith("barn"):
+    elif bid == "house_headman":       # староста: два этажа, цветы, труба
+        special = "headman"
+        look.wall, look.braces, look.floors, look.wall_h, look.pitch = "timber", True, 2, 72.0, 16.0
+        look.flowers, look.chimney, look.lit, look.cross_ridge = True, True, 0.8, False
+        look.plaster, look.roof_col = (206, 192, 156), ROOF["shingle"][0]
+    elif bid.startswith("barn") or bid == "shed":
         special = "barn"
         look.wall_h, look.pitch, look.lit, look.chimney, look.flowers = 44.0, 20.0, 0.0, False, False
     elif bid == "shaman_hut":
@@ -994,7 +1002,7 @@ def preview(maps: dict, sprites: dict[str, Image.Image], loc: str, path: Path, s
         sp = sprites.get(b["id"])
         if sp is None:
             continue
-        X, Y = ox + 16 * ((x + w) - (y + h)), oy + 8 * ((x + w) + (y + h))
+        X, Y = ox + 16 * ((x + w) - (y + h)) - 8 * (w - h), oy + 8 * ((x + w) + (y + h))   # середина ромба
         items.append((Y, X, sp))
     legend = m.get("legend", {})
     for y, row in enumerate(rows):
