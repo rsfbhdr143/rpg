@@ -8,6 +8,7 @@ var _passed := 0
 
 
 func _init() -> void:
+	(load("res://scripts/ui/hotbar.gd") as GDScript).set("path", "user://test_hotbars.json")   # не трогать раскладку игрока
 	GameData.reload_data()
 	GameLog.echo_to_console = false
 	for t in [

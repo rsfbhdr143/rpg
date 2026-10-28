@@ -38,6 +38,10 @@ func _run() -> void:
 	# не по имени класса: title_screen.gd использует автозагрузку Net, а её имени ещё нет,
 	# когда Godot компилирует скрипт из -s, — прогон тогда не собирается
 	load("res://scripts/ui/title_screen.gd").set("allow_dedicated", false)
+	# своя раскладка панели умений: прогон не должен затирать раскладку игрока (user://hotbars.json)
+	var hotbar: GDScript = load("res://scripts/ui/hotbar.gd")
+	hotbar.set("path", "user://test_hotbars.json")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://test_hotbars.json"))
 
 	# титульный экран и выбор героев
 	var title: Node = load("res://scenes/title.tscn").instantiate()

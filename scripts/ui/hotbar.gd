@@ -3,10 +3,12 @@ extends RefCounted
 ## ставить — решает игрок (перетаскиванием). Новый навык или расходник сам встаёт в первую свободную ячейку; убранный с панели остаётся изученным
 ## и обратно сам не возвращается (его можно перетащить из листа героя). Раскладка — удобство этого компьютера:
 ## хранится в user://hotbars.json, на сервер не уходит. Подключается через preload (const Hotbar := preload(...)).
+## Тесты переставляют path на свой файл, чтобы не трогать раскладку игрока.
 
 const ROWS := 3
 const COLS := 10
-const PATH := "user://hotbars.json"
+
+static var path := "user://hotbars.json"
 
 static var _data: Dictionary = {}     # uid -> {"slots": [ROWS*COLS id или ""], "known": [id], "row": int}
 static var _loaded := false
@@ -16,8 +18,8 @@ static func _ensure() -> void:
 	if _loaded:
 		return
 	_loaded = true
-	if FileAccess.file_exists(PATH):
-		var f := FileAccess.open(PATH, FileAccess.READ)
+	if FileAccess.file_exists(path):
+		var f := FileAccess.open(path, FileAccess.READ)
 		if f != null:
 			var v: Variant = JSON.parse_string(f.get_as_text())
 			if typeof(v) == TYPE_DICTIONARY:
@@ -25,7 +27,7 @@ static func _ensure() -> void:
 
 
 static func _save() -> void:
-	var f := FileAccess.open(PATH, FileAccess.WRITE)
+	var f := FileAccess.open(path, FileAccess.WRITE)
 	if f != null:
 		f.store_string(JSON.stringify(_data))
 
