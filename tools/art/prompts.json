@@ -85,7 +85,8 @@
         0.75,
         1.35
       ],
-      "trim": true
+      "trim": true,
+      "pixel_colors": 32
     },
     "icon": {
       "size": [
@@ -467,12 +468,57 @@
       "trim": true
     },
     "house": {
-      "subject": "a small timber-framed village house with a dark thatched roof, dark weathered timber, rich warm colors",
+      "subject": "a small one-storey timber-framed cottage with a steep dark thatched roof, plain plastered walls with small shuttered windows, no door",
       "px": [
-        84,
-        84
+        176,
+        176
       ],
-      "kind": "building"
+      "kind": "building",
+      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
+    },
+    "house_b": {
+      "subject": "a long low one-storey peasant house with a thick thatched roof, whitewashed walls with dark timber beams and small shuttered windows, no door",
+      "px": [
+        192,
+        170
+      ],
+      "kind": "building",
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
+    },
+    "house_c": {
+      "subject": "a narrow two-storey timber-framed house with a tall steep front gable, carved window frames and wooden shutters, a small roofed porch, no door",
+      "px": [
+        176,
+        184
+      ],
+      "kind": "building",
+      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
+    },
+    "house_log": {
+      "subject": "a sturdy log cabin made of thick round logs with a mossy turf roof, small square windows with wooden shutters, no door",
+      "px": [
+        176,
+        170
+      ],
+      "kind": "building",
+      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse"
+    },
+    "barn": {
+      "subject": "a large plank barn with a high steep thatched roof and small square vents under the eaves, solid plank walls without doors",
+      "px": [
+        224,
+        200
+      ],
+      "kind": "building",
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "door, doorway, entrance, gate, open door, steps, stairs, fence, yard, garden, people, cart, horse, silo, tractor, hay bales"
     },
     "tavern": {
       "subject": "a single two-storey timber-framed tavern standing alone, thatched roof, a wooden sign board hanging over the door, a barrel by the wall",
