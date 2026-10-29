@@ -166,7 +166,7 @@ static func theme() -> Theme:
 # --- Рамки ----------------------------------------------------------------------
 # Окна, кнопки и ячейки рисуются кодом в небольшие картинки 9 ломтей: тёмный орех, латунная кайма, мягкая тень.
 # Края гладкие, середина повторяется без шва (узор дерева периодичен), поэтому окно любого размера выглядит одинаково.
-# Если поток картинок нарисовал images/ui_frame, images/ui_slot или images/ui_parchment, берутся они.
+# Если поток картинок нарисовал images/ui_slot или images/ui_parchment, берутся они; у images/ui_frame — только кайма.
 
 ## Расстояние от точки до края скруглённого прямоугольника w×h изнутри (отрицательное — снаружи).
 static func _inset(x: int, y: int, w: int, h: int, r: float) -> float:
@@ -193,10 +193,6 @@ static func frame(fill: Color, border: Color, outline: Color, inner: Color, alph
 	var key := "frame%s%s%s%s%s%d" % [fill, border, outline, inner, alpha, pad]
 	if _boxes.has(key):
 		return _boxes[key]
-	var art := _art_box("ui_frame", pad)
-	if art != null and alpha >= 0.99:
-		_boxes[key] = art
-		return art
 	var n := 48
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
 	var brass_hi := border.lightened(0.38)
@@ -224,9 +220,36 @@ static func frame(fill: Color, border: Color, outline: Color, inner: Color, alph
 				c.a *= d
 			img.set_pixel(x, y, c)
 	_corner_plates(img, n, border)
+	_art_border(img, "ui_frame", 11)
 	var sb := _smooth_box(img, 12, pad)
 	_boxes[key] = sb
 	return sb
+
+
+## Рисованная рамка (images/<id>, тот же размер, что у рамки кодом) поверх рамки кодом — только кайма шириной ring:
+## внутри у рисунка светлый пергамент, а светлый текст окон читается на тёмном дереве, поэтому середина остаётся своей.
+static func _art_border(img: Image, id: String, ring: int) -> void:
+	var fr := SpriteLibrary.frame("images", id)
+	if fr.is_empty():
+		return
+	var src := (fr["texture"] as Texture2D).get_image()
+	if src == null:
+		return
+	if src.is_compressed():
+		src.decompress()
+	var art := src.get_region(Rect2i(fr["region"]))
+	if art.get_size() != img.get_size():
+		art.resize(img.get_width(), img.get_height(), Image.INTERPOLATE_NEAREST)
+	art.convert(Image.FORMAT_RGBA8)
+	var w := img.get_width()
+	var h := img.get_height()
+	for y in h:
+		for x in w:
+			var d := mini(mini(x, y), mini(w - 1 - x, h - 1 - y))
+			if d < ring:
+				img.set_pixel(x, y, art.get_pixel(x, y))
+			elif d < ring + 3:
+				img.set_pixel(x, y, img.get_pixel(x, y).darkened(0.12 * float(ring + 3 - d)))   # тень под кромкой
 
 
 ## Латунные накладки на углах окна: уголок с заклёпкой.
