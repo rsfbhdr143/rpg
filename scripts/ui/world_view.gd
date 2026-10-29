@@ -73,6 +73,8 @@ var _over: Node2D
 var _glow: Node2D
 var _cells_img: Image
 var _cells_tex: ImageTexture
+var _deco_tex: ImageTexture   # рисунок на земле: тропы, мостовая, грядки, мост, камни брода (DECO)
+const DECO := {"path": 1, "square": 2, "field": 3, "bridge_x": 4, "bridge_y": 5, "stones": 6}
 var _hl_img: Image
 var _hl_tex: ImageTexture
 var _pal_tex: ImageTexture
@@ -249,6 +251,17 @@ func _setup_ground(data: Dictionary) -> void:
 	m.set_shader_parameter("speck", Color(str(style.get("speck", Color(a.r * 1.15, a.g * 1.4, a.b * 1.05).to_html(false)))))
 	bg_color = Color(str(style["bg"])) if style.has("bg") else a.darkened(0.8)
 	m.set_shader_parameter("outer_color", bg_color)
+	var deco_img := Image.create(grid_w, grid_h, false, Image.FORMAT_R8)
+	for dc in data.get("deco", []):
+		var dx := int(dc[0])
+		var dy := int(dc[1])
+		if dx >= 0 and dy >= 0 and dx < grid_w and dy < grid_h:
+			deco_img.set_pixel(dx, dy, Color(float(DECO.get(str(dc[2]), 0)) / 255.0, 0, 0))
+	_deco_tex = ImageTexture.create_from_image(deco_img)
+	m.set_shader_parameter("deco_tex", _deco_tex)
+	var path_cols: Array = style.get("path", ["6e5c3c", "62523a"])
+	m.set_shader_parameter("path_a", Color(str(path_cols[0])))
+	m.set_shader_parameter("path_b", Color(str(path_cols[1] if path_cols.size() > 1 else path_cols[0])))
 	# своя текстура пола из data/sprites.json (только если она задана именно для этой локации)
 	var tex: Texture2D = null
 	var locs: Dictionary = SpriteLibrary.bindings.get("locations", {})

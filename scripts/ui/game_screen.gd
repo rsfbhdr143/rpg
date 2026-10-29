@@ -745,7 +745,7 @@ func _reachable(u: Character) -> Dictionary:
 			continue
 		for dir in SurfaceGrid.DIRS:
 			var n: Vector2i = c + dir
-			if dist.has(n) or not cm.grid.is_walkable(n) or occ.has(n):
+			if dist.has(n) or not cm.grid.can_step(c, dir) or occ.has(n):
 				continue
 			dist[n] = d + 1
 			out[n] = true

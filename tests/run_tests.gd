@@ -17,7 +17,7 @@ func _init() -> void:
 		"test_auto_battle", "test_serialization", "test_session_commands",
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
-		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village", "test_join_combat",
+		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_corners", "test_village", "test_join_combat",
 		"test_physical_skills", "test_notice_board", "test_tooltips_text", "test_attack_villagers", "test_cleric_skills",
 		"test_loot", "test_equipment_slots", "test_trade",
 	]:
@@ -886,7 +886,7 @@ func test_walking() -> void:
 	var start_h := h.cell
 	var start_f := f.cell
 	GameEvents.clear()
-	var far := _free_neighbor(s, Vector2i(44, 31))
+	var far := _free_neighbor(s, Vector2i(39, 41))
 	check(_walk(s, h, far) == "" and h.cell == far, "партия дошла до площади")
 	var mv: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "move")
 	check(mv.size() == 1, "одно событие ходьбы")
@@ -929,6 +929,21 @@ func test_walking() -> void:
 		"чужая клетка в from просто не учитывается")
 
 
+func test_corners() -> void:
+	print("paths: no squeezing past wall corners, straight lines on screen")
+	var g := SurfaceGrid.new(6, 6)
+	g.blocked[Vector2i(2, 1)] = true
+	g.blocked[Vector2i(1, 2)] = true
+	var p := g.find_path(Vector2i(1, 1), Vector2i(2, 2))
+	check(p.is_empty() or p.size() > 1, "между двумя углами по диагонали не протиснуться")
+	g.blocked.erase(Vector2i(1, 2))
+	p = g.find_path(Vector2i(1, 1), Vector2i(2, 2))
+	check(p.size() == 2 and p[0] == Vector2i(1, 2), "мимо угла стены — в обход, а не срезая")
+	var open := SurfaceGrid.new(12, 12)
+	var straight := open.find_path(Vector2i(2, 5), Vector2i(7, 5))
+	check(straight.size() == 5 and straight.all(func(c): return (c as Vector2i).y == 5), "по прямой — прямо, без зигзага")
+
+
 func test_village() -> void:
 	print("village: every door reachable, houses differ, villagers out and about")
 	var s := _story_session()
@@ -967,6 +982,22 @@ func test_village() -> void:
 	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": talker.uid}) == "" and s.mode == "explore", "житель отвечает, не открывая разговор")
 	check(GameEvents.list.any(func(e): return str(e["type"]) == "bark" and str(e["unit"]) == talker.uid), "реплика жителя")
 	check(SurfaceGrid.distance(h.cell, talker.cell) <= 1, "герой подошёл к жителю")
+	var kinds := {}
+	for dc in s.location_data().get("deco", []):
+		kinds[str(dc[2])] = int(kinds.get(str(dc[2]), 0)) + 1
+	check(int(kinds.get("path", 0)) > 200 and kinds.has("square") and kinds.has("field"), "тропы, мостовая и огороды на земле")
+	check(kinds.has("bridge_x") and kinds.has("stones"), "через реку мост и брод по камням")
+	var bridge := Vector2i(-1, -1)
+	for dc in s.location_data().get("deco", []):
+		if str(dc[2]) == "bridge_x":
+			bridge = Vector2i(int(dc[0]), int(dc[1]))
+	check(s.grid.is_walkable(bridge) and s.grid.get_ground(bridge) == "none", "по мосту идут посуху")
+	var east: Dictionary = {}
+	for e in s.location_data()["exits"]:
+		if str(e["to"]) == "forest":
+			east = e
+	var way := s.grid.find_path(h.cell, _cell_of_any(east["cells"][0]))
+	check(way.any(func(c): return c == bridge or SurfaceGrid.distance(c, bridge) <= 1), "дорога в лес идёт через мост")
 
 
 func test_join_combat() -> void:
