@@ -4097,6 +4097,32 @@
      "loop": true
     }
    }
+  },
+  "image_ui_parchment": {
+   "sheet": "res://art/sprites/image_ui_parchment.png",
+   "kind": "image",
+   "frame": [
+    48,
+    48
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": false,
+   "source": [
+    "nano/images/image_ui_parchment.png"
+   ],
+   "scale": 0.1875,
+   "painted": true,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
   }
  }
 }

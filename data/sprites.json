@@ -121,6 +121,7 @@
     "images/intro_4",
     "images/notice_board",
     "images/title",
+    "images/ui_parchment",
     "items/gold",
     "items/letter",
     "items/potion",
@@ -389,7 +390,8 @@
     "intro_3": "image_intro_3",
     "intro_4": "image_intro_4",
     "title": "image_title",
-    "notice_board": "image_notice_board"
+    "notice_board": "image_notice_board",
+    "ui_parchment": "image_ui_parchment"
   },
   "items": {
     "gold": "item_gold",

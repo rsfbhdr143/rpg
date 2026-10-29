@@ -418,6 +418,25 @@ def icon_text(iid: str, prompts: dict) -> str:
     return NEW_SKILLS.get(iid) or NEW_STATUSES.get(iid) or ITEMS.get(iid) or iid.replace("_", " ")
 
 
+HOUSE_GROUPS = [
+    ["bld_tavern", "prop_well", "prop_notice_board"], ["bld_church", "prop_bell_tower", "bld_crypt"],
+    ["bld_smithy", "bld_barn", "bld_house_headman", "bld_house_korn"],
+    ["bld_house_fisher", "bld_house_shepherd", "bld_house_miller", "bld_house_brzezinski"],
+    ["bld_house_baker", "bld_vetla_hut", "bld_lodge", "bld_priest_house"],
+    ["bld_house_cooper", "bld_house_carpenter", "bld_house_chandler", "bld_house_boatman"],
+    ["bld_shed", "bld_house_healer", "bld_house_beekeeper", "bld_house_potter"],
+    ["bld_house_midwife", "bld_house_hunter", "bld_shaman_hut", "bld_house_weaver"],
+    ["bld_house_widow", "bld_house_shoemaker", "bld_house_tanner"],
+]
+
+
+def prop_text(pid: str, prompts: dict) -> str:
+    v = prompts["props"].get(pid)
+    if v:
+        return v if isinstance(v, str) else v.get("subject", pid)
+    return PROP_TEXT.get(pid) or icon_text(pid, prompts)
+
+
 # --- Листы ------------------------------------------------------------------------------------------------------
 
 def build_sheets(style_src: Path) -> None:
@@ -443,10 +462,14 @@ def build_sheets(style_src: Path) -> None:
     houses = buildings.scene_from_cells(maps, warn=False)
     src = ROOT / "art/inbox/buildings"
     ids = [buildings.sprite_id(b["id"]) for b in houses]
-    groups = [["bld_tavern", "prop_well", "prop_notice_board"], ["bld_church", "prop_bell_tower", "bld_crypt"]]
+    # Раскладка закреплена: листы h01–h09 уже ушли в Gemini, нарезка должна совпасть с ними.
+    # Новые дома, которых тут нет, идут листами после h09.
+    groups = [g[:] for g in HOUSE_GROUPS]
     rest = [i for i in ids if not any(i in g for g in groups)]
     rest.sort(key=lambda i: -Image.open(src / f"{i}.png").width)
     groups += [rest[j:j + 4] for j in range(0, len(rest), 4)]
+    groups = [[i for i in g if i in ids or i.startswith("prop_")] for g in groups]
+    groups = [g for g in groups if g]
     house_prompt = (
         "Image 1 is a sheet of isometric game buildings rendered as flat pixel art on a white background. "
         f"Repaint every building as a {STYLE}. {STYLE_NOTE} "
@@ -467,7 +490,8 @@ def build_sheets(style_src: Path) -> None:
 
     # 2. Мебель, деревья и предметы на земле: эталон — нынешняя картинка или новая форма из кода
     prop_ids = [k for k in sprites["props"] if not k.startswith("bld_") and k not in
-                ("bell_tower", "well", "notice_board", "lado_tracks", "fresh_grave")] + ["loot_bag"]
+                ("bell_tower", "well", "notice_board", "lado_tracks", "fresh_grave")]
+    prop_ids += [k for k in PROPS_CODE if k not in prop_ids]
     cell = (200, 200)
     pcells, pitems = [], []
     for pid in prop_ids:
@@ -492,7 +516,7 @@ def build_sheets(style_src: Path) -> None:
         sheet, rects = grid_sheet(part, 3, 40, WHITE)
         for it, r in zip(its, rects):
             it["rect"] = r
-        names = "; ".join(f"{k + 1}) {PROP_TEXT.get(it['pid']) or icon_text(it['pid'], prompts) if it['pid'] not in prompts['props'] else prompts['props'][it['pid']]}"
+        names = "; ".join(f"{k + 1}) {prop_text(it['pid'], prompts)}"
                           for k, it in enumerate(its))
         prompt = (f"Image 1 is a sheet of {len(its)} game props (left to right, top to bottom): {names}. "
                   f"Repaint each prop as a {STYLE}. {STYLE_NOTE} Keep each prop's silhouette, size, viewing angle "
@@ -585,22 +609,21 @@ def build_sheets(style_src: Path) -> None:
     d.rectangle([250, 60, 370, 180], fill=(60, 44, 30), outline=(150, 120, 70), width=6)
     add("s02", ui, [{"id": "image_ui_frame", "rect": [20, 20, 201, 201], "dir": "images", "mode": "square",
                      "art": {"id": "image_ui_frame", "bind": "images/ui_frame", "kind": "image", "painted": True,
-                             "max_side": 96, "crop": False}},
+                             "max_side": 48, "crop": False}},
                     {"id": "image_ui_slot", "rect": [250, 60, 371, 181], "dir": "images", "mode": "square",
                      "art": {"id": "image_ui_slot", "bind": "images/ui_slot", "kind": "image", "painted": True,
-                             "max_side": 64, "crop": False}}],
+                             "max_side": 24, "crop": False}}],
         f"Image 1 shows two interface pieces for a game menu. Repaint them in the style of image 2: left, a square window "
         "frame of dark walnut wood planks with brass corner plates and small brass nails, with a parchment panel inside; "
         "right, an empty inventory slot: a square recess of dark carved wood with a thin brass rim. Keep both exactly "
         "where they are, keep their straight edges and square shapes, perfectly symmetric, seen straight on (not "
         "isometric). Plain flat white background, no text.", batch=3)
-    doll = Image.new("RGB", (300, 420), (226, 208, 170))
-    doll_im = Image.new("RGBA", (300, 420), (226, 208, 170, 255))
-    fg = front_figure()
-    doll_im.alpha_composite(fg, (42, 80))
-    add("s03", doll_im.convert("RGB"), [{"id": "image_ui_paperdoll", "rect": [0, 0, 300, 420], "dir": "images",
+    doll_im = Image.new("RGBA", (328, 524), (226, 208, 170, 255))      # место в окне героя 164×262, вдвое крупнее
+    fg = front_figure().resize((259, 360), Image.LANCZOS)
+    doll_im.alpha_composite(fg, (35, 100))
+    add("s03", doll_im.convert("RGB"), [{"id": "image_ui_paperdoll", "rect": [0, 0, 328, 524], "dir": "images",
                                           "mode": "full", "art": {"id": "image_ui_paperdoll", "bind": "images/ui_paperdoll",
-                                                                  "kind": "image", "painted": True, "max_side": 420,
+                                                                  "kind": "image", "painted": True, "max_side": 524,
                                                                   "crop": False}}],
         "Image 1 is a rough layout for an RPG equipment screen. Repaint it as an old parchment page with a faint "
         "engraved outline of a standing human figure seen from the front (arms slightly away from the body), drawn in "
@@ -612,7 +635,7 @@ def build_sheets(style_src: Path) -> None:
     dest.mkdir(parents=True, exist_ok=True)
     parchment().save(dest / "image_ui_parchment.png")
     json.dump({"id": "image_ui_parchment", "bind": "images/ui_parchment", "kind": "image", "painted": True,
-               "crop": False, "max_side": 256}, open(dest / "image_ui_parchment.art.json", "w", encoding="utf-8"))
+               "crop": False, "max_side": 48}, open(dest / "image_ui_parchment.art.json", "w", encoding="utf-8"))
 
     json.dump(jobs, open(JOBS / "jobs.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump(layout, open(JOBS / "layout.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
