@@ -131,7 +131,7 @@ func _run() -> void:
 		var world_node: Node2D = screen.get("world")
 		var ps := int(screen.get("_pixel_scale"))
 		var wz := int(world_node.get("zoom"))
-		for i in 4:
+		for z in 4:   # не i: выше в _run уже есть var i
 			screen.call("_zoom_step", -1)
 		await _wait(0.8)
 		await _shot("15_village_far")
