@@ -93,7 +93,8 @@ static func has_sprite(category: String, id: String, location: String = "") -> b
 	return not binding(category, id, location).is_empty()
 
 
-## Кадр для рисования: {"texture", "region", "flip", "scale", "offset", "draw", "alpha", "pixels", "opaque"} или {}.
+## Кадр для рисования: {"texture", "region", "flip", "scale", "offset", "draw", "alpha", "pixels", "opaque", "painted",
+## "doors"} или {}.
 ##   anim   — idle, walk, attack, cast, hurt, death... Если анимации нет, берётся idle (кроме death).
 ##   facing — right/left/down/up: сначала ищется "<anim>_<facing>", для left/right подходит и отражённая.
 ##   time   — секунды от начала анимации; variant — номер варианта для клеток.
@@ -157,6 +158,8 @@ static func frame(category: String, id: String, anim: String = "idle", time: flo
 		"alpha": float(b.get("alpha", -1.0)),
 		"pixels": float(a.get("scale", 1.0)),   # во сколько раз импорт уменьшил кадр
 		"opaque": bool(a.get("opaque", false)),  # сплошная текстура без прозрачности
+		"painted": bool(a.get("painted", false)),  # рисованная картинка (портрет, значок): не пикселизовать, сглаживать
+		"doors": bool(a.get("doors", false)),      # у рисунка дома двери нарисованы в клетках "+" карты
 	}
 
 

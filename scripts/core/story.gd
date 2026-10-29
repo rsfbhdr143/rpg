@@ -288,7 +288,10 @@ static func visible_choices(s: GameSession) -> Array:
 		var chk: Dictionary = c.get("check", {})
 		if not chk.is_empty():
 			text = "[%s %d] %s" % [attribute_name(str(chk.get("attr", ""))), int(chk.get("min", 0)), text]
-		out.append({"index": i, "text": text})
+		var v := {"index": i, "text": text}
+		if c.has("page"):
+			v["page"] = int(c["page"])   # ответ-листок доски объявлений (DialogueBox.BoardLayer)
+		out.append(v)
 	return out
 
 

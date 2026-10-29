@@ -283,17 +283,49 @@ class CineLayer extends Control:
 
 
 ## Доска объявлений: картинка images/<board.image> (нет картинки — простая доска), на местах board.pages —
-## листки board.notes: текст, подпись, приписка другой рукой или размокшая бумажка. Читаемый листок
-## (поле page реплики) обведён, на остальных чернила бледнее. sign_align "left" — подпись слева (справа печать).
+## листки board.notes: текст, подпись, приписка другой рукой или размокшая бумажка. sign_align "left" — подпись
+## слева (справа печать). Листок с делом срывают кликом: у ответа реплики есть "page" с номером листка, клик по листку
+## выбирает этот ответ. Сорванный (флаг taken_flag) закрывается деревом доски (полоса board.wood_strip поверх
+## board.notes[i].paper), под гвоздём остаётся клочок.
 class BoardLayer extends Control:
 	const INK := Color("2b1d14")
 	var box: DialogueBox
+	var _rects: Array = []   # места листков на экране (для клика)
+	var _hover := -1
 
 	func _gui_input(event: InputEvent) -> void:
+		var mm := event as InputEventMouseMotion
+		if mm != null:
+			var h := _page_at(mm.position)
+			if _page_choice(h) < 0:
+				h = -1
+			if h != _hover:
+				_hover = h
+				mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if h >= 0 else Control.CURSOR_ARROW
+				queue_redraw()
 		var mb := event as InputEventMouseButton
 		if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
-			box.advance()
+			var choice := _page_choice(_page_at(mb.position))
+			if choice >= 0 and box.can_answer and box._shown >= box._total:
+				box._choose(choice)
+			else:
+				box.advance()
 			accept_event()
+
+	func _page_at(p: Vector2) -> int:
+		for i in _rects.size():
+			if (_rects[i] as Rect2).grow(8.0).has_point(p):
+				return i
+		return -1
+
+	## Ответ реплики, привязанный к листку i (сорвать его), или -1.
+	func _page_choice(i: int) -> int:
+		if i < 0:
+			return -1
+		for c in box.view.get("choices", []):
+			if int((c as Dictionary).get("page", -1)) == i:
+				return int((c as Dictionary).get("index", -1))
+		return -1
 
 	func _draw() -> void:
 		var b: Dictionary = box.view.get("board", {})
@@ -304,12 +336,16 @@ class BoardLayer extends Control:
 		var k := maxf(1.0, floorf(minf((size.x - 40.0) / src.x, (top_h - 10.0) / src.y) * 4.0) / 4.0)
 		var area := Rect2(((Vector2(size.x, top_h) - src * k) * 0.5).floor(), src * k)
 		var pages: Array = b.get("pages", [])
+		var notes: Array = b.get("notes", [])
+		var flags: Dictionary = Net.session.flags if Net.session != null else {}
 		var fr := SpriteLibrary.frame("images", str(b.get("image", "")))
 		if fr.is_empty():
 			draw_rect(area, Color("5a3c24"))
 			draw_rect(area, Color("2a1a10"), false, 3.0)
-			for pr in pages:
-				draw_rect(_at(pr, area, k).grow(7.0 * k), Color("e8dcc0"))
+			for i in pages.size():
+				var nt: Dictionary = notes[i] if i < notes.size() else {}
+				if not flags.has(str(nt.get("taken_flag", "-"))):
+					draw_rect(_at(pages[i], area, k).grow(7.0 * k), Color("e8dcc0"))
 		else:
 			draw_texture_rect_region(fr["texture"], area, fr["region"])
 		if b.has("title_rect"):
@@ -319,17 +355,52 @@ class BoardLayer extends Control:
 			var title := str(b.get("title", ""))
 			draw_string(UiTheme.font("bold"), base + Vector2(1, 1), title, HORIZONTAL_ALIGNMENT_CENTER, tr.size.x, fs, Color("1a0f08"))
 			draw_string(UiTheme.font("bold"), base, title, HORIZONTAL_ALIGNMENT_CENTER, tr.size.x, fs, Color("f0dcb0"))
-		var notes: Array = b.get("notes", [])
 		var cur := int(box.view.get("page", -1))
+		_rects.clear()
 		for i in pages.size():
 			var r := _at(pages[i], area, k)
+			_rects.append(r)
 			var note: Dictionary = notes[i] if i < notes.size() else {}
+			if flags.has(str(note.get("taken_flag", "-"))):
+				_torn(fr, b, note, area, k)
+				continue
 			if bool(note.get("soaked", false)):
 				_soaked(r, k)
 			else:
 				_note(r, note, k, INK if cur < 0 or cur == i else Color(INK, 0.38))
+			if i == _hover:
+				draw_rect(r.grow(9.0 * k), Color(UiTheme.GOLD, 0.95), false, 3.0)
+				draw_string(UiTheme.font("bold"), Vector2(r.position.x, r.end.y + 9.0 * k + 18.0), "Сорвать",
+					HORIZONTAL_ALIGNMENT_CENTER, r.size.x, 16, UiTheme.GOLD)
 		if cur >= 0 and cur < pages.size():
 			draw_rect(_at(pages[cur], area, k).grow(9.0 * k), Color(UiTheme.GOLD, 0.9), false, 2.0)
+
+	## Листок сорван: место под ним — дерево доски, под гвоздём клочок бумаги.
+	func _torn(fr: Dictionary, b: Dictionary, note: Dictionary, area: Rect2, k: float) -> void:
+		var pa: Array = note.get("paper", [])
+		if pa.size() < 4:
+			return
+		var paper := _at(pa, area, k)
+		var strip: Array = b.get("wood_strip", [])
+		if not fr.is_empty() and strip.size() >= 2:
+			var reg: Rect2 = fr["region"]
+			var sy := float(strip[0])
+			var sh := float(strip[1])
+			var y := 0.0
+			while y < float(pa[3]):
+				var h := minf(sh, float(pa[3]) - y)
+				var src := Rect2(reg.position + Vector2(float(pa[0]), sy), Vector2(float(pa[2]), h))
+				draw_texture_rect_region(fr["texture"], Rect2(paper.position + Vector2(0, y * k), Vector2(paper.size.x, h * k)), src)
+				y += sh
+		else:
+			draw_rect(paper, Color("5a3c24"))
+		var pin := paper.position + Vector2(paper.size.x * 0.48, 5.0 * k)
+		var scrap := PackedVector2Array([pin + Vector2(-9, -4) * k, pin + Vector2(8, -5) * k, pin + Vector2(6, 3) * k,
+			pin + Vector2(1, 9) * k, pin + Vector2(-3, 4) * k, pin + Vector2(-8, 7) * k])
+		draw_colored_polygon(scrap, Color("e2d4b4"))
+		draw_polyline(scrap + PackedVector2Array([scrap[0]]), Color("8a7a5a"), 1.0)
+		draw_circle(pin, 2.5 * k, Color("a02a20"))
+		draw_circle(pin + Vector2(-0.6, -0.6) * k, 1.0 * k, Color("e86a5a"))
 
 	func _at(v: Variant, area: Rect2, k: float) -> Rect2:
 		var a: Array = v

@@ -1057,7 +1057,7 @@ func test_physical_skills() -> void:
 
 
 func test_notice_board() -> void:
-	print("notice board: a drawn board with pages, not plain text")
+	print("notice board: a drawn board with notes; a quest is taken by tearing its note off")
 	var s := _story_session()
 	check(s.start_dialogue("notice_board", 1), "доска открылась")
 	var v := Story.view(s)
@@ -1065,10 +1065,13 @@ func test_notice_board() -> void:
 	check(str(v["style"]) == "board" and not board.is_empty(), "стиль доски и её описание приходят в интерфейс")
 	check((board.get("pages", []) as Array).size() == (board.get("notes", []) as Array).size(), "на каждом месте доски свой листок")
 	check(SpriteLibrary.frame("images", str(board.get("image", ""))).size() > 0, "картинка доски есть")
-	var seen := []
-	while s.mode == "dialogue":
-		seen.append(int(Story.view(s).get("page", -1)))
-		s.submit(1, {"type": "dialogue_next"})
-	check(seen.has(0) and seen.has(1) and seen.has(2), "листки читаются по очереди: %s" % str(seen))
-	check(s.quests.get("goat_zaraza", "") == "active", "объявление о козе даёт задание")
-
+	check(not str(v["text"]).contains("Зараза"), "текст объявлений не повторяется в окне реплики")
+	var tear: Array = (v["choices"] as Array).filter(func(c): return int((c as Dictionary).get("page", -1)) == 0)
+	check(tear.size() == 1, "объявление о козе можно сорвать (ответ привязан к листку)")
+	s.submit(1, {"type": "dialogue_choice", "index": int(tear[0]["index"])})
+	check(s.quests.get("goat_zaraza", "") == "active" and s.flags.has("note_goat_taken"), "сорванное объявление даёт задание")
+	s.submit(1, {"type": "dialogue_next"})
+	var left: Array = Story.view(s).get("choices", [])
+	check(left.all(func(c): return int((c as Dictionary).get("page", -1)) != 0), "второй раз не сорвать")
+	s.submit(1, {"type": "dialogue_choice", "index": int(left[-1]["index"])})
+	check(s.mode == "explore", "отошли от доски")

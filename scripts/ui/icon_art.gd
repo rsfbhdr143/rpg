@@ -423,14 +423,41 @@ static func draw_glyph(ci: CanvasItem, glyph: String, rect: Rect2, color: Color,
 
 
 ## Картинка из data/sprites.json, если есть. Возвращает true, если нарисовала.
+## Рисованный значок (painted) уменьшается заранее с хорошим сглаживанием до размера ячейки: на экране он чёткий,
+## без пикселизации и без мыла.
 static func _sprite(ci: CanvasItem, category: String, id: String, rect: Rect2, dim: bool) -> bool:
 	var fr := SpriteLibrary.frame(category, id)
 	if fr.is_empty():
 		return false
 	var mod := Color(0.5, 0.5, 0.5, 0.8) if dim else Color.WHITE
 	var tex: Texture2D = fr["texture"]
+	if bool(fr.get("painted", false)):
+		var sm := _smooth(tex, fr["region"], Vector2i(rect.size.round()))
+		if sm != null:
+			ci.draw_texture_rect(sm, rect, false, mod)
+			return true
 	ci.draw_texture_rect_region(tex, rect, fr["region"], mod)
 	return true
+
+
+## Кусок src картинки, уменьшенный (Lanczos) ровно до size пикселей; кэшируется.
+static func _smooth(tex: Texture2D, src: Rect2, size: Vector2i) -> Texture2D:
+	if size.x < 1 or size.y < 1:
+		return null
+	var key := "s|%d|%s|%s" % [tex.get_instance_id(), src, size]
+	if _pix_cache.has(key):
+		return _pix_cache[key]
+	var img := tex.get_image()
+	if img == null:
+		return null
+	if img.is_compressed():
+		img.decompress()
+	img = img.get_region(Rect2i(src))
+	img.convert(Image.FORMAT_RGBA8)
+	img.resize(size.x, size.y, Image.INTERPOLATE_LANCZOS)
+	var out := ImageTexture.create_from_image(img)
+	_pix_cache[key] = out
+	return out
 
 
 static func skill_icon(ci: CanvasItem, skill_id: String, rect: Rect2, dim := false) -> void:
@@ -485,6 +512,11 @@ static func portrait(ci: CanvasItem, id: String, rect: Rect2, t := 0.0, dead := 
 			src = Rect2(region.position.x + (region.size.x - side) * 0.5, region.position.y, side, side)
 	if not fr.is_empty():
 		ci.draw_rect(rect, Color("221a14"))
+		if bool(fr.get("painted", false)):   # рисованный портрет: чёткий, без крупных пикселей
+			var sm := _smooth(fr["texture"], src, Vector2i(rect.size.round()))
+			if sm != null:
+				ci.draw_texture_rect(sm, rect, false, mod)
+				return
 		var px := clampi(roundi(minf(rect.size.x, rect.size.y) / 3.0), 20, 48)
 		var tex := _pixelated(fr["texture"], src, px)
 		if tex != null:
