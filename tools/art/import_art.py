@@ -784,6 +784,9 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             assets.append(asset)
             log("  %s: %s, %s" % (rel, asset.kind, describe(asset)))
 
+    # перерисовка из Gemini (inbox/nano, tools/art/nano.py) заменяет одноимённую картинку: та остаётся эталоном
+    redrawn = {a.id for a in assets if str(a.sources[0]).startswith("nano/")}
+    assets = [a for a in assets if a.id not in redrawn or str(a.sources[0]).startswith("nano/")]
     # одинаковые имена в разных папках: добавляем имя папки, потом номер
     taken: set[str] = set()
     for a in assets:

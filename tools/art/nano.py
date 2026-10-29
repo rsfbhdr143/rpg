@@ -9,8 +9,9 @@
   3. `python tools/art/nano.py cut` — режет ответы обратно на картинки по раскладке (art/nano/jobs/layout.json),
      убирает фон и кладёт во входящие art/inbox/nano/ вместе с подсказками *.art.json. Дальше — import_art.py.
 
-Дом из Gemini встаёт на карту, потому что лист — это те же картинки домов из кода: тот же холст, те же двери и окна;
-Gemini меняет только рисунок, а вырезается ровно прямоугольник исходной картинки.
+Дом из Gemini встаёт на карту, потому что лист — это те же картинки домов из кода: тот же холст, те же двери и окна.
+Gemini при этом меняет размер листа и сдвигает предметы, поэтому нарезка ищет каждый предмет по пятну на фоне
+и ставит его на холст из кода по ширине и низу (дома) или по ступням с общим для листа масштабом (персонажи).
 """
 from __future__ import annotations
 
@@ -681,6 +682,82 @@ def cutout(piece: Image.Image, bg) -> Image.Image:
     return Image.fromarray(np.dstack([rgb, (fg * 255).astype(np.uint8)]), "RGBA")
 
 
+KEEP_ANIMATED = ("prop_cauldron", "prop_oven")   # у них огонь в несколько кадров: одна картинка из Gemini хуже
+
+
+def find_items(out: Image.Image, info: dict) -> tuple[list[dict], float]:
+    """Где на ответе Gemini каждая картинка листа. Gemini меняет размер и пропорции листа, сдвигает и по-разному
+    масштабирует предметы, поэтому ищем их по пятнам на фоне, а не по прямоугольникам раскладки.
+    Возвращает по предмету {"exp": рамка на листе, "box": рамка на ответе или None, "mask": его пятна}
+    и общий масштаб листа (пикселей ответа на пиксель листа)."""
+    from scipy import ndimage
+    k, bg = info["k"], info["bg"]
+    sheet = Image.open(JOBS / f"{info['job']}.png").convert("RGB")
+    fs = ~bg_mask(np.asarray(sheet), bg)
+    found = []
+    for it in info["items"]:
+        x0, y0, x1, y1 = (v * k for v in it["rect"])
+        ys, xs = np.nonzero(fs[y0:y1, x0:x1])
+        found.append({"exp": (x0 + xs.min(), y0 + ys.min(), x0 + xs.max() + 1, y0 + ys.max() + 1) if len(xs)
+                      else (x0, y0, x1, y1), "box": None, "mask": None})
+    a = np.asarray(out)
+    fo = ndimage.binary_opening(~bg_mask(a, bg), iterations=4)        # дымок, волоски и шум отпадают
+    lab, n = ndimage.label(fo)
+    side = min(out.size)
+    comps = []
+    for i, sl in enumerate(ndimage.find_objects(lab), 1):
+        w, h = sl[1].stop - sl[1].start, sl[0].stop - sl[0].start
+        edge = sl[0].start == 0 or sl[1].start == 0 or sl[0].stop == out.height or sl[1].stop == out.width
+        area = int((lab[sl] == i).sum())
+        if area < 0.0004 * fo.size or min(w, h) < 0.006 * side or (edge and min(w, h) < 0.03 * side):
+            continue                                                  # крошки и полоски по краю картинки
+        comps.append((i, (sl[1].start, sl[0].start, sl[1].stop, sl[0].stop)))
+    if not comps:
+        return found, out.width / sheet.width
+    exp = np.array([f["exp"] for f in found], float)
+    eu = exp[:, 0].min(), exp[:, 1].min(), exp[:, 2].max(), exp[:, 3].max()
+    ob = np.array([b for _, b in comps], float)
+    ou = ob[:, 0].min(), ob[:, 1].min(), ob[:, 2].max(), ob[:, 3].max()
+    gx, gy = (ou[2] - ou[0]) / (eu[2] - eu[0]), (ou[3] - ou[1]) / (eu[3] - eu[1])
+    mapped = [((e[0] - eu[0]) * gx + ou[0], (e[1] - eu[1]) * gy + ou[1],
+               (e[2] - eu[0]) * gx + ou[0], (e[3] - eu[1]) * gy + ou[1]) for e in exp]
+    groups: dict[int, list] = {}
+    for i, b in comps:                                                # пятно — ближайшему предмету
+        cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+        d = [max(m[0] - cx, 0, cx - m[2]) ** 2 + max(m[1] - cy, 0, cy - m[3]) ** 2 for m in mapped]
+        groups.setdefault(int(np.argmin(d)), []).append((i, b))
+    for j, f in enumerate(found):
+        g = groups.get(j)
+        if not g:
+            continue
+        bs = np.array([b for _, b in g])
+        f["box"] = (int(bs[:, 0].min()), int(bs[:, 1].min()), int(bs[:, 2].max()), int(bs[:, 3].max()))
+        f["mask"] = ndimage.binary_dilation(np.isin(lab, [i for i, _ in g]), iterations=10)
+    sc = [((f["box"][2] - f["box"][0]) / (f["exp"][2] - f["exp"][0]) +
+           (f["box"][3] - f["box"][1]) / (f["exp"][3] - f["exp"][1])) / 2 for f in found if f["box"]]
+    return found, float(np.median(sc)) if sc else (gx + gy) / 2
+
+
+def crop_bg(out: Image.Image, box, bg) -> Image.Image:
+    """Кусок ответа; то, что вылезает за края картинки, заливается фоном."""
+    x0, y0, x1, y1 = (round(v) for v in box)
+    piece = Image.new("RGB", (max(1, x1 - x0), max(1, y1 - y0)), tuple(bg))
+    piece.paste(out.crop((max(0, x0), max(0, y0), min(out.width, x1), min(out.height, y1))), (max(0, -x0), max(0, -y0)))
+    return piece
+
+
+def masked_cutout(out: Image.Image, box, bg, mask) -> Image.Image:
+    """Вырезка с фоном прочь; соседние предметы, залезшие в рамку, отрезаются по пятнам этого предмета."""
+    piece = cutout(crop_bg(out, box, bg), bg)
+    if mask is None:
+        return piece
+    m = Image.fromarray((mask * 255).astype(np.uint8))
+    m = crop_bg(m.convert("RGB"), box, (0, 0, 0)).convert("L")
+    a = np.asarray(piece).copy()
+    a[..., 3] = np.minimum(a[..., 3], np.asarray(m))
+    return Image.fromarray(a, "RGBA")
+
+
 def cut(only: list[str] | None = None) -> None:
     layout = json.load(open(JOBS / "layout.json", encoding="utf-8"))
     report = []
@@ -691,40 +768,102 @@ def cut(only: list[str] | None = None) -> None:
         if src is None:
             continue
         out = Image.open(src).convert("RGB")
+        info = {**info, "job": job}
+        k, bg = info["k"], info["bg"]
         bw, bh = info["base"]
-        sx, sy = out.width / bw, out.height / bh
-        if abs(sx / sy - 1) > 0.04:
-            report.append(f"{job}: пропорции листа изменились ({sx:.2f} × {sy:.2f}), режу по каждой оси отдельно")
-        for it in info["items"]:
-            x0, y0, x1, y1 = it["rect"]
-            pad = 0.0 if it["mode"] in ("house", "unit", "full") else 0.02
-            if it["mode"] == "square":
-                inset = round((x1 - x0) * 0.025)
-                x0, y0, x1, y1 = x0 + inset, y0 + inset, x1 - inset, y1 - inset
-            box = (round(x0 * sx), round(y0 * sy), round(x1 * sx), round(y1 * sy))
-            piece = out.crop(box)
-            if it["mode"] in ("house", "unit", "cut"):
-                piece = cutout(piece, info["bg"])
-                if it["mode"] == "house":
-                    piece = match_house(piece, it)
+        if info["items"][0]["mode"] == "full":
+            found, g = [{"box": (0, 0, out.width, out.height), "mask": None}], 1.0
+        else:
+            found, g = find_items(out, info)
+        lost = [it["id"] for it, f in zip(info["items"], found) if not f["box"]]
+        if lost:
+            report.append(f"{job}: не нашёл {', '.join(lost)} — режу по раскладке")
+        if info["items"][0]["mode"] == "unit":                      # один масштаб на лист: рост как у манекенов
+            hs = [(f["box"][3] - f["box"][1]) / (f["exp"][3] - f["exp"][1]) for f in found if f["box"]]
+            g = float(np.median(hs)) if hs else g
+        for it, f in zip(info["items"], found):
+            if it["id"] in KEEP_ANIMATED:
+                continue
+            box = f["box"]
+            if box is None:                                           # запасной путь: прямоугольник раскладки
+                sx, sy = out.width / bw, out.height / bh
+                x0, y0, x1, y1 = it["rect"]
+                box = (x0 * sx, y0 * sy, x1 * sx, y1 * sy)
+            art = dict(it["art"])
+            mode = it["mode"]
+            if mode == "house":
+                piece, art = place_house(out, box, f["mask"], it, art, bg)
+            elif mode == "unit":
+                piece = place_unit(out, box, f, it, k, g, bg)
+            elif mode == "cut":
+                m = round(0.03 * max(box[2] - box[0], box[3] - box[1]))
+                piece = masked_cutout(out, (box[0] - m, box[1] - m, box[2] + m, box[3] + m), bg, f["mask"])
+                if f["box"] and art.get("pixel_box"):                 # Gemini мог поменять пропорции предмета
+                    ew, eh = f["exp"][2] - f["exp"][0], f["exp"][3] - f["exp"][1]
+                    r = min(art["pixel_box"][0] / ew, art["pixel_box"][1] / eh) / g
+                    nw, nh = (box[2] - box[0]) * r, (box[3] - box[1]) * r
+                    lim = 1.6 * max(art["pixel_box"]) / max(nw, nh)
+                    if lim < 1:
+                        nw, nh = nw * lim, nh * lim
+                    art["pixel_box"] = [max(4, round(nw)), max(4, round(nh))]
+            elif mode == "square":
+                cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+                half = max(box[2] - box[0], box[3] - box[1]) / 2 * 0.975
+                piece = crop_bg(out, (cx - half, cy - half, cx + half, cy + half), bg)
+            else:
+                piece = out.crop(tuple(round(v) for v in box)).resize(
+                    (round(bw / max(bw, bh) * max(out.size)), round(bh / max(bw, bh) * max(out.size))), Image.LANCZOS)
+            if mode in ("house", "unit", "cut"):                      # в игре они мельче: хранить с запасом
+                big = max(256, 2 * max(art.get("pixel_box") or [256]))
+                if max(piece.size) > big:
+                    piece = fit(piece, (big, big))
             dest = INBOX / it["dir"]
             dest.mkdir(parents=True, exist_ok=True)
-            piece.save(dest / f"{it['id']}.png")
-            json.dump(it["art"], open(dest / f"{it['id']}.art.json", "w", encoding="utf-8"), ensure_ascii=False)
+            piece.save(dest / f"{it['id']}.png", optimize=True)
+            json.dump(art, open(dest / f"{it['id']}.art.json", "w", encoding="utf-8"), ensure_ascii=False)
         report.append(f"{job}: {len(info['items'])} шт.")
     print("\n".join(report))
 
 
-def match_house(piece: Image.Image, it: dict) -> Image.Image:
-    """Дом из Gemini против дома из кода: совпадение силуэта (если сильно разошлось — предупреждение)."""
+def place_house(out: Image.Image, box, mask, it: dict, art: dict, bg) -> tuple[Image.Image, dict]:
+    """Дом на холст из кода: ширина и низ как у дома из кода (там основание и двери), значит дом встаёт на свои
+    клетки. Если Gemini сделал дом выше, холст растёт вверх; pixel_box — новый размер холста в пикселях игры."""
     ref = Image.open(ROOT / "art/inbox/buildings" / f"{it['id']}.png").convert("RGBA")
-    small = piece.resize(ref.size, Image.BOX)
+    cw, ch = ref.size
+    rx0, ry0, rx1, ry1 = ref.getbbox()
+    s = (box[2] - box[0]) / (rx1 - rx0)                              # пикселей ответа на пиксель игры
+    left, bottom = box[0] - rx0 * s, box[3] + (ch - ry1) * s
+    top = min(bottom - ch * s, box[1] - 2 * s)
+    piece = masked_cutout(out, (left, top, left + cw * s, bottom), bg, mask)
+    h = max(ch, round((bottom - top) / s))
+    art["pixel_box"] = [cw, h]
+    small = piece.resize((cw, h), Image.BOX)
+    canvas = Image.new("RGBA", (cw, h))
+    canvas.paste(ref, (0, h - ch))
     a = np.asarray(small)[..., 3] > 127
-    b = np.asarray(ref)[..., 3] > 0
+    b = np.asarray(canvas)[..., 3] > 0
     iou = float((a & b).sum() / max(1, (a | b).sum()))
-    if iou < 0.95:
-        print(f"  ! {it['id']}: силуэт совпал только на {iou:.0%}")
-    return piece
+    aspect = ((box[3] - box[1]) / (box[2] - box[0])) / ((ry1 - ry0) / (rx1 - rx0))
+    if iou < 0.9 or abs(aspect - 1) > 0.08:
+        print(f"  ! {it['id']}: силуэт {iou:.0%}, высота к ширине {aspect:.2f} от дома из кода")
+    return piece, art
+
+
+def place_unit(out: Image.Image, box, f: dict, it: dict, k: int, g: float, bg) -> Image.Image:
+    """Фигура на холст манекена: ступни туда же, где у манекена, масштаб общий для листа — все одного роста."""
+    x0, y0, x1, y1 = (v * k for v in it["rect"])
+    e = f.get("exp") or (x0, y0, x1, y1)
+
+    def feet_x(mask, b):
+        band = mask[max(0, int(b[3] - 0.06 * (b[3] - b[1]))):int(b[3]), int(b[0]):int(b[2])]
+        xs = np.nonzero(band)[1]
+        return b[0] + xs.mean() if len(xs) else (b[0] + b[2]) / 2
+
+    ex = (e[0] + e[2]) / 2                                          # манекен симметричен: ступни посередине
+    fx = feet_x(f.get("mask"), box) if f.get("box") else (box[0] + box[2]) / 2
+    left = fx - (ex - x0) * g
+    top = box[3] - (e[3] - y0) * g
+    return masked_cutout(out, (left, top, left + (x1 - x0) * g, top + (y1 - y0) * g), bg, f.get("mask"))
 
 
 def main() -> None:

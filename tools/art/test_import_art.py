@@ -302,6 +302,14 @@ class ImportTest(unittest.TestCase):
         res = self.run_import()
         self.assertEqual(sorted(res["catalog"]["wolf"]["animations"]), ["idle_left", "idle_right"])
 
+    def test_nano_redraw_replaces_same_id(self):
+        self.put("furniture/prop_chest.png", figure((40, 40)))
+        self.put("nano/props/prop_chest.png", figure((40, 40), color=(40, 60, 200, 255)))
+        res = self.run_import()
+        chests = [k for k in res["catalog"] if "chest" in k]
+        self.assertEqual(chests, ["prop_chest"])
+        self.assertEqual(res["catalog"]["prop_chest"]["source"], ["nano/props/prop_chest.png"])
+
     def test_names(self):
         n = import_art.parse_name("femaleAdventurer_walk3")
         self.assertEqual((n.base, n.anim, n.number), (["female", "adventurer"], "walk", 3))

@@ -203,6 +203,7 @@
     "props/herbs",
     "props/lado_tracks",
     "props/loom",
+    "props/loot_bag",
     "props/notice_board",
     "props/open_grave",
     "props/oven",
@@ -380,7 +381,8 @@
     "pots": "prop_pots",
     "rack": "prop_rack",
     "sacks": "prop_sacks",
-    "workbench": "prop_workbench"
+    "workbench": "prop_workbench",
+    "loot_bag": "prop_loot_bag"
   },
   "images": {
     "epilogue": "image_epilogue",
