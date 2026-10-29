@@ -15,6 +15,7 @@ var height: int
 var blocked: Dictionary = {}                  # Vector2i -> true (стены, препятствия)
 var layers: Dictionary = {"ground": {}, "cloud": {}}   # layer -> {Vector2i -> {"id","turns","level"}}
 var traps: Dictionary = {}                    # Vector2i -> {"type", "state": hidden|found|disarmed|sprung, "rolled": {uid: true}}
+var deep: Dictionary = {}                     # Vector2i -> id поверхности земли на непроходимой клетке карты (река): видна, но не меняется
 
 
 func _init(w: int = 12, h: int = 10) -> void:
@@ -121,6 +122,8 @@ func get_surface(layer: String, c: Vector2i) -> String:
 	var d: Dictionary = layers[layer]
 	if d.has(c):
 		return str(d[c]["id"])
+	if layer == "ground" and deep.has(c):
+		return str(deep[c])
 	return "none"
 
 
@@ -215,7 +218,7 @@ func flood_fill(layer: String, start: Vector2i, surface_id: String) -> Array:
 		out.append(cur)
 		for d in DIRS:
 			var n: Vector2i = cur + d
-			if not seen.has(n) and get_surface(layer, n) == surface_id:
+			if not seen.has(n) and not deep.has(n) and get_surface(layer, n) == surface_id:   # по руслу реки ток не уходит
 				seen[n] = true
 				queue.append(n)
 	return out
@@ -278,7 +281,10 @@ func to_dict() -> Dictionary:
 	for c in traps:
 		var t: Dictionary = traps[c]
 		trap_list.append([c.x, c.y, t["type"], t["state"], (t.get("rolled", {}) as Dictionary).keys()])
-	return {"w": width, "h": height, "blocked": walls, "layers": out_layers, "traps": trap_list}
+	var deep_list: Array = []
+	for c in deep:
+		deep_list.append([c.x, c.y, deep[c]])
+	return {"w": width, "h": height, "blocked": walls, "layers": out_layers, "traps": trap_list, "deep": deep_list}
 
 
 static func from_dict(d: Dictionary) -> SurfaceGrid:
@@ -292,6 +298,9 @@ static func from_dict(d: Dictionary) -> SurfaceGrid:
 		var target: Dictionary = g.layers[layer]
 		for e in entries:
 			target[Vector2i(int(e[0]), int(e[1]))] = {"id": str(e[2]), "turns": int(e[3]), "level": int(e[4])}
+	var deep_list: Array = d.get("deep", [])
+	for e in deep_list:
+		g.deep[Vector2i(int(e[0]), int(e[1]))] = str(e[2])
 	var trap_list: Array = d.get("traps", [])
 	for e in trap_list:
 		var rolled := {}

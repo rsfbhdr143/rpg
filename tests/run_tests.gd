@@ -948,6 +948,14 @@ func test_village() -> void:
 	print("village: every door reachable, houses differ, villagers out and about")
 	var s := _story_session()
 	var h: Character = s.heroes[0]
+	var river := 0
+	for c in s.grid.deep:
+		if s.grid.get_ground(c) == "water" and s.grid.blocked.has(c):
+			river += 1
+	check(river > 100, "русло реки — вода, её видно, хоть по ней и не пройти (%d клеток)" % river)
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(mirror.grid.deep.size() == s.grid.deep.size(), "клиент видит реку")
 	var bad: Array = []
 	var sizes := {}
 	for b in s.location_data().get("buildings", []):
@@ -1219,7 +1227,7 @@ func test_cleric_skills() -> void:
 
 
 func test_loot() -> void:
-	print("loot: bodies leave bags, take items, leftovers are collected when the story moves on")
+	print("loot: bodies leave bags, take items by hand, leftovers stay on the bodies")
 	check(GameData.loot_table("boss_mukhoglot").any(func(r): return str((r as Dictionary).get("item", "")) == "mukhoglot_mask"), "Мухоглот роняет маску")
 	check(not GameData.loot_table("someone", true).is_empty(), "у жителей без своей записи есть общая добыча")
 	var s := _story_session("forest")
@@ -1252,10 +1260,11 @@ func test_loot() -> void:
 	m.load_snapshot(snap)
 	check(m.loot.size() == s.loot.size(), "добыча видна клиенту")
 	var left := s.loot.size()
+	var items_before := s.items.duplicate()
 	s.mode = "explore"
 	s.goto_location("village", "from_forest")
 	var forest_loot: Dictionary = s._locations["forest"]["loot"]
-	check(left == 0 or forest_loot.is_empty(), "уходя по сюжету, отряд забирает остальное")
+	check(forest_loot.size() == left and s.items == items_before, "уходя по сюжету, сами ничего не берут: тела ждут обыска")
 
 
 func test_equipment_slots() -> void:

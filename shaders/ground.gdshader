@@ -65,6 +65,22 @@ vec3 dither_mix(vec3 a, vec3 b, float k, float d) {
 	return k > d ? b : a;
 }
 
+// Текстура пола без видимого повтора: пол разбит на неровные пятна по паре клеток, каждое берёт плитку
+// со своим сдвигом, а большие пятна чуть светлее или темнее. Иначе плитка 3×3 клетки складывается в сетку квадратов.
+// Крупные пятна из самой плитки заранее убраны (WorldView._flat_floor), в ней осталась только мелкая фактура.
+vec3 floor_sample(vec2 p, vec2 g, float d) {
+	vec2 wob = vec2(noise(p / 37.0 + vec2(0.13, 0.4)), noise(p / 37.0 + vec2(0.61, 0.17))) - 0.5;
+	vec2 spot = floor(g / 2.0 + wob * 0.9);
+	vec2 shift = vec2(hash(spot), hash(spot + vec2(17.0, 3.0)));
+	vec2 uv = fract(g / floor_tex_cells + shift);
+	vec3 col = texture(floor_tex, uv).rgb;
+	// два шума разного масштаба: их сумма не повторяется на экране
+	float big = noise(p / 233.0 + vec2(0.3, 0.8)) * 0.6 + noise(p / 97.0 + vec2(0.41, 0.13)) * 0.4 + (d - 0.5) * 0.2;
+	if (big < 0.4) col *= 0.93;
+	else if (big > 0.62) col *= 1.05;
+	return col;
+}
+
 vec3 surface_color(int s, vec2 p, float d, float t, vec3 base) {
 	vec4 pal = texelFetch(surf_pal, ivec2(s, 0), 0);
 	int kind = int(pal.a * 255.0 + 0.5);
@@ -110,7 +126,7 @@ vec3 map_color(vec2 p, vec2 g, ivec2 c, float d) {
 	float big = noise(p / 190.0);
 	float fine = noise(p / 27.0 + vec2(0.5, 0.2));
 	if (use_floor_tex) {
-		col = texture(floor_tex, g / floor_tex_cells).rgb;
+		col = floor_sample(p, g, d);
 		col = dither_mix(col * 0.92, col, fine + (d - 0.5) * 0.3, 0.45);
 	} else {
 		float v = big * 0.7 + fine * 0.3 + (d - 0.5) * 0.16;
@@ -235,7 +251,7 @@ void fragment() {
 		float k = clamp(max(out_d.x, out_d.y) / 6.0, 0.0, 1.0);
 		float n0 = noise(p / 27.0 + vec2(0.5, 0.2)) * 0.6 + noise(p / 90.0) * 0.4;
 		vec3 oc = n0 + (d - 0.5) * 0.2 > 0.5 ? floor_b.rgb : floor_dark.rgb;
-		if (use_floor_tex) oc = texture(floor_tex, g / floor_tex_cells).rgb;
+		if (use_floor_tex) oc = floor_sample(p, g, d);
 		oc *= 0.62 - 0.22 * k;
 		if (hash(vec2(floor(p.x), floor(p.y * 0.5))) > 0.985) oc = floor_dark.rgb * 0.7;
 		if (k * 1.1 + (d - 0.5) * 0.5 + (n0 - 0.5) * 0.4 > 0.7) oc = outer_color.rgb;

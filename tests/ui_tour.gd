@@ -127,6 +127,17 @@ func _run() -> void:
 		(screen.get("travel_panel") as Control).visible = false
 		await _wait(0.5)
 		await _shot("15_village_square")
+		# камера отдалена до упора: пол без сетки квадратов, видна река
+		var world_node: Node2D = screen.get("world")
+		var ps := int(screen.get("_pixel_scale"))
+		var wz := int(world_node.get("zoom"))
+		for i in 4:
+			screen.call("_zoom_step", -1)
+		await _wait(0.8)
+		await _shot("15_village_far")
+		screen.set("_pixel_scale", ps)
+		world_node.set("zoom", wz)
+		(screen.get("container") as SubViewportContainer).stretch_shrink = ps
 		# торговля: кузнец раскладывает товар
 		s.gold += 120
 		s.open_trade("gunter", int(net.call("my_id")), str(screen.get("selected_uid")))

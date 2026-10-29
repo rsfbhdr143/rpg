@@ -79,6 +79,7 @@ var _hl_img: Image
 var _hl_tex: ImageTexture
 var _pal_tex: ImageTexture
 var _noise_tex: ImageTexture
+static var _flat_cache := {}   # плитки пола без крупных пятен (_flat_floor)
 var _surf_index: Dictionary = {}
 var _cells_key := ""
 var _hl_key := ""
@@ -268,12 +269,49 @@ func _setup_ground(data: Dictionary) -> void:
 	if (locs.get(loc_id, {}) as Dictionary).has("floor"):
 		var fr := SpriteLibrary.frame("tiles", "floor", "idle", 0.0, "", 0, loc_id)
 		if not fr.is_empty():
-			tex = fr["texture"]
+			tex = _flat_floor(fr["texture"], fr["region"])
 	m.set_shader_parameter("use_floor_tex", tex != null)
 	if tex != null:
 		m.set_shader_parameter("floor_tex", tex)
 		m.set_shader_parameter("floor_tex_cells", float(SpriteLibrary.setting("texture_cells", 3)))
 	update_cells(true)
+
+
+## Плитка пола для шейдера: только сама плитка (без прозрачной рамки листа) и без крупных пятен —
+## из каждой точки вычитается размытая плитка. Крупные пятна рисует шейдер шумом, поэтому повтор плитки не виден.
+static func _flat_floor(tex: Texture2D, region: Rect2) -> Texture2D:
+	var key := "%s|%s" % [tex.get_rid(), region]
+	if _flat_cache.has(key):
+		return _flat_cache[key]
+	var src := tex.get_image()
+	if src == null:
+		return tex
+	if src.is_compressed():
+		src.decompress()
+	var tile := src.get_region(Rect2i(region))
+	tile.convert(Image.FORMAT_RGB8)
+	var w := tile.get_width()
+	var h := tile.get_height()
+	# размытие с переносом через край: плитка 3×3, уменьшить и увеличить, взять середину
+	var big := Image.create(w * 3, h * 3, false, Image.FORMAT_RGB8)
+	for i in 3:
+		for j in 3:
+			big.blit_rect(tile, Rect2i(0, 0, w, h), Vector2i(i * w, j * h))
+	@warning_ignore("integer_division")
+	big.resize(maxi(3, w / 4), maxi(3, h / 4), Image.INTERPOLATE_BILINEAR)
+	big.resize(w * 3, h * 3, Image.INTERPOLATE_BILINEAR)
+	var mean := Color(0, 0, 0)
+	for y in h:
+		for x in w:
+			mean += tile.get_pixel(x, y)
+	mean = mean / float(w * h)
+	for y in h:
+		for x in w:
+			var c := tile.get_pixel(x, y) - big.get_pixel(x + w, y + h) + mean
+			tile.set_pixel(x, y, Color(clampf(c.r, 0.0, 1.0), clampf(c.g, 0.0, 1.0), clampf(c.b, 0.0, 1.0)))
+	var out := ImageTexture.create_from_image(tile)
+	_flat_cache[key] = out
+	return out
 
 
 func _draw_ground() -> void:

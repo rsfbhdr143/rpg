@@ -290,8 +290,7 @@ func goto_location(id: String, spawn: String) -> void:
 	if id == location_id and _locations.has(id):
 		_place_heroes(spawn)
 		return
-	_collect_all_loot()   # сюжет уводит партию сразу после боя: добычу с поля она успевает собрать
-	enter_location(id, spawn)
+	enter_location(id, spawn)   # необысканные тела остаются на месте: вернётесь — обыщете
 
 
 func _build_location(data: Dictionary) -> Dictionary:
@@ -320,7 +319,10 @@ func _build_location(data: Dictionary) -> Dictionary:
 	for s in surfs:
 		var sc: Array = s["cell"]
 		var layer := str(GameData.surface(str(s["id"])).get("layer", "ground"))
-		for c in g.cells_in_radius(Vector2i(int(sc[0]), int(sc[1])), int(s.get("radius", 0))):
+		var center := Vector2i(int(sc[0]), int(sc[1]))
+		if layer == "ground" and g.blocked.has(center):
+			g.deep[center] = str(s["id"])   # вода на непроходимой клетке (русло реки): видна, но не замерзает и не высыхает
+		for c in g.cells_in_radius(center, int(s.get("radius", 0))):
 			g.set_surface(c, str(s["id"]))
 			if (g.layers[layer] as Dictionary).has(c):
 				g.layers[layer][c]["turns"] = -1   # болото с картой не высыхает, пока его не сожгут или не заморозят
@@ -339,6 +341,10 @@ func _on_reenter(st: Dictionary, data: Dictionary) -> void:
 			continue
 		st["defeated"].erase(eid)
 		st["spawned"].erase(eid)
+		var bags: Dictionary = st["loot"]
+		for e in st["enemies"]:
+			if e.encounter_id == eid and bags.has(e.uid):
+				e.encounter_id = ""   # необысканное тело остаётся лежать, встреча появляется заново без него
 		st["enemies"] = (st["enemies"] as Array).filter(func(e): return e.encounter_id != eid)
 	for e in st["enemies"]:
 		var foe: Character = e
@@ -1576,15 +1582,6 @@ func _take_loot(corpse: String, what: String) -> void:
 		loot.erase(corpse)
 	GameEvents.add("loot_taken", {"corpse": corpse, "empty": not loot.has(corpse)})
 	GameEvents.add("sfx", {"id": "pickup"})
-
-
-## Перед уходом по сюжету: всё, что лежит на телах в этой локации, — в сумку.
-func _collect_all_loot() -> void:
-	if loot.is_empty():
-		return
-	GameLog.add("Перед уходом вы обыскиваете тела.")
-	for corpse in loot.keys():
-		_take_loot(str(corpse), "all")
 
 
 func _cmd_loot(pid: int, cmd: Dictionary) -> String:

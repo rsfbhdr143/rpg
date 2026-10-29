@@ -18,6 +18,8 @@ var _total := 0
 var _image := ""
 var _blip := 0.0
 var _choice_buttons: Array = []
+var _listed: Array = []      # индексы ответов под кнопками (листки доски срывают кликом по картинке, кнопок у них нет)
+var _tearable := false       # на доске есть листок, который можно сорвать
 
 var _cine: CineLayer
 var _board: BoardLayer
@@ -177,10 +179,19 @@ func _build_choices() -> void:
 	_choice_buttons.clear()
 	var parent := _cine_choices if cinematic else _choices
 	var list: Array = view.get("choices", [])
+	_listed.clear()
+	_tearable = false
+	var texts: Array = []
 	for i in list.size():
 		var c: Dictionary = list[i]
-		var idx := int(c.get("index", i))
-		var b := UiTheme.button("%d. %s" % [i + 1, str(c.get("text", ""))], func() -> void: _choose(idx), 18)
+		if _board.visible and int(c.get("page", -1)) >= 0:
+			_tearable = true
+			continue
+		_listed.append(int(c.get("index", i)))
+		texts.append(str(c.get("text", "")))
+	for i in _listed.size():
+		var idx := int(_listed[i])
+		var b := UiTheme.button("%d. %s" % [i + 1, texts[i]], func() -> void: _choose(idx), 18)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		b.disabled = not can_answer
 		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -212,6 +223,8 @@ func _process(delta: float) -> void:
 		hint = "Отвечает %s" % answerer
 	elif not done:
 		hint = "ЛКМ или Пробел — показать всё"
+	elif _tearable:
+		hint = "ЛКМ по листку — сорвать"
 	elif has_choices:
 		hint = "Выберите ответ: 1–%d" % _choice_buttons.size()
 	else:
@@ -236,16 +249,15 @@ func advance() -> void:
 		_shown = float(_total)
 		(_cine_text if cinematic else _text).visible_characters = -1
 		return
-	if _choice_buttons.is_empty() and can_answer:
+	if _choice_buttons.is_empty() and not _tearable and can_answer:
 		screen.call("dialogue_next")
 
 
 func choose_number(n: int) -> void:
 	if not visible or _shown < _total or not can_answer:
 		return
-	var list: Array = view.get("choices", [])
-	if n >= 0 and n < list.size():
-		_choose(int((list[n] as Dictionary).get("index", n)))
+	if n >= 0 and n < _listed.size():
+		_choose(int(_listed[n]))
 
 
 func _choose(index: int) -> void:
