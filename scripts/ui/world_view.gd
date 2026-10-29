@@ -73,6 +73,8 @@ var _over: Node2D
 var _glow: Node2D
 var _cells_img: Image
 var _cells_tex: ImageTexture
+var _deco_tex: ImageTexture   # рисунок на земле: тропы, мостовая, грядки, мост, камни брода (DECO)
+const DECO := {"path": 1, "square": 2, "field": 3, "bridge_x": 4, "bridge_y": 5, "stones": 6}
 var _hl_img: Image
 var _hl_tex: ImageTexture
 var _pal_tex: ImageTexture
@@ -249,6 +251,17 @@ func _setup_ground(data: Dictionary) -> void:
 	m.set_shader_parameter("speck", Color(str(style.get("speck", Color(a.r * 1.15, a.g * 1.4, a.b * 1.05).to_html(false)))))
 	bg_color = Color(str(style["bg"])) if style.has("bg") else a.darkened(0.8)
 	m.set_shader_parameter("outer_color", bg_color)
+	var deco_img := Image.create(grid_w, grid_h, false, Image.FORMAT_R8)
+	for dc in data.get("deco", []):
+		var dx := int(dc[0])
+		var dy := int(dc[1])
+		if dx >= 0 and dy >= 0 and dx < grid_w and dy < grid_h:
+			deco_img.set_pixel(dx, dy, Color(float(DECO.get(str(dc[2]), 0)) / 255.0, 0, 0))
+	_deco_tex = ImageTexture.create_from_image(deco_img)
+	m.set_shader_parameter("deco_tex", _deco_tex)
+	var path_cols: Array = style.get("path", ["6e5c3c", "62523a"])
+	m.set_shader_parameter("path_a", Color(str(path_cols[0])))
+	m.set_shader_parameter("path_b", Color(str(path_cols[1] if path_cols.size() > 1 else path_cols[0])))
 	# своя текстура пола из data/sprites.json (только если она задана именно для этой локации)
 	var tex: Texture2D = null
 	var locs: Dictionary = SpriteLibrary.bindings.get("locations", {})
@@ -928,6 +941,7 @@ func pick(p: Vector2) -> Dictionary:
 	var first: UnitNode = null     # по силуэту, нужная сторона
 	var on_cell: UnitNode = null   # стоит на клетке под курсором
 	var other: UnitNode = null     # по силуэту, остальные
+	var bag: UnitNode = null       # мешок с добычей на месте тела
 	for u in units.values():
 		var n: UnitNode = u
 		var ch := n.ch()
@@ -936,6 +950,8 @@ func pick(p: Vector2) -> Dictionary:
 		if ch.cell == c and ch.is_alive():
 			on_cell = n
 		var r := Rect2(n.position + n.rect.position, n.rect.size).grow(2.0)
+		if not ch.is_alive() and session.loot.has(ch.uid) and (r.has_point(p) or ch.cell == c):
+			bag = n
 		if not r.has_point(p):
 			continue
 		var preferred := ch.is_alive() and session.heroes.has(ch) == (pick_prefer == "ally")
@@ -945,6 +961,8 @@ func pick(p: Vector2) -> Dictionary:
 		elif other == null or n.position.y > other.position.y:
 			other = n
 	var best := first if first != null else on_cell
+	if best == null and bag != null and session.mode == "explore":
+		best = bag
 	if best == null and other != null and not _free_floor(c):
 		best = other
 	if best != null:
@@ -1402,12 +1420,36 @@ class UnitNode extends Node2D:
 			ring = Color("b8b0a0")
 		if ring.a > 0.0:
 			_ring(ring)
-		# сам персонаж
-		if dead and death_t < 0.35:
-			tint = tint.lerp(Color(1, 0.5, 0.4), 1.0 - death_t / 0.35)
+		# сам персонаж. Павший враг краснеет и тает за секунду (на земле не остаётся непонятного пятна);
+		# если на теле есть добыча — на его месте лежит мешок. Павший герой лежит серым: его можно поднять.
+		var fallen_hero := dead and is_hero
+		if dead and not fallen_hero:
+			if death_t < 0.35:
+				tint = tint.lerp(Color(1, 0.5, 0.4), 1.0 - death_t / 0.35)
+			var fade := clampf(1.0 - (death_t - 0.2) / 0.8, 0.0, 1.0)
+			if view.session.loot.has(uid):
+				_loot_bag(clampf(death_t / 0.6, 0.0, 1.0))
+			else:
+				rect = Rect2()
+			if fade <= 0.0:
+				return
+			tint.a *= fade
+			off.y += roundf((1.0 - fade) * 4.0)
 		var fr: Dictionary = {}
-		if not dead:
-			fr = SpriteLibrary.frame("units", template, "walk" if walking else "idle", t, "right" if facing > 0 else "left")
+		fr = SpriteLibrary.frame("units", template, "walk" if walking else "idle", t, "right" if facing > 0 else "left")
+		if fallen_hero:
+			tint = Color(0.55, 0.55, 0.6, 0.75)
+			if not fr.is_empty():
+				# лежит на боку: тот же кадр, повёрнутый на 90°
+				var region0: Rect2 = fr["region"]
+				var sz0: Vector2 = (region0.size * float(fr["scale"])).round()
+				draw_set_transform(Vector2(-sz0.y * 0.5, -2.0), -PI * 0.5, Vector2(1, 1))
+				draw_texture_rect_region(fr["texture"], Rect2(Vector2(-sz0.x * 0.5, 0), sz0), region0, tint)
+				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+				rect = Rect2(-sz0.y * 0.5, -sz0.x * 0.5 - 2.0, sz0.y, sz0.x * 0.5 + 4.0)
+			else:
+				rect = PixelArt.draw_unit(self, template, off, facing, t, 1.0, tint, true)
+			return
 		if not fr.is_empty():
 			var region: Rect2 = fr["region"]
 			var sz: Vector2 = (region.size * float(fr["scale"])).round()
@@ -1421,7 +1463,9 @@ class UnitNode extends Node2D:
 				draw_texture_rect_region(fr["texture"], dest, region, tint)
 			rect = dest
 		else:
-			rect = PixelArt.draw_unit(self, template, off, facing, t, 1.0, tint, dead)
+			var r0 := PixelArt.draw_unit(self, template, off, facing, t, 1.0, tint, false)
+			if not dead:
+				rect = r0
 		if dead:
 			return
 		# здоровье и статусы (у NPC не показываем)
@@ -1443,6 +1487,31 @@ class UnitNode extends Node2D:
 				draw_rect(Rect2(x, top - 4, 3, 3), Color("120c0a"))
 				draw_rect(Rect2(x + 0.0, top - 4, 2, 2), IconArt.status_color(str(sid)))
 				x += 4.0
+
+	## Мешок с добычей на месте тела: картинка props/loot_bag или холщовый мешок кодом. k — появление (0..1).
+	func _loot_bag(k: float) -> void:
+		var bob := roundf(sin(view.time * 2.0) * 0.5)
+		var fr := SpriteLibrary.frame("props", "loot_bag")
+		if not fr.is_empty():
+			var region: Rect2 = fr["region"]
+			var sz: Vector2 = (region.size * float(fr["scale"])).round()
+			var dest := Rect2(Vector2(-roundf(sz.x * 0.5), -sz.y + 2.0), sz)
+			draw_texture_rect_region(fr["texture"], dest, region, Color(1, 1, 1, k))
+			rect = dest
+			return
+		var a := k
+		var sack := Color(0.55, 0.42, 0.26, a)
+		var dark := Color(0.32, 0.22, 0.13, a)
+		_shadow(Vector2(0, 0), 6.0)
+		draw_colored_polygon(PackedVector2Array([Vector2(-6, 0), Vector2(-7, -5), Vector2(-4, -9), Vector2(4, -9),
+			Vector2(7, -5), Vector2(6, 0)]), sack)
+		draw_polyline(PackedVector2Array([Vector2(-6, 0), Vector2(-7, -5), Vector2(-4, -9), Vector2(4, -9),
+			Vector2(7, -5), Vector2(6, 0), Vector2(-6, 0)]), dark, 1.0)
+		draw_colored_polygon(PackedVector2Array([Vector2(-3, -9), Vector2(-2, -12), Vector2(2, -12), Vector2(3, -9)]), sack.darkened(0.1))
+		draw_line(Vector2(-3, -9.5), Vector2(3, -9.5), Color(0.75, 0.6, 0.3, a), 1.0)   # завязка
+		var glint := 0.5 + 0.5 * sin(view.time * 3.0)
+		draw_rect(Rect2(Vector2(3, -4 + bob), Vector2(2, 2)), Color(1.0, 0.85, 0.35, a * (0.5 + 0.5 * glint)))
+		rect = Rect2(-8, -13, 16, 14)
 
 	func _shadow(p: Vector2, r: float) -> void:
 		var col := Color(0, 0, 0, 0.32)

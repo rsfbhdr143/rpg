@@ -1,8 +1,8 @@
 class_name UiTheme
 extends RefCounted
 ## Тема интерфейса: шрифты, цвета, рамки окон и кнопок.
-## Рамки рисуются кодом в маленькую картинку и увеличиваются без сглаживания,
-## поэтому для интерфейса не нужны файлы картинок. Поменять вид — правь цвета ниже.
+## Рамки рисуются кодом (тёмный орех, латунь, пергамент), поэтому для интерфейса файлы картинок не обязательны;
+## нарисованные images/ui_frame, ui_slot, ui_parchment подхватываются сами. Поменять вид — правь цвета ниже.
 
 const FONT_BODY := "res://assets/fonts/AlegreyaSans-Regular.ttf"
 const FONT_BOLD := "res://assets/fonts/AlegreyaSans-Bold.ttf"
@@ -19,6 +19,8 @@ const GOLD_DIM := Color("8a6a3a")
 const TEXT := Color("ecdfc2")
 const TEXT_DIM := Color("a89a80")
 const TEXT_FAINT := Color("6e6454")
+const INK_TEXT := Color("3b2a1a")      # текст на пергаменте
+const INK_DIM := Color("6b5236")
 const RED := Color("d8573f")
 const GREEN := Color("82c86a")
 const BLUE := Color("6aa6e8")
@@ -162,78 +164,228 @@ static func theme() -> Theme:
 
 
 # --- Рамки ----------------------------------------------------------------------
+# Окна, кнопки и ячейки рисуются кодом в небольшие картинки 9 ломтей: тёмный орех, латунная кайма, мягкая тень.
+# Края гладкие, середина повторяется без шва (узор дерева периодичен), поэтому окно любого размера выглядит одинаково.
+# Если поток картинок нарисовал images/ui_frame, images/ui_slot или images/ui_parchment, берутся они.
 
-## Рамка окна: тёмный контур, золотистая кайма, тёмная внутренняя полоса, заливка. Уголки срезаны.
+## Расстояние от точки до края скруглённого прямоугольника w×h изнутри (отрицательное — снаружи).
+static func _inset(x: int, y: int, w: int, h: int, r: float) -> float:
+	var px := float(x) + 0.5
+	var py := float(y) + 0.5
+	var dx := minf(px, float(w) - px)
+	var dy := minf(py, float(h) - py)
+	if dx < r and dy < r:
+		return r - Vector2(r - dx, r - dy).length()
+	return minf(dx, dy)
+
+
+## Волокна ореха: 0..1, период 24 по x и 12 по y (середина 9-ломтевой картинки повторяется без шва).
+static func _grain(x: int, y: int) -> float:
+	var fx := float(x) / 24.0 * TAU
+	var fy := float(y) / 12.0 * TAU
+	var g := 0.5 + 0.5 * sin(fy + 1.4 * sin(fx) + 0.5 * sin(2.0 * fx + 1.0))
+	var line := 1.0 - clampf(absf(sin(fy * 0.5 + 0.9 * sin(fx + 0.4))) * 6.0, 0.0, 1.0)   # тонкие тёмные прожилки
+	return clampf(g * 0.8 - line * 0.5 + 0.1, 0.0, 1.0)
+
+
+## Окно: тёмное дерево, латунная кайма с накладками на углах, тень внутрь. alpha — прозрачность дерева.
 static func frame(fill: Color, border: Color, outline: Color, inner: Color, alpha := 1.0, pad := 5) -> StyleBoxTexture:
 	var key := "frame%s%s%s%s%s%d" % [fill, border, outline, inner, alpha, pad]
 	if _boxes.has(key):
 		return _boxes[key]
-	var n := 12
+	var art := _art_box("ui_frame", pad)
+	if art != null and alpha >= 0.99:
+		_boxes[key] = art
+		return art
+	var n := 48
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
-	var f := Color(fill.r, fill.g, fill.b, alpha)
+	var brass_hi := border.lightened(0.38)
+	var brass_lo := border.darkened(0.3)
 	for y in n:
 		for x in n:
-			var d := mini(mini(x, y), mini(n - 1 - x, n - 1 - y))
-			var corner := (x == 0 or x == n - 1) and (y == 0 or y == n - 1)
+			var d := _inset(x, y, n, n, 6.0)
+			if d <= 0.0:
+				continue
 			var c: Color
-			if corner:
-				c = Color(0, 0, 0, 0)
-			elif d == 0:
+			if d < 1.2:
 				c = outline
-			elif d == 1:
-				c = border
-			elif d == 2:
-				c = inner
+			elif d < 3.6:
+				c = brass_hi.lerp(brass_lo, float(y) / float(n - 1))
+				if d < 1.9:
+					c = c.lightened(0.18)
+			elif d < 4.6:
+				c = inner.darkened(0.25)
 			else:
-				c = f
+				var g := _grain(x, y)
+				c = fill.darkened(0.06).lerp(fill.lightened(0.12), g)
+				c = c.darkened(0.4 * clampf((8.5 - d) / 4.0, 0.0, 1.0))
+				c.a = alpha
+			if d < 1.0:
+				c.a *= d
 			img.set_pixel(x, y, c)
-	# заклёпки в углах
-	for p in [Vector2i(1, 1), Vector2i(n - 2, 1), Vector2i(1, n - 2), Vector2i(n - 2, n - 2)]:
-		img.set_pixel(p.x, p.y, border.lightened(0.35))
-	_boxes[key] = _box(img, 3, pad)
-	return _boxes[key]
+	_corner_plates(img, n, border)
+	var sb := _smooth_box(img, 12, pad)
+	_boxes[key] = sb
+	return sb
 
 
+## Латунные накладки на углах окна: уголок с заклёпкой.
+static func _corner_plates(img: Image, n: int, border: Color) -> void:
+	var hi := border.lightened(0.45)
+	var lo := border.darkened(0.15)
+	for corner in [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]:
+		for a in 10:
+			for t in 4:
+				for p in [Vector2i(a, t), Vector2i(t, a)]:
+					var x: int = 1 + p.x if corner.x == 0 else n - 2 - p.x
+					var y: int = 1 + p.y if corner.y == 0 else n - 2 - p.y
+					var edge: bool = a == 9 or t == 3
+					img.set_pixel(x, y, (lo.darkened(0.45) if edge else hi.lerp(lo, float(t) / 3.0)))
+		var cx: int = 4 if corner.x == 0 else n - 5
+		var cy: int = 4 if corner.y == 0 else n - 5
+		for dy in range(-2, 3):
+			for dx in range(-2, 3):
+				var rr := Vector2(dx, dy).length()
+				if rr <= 1.7:
+					img.set_pixel(cx + dx, cy + dy, Color("fff4c8") if rr < 0.8 and dx <= 0 and dy <= 0 else lo.darkened(0.2).lerp(hi, 0.5))
+
+
+## Кнопка: дощечка с латунной окантовкой; нажатая — светлая полоса внизу, тень сверху.
 static func button_box(fill: Color, border: Color, highlight: Color, pressed := false) -> StyleBoxTexture:
 	var key := "button%s%s%s%s" % [fill, border, highlight, pressed]
 	if _boxes.has(key):
 		return _boxes[key]
-	var n := 10
+	var n := 24
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
 	for y in n:
 		for x in n:
-			var edge := x == 0 or y == 0 or x == n - 1 or y == n - 1
-			var corner := (x == 0 or x == n - 1) and (y == 0 or y == n - 1)
-			var c := fill
-			if corner:
-				c = Color(0, 0, 0, 0)
-			elif edge:
-				c = border
-			elif (y == 1 and not pressed) or (y == n - 2 and pressed):
-				c = highlight
-			elif (y == n - 2 and not pressed) or (y == 1 and pressed):
-				c = fill.darkened(0.35)
+			var d := _inset(x, y, n, n, 4.0)
+			if d <= 0.0:
+				continue
+			var c: Color
+			var k := float(y) / float(n - 1)
+			if pressed:
+				k = 1.0 - k
+			if d < 1.1:
+				c = INK
+			elif d < 2.3:
+				c = border.lightened(0.2).lerp(border.darkened(0.25), k)
+			else:
+				c = highlight.lerp(fill, clampf(k * 1.6, 0.0, 1.0)).lerp(fill.darkened(0.3), clampf((k - 0.6) * 2.0, 0.0, 1.0))
+			if d < 1.0:
+				c.a *= d
 			img.set_pixel(x, y, c)
-	var sb := _box(img, 2, 4)
+	var sb := _smooth_box(img, 7, 4)
+	sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
 	sb.content_margin_left = 10 * PX
 	sb.content_margin_right = 10 * PX
 	_boxes[key] = sb
 	return sb
 
 
-## Пустая ячейка (под значок навыка, портрет).
+## Ячейка под значок: утопленная тёмная лунка в тонкой латунной оправе.
 static func slot_box(border: Color = Color("5a4630"), fill: Color = Color("0f0c0a")) -> StyleBoxTexture:
 	var key := "slot%s%s" % [border, fill]
 	if _boxes.has(key):
 		return _boxes[key]
-	var n := 8
+	var art := _art_box("ui_slot", 1)
+	if art != null and border == Color("5a4630"):
+		_boxes[key] = art
+		return art
+	var n := 24
 	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
 	for y in n:
 		for x in n:
-			var edge := x == 0 or y == 0 or x == n - 1 or y == n - 1
-			img.set_pixel(x, y, border if edge else fill)
-	_boxes[key] = _box(img, 1, 1)
-	return _boxes[key]
+			var d := _inset(x, y, n, n, 3.0)
+			if d <= 0.0:
+				continue
+			var c: Color
+			if d < 1.1:
+				c = INK
+			elif d < 2.4:
+				c = border.lightened(0.25).lerp(border.darkened(0.2), float(y) / float(n - 1))
+			else:
+				var k := float(y) / float(n - 1)
+				c = fill.darkened(0.3).lerp(fill.lightened(0.08), k)
+				c = c.darkened(0.45 * clampf((5.5 - d) / 3.0, 0.0, 1.0))
+			if d < 1.0:
+				c.a *= d
+			img.set_pixel(x, y, c)
+	var sb := _smooth_box(img, 7, 1)
+	sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	_boxes[key] = sb
+	return sb
+
+
+## Пергамент: страница в окне героя, торговли, журнала. Текст на нём — INK_TEXT.
+static func parchment(pad := 8) -> StyleBoxTexture:
+	var key := "parchment%d" % pad
+	if _boxes.has(key):
+		return _boxes[key]
+	var art := _art_box("ui_parchment", pad)
+	if art != null:
+		_boxes[key] = art
+		return art
+	var n := 48
+	var img := Image.create(n, n, false, Image.FORMAT_RGBA8)
+	var light := Color("e9dbb8")
+	var dark := Color("cdb88c")
+	for y in n:
+		for x in n:
+			var d := _inset(x, y, n, n, 4.0)
+			if d <= 0.0:
+				continue
+			var fx := float(x) / 24.0 * TAU
+			var fy := float(y) / 24.0 * TAU
+			var blot := 0.5 + 0.25 * sin(fx + 2.0 * sin(fy)) + 0.25 * sin(2.0 * fy + sin(2.0 * fx) + 0.7)
+			var c := light.lerp(dark, blot * 0.55)
+			c = c.lerp(Color("8a6a42"), 0.75 * clampf((6.0 - d) / 6.0, 0.0, 1.0))   # подпалённый край
+			if d < 1.2:
+				c = Color("4a3622")
+			if d < 1.0:
+				c.a *= d
+			img.set_pixel(x, y, c)
+	var sb := _smooth_box(img, 12, pad)
+	_boxes[key] = sb
+	return sb
+
+
+## Картинка интерфейса из потока картинок (images/<id>) как 9 ломтей; поля — "ui_margin" в каталоге (или 24).
+static func _art_box(id: String, pad: int) -> StyleBoxTexture:
+	var fr := SpriteLibrary.frame("images", id)
+	if fr.is_empty():
+		return null
+	var region: Rect2 = fr["region"]
+	var tex: Texture2D = fr["texture"]
+	var m := minf(24.0, region.size.x * 0.3)
+	var sb := StyleBoxTexture.new()
+	sb.texture = tex
+	sb.region_rect = region
+	sb.texture_margin_left = m
+	sb.texture_margin_right = m
+	sb.texture_margin_top = m
+	sb.texture_margin_bottom = m
+	sb.set_content_margin_all(pad * PX + m * 0.5)
+	return sb
+
+
+## 9 ломтей из картинки в родном размере: углы и края 1:1, середина повторяется.
+static func _smooth_box(img: Image, margin: int, pad: int) -> StyleBoxTexture:
+	var sb := StyleBoxTexture.new()
+	sb.texture = ImageTexture.create_from_image(img)
+	sb.texture_margin_left = margin
+	sb.texture_margin_right = margin
+	sb.texture_margin_top = margin
+	sb.texture_margin_bottom = margin
+	sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+	sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE
+	sb.content_margin_left = pad * PX
+	sb.content_margin_right = pad * PX
+	sb.content_margin_top = pad * PX
+	sb.content_margin_bottom = pad * PX
+	return sb
 
 
 static func _box(img: Image, margin: int, pad: int) -> StyleBoxTexture:

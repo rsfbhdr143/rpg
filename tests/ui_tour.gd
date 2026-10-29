@@ -77,10 +77,19 @@ func _run() -> void:
 	await _wait(2.0)
 	await _shot("06_cemetery")
 
-	# лист героя, журнал, сумка
+	# лист героя (снаряжение, сумка, страницы), журнал; в сумку — пара вещей, чтобы было что показать
+	var bag: Dictionary = s.items
+	for it in ["iron_helm", "silver_ring", "wolf_fang", "honey_cake"]:
+		bag[it] = int(bag.get(it, 0)) + 1
 	screen.call("open_panel", "sheet")
 	await _wait(0.6)
 	await _shot("07_sheet")
+	var sheet: Node = screen.get("sheet")
+	for pg in ["abilities", "skills", "talents"]:
+		sheet.call("_set_page", pg)
+		await _wait(0.4)
+		await _shot("07_sheet_" + pg)
+	sheet.call("_set_page", "stats")
 	screen.call("open_panel", "journal")
 	await _wait(0.6)
 	await _shot("08_journal")
@@ -118,6 +127,12 @@ func _run() -> void:
 		(screen.get("travel_panel") as Control).visible = false
 		await _wait(0.5)
 		await _shot("15_village_square")
+		# торговля: кузнец раскладывает товар
+		s.gold += 120
+		s.open_trade("gunter", int(net.call("my_id")), str(screen.get("selected_uid")))
+		await _wait(1.5)
+		await _shot("15_trade")
+		screen.call("open_panel", "")
 
 	# лес: через брод и выход на краю деревни, потом бой; курган
 	await _walk_exit("forest", "16_village_ford", "20_forest")
@@ -132,6 +147,13 @@ func _run() -> void:
 	if s.mode == "combat":
 		await _combat("21_forest")
 	await _finish_dialogue()
+	# добыча: обыскать первое тело с мешком
+	s = net.get("session")
+	if s.mode == "explore" and not s.loot.is_empty():
+		net.call("send_command", {"type": "loot", "unit": str(screen.get("selected_uid")), "corpse": str(s.loot.keys()[0])})
+		await _wait(5.0)
+		await _shot("22_loot")
+		screen.call("open_panel", "")
 	await _goto("goblin_camp", "from_forest", "30_goblin_camp")
 	s = net.get("session")
 	s.reveal_traps()

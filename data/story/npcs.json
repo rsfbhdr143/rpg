@@ -87,7 +87,18 @@
       "Дурак ты, Ладо. Какой же ты дурак.",
       "Ешьте. Потом спасёте мир."
     ],
-    "anchor": "tavern"
+    "anchor": "tavern",
+    "trade": {
+      "buy": 1.0,
+      "sell": 0.3,
+      "stock": {
+        "funeral_bread": -1,
+        "smoked_fish": -1,
+        "honey_cake": 6,
+        "lamp_oil": 4,
+        "healing_brew": 2
+      }
+    }
   },
   "pipin": {
     "name": "Пипин Шмель",
@@ -182,7 +193,18 @@
       "...",
       "Лопату так и не вернул."
     ],
-    "anchor": "smithy"
+    "anchor": "smithy",
+    "trade": {
+      "buy": 1.0,
+      "sell": 0.35,
+      "stock": {
+        "iron_sword": 2,
+        "wooden_shield": 2,
+        "iron_helm": 1,
+        "chainmail": 1,
+        "tar_torch": 4
+      }
+    }
   },
   "vetla": {
     "name": "Бабка Ветла",
@@ -235,6 +257,10 @@
       {
         "id": "goat_stump"
       }
+    ],
+    "angry": [
+      "Бе-е-е!!!",
+      "МЕ-Е-Е!"
     ]
   },
   "shmyg": {
@@ -284,7 +310,8 @@
       "Я куст. Я очень куст.",
       "Шмыг сзади. Шмыг прикрывает."
     ],
-    "anchor": "goblin_trail"
+    "anchor": "goblin_trail",
+    "on_attack": "forest_scout"
   },
   "mukhoglot": {
     "name": "Шаман Мухоглот",
@@ -311,7 +338,8 @@
       "Бог молчит! Бог согласен!",
       "Пойте громче, бог не слышит!"
     ],
-    "anchor": "bone_throne"
+    "anchor": "bone_throne",
+    "on_attack": "camp_boss"
   },
   "lado_ghost": {
     "name": "Ладо Корн",
@@ -326,7 +354,8 @@
     "dialogue": "lado_ghost_idle",
     "barks": [],
     "anchor": "pyre",
-    "hidden": true
+    "hidden": true,
+    "attackable": false
   },
   "jacek": {
     "name": "Яцек",
@@ -411,7 +440,11 @@
       "Я видел гоблина! Ну, почти.",
       "Мамка не велит к речке ходить."
     ],
-    "villager": true
+    "villager": true,
+    "angry": [
+      "Мама-а-а!",
+      "Я всё расскажу старосте!"
+    ]
   },
   "bolek": {
     "name": "Болек",
@@ -445,7 +478,26 @@
       "Дороги нынче опасные. Наценка за риск.",
       "В Сольгарде о вашей деревне уже судачат."
     ],
-    "villager": true
+    "villager": true,
+    "trade": {
+      "buy": 1.0,
+      "sell": 0.4,
+      "stock": {
+        "leather_cap": 2,
+        "padded_jacket": 2,
+        "leather_gloves": 2,
+        "leather_boots": 2,
+        "wool_trousers": 2,
+        "leather_belt": 2,
+        "silver_ring": 1,
+        "amber_amulet": 1,
+        "hunting_bow": 1,
+        "oak_staff": 1,
+        "healing_brew": 3,
+        "lamp_oil": 3,
+        "tar_torch": 3
+      }
+    }
   },
   "matey": {
     "name": "Матей",

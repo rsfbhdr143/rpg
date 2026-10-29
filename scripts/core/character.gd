@@ -6,6 +6,11 @@ extends RefCounted
 
 static var _next_uid := 1
 
+## Ячейки снаряжения, как в D:OS1. В кольцах два места, в остальных по одному.
+const SLOTS := ["head", "amulet", "chest", "weapon", "offhand", "hands", "belt", "legs", "feet", "ring"]
+const SLOT_NAMES := {"head": "Голова", "amulet": "Амулет", "chest": "Тело", "weapon": "Оружие",
+	"offhand": "Вторая рука", "hands": "Руки", "belt": "Пояс", "legs": "Ноги", "feet": "Ступни", "ring": "Кольцо"}
+
 var uid: String = ""
 var template_id: String = ""
 var display_name: String = ""
@@ -107,6 +112,30 @@ func _modifier_sum(stat: String) -> float:
 		var istats: Dictionary = GameData.item(str(it)).get("stats", {})
 		s += float(istats.get(stat, 0.0))
 	return s
+
+
+## Ячейка предмета ("slot" в items.json; у старых записей без него оружие — в руку, прочее — амулет) или "".
+static func slot_of(item_id: String) -> String:
+	var d := GameData.item(item_id)
+	if d.has("slot"):
+		return str(d["slot"])
+	if d.has("weapon"):
+		return "weapon"
+	return "amulet" if d.has("stats") else ""
+
+
+static func slot_capacity(slot: String) -> int:
+	return 2 if slot == "ring" else 1
+
+
+## Что надето в ячейку (для колец — до двух).
+func in_slot(slot: String) -> Array:
+	return equipment.filter(func(it): return slot_of(str(it)) == slot)
+
+
+## Оружие держит обе руки (двуручное своё или надетое): вторая рука занята.
+func two_handed() -> bool:
+	return bool(effective_weapon().get("two_handed", false)) and not in_slot("weapon").is_empty()
 
 
 ## Оружие с учётом надетых предметов.

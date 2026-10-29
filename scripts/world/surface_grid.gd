@@ -61,7 +61,9 @@ func cells_in_radius(center: Vector2i, radius: int) -> Array:
 	return out
 
 
-## BFS-путь от from до to (без стартовой клетки). occupied: {Vector2i: true}.
+## Путь от from до to (без стартовой клетки) за наименьшее число шагов; из таких путей — самый короткий на экране
+## (в изометрии шаг по диагонали (1,-1) вдвое длиннее, чем по (1,1)), поэтому фигурки идут прямо, без зигзагов.
+## По диагонали мимо угла стены не срезать (can_step). occupied: {Vector2i: true}.
 ## allow_occupied_goal — путь до занятой клетки (удобно для ИИ: «подойти к врагу»).
 func find_path(from: Vector2i, to: Vector2i, occupied: Dictionary = {}, allow_occupied_goal: bool = false) -> Array:
 	if from == to or not is_walkable(to):
@@ -69,19 +71,24 @@ func find_path(from: Vector2i, to: Vector2i, occupied: Dictionary = {}, allow_oc
 	if occupied.has(to) and not allow_occupied_goal:
 		return []
 	var came_from := {from: from}
-	var queue: Array = [from]
-	while not queue.is_empty():
-		var cur: Vector2i = queue.pop_front()
-		if cur == to:
-			break
-		for d in DIRS:
-			var n: Vector2i = cur + d
-			if came_from.has(n) or not is_walkable(n):
-				continue
-			if occupied.has(n) and n != to:
-				continue
-			came_from[n] = cur
-			queue.append(n)
+	var length := {from: 0.0}
+	var frontier: Array = [from]
+	while not frontier.is_empty() and not came_from.has(to):
+		var level := {}   # клетки этого шага: из какой клетки прийти, чтобы путь на экране был короче
+		for cur in frontier:
+			var cv: Vector2i = cur
+			for d in DIRS:
+				var n: Vector2i = cv + d
+				if (came_from.has(n) and not level.has(n)) or not can_step(cv, d):
+					continue
+				if occupied.has(n) and n != to:
+					continue
+				var l: float = float(length[cv]) + step_length(d)
+				if not level.has(n) or l < float(length[n]):
+					level[n] = true
+					came_from[n] = cv
+					length[n] = l
+		frontier = level.keys()
 	if not came_from.has(to):
 		return []
 	var path: Array = []
@@ -90,6 +97,22 @@ func find_path(from: Vector2i, to: Vector2i, occupied: Dictionary = {}, allow_oc
 		path.push_front(step)
 		step = came_from[step]
 	return path
+
+
+## Можно ли шагнуть из клетки c в сторону d: клетка проходима, а по диагонали — ещё и не мимо угла стены.
+func can_step(c: Vector2i, d: Vector2i) -> bool:
+	if not is_walkable(c + d):
+		return false
+	if d.x != 0 and d.y != 0:
+		return is_walkable(c + Vector2i(d.x, 0)) and is_walkable(c + Vector2i(0, d.y))
+	return true
+
+
+## Длина шага на экране в клетках по стороне: (1,1) — вниз на 16 px, (1,-1) — вбок на 32 px, по стороне — ~18 px.
+static func step_length(d: Vector2i) -> float:
+	if d.x != 0 and d.y != 0:
+		return 0.9 if d.x == d.y else 1.8
+	return 1.0
 
 
 # --- Поверхности --------------------------------------------------------------

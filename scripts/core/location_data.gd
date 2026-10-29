@@ -10,6 +10,8 @@ extends RefCounted
 ##     "g": {"prop": "grave"},               декорация на клетке, по умолчанию непроходима ("block": false — проходима)
 ##     "H": {"prop": "tavern", "size": [3, 3]}   здание на несколько клеток: буква в его дальнем углу (меньшие x и y)
 ##     "~": {"surface": "water"},            поверхность
+##     "`": {"deco": "path"},                рисунок на земле, ходить не мешает: path — тропа, square — мостовая,
+##                                           field — грядки, bridge_x / bridge_y — мост вдоль x / y, stones — камни брода
 ##     "a": {"spawn": "start"},              клетка точки появления (по клетке на героя, по порядку)
 ##     "1": {"exit": "to_village"},          клетка выхода; сам выход описан в "exits" с этим "id"
 ##     "P": {"npc": "tadeush"},              где стоит NPC (можно с "if")
@@ -43,6 +45,7 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	var objects: Array = loc.get("objects", [])
 	var traps: Array = loc.get("traps", [])
 	var buildings: Array = loc.get("buildings", [])
+	var deco: Array = loc.get("deco", [])
 	var door_cells := {}
 	var exit_cells := {}
 	var enc_cells := {}       # id встречи -> [[x, y], …]
@@ -79,6 +82,8 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 					props.append(p)
 				if e.has("surface"):
 					surfaces.append({"id": str(e["surface"]), "cell": c, "radius": 0})
+				if e.has("deco"):
+					deco.append([x, y, str(e["deco"])])
 				if e.has("anchor"):
 					anchors[str(e["anchor"])] = c
 				if _flag(e, "door"):
@@ -179,6 +184,7 @@ static func normalize(id: String, d: Dictionary, warnings: Array) -> Dictionary:
 	loc["walls"] = walls
 	loc["solid"] = solid
 	loc["surfaces"] = surfaces
+	loc["deco"] = deco
 	loc["spawns"] = spawns
 	loc["exits"] = exits
 	loc["props"] = props
@@ -285,7 +291,7 @@ static func merge_story(mine: Dictionary, story: Dictionary, id: String, warning
 					var nid := str(n.get("id", "")) if typeof(n) == TYPE_DICTIONARY else str(n)
 					if not placed.any(func(p): return str(p.get("id", "")) == nid):
 						warnings.append("%s: NPC %s не стоит на карте" % [id, nid])
-			"size", "rows", "legend", "walls", "solid", "wall_rects", "spawns", "exits", "props", "anchors":
+			"size", "rows", "legend", "walls", "solid", "wall_rects", "spawns", "exits", "props", "anchors", "deco":
 				if mine.is_empty():
 					out[key] = story[key]
 			_:

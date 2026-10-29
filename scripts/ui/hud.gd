@@ -8,6 +8,7 @@ const FRAME_SIZE := Vector2(244, 66)
 const TOAST_W := 290.0   # шире сообщения переносятся, чтобы не залезать на середину экрана
 const SLOT := 46.0
 const Hotbar := preload("res://scripts/ui/hotbar.gd")
+const Describe := preload("res://scripts/ui/describe.gd")
 
 var screen: Node                    # GameScreen
 var party_box: VBoxContainer
@@ -124,10 +125,7 @@ func _build_bottom() -> void:
 
 func _build_log() -> void:
 	var p := PanelContainer.new()
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.05, 0.035, 0.03, 0.55)
-	sb.set_content_margin_all(6)
-	p.add_theme_stylebox_override("panel", sb)
+	p.add_theme_stylebox_override("panel", UiTheme.frame(Color("120e0b"), UiTheme.GOLD_DIM, UiTheme.INK, Color("221a14"), 0.62, 6))
 	UiTheme.place(p, Control.PRESET_BOTTOM_LEFT, Vector2(10, -150), Vector2(380, 140))
 	log_panel = p
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -200,8 +198,8 @@ func _build_tooltip() -> void:
 
 
 func _build_help() -> void:
-	help_panel = UiTheme.panel(Vector2(560, 0))
-	UiTheme.center(help_panel, Vector2(560, 300))
+	help_panel = UiTheme.panel(Vector2(640, 0))
+	UiTheme.center(help_panel, Vector2(640, 420))
 	help_panel.visible = false
 	add_child(help_panel)
 	var v := UiTheme.vbox(6)
@@ -210,16 +208,20 @@ func _build_help() -> void:
 	var text := UiTheme.label("""ЛКМ по земле — идти, по герою — выбрать, по жителю или предмету — поговорить, осмотреть
 ЛКМ по найденной ловушке — обезвредить; подорвать её можно и ударом издалека
 ЛКМ по врагу — подойти и ударить; вне боя так можно напасть первым, пока враги не заметили,
-а в бою — ударить и того, кто ещё не в бою: его отряд вступит в бой
+а в бою — ударить и того, кто ещё не в бою: его отряд вступит в бой. Навык с панели вне боя тоже бьёт первым:
+выберите молнию или стрелу и щёлкните по врагу — герой сам подойдёт на расстояние
+Ctrl+ЛКМ по жителю — напасть на него (он станет врагом)
+ЛКМ по мешку на месте тела — обыскать; ЛКМ по торговцу — поговорить и поторговать
 1–9, 0 — ячейка панели умений (вне боя тоже: лечение, масло, факел), ПКМ или Esc — отменить, Пробел — конец хода
 Панель умений: три линейки (стрелки слева или колесо мыши), ячейки перетаскиваются, за панель — убрать,
 навык из листа героя (C) — перетащить на панель
 Tab — следующий герой, колесо — приблизить, ПКМ с перетаскиванием или WASD — сдвинуть камеру, Z — вернуть
-C — герой и прокачка, J — журнал заданий, I — сумка
+C или I — герой: снаряжение, сумка, прокачка (вещь надевается двойным щелчком или перетаскиванием на силуэт)
+J — журнал заданий
 K — сохранить, L — загрузить, Esc — меню, H — эта справка
 В разговоре: ЛКМ или Пробел — дальше, 1–9 — ответ, Esc — пролистать""", 16, UiTheme.TEXT)
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	text.custom_minimum_size = Vector2(540, 0)
+	text.custom_minimum_size = Vector2(620, 0)
 	v.add_child(text)
 
 
@@ -412,6 +414,24 @@ func toggle_help() -> void:
 
 
 ## Подсказка у курсора; пустой текст прячет её.
+## Подсказка о статусе, если курсор над его значком у портрета героя ("" — нет).
+func status_tip_at(at: Vector2) -> String:
+	var s: GameSession = Net.session
+	if s == null:
+		return ""
+	for f in party_box.get_children():
+		var pf := f as PartyFrame
+		if pf == null or not pf.is_visible_in_tree() or not pf.get_global_rect().has_point(at):
+			continue
+		var h := s.unit_by_uid(pf.uid)
+		var local := at - pf.get_global_rect().position
+		for r in pf.status_rects:
+			if (r[0] as Rect2).has_point(local) and h != null and h.statuses.has(str(r[1])):
+				var st: Dictionary = h.statuses[str(r[1])]
+				return Describe.status_text(str(r[1]), int(st.get("turns", 0)), int(st.get("level", 1)))
+	return ""
+
+
 func set_tooltip(text: String, at: Vector2) -> void:
 	if text == "":
 		tooltip.visible = false
@@ -436,6 +456,7 @@ func set_tooltip(text: String, at: Vector2) -> void:
 class PartyFrame extends Control:
 	var hud: Hud
 	var uid := ""
+	var status_rects: Array = []   # [Rect2, id статуса] — для подсказки над значком
 	var _portrait: IconArt.PortraitView
 
 	func _ready() -> void:
@@ -492,8 +513,10 @@ class PartyFrame extends Control:
 				_pip(Vector2(x + 4, 56), c)
 				x += 10.0
 			x += 6.0
+		status_rects.clear()
 		for sid in h.statuses:
 			IconArt.status_icon(self, str(sid), Rect2(x, 50, 12, 12))
+			status_rects.append([Rect2(x - 1, 49, 14, 14), str(sid)])
 			x += 14.0
 		var pts := h.unspent_attribute_points + h.unspent_ability_points + h.unspent_talent_points
 		if pts > 0 and mine:

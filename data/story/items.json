@@ -7,7 +7,9 @@
     "stats": {
       "tenacity_res": 10,
       "accuracy": 3
-    }
+    },
+    "slot": "amulet",
+    "value": 30
   },
   "own_grimoire": {
     "name": "Ваш гримуар",
@@ -16,7 +18,9 @@
     "description": "Шесть лет у Ладо. На полях пометки: «скучно», «тут я уснул», «а вот это красиво».",
     "stats": {
       "magic_damage_pct": 5
-    }
+    },
+    "slot": "offhand",
+    "value": 25
   },
   "lado_map": {
     "name": "Карта курганов Пограничья",
@@ -25,7 +29,8 @@
     "description": "Половина пометок: «здесь я ничего не нашёл». Одна, на севере, обведена трижды.",
     "stats": {
       "crit_chance": 3
-    }
+    },
+    "slot": "belt"
   },
   "copper_raven": {
     "name": "Медный оберег-ворон",
@@ -38,7 +43,9 @@
       "earth_res": 5,
       "air_res": 5,
       "poison_res": 5
-    }
+    },
+    "slot": "amulet",
+    "value": 20
   },
   "lamp_oil": {
     "name": "Лампадное масло",
@@ -46,7 +53,8 @@
     "description": "Бутыль масла из таверны Марты. Разлить и поджечь.",
     "use": {
       "skill": "oil_slick"
-    }
+    },
+    "value": 6
   },
   "tar_torch": {
     "name": "Дёгтевый факел",
@@ -54,7 +62,8 @@
     "description": "Работы Гюнтера. Горит даже в болоте. Можно бросить в масло или яд.",
     "use": {
       "skill": "torch_throw"
-    }
+    },
+    "value": 5
   },
   "funeral_bread": {
     "name": "Поминальный хлеб с сыром",
@@ -62,7 +71,8 @@
     "description": "Марта не отпускает в дорогу голодными.",
     "use": {
       "heal": 15
-    }
+    },
+    "value": 3
   },
   "healing_brew": {
     "name": "Отвар Ветлы",
@@ -73,7 +83,8 @@
       "remove_status": [
         "poisoned"
       ]
-    }
+    },
+    "value": 15
   },
   "juniper_bottle": {
     "name": "Можжевеловка",
@@ -93,8 +104,11 @@
       "name": "Кузнечный молот",
       "min": 6,
       "max": 10,
-      "element": "physical"
-    }
+      "element": "physical",
+      "two_handed": true
+    },
+    "slot": "weapon",
+    "value": 35
   },
   "gravedigger_lantern": {
     "name": "Фонарь могильщика",
@@ -103,7 +117,9 @@
     "stats": {
       "accuracy": 5,
       "initiative": 1
-    }
+    },
+    "slot": "belt",
+    "value": 20
   },
   "smoldering_seal": {
     "name": "Тлеющая печать",
@@ -111,6 +127,273 @@
     "description": "Уголь размером с орех из груди Ладо. Тёплый даже в ледяной воде. Иногда кажется, что он дышит.",
     "stats": {
       "fire_res": 15
+    },
+    "slot": "amulet"
+  },
+  "wolf_fang": {
+    "name": "Волчий клык",
+    "type": "loot",
+    "value": 4,
+    "description": "Длинный, жёлтый, с зазубриной. Збышек берёт такие на обереги."
+  },
+  "wolf_pelt": {
+    "name": "Волчья шкура",
+    "type": "loot",
+    "value": 9,
+    "description": "Серая, жёсткая, пахнет лесом и псиной. Скорняк в Сольгарде дал бы больше."
+  },
+  "grave_ash": {
+    "name": "Прах мертвеца",
+    "type": "loot",
+    "value": 6,
+    "description": "Серый, жирный на ощупь. Знахарки платят за него неплохо. Не спрашивайте зачем."
+  },
+  "river_pearl": {
+    "name": "Речная жемчужина",
+    "type": "loot",
+    "value": 18,
+    "description": "Мутная, неровная, но настоящая. Утопленник прижимал её к груди."
+  },
+  "bone_charm": {
+    "name": "Костяной оберег",
+    "type": "trinket",
+    "slot": "amulet",
+    "value": 22,
+    "description": "Птичьи косточки на жиле. Скелет носил его зачем-то и после смерти.",
+    "stats": {
+      "tenacity_res": 10,
+      "poison_res": 10
+    }
+  },
+  "goblin_knife": {
+    "name": "Гоблинский нож",
+    "type": "weapon",
+    "slot": "weapon",
+    "value": 12,
+    "description": "Ржавый, кривой и очень острый. Гоблины точат ножи лучше, чем моются.",
+    "weapon": {
+      "name": "Гоблинский нож",
+      "min": 3,
+      "max": 6,
+      "element": "physical"
+    },
+    "stats": {
+      "crit_chance": 4
+    }
+  },
+  "goblin_shield": {
+    "name": "Гоблинский щит",
+    "type": "armor",
+    "slot": "offhand",
+    "value": 14,
+    "description": "Крышка от бочки с ручкой. Держит удар лучше, чем выглядит.",
+    "stats": {
+      "armor": 6
+    }
+  },
+  "fly_totem": {
+    "name": "Мушиный тотем",
+    "type": "trinket",
+    "slot": "belt",
+    "value": 20,
+    "description": "Сушёные мухи на нитке вокруг гнилого зуба. Висит на поясе и тихо жужжит.",
+    "stats": {
+      "poison_res": 15,
+      "magic_damage_pct": 5
+    }
+  },
+  "mukhoglot_mask": {
+    "name": "Маска Мухоглота",
+    "type": "armor",
+    "slot": "head",
+    "value": 60,
+    "description": "Череп неведомого зверя, выдолбленный изнутри. Мухи от запаха падают замертво. Носить можно, если очень хочется.",
+    "stats": {
+      "armor": 4,
+      "poison_res": 25,
+      "magic_damage_pct": 10
+    }
+  },
+  "iron_sword": {
+    "name": "Железный меч",
+    "type": "weapon",
+    "slot": "weapon",
+    "value": 45,
+    "description": "Сольгардская ковка, простой и надёжный. Вторая рука остаётся для щита.",
+    "weapon": {
+      "name": "Железный меч",
+      "min": 6,
+      "max": 9,
+      "element": "physical"
+    }
+  },
+  "hunting_bow": {
+    "name": "Охотничий лук",
+    "type": "weapon",
+    "slot": "weapon",
+    "value": 50,
+    "description": "Тис и жила. Бьёт далеко и больно, держать нужно обеими руками.",
+    "weapon": {
+      "name": "Охотничий лук",
+      "min": 6,
+      "max": 10,
+      "element": "physical",
+      "two_handed": true,
+      "ranged": true
+    }
+  },
+  "oak_staff": {
+    "name": "Дубовый посох",
+    "type": "weapon",
+    "slot": "weapon",
+    "value": 40,
+    "description": "Узловатый, с медным навершием. Заклинания с ним выходят злее.",
+    "weapon": {
+      "name": "Дубовый посох",
+      "min": 4,
+      "max": 6,
+      "element": "physical",
+      "two_handed": true
+    },
+    "stats": {
+      "magic_damage_pct": 10
+    }
+  },
+  "wooden_shield": {
+    "name": "Деревянный щит",
+    "type": "armor",
+    "slot": "offhand",
+    "value": 25,
+    "description": "Дубовые доски, окованные железом.",
+    "stats": {
+      "armor": 8
+    }
+  },
+  "leather_cap": {
+    "name": "Кожаная шапка",
+    "type": "armor",
+    "slot": "head",
+    "value": 12,
+    "description": "Лучше, чем ничего. Немного лучше.",
+    "stats": {
+      "armor": 3
+    }
+  },
+  "iron_helm": {
+    "name": "Железный шлем",
+    "type": "armor",
+    "slot": "head",
+    "value": 35,
+    "description": "Тяжёлый, гулкий, в нём плохо слышно. Зато голова цела.",
+    "stats": {
+      "armor": 7,
+      "initiative": -1
+    }
+  },
+  "padded_jacket": {
+    "name": "Стёганка",
+    "type": "armor",
+    "slot": "chest",
+    "value": 22,
+    "description": "Толстая простёганная куртка. Тепло и мягко падать.",
+    "stats": {
+      "armor": 6
+    }
+  },
+  "chainmail": {
+    "name": "Кольчуга",
+    "type": "armor",
+    "slot": "chest",
+    "value": 70,
+    "description": "Двадцать тысяч колец. Тяжёлая, звенит, держит удар.",
+    "stats": {
+      "armor": 14,
+      "dodge": -3
+    }
+  },
+  "leather_gloves": {
+    "name": "Кожаные перчатки",
+    "type": "armor",
+    "slot": "hands",
+    "value": 14,
+    "description": "Рукоять в них не скользит.",
+    "stats": {
+      "armor": 2,
+      "accuracy": 3
+    }
+  },
+  "leather_boots": {
+    "name": "Кожаные сапоги",
+    "type": "armor",
+    "slot": "feet",
+    "value": 15,
+    "description": "Мягкие, не скрипят. Ступать в них легче.",
+    "stats": {
+      "armor": 2,
+      "dodge": 2
+    }
+  },
+  "wool_trousers": {
+    "name": "Шерстяные штаны",
+    "type": "armor",
+    "slot": "legs",
+    "value": 12,
+    "description": "Колются, но греют, и в воде не так холодно.",
+    "stats": {
+      "armor": 3,
+      "water_res": 5
+    }
+  },
+  "leather_belt": {
+    "name": "Кожаный пояс",
+    "type": "armor",
+    "slot": "belt",
+    "value": 10,
+    "description": "С медной пряжкой. Держит спину прямо.",
+    "stats": {
+      "armor": 1,
+      "tenacity_res": 5
+    }
+  },
+  "silver_ring": {
+    "name": "Серебряное кольцо",
+    "type": "trinket",
+    "slot": "ring",
+    "value": 40,
+    "description": "Тонкая работа, внутри выбита руна. Заклинания тянутся к серебру.",
+    "stats": {
+      "magic_damage_pct": 5
+    }
+  },
+  "amber_amulet": {
+    "name": "Янтарный амулет",
+    "type": "trinket",
+    "slot": "amulet",
+    "value": 35,
+    "description": "Тёплый камень с застывшей мошкой. Говорят, оберегает от огня и грозы.",
+    "stats": {
+      "fire_res": 10,
+      "air_res": 10
+    }
+  },
+  "smoked_fish": {
+    "name": "Копчёная рыба",
+    "type": "consumable",
+    "value": 4,
+    "description": "Савкин улов. Пахнет дымом и рекой.",
+    "use": {
+      "heal": 12,
+      "sfx": "potion"
+    }
+  },
+  "honey_cake": {
+    "name": "Медовик",
+    "type": "consumable",
+    "value": 8,
+    "description": "Из пекарни Томаша. Сытно и сладко.",
+    "use": {
+      "heal": 22,
+      "sfx": "potion"
     }
   }
 }

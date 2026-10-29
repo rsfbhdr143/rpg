@@ -155,7 +155,14 @@
     "hunters_mark":   {"cast": "curse"},
     "arrow_rain":     {"cast": "bow_shot", "hit": "arrow_hit", "crit": "melee_crit", "miss": "melee_miss"},
     "tactical_retreat": {"cast": "whoosh"},
-    "dirty_trick":    {"cast": "slash", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"}
+    "dirty_trick":    {"cast": "slash", "hit": "melee_hit", "crit": "melee_crit", "miss": "melee_miss"},
+    "smite":          {"cast": "bless", "hit": "lightning_impact"},
+    "shield_of_faith": {"cast": "bless"},
+    "regenerate":     {"cast": "heal"},
+    "purify":         {"cast": "water_cast"},
+    "healing_circle": {"cast": "heal"},
+    "dread":          {"cast": "curse"},
+    "resurrect":      {"cast": "bell"}
   },
 
   "statuses": {
@@ -174,7 +181,9 @@
     "marked": "curse",
     "rallied": "bless",
     "fortified": "melee_hit",
-    "enraged": "fire_cast"
+    "enraged": "fire_cast",
+    "warded": "bless",
+    "terrified": "curse"
   },
 
   "surfaces": {

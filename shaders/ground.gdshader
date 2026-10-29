@@ -3,6 +3,7 @@
 // Данные приходят маленькими текстурами размером с карту (одна точка = одна клетка):
 //   cells_tex: r = 1 непроходимо, g = номер поверхности (палитра surf_pal), b = 1 выход
 //   hl_tex:    r = можно дойти, g = дальность навыка, b = область удара, a = путь
+//   deco_tex:  r = рисунок на земле (WorldView.DECO): 1 тропа, 2 мостовая, 3 грядки, 4/5 мост вдоль x/y, 6 камни брода
 // За краем карты — та же земля, темнеющая к цвету фона (outer_color), чтобы не было чёрных углов.
 shader_type canvas_item;
 render_mode unshaded;
@@ -10,6 +11,9 @@ render_mode unshaded;
 uniform sampler2D cells_tex : filter_nearest;
 uniform sampler2D hl_tex : filter_nearest;
 uniform sampler2D surf_pal : filter_nearest;
+uniform sampler2D deco_tex : filter_nearest;
+uniform vec4 path_a : source_color = vec4(0.43, 0.36, 0.24, 1.0);
+uniform vec4 path_b : source_color = vec4(0.38, 0.32, 0.23, 1.0);
 uniform sampler2D noise_tex : repeat_enable, filter_linear;
 uniform sampler2D floor_tex : repeat_enable, filter_nearest;
 uniform bool use_floor_tex = false;
@@ -51,6 +55,10 @@ float noise(vec2 p) {
 
 vec4 cell_at(ivec2 c) {
 	return texelFetch(cells_tex, clamp(c, ivec2(0), grid_size - 1), 0);
+}
+
+int deco_at(ivec2 c) {
+	return int(texelFetch(deco_tex, clamp(c, ivec2(0), grid_size - 1), 0).r * 255.0 + 0.5);
 }
 
 vec3 dither_mix(vec3 a, vec3 b, float k, float d) {
@@ -118,6 +126,30 @@ vec3 map_color(vec2 p, vec2 g, ivec2 c, float d) {
 	// под стенами и домами — тень
 	if (cellw.r > 0.5) col *= 0.72;
 
+	// тропы и мостовая — с неровным краем (клетка со смещением по шуму), грядки — ровными рядами
+	int dw = deco_at(cw);
+	int dc = deco_at(c);
+	if (dw == 1) {
+		float pv = fine + (d - 0.5) * 0.3;
+		col = pv > 0.5 ? path_a.rgb : path_b.rgb;
+		if (pv < 0.24) col = path_b.rgb * 0.84;
+		if (hash(vec2(floor(p.x / 2.0), floor(p.y))) > 0.986) col = path_a.rgb * 1.28;   // камешки
+		if (deco_at(ivec2(floor(g + wob * 0.3))) != 1 && d > 0.5) col = mix(col, floor_b.rgb, 0.6);   // трава по краю
+	} else if (dw == 2) {
+		vec2 q = g * 3.0;
+		float shift = mod(floor(q.y), 2.0) * 0.5;
+		vec2 qi = floor(q + vec2(shift, 0.0));
+		vec2 qf = fract(q + vec2(shift, 0.0));
+		col = mix(vec3(0.40, 0.38, 0.34), vec3(0.53, 0.50, 0.44), hash(qi));
+		col = dither_mix(col * 0.9, col, fine + (d - 0.5) * 0.3, 0.45);
+		if (qf.x < 0.09 || qf.y < 0.13) col = vec3(0.23, 0.21, 0.18);
+	}
+	if (dc == 3) {
+		float row = fract(g.y * 3.0);
+		col = row < 0.42 ? vec3(0.26, 0.18, 0.11) : vec3(0.36, 0.26, 0.16);
+		if (row > 0.55 && row < 0.9 && hash(floor(p / 2.0)) > 0.55) col = vec3(0.34, 0.49, 0.21);
+	}
+
 	// поверхности
 	int s = int(cellw.g * 255.0 + 0.5);
 	if (s > 0) {
@@ -129,6 +161,34 @@ vec3 map_color(vec2 p, vec2 g, ivec2 c, float d) {
 
 	vec2 f = fract(g);
 	float edge = min(min(f.x, 1.0 - f.x), min(f.y, 1.0 - f.y));
+
+	// мост: доски поперёк хода, щели, по краям брус перил; поверх воды
+	if (dc == 4 || dc == 5) {
+		bool ax = dc == 4;
+		float along = ax ? f.x : f.y;
+		float across = ax ? f.y : f.x;
+		float plank = floor((ax ? g.x : g.y) * 4.0);
+		col = mix(vec3(0.40, 0.27, 0.16), vec3(0.56, 0.40, 0.24), hash(vec2(plank, 7.0)));
+		col = dither_mix(col * 0.88, col, fine + (d - 0.5) * 0.3, 0.5);
+		if (fract(along * 4.0) < 0.13) col = vec3(0.15, 0.10, 0.06);
+		bool open_a = deco_at(c + (ax ? ivec2(0, -1) : ivec2(-1, 0))) != dc;
+		bool open_b = deco_at(c + (ax ? ivec2(0, 1) : ivec2(1, 0))) != dc;
+		if ((open_a && across < 0.15) || (open_b && across > 0.85)) {
+			col = vec3(0.30, 0.20, 0.11);
+			if (fract(along * 2.0) < 0.2) col = vec3(0.20, 0.13, 0.07);   // столбики перил
+		}
+	}
+	// брод: плоские камни в воде
+	if (dc == 6) {
+		vec2 s1 = (f - vec2(0.3, 0.32)) / vec2(0.2, 0.17);
+		vec2 s2 = (f - vec2(0.7, 0.7)) / vec2(0.19, 0.16);
+		float r = min(dot(s1, s1), dot(s2, s2));
+		if (r < 1.0) {
+			col = mix(vec3(0.45, 0.45, 0.42), vec3(0.62, 0.61, 0.56), step(0.5, hash(floor(g * 2.0))));
+			if (r > 0.65) col *= 0.7;
+			else if ((dot(s1, s1) < 1.0 ? s1.y : s2.y) < -0.35) col *= 1.15;
+		}
+	}
 
 	// выход: мерцающая золотая сетка
 	if (cell.b > 0.5) {

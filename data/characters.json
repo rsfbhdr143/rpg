@@ -23,7 +23,7 @@
     "abilities": {"bow": 1, "expert_marksman": 1, "geomancer": 1, "scoundrel": 1},
     "talents": [],
     "skills": ["attack", "arrow_shot", "pinning_shot", "fire_arrow", "tactical_retreat", "poison_dart"],
-    "weapon": {"name": "Лук", "min": 5, "max": 8, "element": "physical"},
+    "weapon": {"name": "Лук", "min": 5, "max": 8, "element": "physical", "ranged": true},
     "base_stats": {"armor": 10}
   },
   "cleric": {
@@ -31,7 +31,7 @@
     "attributes": {"strength": 5, "dexterity": 5, "intelligence": 8, "constitution": 7, "speed": 5, "perception": 5},
     "abilities": {"hydrosophist": 1, "witchcraft": 1, "willpower": 1},
     "talents": ["walk_it_off"],
-    "skills": ["attack", "minor_heal", "bless"],
+    "skills": ["attack", "minor_heal", "bless", "smite", "shield_of_faith", "regenerate", "purify"],
     "weapon": {"name": "Булава", "min": 4, "max": 6, "element": "physical"},
     "base_stats": {"armor": 14}
   },

@@ -24,6 +24,7 @@ static var dialogues: Dictionary = {}
 static var quests: Dictionary = {}
 static var npcs: Dictionary = {}
 static var items: Dictionary = {}
+static var loot: Dictionary = {}       # что падает с тел (data/story/loot.json)
 static var load_warnings: Array = []   # что не сошлось при слиянии сюжета с картами (видно в тестах)
 
 ## Общий генератор случайных чисел. В тестах можно задать seed.
@@ -68,6 +69,7 @@ static func _load_story() -> void:
 	dialogues = _load_optional(STORY_DIR + "dialogues.json", "dialogues")
 	quests = _load_optional(STORY_DIR + "quests.json", "quests")
 	items = _load_optional(STORY_DIR + "items.json", "items")
+	loot = _load_optional(STORY_DIR + "loot.json", "loot")
 	npcs = _load_optional(STORY_DIR + "npcs.json", "npcs")
 	var enemies := _load_optional(STORY_DIR + "enemies.json", "enemies")
 	for id in enemies:
@@ -181,6 +183,14 @@ static func npc(id: String) -> Dictionary:
 static func item(id: String) -> Dictionary:
 	ensure_loaded()
 	return items.get(id, {})
+
+
+## Строки добычи для шаблона (у жителя без своей записи — "_npc"), [] — с тела ничего не взять.
+static func loot_table(template: String, npc := false) -> Array:
+	ensure_loaded()
+	if loot.has(template):
+		return loot[template]
+	return loot.get("_npc", []) if npc else []
 
 
 static func attribute_list() -> Array:

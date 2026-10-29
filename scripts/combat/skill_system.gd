@@ -2,12 +2,13 @@ class_name SkillSystem
 extends RefCounted
 ## Выполнение навыков из data/skills.json.
 ## Поля навыка:
-##   ap, cooldown, range, target ("enemy" | "ally" | "self" | "cell"),
-##   aoe_radius, affects ("all" | "enemies" | "allies"),
+##   ap, cooldown, range, target ("enemy" | "ally" | "self" | "cell" | "fallen" — павший союзник),
+##   aoe_radius, affects ("all" | "enemies" | "allies"), include_self — навык на себя с областью задевает и самого,
 ##   damage {source: "weapon"|"skill", element, multiplier}, can_miss, can_crit,
 ##   heal {multiplier}, statuses [{id, chance, duration?, on: "target"|"self"}],
 ##   surface {element, radius, create},
 ##   vs_undead {damage, statuses} — что навык делает с нежитью вместо обычного (лечение и благословение жгут её),
+##   cleanse: true — снимает с цели все вредные состояния, revive {hp_pct} — поднимает павшего союзника,
 ##   move: "charge" — рывок: заклинатель бежит к цели (путь не длиннее дальности) и бьёт её с разбега;
 ##         "leap" — прыжок в выбранную свободную клетку (target "cell")
 ## Навык с уроном или стихией, задевший клетку взведённой ловушки, подрывает её; найденную ловушку можно
@@ -42,6 +43,9 @@ static func target_block_reason(combat: CombatManager, u: Character, def: Dictio
 		"cell":
 			if combat.grid.blocked.has(target_cell):
 				return "клетка занята стеной"
+		"fallen":
+			if fallen_at(combat, u, target_cell) == null:
+				return "нужен павший союзник"
 	match str(def.get("move", "")):
 		"leap":
 			if combat.occupied_cells(u).has(target_cell):
@@ -70,7 +74,27 @@ static func charge_path(combat: CombatManager, u: Character, target_cell: Vector
 	return best
 
 
+## Павший союзник в клетке (для воскрешения) или null.
+static func fallen_at(combat: CombatManager, u: Character, c: Vector2i) -> Character:
+	for o in combat.units:
+		var f: Character = o
+		if not f.is_alive() and f.cell == c and f.faction == u.faction and f != u:
+			return f
+	return null
+
+
 static func execute(combat: CombatManager, caster: Character, def: Dictionary, target_cell: Vector2i) -> void:
+	if def.has("revive"):
+		var f := fallen_at(combat, caster, target_cell)
+		if f != null:
+			var rv: Dictionary = def["revive"]
+			f.hp = maxf(1.0, roundf(f.max_hp() * float(rv.get("hp_pct", 30)) / 100.0))
+			f.death_handled = false
+			f.statuses.clear()
+			f.ap = 0
+			GameLog.add("%s поднимается на ноги!" % f.display_name)
+			GameEvents.add("revive", {"unit": f.uid, "amount": int(f.hp)})
+		return
 	if def.has("move"):
 		_move_caster(combat, caster, def, target_cell)
 		if not caster.can_act():   # прыгнул в ловушку или в лёд: удар уже не состоится
@@ -100,6 +124,12 @@ static func execute(combat: CombatManager, caster: Character, def: Dictionary, t
 			target.heal(amount)
 			GameLog.add("%s восстанавливает %d ОЗ." % [target.display_name, amount])
 			GameEvents.add("heal", {"unit": target.uid, "amount": int(amount)})
+		if bool(def.get("cleanse", false)):
+			var bad: Array = target.statuses.keys().filter(func(st): return bool(GameData.status(str(st)).get("negative", false)))
+			for st in bad:
+				target.remove_status(str(st))
+			GameLog.add("%s: %s" % [target.display_name, "снято: " + ", ".join(bad.map(func(st): return str(GameData.status(str(st)).get("name", st)))) if not bad.is_empty() else "снимать нечего"])
+			GameEvents.add("cleanse", {"unit": target.uid, "count": bad.size()})
 		if target.is_alive():
 			_apply_statuses(caster, target, def, "target")
 
@@ -175,7 +205,7 @@ static func _collect_targets(combat: CombatManager, caster: Character, def: Dict
 		var u := combat.unit_at(c)
 		if u == null:
 			continue
-		if tt == "self" and u == caster:
+		if tt == "self" and u == caster and not bool(def.get("include_self", false)):
 			continue
 		if affects == "enemies" and u.faction == caster.faction:
 			continue
