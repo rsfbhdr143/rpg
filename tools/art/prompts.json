@@ -452,7 +452,14 @@
       "subject": "a curved dagger dripping red blood drops",
       "lora_strength": 0.5,
       "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
-    }
+    },
+    "smite": "a pillar of white holy light striking down from the sky",
+    "shield_of_faith": "a translucent golden shield of light with a small sun emblem",
+    "regenerate": "a green sprout growing out of a drop of clear water, glowing softly",
+    "purify": "a clear water drop washing away black smoke",
+    "healing_circle": "a glowing green ring of light on the ground with small crosses",
+    "dread": "a pale ghostly face whispering from black smoke",
+    "resurrect": "a hand reaching up from a grave into a ray of golden light"
   },
   "statuses": {
     "wet": "a blue water droplet",
@@ -474,7 +481,9 @@
     "marked": "a red target crosshair mark",
     "rallied": "a golden war banner",
     "fortified": "a small iron shield with a glowing rim",
-    "enraged": "an angry red flame shaped like a fist"
+    "enraged": "an angry red flame shaped like a fist",
+    "warded": "a small golden shield with a sun emblem",
+    "terrified": "a wide-eyed pale face with a black shadow behind it"
   },
   "portraits": {
     "knight": "a stern medieval knight with short grey hair and a scar, plate armor and a deep blue tabard",

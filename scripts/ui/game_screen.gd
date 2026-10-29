@@ -7,6 +7,9 @@ extends Control
 ## Действия игрока уходят командами Net.send_command(); справка по клавишам — H.
 
 const TITLE_SCENE := "res://scenes/title.tscn"
+const Describe = preload("res://scripts/ui/describe.gd")
+const LootWindow := preload("res://scripts/ui/loot_window.gd")
+const TradeWindow := preload("res://scripts/ui/trade_window.gd")
 
 var session: GameSession
 var world: WorldView
@@ -14,6 +17,8 @@ var hud: Hud
 var dialogue_box: DialogueBox
 var sheet: CharSheet
 var journal: Journal
+var loot_window: LootWindow
+var trade_window: TradeWindow
 var settings: SettingsPanel
 var pause_panel: PanelContainer
 var defeat_panel: PanelContainer
@@ -27,6 +32,7 @@ var selected_uid := ""
 var selected_skill := ""
 var selected_item := ""
 var bar_hover: Dictionary = {}
+var ui_tip := ""   # подсказку у курсора ставят окна (лист героя, торговля, добыча): BBCode, "" — нет
 
 var _bg: ColorRect
 var _queue: Array = []
@@ -110,6 +116,12 @@ func _ready() -> void:
 	journal = Journal.new()
 	journal.screen = self
 	add_child(journal)
+	loot_window = LootWindow.new()
+	loot_window.screen = self
+	add_child(loot_window)
+	trade_window = TradeWindow.new()
+	trade_window.screen = self
+	add_child(trade_window)
 	_build_pause()
 	_build_defeat()
 	_build_end()
@@ -329,6 +341,36 @@ func _present(e: Dictionary) -> float:
 		"heal":
 			world.heal_fx(uid, int(e.get("amount", 0)))
 			return 0.06
+		"revive":
+			var rn := world.unit_node(uid)
+			if rn != null:
+				rn.death_pending = false
+				rn.appear = 0.0
+				rn.rising = true
+			world.heal_fx(uid, int(e.get("amount", 0)))
+			GameAudio.sfx("bless")
+			return 0.4
+		"cleanse":
+			if int(e.get("count", 0)) > 0:
+				world.float_text(world.unit_pos(uid) + Vector2(0, -44), "Очищен", Color("bfe8ff"), 8)
+				world.burst(world.unit_pos(uid) + Vector2(0, -12), Color("bfe8ff"), 10, 26.0)
+			return 0.1
+		"loot_open", "trade_open":
+			# окно открывается, когда герой дошёл до тела или торговца
+			if world.walk_time_left() > 0.05 and not e.has("_waited"):
+				e["_waited"] = true
+				_queue.push_front(e)
+				return world.walk_time_left()
+			if int(e.get("pid", -1)) == Net.my_id():
+				open_panel("")
+				if str(e["type"]) == "loot_open":
+					loot_window.open(str(e.get("corpse", "")), uid)
+				else:
+					trade_window.open(str(e.get("npc", "")), uid if uid != "" else selected_uid)
+			return 0.0
+		"trade_done":
+			GameAudio.sfx("coin")
+			return 0.0
 		"waypoint_found":
 			hud.toast("Путевой камень: %s" % str(e.get("name", "")), UiTheme.GOLD, 3.0)
 			GameAudio.sfx("bell")
@@ -589,8 +631,13 @@ func _update_selection() -> void:
 
 
 func _modal_open() -> bool:
-	return sheet.visible or journal.visible or pause_panel.visible or settings.visible or end_panel.visible or travel_panel.visible \
+	return _window_open() or pause_panel.visible or settings.visible or end_panel.visible or travel_panel.visible \
 		or hud.help_panel.visible
+
+
+## Открыто окно, которое само ставит подсказку у курсора (ui_tip).
+func _window_open() -> bool:
+	return sheet.visible or journal.visible or loot_window.visible or trade_window.visible
 
 
 func _update_hover() -> void:
@@ -707,6 +754,13 @@ func _reachable(u: Character) -> Dictionary:
 
 
 func _attack_skill(u: Character) -> String:
+	# с луком в руках обычная атака — выстрел (как в D:OS), иначе удар оружием
+	if bool(u.effective_weapon().get("ranged", false)):
+		for sk in u.skills:
+			var d := GameData.skill(str(sk))
+			if str((d.get("damage", {}) as Dictionary).get("source", "")) == "weapon" and int(d.get("range", 1)) > 1 \
+					and int(d.get("cooldown", 0)) == 0 and not d.has("statuses"):
+				return str(sk)
 	if u.skills.has("attack"):
 		return "attack"
 	for sk in u.skills:
@@ -797,8 +851,15 @@ func _update_overlays(idle: bool) -> void:
 
 func _update_tooltip() -> void:
 	var text := ""
-	if not bar_hover.is_empty():
+	var st_tip := hud.status_tip_at(get_global_mouse_position())
+	if ui_tip != "" and not _window_open():
+		ui_tip = ""   # окно закрыли, пока мышь была над вещью
+	if ui_tip != "":
+		text = ui_tip
+	elif not bar_hover.is_empty():
 		text = _slot_tip(bar_hover)
+	elif st_tip != "":
+		text = st_tip
 	elif _mouse_on_world and not _modal_open() and not dialogue_box.visible:
 		text = _world_tip()
 	hud.set_tooltip(text, get_global_mouse_position())
@@ -807,42 +868,61 @@ func _update_tooltip() -> void:
 func _slot_tip(slot: Dictionary) -> String:
 	var id := str(slot.get("id", ""))
 	if str(slot.get("kind", "")) == "skill":
-		var def := GameData.skill(id)
-		var u := bar_unit()
-		var lines := PackedStringArray()
-		lines.append("[b]%s[/b]  [color=#9ad248]%d ОД[/color]" % [def.get("name", id), int(def.get("ap", 0))])
-		var info := "Дальность %d" % (SkillSystem.skill_range(u, def) if u != null else int(def.get("range", 1)))
-		if int(def.get("aoe_radius", 0)) > 0:
-			info += " · область %d" % int(def["aoe_radius"])
-		if int(def.get("cooldown", 0)) > 0:
-			info += " · перезарядка %d" % int(def["cooldown"])
-		lines.append(info)
-		var dmg: Dictionary = def.get("damage", {})
-		if not dmg.is_empty():
-			var el := str(dmg.get("element", "physical" if str(dmg.get("source", "")) == "weapon" else ""))
-			lines.append("Урон: %s" % _element_name(el))
-		if def.has("heal"):
-			lines.append("Лечит союзника")
-		for st in def.get("statuses", []):
-			var sd: Dictionary = st
-			lines.append("%s, шанс %d%%" % [GameData.status(str(sd.get("id", ""))).get("name", sd.get("id", "")), int(sd.get("chance", 100))])
-		if def.has("description"):
-			lines.append("[color=#a89a80]%s[/color]" % str(def["description"]))
-		if def.has("vs_undead"):
-			lines.append("[color=#fff0a8]По нежити: святой урон[/color]")
-		if session.mode == "explore":
-			lines.append("[color=#6e6454]Вне боя — без ОД; удар по врагу начнёт бой[/color]")
-		return "\n".join(lines)
+		return skill_tip(id, bar_unit())
+	return Describe.item_text(id) + _item_use_line(id)
+
+
+## Подсказка навыка: дальность, урон или лечение с учётом героя u, статусы с их действием, поверхность.
+func skill_tip(id: String, u: Character) -> String:
+	var def := GameData.skill(id)
+	var lines := PackedStringArray()
+	lines.append("[b]%s[/b]  [color=#9ad248]%d ОД[/color]" % [def.get("name", id), int(def.get("ap", 0))])
+	var info := "Дальность %d" % (SkillSystem.skill_range(u, def) if u != null else int(def.get("range", 1)))
+	if int(def.get("aoe_radius", 0)) > 0:
+		info += " · область %d" % int(def["aoe_radius"])
+	if int(def.get("cooldown", 0)) > 0:
+		info += " · перезарядка %d" % int(def["cooldown"])
+	lines.append(info)
+	if u != null and def.has("damage"):
+		var dl := Describe.damage_line(u, def)
+		lines.append("Урон: " + dl)
+		if bool(def.get("can_miss", false)):
+			lines.append("[color=#6e6454]Может промахнуться: точность против уклонения цели[/color]")
+	if u != null and def.has("heal"):
+		var hp: Array = DamageCalc.heal_preview(u, def)
+		lines.append("Лечит: [color=#9ad248]%d–%d[/color]" % [int(hp[0]), int(hp[1])])
+	if def.has("move"):
+		lines.append("Рывок к цели и удар с разбега" if str(def["move"]) == "charge" else "Прыжок в выбранную клетку")
+	if bool(def.get("cleanse", false)):
+		lines.append("Снимает с цели все вредные состояния")
+	if def.has("revive"):
+		lines.append("Поднимает павшего союзника с %d%% здоровья" % int((def["revive"] as Dictionary).get("hp_pct", 30)))
+	for st in def.get("statuses", []):
+		lines.append(Describe.status_short(st, u.level if u != null else 1))
+	if def.has("surface"):
+		var sf: Dictionary = def["surface"]
+		var sid := GameData.element_surface(str(sf.get("element", "")))
+		if bool(sf.get("create", false)) and sid != "":
+			lines.append("[color=#a89a80]Оставляет на земле: %s[/color]" % str(GameData.surface(sid).get("name", sid)).to_lower())
+	if def.has("description"):
+		lines.append("[color=#a89a80]%s[/color]" % str(def["description"]))
+	if def.has("vs_undead") and u != null:
+		var vs: Dictionary = def["vs_undead"]
+		var vl := Describe.damage_line(u, vs)
+		lines.append("[color=#fff0a8]По нежити вместо этого: %s[/color]" % (vl if vl != "" else "святой свет"))
+	if session != null and session.mode == "explore":
+		lines.append("[color=#6e6454]Вне боя — без ОД; удар по врагу начнёт бой[/color]")
+	return "\n".join(lines)
+
+
+func _item_use_line(id: String) -> String:
 	var idef := GameData.item(id)
-	var out := "[b]%s[/b]" % idef.get("name", id)
-	if idef.has("description"):
-		out += "\n[color=#a89a80]%s[/color]" % str(idef["description"])
 	var use: Dictionary = idef.get("use", {})
 	if use.has("skill"):
-		out += "\nВыберите и укажите клетку · в бою %d ОД, вне боя даром" % int(idef.get("ap", GameData.skill(str(use["skill"])).get("ap", 2)))
-	elif use.has("heal"):
-		out += "\nЛечит %d" % int(use["heal"])
-	return out
+		return "\n[color=#c8a060]Выберите и укажите клетку · в бою %d ОД, вне боя даром[/color]" % int(idef.get("ap", GameData.skill(str(use["skill"])).get("ap", 2)))
+	if not use.is_empty():
+		return "\n[color=#c8a060]ЛКМ — использовать[/color]"
+	return ""
 
 
 func _world_tip() -> String:
@@ -851,13 +931,24 @@ func _world_tip() -> String:
 		if u == null:
 			return ""
 		var lines := PackedStringArray()
+		if not u.is_alive() and session.loot.has(u.uid):
+			var bag: Dictionary = session.loot[u.uid]
+			var n := (bag.get("items", {}) as Dictionary).size() + (1 if int(bag.get("gold", 0)) > 0 else 0)
+			return "[b]Тело: %s[/b]\n[color=#a89a80]Здесь что-то есть (%d)[/color]\n[color=#c8a060]ЛКМ — обыскать[/color]" % [bag.get("name", u.display_name), n]
 		if session.is_npc(u):
 			var nd := GameData.npc(u.template_id)
 			lines.append("[b]%s[/b]" % u.display_name)
 			if nd.has("title"):
 				lines.append("[color=#a89a80]%s[/color]" % str(nd["title"]))
 			if session.mode == "explore" and session.npc_dialogue(u.template_id) != "":
-				lines.append("[color=#c8a060]ЛКМ — поговорить[/color]")
+				lines.append("[color=#c8a060]ЛКМ — поговорить%s[/color]" % (" и поторговать" if nd.has("trade") else ""))
+			elif session.mode == "explore" and nd.has("trade"):
+				lines.append("[color=#c8a060]ЛКМ — торговать[/color]")
+			if bool(nd.get("attackable", true)):
+				if _aim_skill() != "" and _offensive(GameData.skill(_aim_skill())):
+					lines.append("[color=#d8573f]ЛКМ — напасть: житель станет врагом[/color]")
+				else:
+					lines.append("[color=#8a7a6a]Ctrl+ЛКМ — напасть[/color]")
 			return "\n".join(lines)
 		var hero := session.heroes.has(u)
 		var cls := " · " + u.class_title().to_lower() if hero else ""
@@ -866,11 +957,13 @@ func _world_tip() -> String:
 			lines.append("Пал")
 			return "\n".join(lines)
 		lines.append("Здоровье %d/%d · броня %d" % [roundi(u.hp), roundi(u.max_hp()), roundi(DamageCalc.effective_armor(u))])
-		var sts := PackedStringArray()
 		for sid in u.statuses:
-			sts.append("%s (%d)" % [GameData.status(str(sid)).get("name", sid), int(u.statuses[sid].get("turns", 0))])
-		if not sts.is_empty():
-			lines.append("[color=#c8b8ff]%s[/color]" % ", ".join(sts))
+			var st: Dictionary = u.statuses[sid]
+			var sd := GameData.status(str(sid))
+			var fx := Describe.status_effects(str(sid), int(st.get("level", 1)))
+			lines.append("[color=%s]%s[/color] [color=#a89a80](%d х.)[/color] %s" % [
+				Describe.BAD if bool(sd.get("negative", false)) else Describe.GOOD, sd.get("name", sid),
+				int(st.get("turns", 0)), "; ".join(fx) if fx.size() <= 2 else "; ".join(fx.slice(0, 2))])
 		if is_my_turn() and not hero:
 			var cur := session.combat.current
 			var sk := selected_skill if selected_skill != "" else _attack_skill(cur)
@@ -880,13 +973,24 @@ func _world_tip() -> String:
 				if reason == "" or selected_skill == "":
 					if bool(def.get("can_miss", false)):
 						lines.append("Шанс попасть: %d%%" % roundi(DamageCalc.hit_chance(cur, u)))
+					if def.has("damage"):
+						lines.append("Урон по цели: " + Describe.damage_line(cur, def, u))
 					lines.append("[color=#c8a060]ЛКМ — %s (%d ОД)[/color]" % [def.get("name", sk), _preview_ap])
 				else:
 					lines.append("[color=#d8573f]Нельзя: %s[/color]" % reason)
 		elif hero and session.mode == "explore" and session.owner_of(u) == Net.my_id() and u.uid != selected_uid:
 			lines.append("[color=#c8a060]ЛКМ — выбрать[/color]")
 		elif not hero and session.mode == "explore" and session.enemies.has(u):
-			lines.append("[color=#c8a060]ЛКМ — напасть первым[/color]")
+			var me := bar_unit()
+			var sk := _aim_skill()
+			if sk == "" and me != null:
+				sk = _attack_skill(me)
+			var def := GameData.skill(sk)
+			if me != null and def.has("damage"):
+				if bool(def.get("can_miss", false)):
+					lines.append("Шанс попасть: %d%%" % roundi(DamageCalc.hit_chance(me, u)))
+				lines.append("Урон по цели: " + Describe.damage_line(me, def, u))
+			lines.append("[color=#c8a060]ЛКМ — напасть первым%s[/color]" % (" (%s)" % def.get("name", sk) if sk != "" else ""))
 		return "\n".join(lines)
 	if world.hover_object != "":
 		for o in session.location_data().get("objects", []):
@@ -944,11 +1048,6 @@ func _trap_tip(tr: Dictionary) -> String:
 		_:
 			lines.append("Сработала")
 	return "\n".join(lines)
-
-
-static func _element_name(el: String) -> String:
-	return str({"physical": "физический", "fire": "огонь", "water": "вода", "earth": "земля", "air": "воздух",
-		"poison": "яд", "holy": "святой свет", "": "физический"}.get(el, el))
 
 
 # --- Ввод ---------------------------------------------------------------------------------
@@ -1026,15 +1125,21 @@ func _on_world_click() -> void:
 		hu = session.unit_by_uid(world.hover_uid)
 	if session.mode == "explore":
 		if _aim_skill() != "":
-			_cast_explore((hu.cell if hu != null else c))
+			_cast_explore((hu.cell if hu != null else c), hu)
 			return
 		if hu != null and session.heroes.has(hu) and session.owner_of(hu) == Net.my_id():
 			select_hero(hu.uid, false)
 			return
 		if selected_uid == "":
 			return
+		if hu != null and not hu.is_alive() and session.loot.has(hu.uid):
+			_queue_or_send({"type": "loot", "unit": selected_uid, "corpse": hu.uid})
+			return
 		if hu != null and hu.is_alive() and session.enemies.has(hu):
 			_explore_attack(hu)
+			return
+		if hu != null and session.is_npc(hu) and Input.is_key_pressed(KEY_CTRL):
+			_explore_attack(hu, true)   # как в D:OS: Ctrl+ЛКМ — напасть на жителя
 			return
 		if hu != null and session.is_npc(hu):
 			_queue_or_send({"type": "talk", "unit": selected_uid, "target": hu.uid})
@@ -1064,12 +1169,23 @@ func _on_world_click() -> void:
 		return
 	if selected_skill != "":
 		var cell := hu.cell if hu != null else c
+		if session.is_npc(hu) and _offensive(GameData.skill(selected_skill)):
+			send({"type": "skill", "skill": selected_skill, "cell": [cell.x, cell.y], "force": true})
+			_cancel_targeting()
+			return
 		var reason := session.combat.skill_block_reason(cur, selected_skill, cell)
 		if reason != "":
 			_on_notice(reason)
 			return
 		send({"type": "skill", "skill": selected_skill, "cell": [cell.x, cell.y]})
 		_cancel_targeting()
+		return
+	if session.is_npc(hu) and hu.is_alive() and Input.is_key_pressed(KEY_CTRL):
+		var natk := _attack_skill(cur)
+		if natk != "" and SurfaceGrid.distance(cur.cell, hu.cell) <= SkillSystem.skill_range(cur, GameData.skill(natk)):
+			send({"type": "skill", "skill": natk, "cell": [hu.cell.x, hu.cell.y], "force": true})
+		else:
+			_on_notice("слишком далеко")
 		return
 	if hu != null and hu.is_alive() and hu.faction != cur.faction and session.enemies.has(hu):
 		var atk := _attack_skill(cur)
@@ -1095,29 +1211,36 @@ func _on_world_click() -> void:
 
 ## Удар по врагу вне боя, как в D:OS: герой подходит на расстояние удара и бьёт первым — с этого начинается бой.
 ## Так можно напасть и на тех, кто ещё не заметил партию.
-func _explore_attack(foe: Character) -> void:
+func _explore_attack(foe: Character, force := false) -> void:
 	var me := session.unit_by_uid(selected_uid)
 	if me == null:
 		return
 	var atk := _attack_skill(me)
 	if atk == "":
 		return
-	var def := GameData.skill(atk)
 	var cmd := {"type": "skill", "unit": me.uid, "skill": atk, "cell": [foe.cell.x, foe.cell.y]}
+	if force:
+		cmd["force"] = true
+	_strike(me, GameData.skill(atk), foe.cell, cmd, force)
+
+
+## Навык или удар вне боя по клетке target: достаёт — сразу, далеко — герой сам подходит на расстояние навыка
+## и тогда бьёт (молния, стрела, удар мечом — всё равно). force — цель житель: проверку «нужен враг» делает сервер.
+func _strike(me: Character, def: Dictionary, target: Vector2i, cmd: Dictionary, force := false) -> void:
 	var from := _shown_cell(me)
 	var reach := SkillSystem.skill_range(me, def)
 	var reason := ""
-	if from == me.cell:
-		reason = SkillSystem.target_block_reason(session.explore_field(), me, def, foe.cell)
-	elif SurfaceGrid.distance(from, foe.cell) > reach:
-		reason = "слишком далеко"   # герой ещё идёт: дальность считаем от клетки, к которой он идёт
+	if SurfaceGrid.distance(from, target) > reach:
+		reason = "слишком далеко"   # герой, может, ещё идёт: дальность считаем от клетки, к которой он идёт
+	elif from == me.cell and not force:
+		reason = SkillSystem.target_block_reason(session.explore_field(), me, def, target)
 	if reason == "":
 		_queue_or_send(cmd)
 		return
-	if reason != "слишком далеко":
+	if reason != "слишком далеко" or str(def.get("move", "")) != "":
 		_on_notice(reason)
 		return
-	var spot := _strike_spot(me, foe.cell, reach, from)
+	var spot := _strike_spot(me, target, reach, from)
 	if spot.x < -90:
 		_on_notice("не подойти")
 		return
@@ -1125,6 +1248,12 @@ func _explore_attack(foe: Character) -> void:
 	_queue_or_send({"type": "move", "unit": me.uid, "cell": [spot.x, spot.y]})
 	cmd["explore"] = true
 	_pending.append(cmd)
+
+
+## Навык против кого-то: по жителю таким можно ударить (он станет врагом), лечением и благословением — нет.
+static func _offensive(def: Dictionary) -> bool:
+	var tt := str(def.get("target", "enemy"))
+	return tt != "ally" and tt != "self" and (def.has("damage") or def.has("statuses"))
 
 
 ## Ближайшая по пути свободная клетка, откуда герой достаёт цель навыком с дальностью reach.
@@ -1321,7 +1450,7 @@ func _on_escape() -> void:
 		travel_panel.visible = false
 	elif hud.help_panel.visible:
 		hud.help_panel.visible = false
-	elif sheet.visible or journal.visible:
+	elif _window_open():
 		open_panel("")
 	elif pause_panel.visible:
 		pause_panel.visible = false
@@ -1413,18 +1542,18 @@ func _select_explore_skill(skill_id: String) -> void:
 	GameAudio.ui("ui_click")
 
 
-func _cast_explore(cell: Vector2i) -> void:
+func _cast_explore(cell: Vector2i, hu: Character = null) -> void:
 	var u := bar_unit()
 	if u == null:
 		return
-	var reason := SkillSystem.target_block_reason(session.explore_field(), u, GameData.skill(_aim_skill()), cell)
-	if reason != "":
-		_on_notice(reason)
-		return
+	var def := GameData.skill(_aim_skill())
+	var cmd := {"type": "skill", "unit": u.uid, "skill": selected_skill, "cell": [cell.x, cell.y]}
 	if selected_item != "":
-		_queue_or_send({"type": "use_item", "unit": u.uid, "item": selected_item, "cell": [cell.x, cell.y]})
-	else:
-		_queue_or_send({"type": "skill", "unit": u.uid, "skill": selected_skill, "cell": [cell.x, cell.y]})
+		cmd = {"type": "use_item", "unit": u.uid, "item": selected_item, "cell": [cell.x, cell.y]}
+	var force := session.is_npc(hu) and _offensive(def)
+	if force:
+		cmd["force"] = true
+	_strike(u, def, cell, cmd, force)
 	_cancel_targeting()
 
 
@@ -1499,16 +1628,18 @@ func open_panel(which: String) -> void:
 	sheet.visible = false
 	journal.visible = false
 	pause_panel.visible = false
+	if loot_window.visible:
+		loot_window.close()
+	if trade_window.visible:
+		trade_window.close()
+	ui_tip = ""
 	match which:
-		"sheet":
+		"sheet", "bag":   # сумка — в окне героя, рядом с силуэтом
 			if not was_sheet:
 				sheet.open(selected_uid)
 		"journal":
-			if not (was_journal and journal.tab == "quests"):
+			if not was_journal:
 				journal.open("quests")
-		"bag":
-			if not (was_journal and journal.tab == "bag"):
-				journal.open("bag")
 		"menu":
 			pause_panel.visible = true
 	if which != "":

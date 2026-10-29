@@ -336,7 +336,7 @@ func _cleanup_dead() -> void:
 		GameLog.add("%s погибает!" % c.display_name)
 		GameEvents.add("death", {"unit": c.uid, "faction": c.faction})
 		var ds := str(GameData.rule("death_surface", ""))
-		if ds != "" and grid.get_ground(c.cell) == "none":
+		if ds != "" and grid.get_ground(c.cell) == "none" and not c.is_undead():   # мертвецы не кровоточат
 			grid.set_surface(c.cell, ds, c.level)
 		unit_died.emit(c)
 

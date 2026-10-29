@@ -230,6 +230,8 @@ static func _apply_one(s: GameSession, e: Dictionary, hero: Character) -> void:
 				GameEvents.add("tip", {"text": str(v)})
 			"reveal_traps":
 				s.reveal_traps()
+			"trade":   # разговор кончается, и торговец раскладывает товар перед тем, кто говорил
+				s.open_trade(str(v), int(s.dialogue.get("pid", s.leader_id())), str(s.dialogue.get("hero", "")))
 			"count", "stage", "spawn", "target", "duration", "title", "to":
 				pass   # параметры соседних эффектов
 			_:

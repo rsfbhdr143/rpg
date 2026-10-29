@@ -377,6 +377,9 @@ const SKILLS := {
 	"defensive_stance": ["shield", "a8b8d0"], "rage": ["flame", "e04030"], "ground_slam": ["hammer", "c8a070"],
 	"pinning_shot": ["arrow", "a8a090"], "fire_arrow": ["arrow", "ff8a3a"], "hunters_mark": ["eye", "e0c060"],
 	"arrow_rain": ["rain", "c8a060"], "tactical_retreat": ["boot", "8ac8a0"], "dirty_trick": ["sword", "c84040"],
+	"smite": ["sun", "fff0a8"], "shield_of_faith": ["shield", "fff0a8"], "regenerate": ["plus", "82e870"],
+	"purify": ["drop", "bfe8ff"], "healing_circle": ["cross", "a8f090"], "dread": ["eye", "8a60b0"],
+	"resurrect": ["sun", "f8f0d0"], "torch_throw": ["flame", "ff8a3a"],
 }
 
 const STATUSES := {
@@ -385,7 +388,8 @@ const STATUSES := {
 	"stunned": ["bolt", "f0e060"], "knocked_down": ["down", "d8a060"], "slowed": ["hourglass", "a8a090"],
 	"blessed": ["sun", "f0d070"], "cursed": ["eye", "a070d0"], "regenerating": ["plus", "82e870"],
 	"bleeding": ["drop", "c03030"], "marked": ["eye", "e0c060"], "rallied": ["sun", "e8a050"],
-	"fortified": ["shield", "a8b8d0"], "enraged": ["flame", "e04030"],
+	"fortified": ["shield", "a8b8d0"], "enraged": ["flame", "e04030"], "warded": ["shield", "fff0a8"],
+	"terrified": ["eye", "8a60b0"],
 }
 
 const ITEMS := {

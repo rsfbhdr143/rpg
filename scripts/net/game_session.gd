@@ -26,6 +26,10 @@ extends RefCounted
 ##   {"type": "use_item", "unit": uid, "item": id, "cell": [x, y]}   масло, факел: в бою и вне боя, как навык
 ##   {"type": "disarm", "unit": uid, "cell": [x, y]}     подойти к найденной ловушке и обезвредить
 ##   {"type": "travel", "to": id камня}                  перенестись к найденному путевому камню
+##   {"type": "equip"/"unequip", "unit": uid, "item": id}   надеть в свою ячейку (прежний предмет — в сумку) / снять
+##   {"type": "loot", "unit": uid, "corpse": uid}        подойти к телу и обыскать (откроется окно добычи)
+##   {"type": "loot_take", "unit": uid, "corpse": uid, "item": id | "all"}   взять с тела
+##   {"type": "trade_buy"/"trade_sell", "unit": uid, "npc": id, "item": id}  купить у торговца / продать ему
 ##   {"type": "skill", "skill": id, "cell": [x, y]}     в бою — навык текущего героя;
 ##   {"type": "skill", "unit": uid, "skill": id, "cell": [x, y]}  вне боя: без ОД, удар по врагу начинает бой
 ##   {"type": "end_turn"}
@@ -58,9 +62,11 @@ var quests: Dictionary = {}    # id задания -> id текущего эта
 var quest_order: Array = []    # в каком порядке задания получены (для журнала)
 var items: Dictionary = {}     # id предмета -> количество (общая сумка партии)
 var gold := 0
+var loot: Dictionary = {}      # добыча на телах текущей локации: uid тела -> {"cell", "name", "items": {id: n}, "gold"}
+var trade_stock: Dictionary = {}   # товар торговцев: id жителя -> {id предмета: сколько}
 var dialogue: Dictionary = {}  # {"id", "node", "pid", "hero", "npc", "pending"} или {}
 
-var _locations: Dictionary = {}    # id -> {"grid", "enemies", "defeated", "spawned", "npcs"}
+var _locations: Dictionary = {}    # id -> {"grid", "enemies", "defeated", "spawned", "npcs", "loot", "rolled"}
 var _mirror_defeated: Array = []   # у клиента: побеждённые группы (все локации)
 var _mode_before_dialogue := "explore"
 var _explore_clock := 0.0          # секунды вне боя до следующего «хода» (перезарядка, состояния)
@@ -125,6 +131,7 @@ func new_game(choices: Dictionary = {}) -> void:
 	quests.clear()
 	quest_order.clear()
 	items.clear()
+	trade_stock.clear()
 	gold = int(GameData.rule("start_gold", 0))
 	dialogue = {}
 	var start_items: Dictionary = GameData.rule("start_items", {})
@@ -259,6 +266,7 @@ func enter_location(id: String, spawn: String) -> void:
 	entry_spawn = spawn
 	grid = st["grid"]
 	enemies = st["enemies"]
+	loot = st["loot"]
 	combat = null
 	if mode != "dialogue":
 		mode = "explore"
@@ -282,6 +290,7 @@ func goto_location(id: String, spawn: String) -> void:
 	if id == location_id and _locations.has(id):
 		_place_heroes(spawn)
 		return
+	_collect_all_loot()   # сюжет уводит партию сразу после боя: добычу с поля она успевает собрать
 	enter_location(id, spawn)
 
 
@@ -318,7 +327,7 @@ func _build_location(data: Dictionary) -> Dictionary:
 	var trap_list: Array = data.get("traps", [])
 	for t in trap_list:
 		g.traps[_cell_of(t["cell"])] = {"type": str(t["type"]), "state": "hidden", "rolled": {}}
-	return {"grid": g, "enemies": [], "defeated": [], "spawned": [], "npcs": {}}
+	return {"grid": g, "enemies": [], "defeated": [], "spawned": [], "npcs": {}, "loot": {}, "rolled": []}
 
 
 ## Повторный вход: живые враги отдыхают, а встречи с respawn оживают заново.
@@ -419,7 +428,7 @@ func _refresh_npcs(st: Dictionary) -> void:
 
 ## Клетка, у которой стоит NPC в текущей локации, или null, если его здесь нет.
 func npc_spot(nid: String) -> Variant:
-	if flags.has("hide:" + nid):
+	if flags.has("hide:" + nid) or flags.has("attacked:" + nid):
 		return null
 	var def := GameData.npc(nid)
 	var placement: Dictionary = {}
@@ -647,7 +656,7 @@ func give_item(item_id: String, count: int = 1, to: String = "") -> void:
 		for h in heroes:
 			var hero: Character = h
 			if who != "" and hero.template_id == who and not hero.equipment.has(item_id):
-				hero.equipment.append(item_id)
+				_equip(hero, item_id)
 				GameEvents.add("item", {"item": item_id, "count": 1, "unit": hero.uid})
 				GameLog.add("%s получает: %s" % [hero.display_name, name])
 				count -= 1
@@ -665,7 +674,25 @@ func give_item(item_id: String, count: int = 1, to: String = "") -> void:
 
 static func is_equippable(item_id: String) -> bool:
 	var def := GameData.item(item_id)
-	return def.has("stats") or def.has("weapon")
+	return def.has("slot") or def.has("stats") or def.has("weapon")
+
+
+## Надеть предмет в его ячейку, как в D:OS1. Что там было — в сумку; двуручное оружие освобождает вторую руку,
+## щит во вторую руку снимает двуручное оружие. Сам предмет из сумки не берётся (это делает вызывающий).
+func _equip(u: Character, item_id: String) -> void:
+	var slot := Character.slot_of(item_id)
+	var off: Array = []
+	var same := u.in_slot(slot)
+	if same.size() >= Character.slot_capacity(slot):
+		off.append(same[0])
+	if slot == "weapon" and bool((GameData.item(item_id).get("weapon", {}) as Dictionary).get("two_handed", false)):
+		off.append_array(u.in_slot("offhand"))
+	if slot == "offhand" and u.two_handed():
+		off.append_array(u.in_slot("weapon"))
+	for it in off:
+		u.equipment.erase(it)
+		items[str(it)] = int(items.get(str(it), 0)) + 1
+	u.equipment.append(item_id)
 
 
 ## Сколько предметов есть у партии: в сумке и надетых.
@@ -871,6 +898,7 @@ func _start_combat(encounter: String) -> void:
 
 ## Проверяет, не закончился ли бой, и переключает режим.
 func _after_action() -> void:
+	_roll_loot()
 	if mode != "combat" or combat == null or combat.active:
 		return
 	var won := combat.winner_faction == "player"
@@ -954,6 +982,12 @@ func submit(pid: int, cmd: Dictionary) -> String:
 			err = _cmd_travel(pid, cmd)
 		"equip", "unequip":
 			err = _cmd_equip(pid, cmd, kind)
+		"loot":
+			err = _cmd_loot(pid, cmd)
+		"loot_take":
+			err = _cmd_loot_take(pid, cmd)
+		"trade_buy", "trade_sell":
+			err = _cmd_trade(pid, cmd, kind)
 		"skill", "end_turn":
 			err = _cmd_explore_skill(pid, cmd) if kind == "skill" and mode == "explore" else _cmd_combat(pid, cmd, kind)
 		"raise_attribute", "raise_ability", "learn_talent", "learn_skill":
@@ -1290,6 +1324,9 @@ func _cmd_talk(pid: int, cmd: Dictionary) -> String:
 			return "не подойти"
 		if _walk_party(u, best) != "":
 			return ""   # по дороге начался бой, переход или ловушка
+	if dl == "" and GameData.npc(npc_id).has("trade"):   # торговец без разговора сразу раскладывает товар
+		open_trade(npc_id, pid, u.uid)
+		return ""
 	if dl == "":   # житель без разговора отвечает одной из своих реплик
 		var barks: Array = GameData.npc(npc_id).get("barks", [])
 		GameEvents.add("bark", {"unit": str(cmd.get("target", "")), "text": str(barks[randi() % barks.size()])})
@@ -1467,19 +1504,199 @@ func _cmd_equip(pid: int, cmd: Dictionary, kind: String) -> String:
 	if kind == "equip":
 		if not is_equippable(item_id) or int(items.get(item_id, 0)) <= 0:
 			return "это нельзя надеть"
-		if GameData.item(item_id).has("weapon"):   # оружие одно
-			for it in u.equipment.duplicate():
-				if GameData.item(str(it)).has("weapon"):
-					u.equipment.erase(it)
-					items[str(it)] = int(items.get(str(it), 0)) + 1
-		u.equipment.append(item_id)
-		give_item(item_id, -1)
+		items[item_id] = int(items[item_id]) - 1
+		if int(items[item_id]) <= 0:
+			items.erase(item_id)
+		_equip(u, item_id)
 	else:
 		if not u.equipment.has(item_id):
 			return "этот предмет не надет"
 		u.equipment.erase(item_id)
 		items[item_id] = int(items.get(item_id, 0)) + 1
 	GameEvents.add("sfx", {"id": "pickup"})
+	return ""
+
+
+# --- Добыча с тел --------------------------------------------------------------
+
+## Павшие враги, которых ещё не обыскивали, получают добычу по data/story/loot.json: на теле остаётся мешок.
+func _roll_loot() -> void:
+	var st: Dictionary = _locations.get(location_id, {})
+	if st.is_empty():
+		return
+	var rolled: Array = st["rolled"]
+	for e in enemies:
+		var foe: Character = e
+		if foe.is_alive() or rolled.has(foe.uid):
+			continue
+		rolled.append(foe.uid)
+		var npc := foe.encounter_id.begins_with("hostile:")
+		if npc:
+			flags["dead:" + foe.template_id] = true
+		var bag := {"cell": [foe.cell.x, foe.cell.y], "name": foe.display_name, "items": {}, "gold": 0}
+		for row in GameData.loot_table(foe.template_id, npc):
+			var r: Dictionary = row
+			if GameData.rng.randf() * 100.0 >= float(r.get("chance", 100)):
+				continue
+			if r.has("gold"):
+				bag["gold"] = int(bag["gold"]) + _roll_count(r["gold"])
+			elif not GameData.item(str(r.get("item", ""))).is_empty():
+				var id := str(r["item"])
+				bag["items"][id] = int((bag["items"] as Dictionary).get(id, 0)) + _roll_count(r.get("count", 1))
+		if int(bag["gold"]) > 0 or not (bag["items"] as Dictionary).is_empty():
+			loot[foe.uid] = bag
+			GameEvents.add("loot_drop", {"corpse": foe.uid, "cell": bag["cell"]})
+
+
+static func _roll_count(v: Variant) -> int:
+	if typeof(v) == TYPE_ARRAY and (v as Array).size() >= 2:
+		return GameData.rng.randi_range(int(v[0]), int(v[1]))
+	return maxi(1, int(v))
+
+
+## Взять с тела всё или один предмет ("gold" — деньги). Пустой мешок исчезает.
+func _take_loot(corpse: String, what: String) -> void:
+	var bag: Dictionary = loot.get(corpse, {})
+	if bag.is_empty():
+		return
+	var its: Dictionary = bag["items"]
+	if (what == "all" or what == "gold") and int(bag["gold"]) > 0:
+		give_gold(int(bag["gold"]))
+		bag["gold"] = 0
+	for id in its.keys():
+		if what == "all" or what == str(id):
+			give_item(str(id), int(its[id]))
+			its.erase(id)
+	if int(bag["gold"]) <= 0 and its.is_empty():
+		loot.erase(corpse)
+	GameEvents.add("loot_taken", {"corpse": corpse, "empty": not loot.has(corpse)})
+	GameEvents.add("sfx", {"id": "pickup"})
+
+
+## Перед уходом по сюжету: всё, что лежит на телах в этой локации, — в сумку.
+func _collect_all_loot() -> void:
+	if loot.is_empty():
+		return
+	GameLog.add("Перед уходом вы обыскиваете тела.")
+	for corpse in loot.keys():
+		_take_loot(str(corpse), "all")
+
+
+func _cmd_loot(pid: int, cmd: Dictionary) -> String:
+	if mode != "explore":
+		return "в бою не до этого" if mode == "combat" else "сейчас нельзя"
+	var r: Variant = _my_hero(pid, cmd)
+	if typeof(r) == TYPE_STRING:
+		return r
+	var u: Character = r
+	var corpse := str(cmd.get("corpse", ""))
+	var bag: Dictionary = loot.get(corpse, {})
+	if bag.is_empty():
+		return "здесь пусто"
+	var c := _cell_of(bag["cell"])
+	if SurfaceGrid.distance(u.cell, c) > 1:
+		var path := grid.find_path(u.cell, c, _avoid(u, c)) if not _occupied(u).has(c) else _path_next_to(u, [c])
+		if path.is_empty():
+			return "не подойти"
+		if path[-1] == c:
+			path.pop_back()   # встать рядом с телом, а не на него
+		if not path.is_empty() and _walk_party(u, path) != "":
+			return ""   # по дороге что-то случилось
+	GameEvents.add("loot_open", {"pid": pid, "corpse": corpse, "unit": u.uid})
+	GameEvents.add("sfx", {"id": "chest_open"})
+	return ""
+
+
+func _cmd_loot_take(pid: int, cmd: Dictionary) -> String:
+	if mode != "explore":
+		return "сейчас нельзя"
+	var r: Variant = _my_hero(pid, cmd)
+	if typeof(r) == TYPE_STRING:
+		return r
+	var u: Character = r
+	var corpse := str(cmd.get("corpse", ""))
+	var bag: Dictionary = loot.get(corpse, {})
+	if bag.is_empty():
+		return "здесь пусто"
+	if SurfaceGrid.distance(u.cell, _cell_of(bag["cell"])) > 2:
+		return "слишком далеко"
+	_take_loot(corpse, str(cmd.get("item", "all")))
+	return ""
+
+
+# --- Торговля ----------------------------------------------------------------
+
+## Товар торговца (из "trade" в npcs.json, дальше живёт в сессии: купленное убывает, проданное ему — прибывает).
+func trader_stock(nid: String) -> Dictionary:
+	if not trade_stock.has(nid):
+		var stock: Dictionary = (GameData.npc(nid).get("trade", {}) as Dictionary).get("stock", {})
+		trade_stock[nid] = stock.duplicate()
+	return trade_stock[nid]
+
+
+## Цена: торговец продаёт по "value" × buy, покупает по "value" × sell (из "trade" жителя).
+static func price(nid: String, item_id: String, selling: bool) -> int:
+	var t: Dictionary = GameData.npc(nid).get("trade", {})
+	var v := float(GameData.item(item_id).get("value", 0))
+	if selling:
+		return maxi(1, floori(v * float(t.get("sell", 0.4)))) if v > 0.0 else 0
+	return maxi(1, ceili(v * float(t.get("buy", 1.0))))
+
+
+static func can_sell(item_id: String) -> bool:
+	var d := GameData.item(item_id)
+	return str(d.get("type", "")) != "quest" and int(d.get("value", 0)) > 0
+
+
+func open_trade(nid: String, pid: int, hero_uid := "") -> void:
+	trader_stock(nid)
+	GameEvents.add("trade_open", {"pid": pid, "npc": nid, "unit": hero_uid})
+
+
+func _cmd_trade(pid: int, cmd: Dictionary, kind: String) -> String:
+	if mode != "explore":
+		return "сейчас не до торговли"
+	var r: Variant = _my_hero(pid, cmd)
+	if typeof(r) == TYPE_STRING:
+		return r
+	var u: Character = r
+	var nid := str(cmd.get("npc", ""))
+	if not GameData.npc(nid).has("trade"):
+		return "это не торговец"
+	var trader: Character = null
+	for n in npcs:
+		if (n as Character).template_id == nid:
+			trader = n
+	if trader == null:
+		return "торговца здесь нет"
+	if SurfaceGrid.distance(u.cell, trader.cell) > 3:
+		return "подойдите к торговцу"
+	var item_id := str(cmd.get("item", ""))
+	var stock := trader_stock(nid)
+	if kind == "trade_buy":
+		if int(stock.get(item_id, 0)) == 0:
+			return "этого товара нет"
+		var cost := price(nid, item_id, false)
+		if gold < cost:
+			return "не хватает золота"
+		if int(stock[item_id]) > 0:
+			stock[item_id] = int(stock[item_id]) - 1
+			if int(stock[item_id]) <= 0:
+				stock.erase(item_id)
+		give_gold(-cost)
+		give_item(item_id, 1)
+		GameEvents.add("sfx", {"id": "coin"})
+	else:
+		if int(items.get(item_id, 0)) <= 0:
+			return "такого в сумке нет"
+		if not can_sell(item_id):
+			return "это не продаётся"
+		give_item(item_id, -1)
+		give_gold(price(nid, item_id, true))
+		if int(stock.get(item_id, 0)) >= 0:
+			stock[item_id] = int(stock.get(item_id, 0)) + 1
+		GameEvents.add("sfx", {"id": "coin"})
+	GameEvents.add("trade_done", {"npc": nid})
 	return ""
 
 
@@ -1507,6 +1724,10 @@ func _cmd_combat(pid: int, cmd: Dictionary, kind: String) -> String:
 				return "туда не дойти (ОД: %d)" % u.ap
 		"skill":
 			var skill_id := str(cmd.get("skill", ""))
+			if bool(cmd.get("force", false)):
+				var enc := _provoke_npc(u, GameData.skill(skill_id), _cell(cmd))
+				if enc != "":
+					_join_combat(enc)
 			var reason := combat.skill_block_reason(u, skill_id, _cell(cmd))
 			if reason != "":
 				return reason
@@ -1568,6 +1789,57 @@ func _join_combat(encounter: String) -> void:
 	GameEvents.add("combat_join", {"encounter": encounter, "units": fresh.map(func(e): return e.uid)})
 
 
+## Удар по жителю, как в D:OS (Ctrl+ЛКМ или навыком прямо в него): житель хватается за оружие и становится врагом.
+## У кого в npcs.json есть "on_attack" (Шмыг, Мухоглот), вместо этого начинается их сюжетная встреча.
+## "attackable": false — на этого не напасть (призрак). Возвращает id отряда врагов или "".
+func _provoke_npc(u: Character, def: Dictionary, cell: Vector2i) -> String:
+	var n: Character = null
+	for c in npcs:
+		if (c as Character).is_alive() and (c as Character).cell == cell:
+			n = c
+	if n == null or u == null or not heroes.has(u):
+		return ""
+	var tt := str(def.get("target", "enemy"))
+	if tt == "ally" or tt == "self" or not (def.has("damage") or def.has("statuses")):
+		return ""
+	if SurfaceGrid.distance(u.cell, cell) > SkillSystem.skill_range(u, def):
+		return ""
+	var nid := n.template_id
+	var nd := GameData.npc(nid)
+	if not bool(nd.get("attackable", true)):
+		return ""
+	var st: Dictionary = _locations.get(location_id, {})
+	if st.is_empty():
+		return ""
+	npcs.erase(n)
+	(st["npcs"] as Dictionary).erase(nid)
+	flags["hide:" + nid] = true
+	flags["attacked:" + nid] = true
+	var enc := str(nd.get("on_attack", ""))
+	if enc != "" and not encounter_def(enc).is_empty() and not (st["defeated"] as Array).has(enc):
+		_spawn_encounters(st, enc)
+		var first: Array = enemies.filter(func(e): return e.encounter_id == enc and e.is_alive())
+		if not first.is_empty():
+			var taken := _occupied(first[0])
+			if not taken.has(n.cell):
+				(first[0] as Character).cell = n.cell
+		GameLog.add("%s принимает бой!" % n.display_name)
+		return enc
+	enc = "hostile:" + nid
+	n.faction = "enemy"
+	n.encounter_id = enc
+	if n.skills.is_empty():
+		n.skills = ["attack"]
+	n.xp_reward = maxi(n.xp_reward, 15 * n.level)
+	enemies.append(n)
+	if not (st["spawned"] as Array).has(enc):
+		st["spawned"].append(enc)
+	var angry: Array = nd.get("angry", ["Да ты что творишь?!", "Стража! Убивают!", "Ах ты ж…"])
+	GameEvents.add("bark", {"unit": n.uid, "text": str(angry[GameData.rng.randi() % angry.size()])})
+	GameLog.add("%s хватается за что попало: теперь это враг." % n.display_name)
+	return enc
+
+
 ## Навык вне боя, как в D:OS: лечение, благословение, дождь на огонь, масло под ноги. ОД не тратит,
 ## перезарядка идёт по времени (pass_time). Жителей навыки не задевают; задели врага — начинается бой.
 ## item_id — навык из предмета (масло, факел): тратится предмет, а не перезарядка.
@@ -1586,8 +1858,10 @@ func _cmd_explore_skill(pid: int, cmd: Dictionary, item_id := "") -> String:
 		return "не может действовать"
 	if item_id == "" and u.cooldowns.has(skill_id):
 		return "перезарядка %d" % int(u.cooldowns[skill_id])
-	var field := explore_field()
 	var target := u.cell if str(def.get("target", "")) == "self" else _cell(cmd)
+	if bool(cmd.get("force", false)):
+		_provoke_npc(u, def, target)
+	var field := explore_field()
 	var reason := SkillSystem.target_block_reason(field, u, def, target)
 	if reason != "":
 		return reason
@@ -1759,6 +2033,8 @@ func to_save() -> Dictionary:
 			"enemies": st["enemies"].map(func(e): return e.to_dict()),
 			"defeated": st["defeated"].duplicate(),
 			"spawned": st["spawned"].duplicate(),
+			"loot": (st["loot"] as Dictionary).duplicate(true),
+			"rolled": (st["rolled"] as Array).duplicate(),
 		}
 	return {
 		"version": SAVE_VERSION,
@@ -1771,6 +2047,7 @@ func to_save() -> Dictionary:
 		"quest_order": quest_order.duplicate(),
 		"items": items.duplicate(),
 		"gold": gold,
+		"trade_stock": trade_stock.duplicate(true),
 	}
 
 
@@ -1794,8 +2071,10 @@ func from_save(d: Dictionary) -> void:
 			for f in foes:
 				if not spawned.has(f.encounter_id):
 					spawned.append(f.encounter_id)
+		var rolled: Array = ld.get("rolled", foes.filter(func(f): return not f.is_alive()).map(func(f): return f.uid))
 		_locations[id] = {"grid": SurfaceGrid.from_dict(ld.get("grid", {})), "enemies": foes,
-			"defeated": defeated.duplicate(), "spawned": spawned.duplicate(), "npcs": {}}
+			"defeated": defeated.duplicate(), "spawned": spawned.duplicate(), "npcs": {},
+			"loot": (ld.get("loot", {}) as Dictionary).duplicate(true), "rolled": rolled.duplicate()}
 	flags = (d.get("flags", {}) as Dictionary).duplicate()
 	quests = (d.get("quests", {}) as Dictionary).duplicate()
 	quest_order = (d.get("quest_order", []) as Array).duplicate()
@@ -1804,11 +2083,13 @@ func from_save(d: Dictionary) -> void:
 	for k in its:
 		items[str(k)] = int(its[k])
 	gold = int(d.get("gold", 0))
+	trade_stock = (d.get("trade_stock", {}) as Dictionary).duplicate(true)
 	location_id = str(d.get("location", ""))
 	entry_spawn = str(d.get("entry_spawn", ""))
 	var st: Dictionary = _locations.get(location_id, {})
 	grid = st.get("grid", null)
 	enemies = st.get("enemies", [])
+	loot = st.get("loot", {})
 	combat = null
 	dialogue = {}
 	mode = "explore"
@@ -1839,6 +2120,8 @@ func snapshot(log_tail: int = 40) -> Dictionary:
 		"quest_order": quest_order.duplicate(),
 		"items": items.duplicate(),
 		"gold": gold,
+		"loot": loot.duplicate(true),
+		"trade_stock": trade_stock.duplicate(true),
 		"dialogue": dialogue.duplicate(true),
 	}
 	if combat != null:
@@ -1867,6 +2150,8 @@ func load_snapshot(s: Dictionary) -> void:
 	quest_order = (s.get("quest_order", []) as Array).duplicate()
 	items = (s.get("items", {}) as Dictionary).duplicate()
 	gold = int(s.get("gold", 0))
+	loot = (s.get("loot", {}) as Dictionary).duplicate(true)
+	trade_stock = (s.get("trade_stock", {}) as Dictionary).duplicate(true)
 	dialogue = (s.get("dialogue", {}) as Dictionary).duplicate(true)
 
 	var by_uid := {}

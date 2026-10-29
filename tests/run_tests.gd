@@ -18,7 +18,8 @@ func _init() -> void:
 		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
 		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_village", "test_join_combat",
-		"test_physical_skills", "test_notice_board",
+		"test_physical_skills", "test_notice_board", "test_tooltips_text", "test_attack_villagers", "test_cleric_skills",
+		"test_loot", "test_equipment_slots", "test_trade",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -1075,3 +1076,226 @@ func test_notice_board() -> void:
 	check(left.all(func(c): return int((c as Dictionary).get("page", -1)) != 0), "второй раз не сорвать")
 	s.submit(1, {"type": "dialogue_choice", "index": int(left[-1]["index"])})
 	check(s.mode == "explore", "отошли от доски")
+
+
+func test_tooltips_text() -> void:
+	print("tooltips: skill damage, status effects, items and attributes are described")
+	var Describe: GDScript = load("res://scripts/ui/describe.gd")
+	var k := Character.from_template("knight")
+	var w := Character.from_template("wizard")
+	var e := Character.from_template("goblin_warrior")
+	var p := DamageCalc.preview(k, GameData.skill("attack"))
+	check(int(p["min"]) > 0 and int(p["max"]) >= int(p["min"]), "удар рыцаря: %d–%d" % [int(p["min"]), int(p["max"])])
+	var pt := DamageCalc.preview(k, GameData.skill("attack"), e)
+	check(int(pt["max"]) <= int(p["max"]) and float(pt["hit_chance"]) >= 5.0 and float(pt["hit_chance"]) <= 95.0, "по гоблину с бронёй и шансом попасть")
+	for sk in w.skills:
+		var def := GameData.skill(str(sk))
+		if def.has("damage"):
+			check(str(Describe.call("damage_line", w, def)) != "", "урон навыка %s расписан" % sk)
+	var heal := DamageCalc.heal_preview(Character.from_template("cleric"), GameData.skill("minor_heal"))
+	check(int(heal[0]) > 0 and int(heal[1]) >= int(heal[0]), "лечение жрицы: %d–%d" % [int(heal[0]), int(heal[1])])
+	for st in GameData.statuses:
+		check(str(GameData.status(str(st)).get("description", "")) != "", "у состояния %s есть описание" % st)
+		check(str(Describe.call("status_text", str(st), 2, 1)) != "", "состояние %s расписано" % st)
+	check((Describe.call("status_effects", "wet", 1) as PackedStringArray).size() > 0, "мокрый: видно, что меняется")
+	var mask := str(Describe.call("item_text", "mukhoglot_mask", ""))
+	check(mask.contains("Голова") and mask.contains("яд"), "маска Мухоглота: ячейка и защита от яда")
+	for a in GameData.attribute_list():
+		check(str(Describe.call("attribute_effects", str(a))) != "", "атрибут %s: что даёт очко" % a)
+		check(str((GameData.rule("attribute_info", {}) as Dictionary).get(a, "")) != "", "атрибут %s: зачем качать" % a)
+
+
+func test_attack_villagers() -> void:
+	print("attack anyone: a forced hit turns a villager into an enemy, Shmyg starts his own fight")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var target: Character = null
+	for n in s.npcs:
+		var nd := GameData.npc((n as Character).template_id)
+		if bool(nd.get("attackable", true)) and str(nd.get("on_attack", "")) == "" and not nd.has("trade") and not nd.has("dialogue"):
+			target = n
+	check(target != null, "есть житель, на которого можно напасть")
+	if target == null:
+		return
+	h.cell = _free_neighbor(s, target.cell)
+	var cmd := {"type": "skill", "unit": h.uid, "skill": "attack", "cell": [target.cell.x, target.cell.y]}
+	check(s.submit(1, cmd) != "" and s.mode == "explore", "без принуждения по жителю не бьём")
+	cmd["force"] = true
+	check(s.submit(1, cmd) == "", "Ctrl+ЛКМ — удар по жителю")
+	check(s.enemies.has(target) and target.faction == "enemy", "житель стал врагом")
+	check(s.mode == "combat" or not target.is_alive(), "начался бой (или житель пал сразу)")
+	check(s.npc_spot(target.template_id) == null and s.flags.has("attacked:" + target.template_id), "больше он не появится мирным")
+	_drive(s, true)
+	check(not target.is_alive(), "житель побеждён")
+	check(s.loot.has(target.uid), "с тела можно что-то снять")
+
+	var f := _story_session("forest")
+	var shmyg: Character = null
+	for n in f.npcs:
+		if (n as Character).template_id == "shmyg":
+			shmyg = n
+	check(shmyg != null, "Шмыг в лесу")
+	if shmyg == null:
+		return
+	var fh: Character = f.heroes[0]
+	fh.cell = _free_neighbor(f, shmyg.cell)
+	check(f.submit(1, {"type": "skill", "unit": fh.uid, "skill": "attack", "cell": [shmyg.cell.x, shmyg.cell.y], "force": true}) == "", "удар по Шмыгу")
+	check(f.enemies.any(func(x): return (x as Character).encounter_id == "forest_scout"), "Шмыг принимает бой: его сценарный отряд появился")
+	check(f.mode == "combat", "бой со Шмыгом")
+
+
+func test_cleric_skills() -> void:
+	print("priestess: smite, purify, healing circle, resurrect")
+	var own: Array = GameData.character("cleric").get("skills", [])
+	check(own.size() >= 6, "жрица начинает с %d навыками" % own.size())
+	var g := SurfaceGrid.new(10, 8)
+	var c := Character.from_template("cleric")
+	var k := Character.from_template("knight")
+	var wz := Character.from_template("wizard")
+	var sk := Character.from_template("skeleton")
+	c.cell = Vector2i(2, 3)
+	k.cell = Vector2i(3, 3)
+	wz.cell = Vector2i(2, 4)
+	sk.cell = Vector2i(6, 3)
+	for extra in ["healing_circle", "resurrect", "dread"]:
+		c.skills.append(extra)
+	var combat := CombatManager.new(g)
+	combat.start([c, k, wz, sk])
+	combat.current = c
+	c.ap = 30
+	var hp := sk.hp
+	check(combat.use_skill(c, "smite", sk.cell), "кара по скелету")
+	check(sk.hp < hp or GameEvents.list.any(func(ev): return str(ev["type"]) == "miss"), "свет ранит нежить")
+	StatusSystem.apply(k, "poisoned")
+	StatusSystem.apply(k, "burning")
+	GameEvents.clear()
+	check(combat.use_skill(c, "purify", k.cell), "очищение")
+	check(not k.has_status("poisoned") and not k.has_status("burning"), "вредные состояния сняты")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "cleanse"), "событие очищения")
+	c.hp = 5
+	k.hp = 5
+	c.cooldowns.clear()
+	check(combat.use_skill(c, "healing_circle", c.cell), "круг исцеления")
+	check(c.hp > 5 and k.hp > 5, "лечит и саму жрицу, и соседа")
+	wz.hp = 0
+	combat._cleanup_dead()
+	check(not wz.is_alive(), "волшебница пала")
+	check(combat.skill_block_reason(c, "resurrect", k.cell) != "", "живого не воскрешают")
+	check(combat.use_skill(c, "resurrect", wz.cell), "воскрешение")
+	check(wz.is_alive() and wz.hp >= roundf(wz.max_hp() * 0.25), "волшебница поднялась с %d ОЗ" % roundi(wz.hp))
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "revive"), "событие воскрешения")
+	check(not GameData.skill("shield_of_faith").is_empty() and not GameData.status("warded").is_empty(), "щит веры и его состояние")
+
+
+func test_loot() -> void:
+	print("loot: bodies leave bags, take items, leftovers are collected when the story moves on")
+	check(GameData.loot_table("boss_mukhoglot").any(func(r): return str((r as Dictionary).get("item", "")) == "mukhoglot_mask"), "Мухоглот роняет маску")
+	check(not GameData.loot_table("someone", true).is_empty(), "у жителей без своей записи есть общая добыча")
+	var s := _story_session("forest")
+	for x in s.enemies:
+		var foe: Character = x
+		foe.hp = 0
+	s._roll_loot()
+	check(not s.loot.is_empty(), "с лесных врагов что-то упало (%d мешков)" % s.loot.size())
+	if s.loot.is_empty():
+		return
+	var corpse := str(s.loot.keys()[0])
+	var bag: Dictionary = s.loot[corpse]
+	var h: Character = s.heroes[0]
+	var bc := Vector2i(int(bag["cell"][0]), int(bag["cell"][1]))
+	h.cell = _free_neighbor(s, bc)
+	var gold := s.gold
+	var count := 0
+	for id in s.items:
+		count += int(s.items[id])
+	GameEvents.clear()
+	check(s.submit(1, {"type": "loot", "unit": h.uid, "corpse": corpse}) == "", "обыскать тело")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "loot_open"), "окно добычи открывается")
+	check(s.submit(1, {"type": "loot_take", "unit": h.uid, "corpse": corpse, "item": "all"}) == "", "взять всё")
+	var after := 0
+	for id in s.items:
+		after += int(s.items[id])
+	check(not s.loot.has(corpse) and (after > count or s.gold > gold), "мешок опустел, вещи в сумке")
+	var snap := s.snapshot()
+	var m := GameSession.new()
+	m.load_snapshot(snap)
+	check(m.loot.size() == s.loot.size(), "добыча видна клиенту")
+	var left := s.loot.size()
+	s.mode = "explore"
+	s.goto_location("village", "from_forest")
+	var forest_loot: Dictionary = s._locations["forest"]["loot"]
+	check(left == 0 or forest_loot.is_empty(), "уходя по сюжету, отряд забирает остальное")
+
+
+func test_equipment_slots() -> void:
+	print("equipment: DOS1-like slots, two rings, two-handed weapons free the off hand")
+	check(Character.slot_of("mukhoglot_mask") == "head" and Character.slot_of("silver_ring") == "ring", "ячейки предметов")
+	check(Character.slot_capacity("ring") == 2 and Character.slot_capacity("head") == 1, "колец два, шлем один")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	for it in ["silver_ring", "silver_ring", "silver_ring", "iron_sword", "wooden_shield", "hunting_bow", "mukhoglot_mask"]:
+		s.items[it] = int(s.items.get(it, 0)) + 1
+	for i in 3:
+		check(s.submit(1, {"type": "equip", "unit": h.uid, "item": "silver_ring"}) == "", "кольцо %d" % (i + 1))
+	check(h.in_slot("ring").size() == 2 and int(s.items.get("silver_ring", 0)) == 1, "надето два кольца, третье в сумке")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "iron_sword"})
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "wooden_shield"})
+	check(h.equipment.has("iron_sword") and h.equipment.has("wooden_shield"), "меч и щит")
+	check(str(h.effective_weapon().get("name", "")) == str(GameData.item("iron_sword")["name"]), "бьёт надетым мечом")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "hunting_bow"})
+	check(h.equipment.has("hunting_bow") and not h.equipment.has("wooden_shield") and not h.equipment.has("iron_sword"), "лук в две руки: меч и щит в сумку")
+	check(bool(h.effective_weapon().get("ranged", false)), "с луком атака — выстрел")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "wooden_shield"})
+	check(h.equipment.has("wooden_shield") and not h.equipment.has("hunting_bow"), "щит снимает двуручный лук")
+	var res := h.get_resistance("poison")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "mukhoglot_mask"})
+	check(h.get_resistance("poison") > res, "маска защищает от яда")
+	s.mode = "combat"
+	check(s.submit(1, {"type": "unequip", "unit": h.uid, "item": "mukhoglot_mask"}) != "", "в бою не переодеться")
+	s.mode = "explore"
+
+
+func test_trade() -> void:
+	print("trade: buy and sell with the smith, the trader and the innkeeper")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var gunter: Character = null
+	var marta: Character = null
+	for n in s.npcs:
+		match (n as Character).template_id:
+			"gunter":
+				gunter = n
+			"marta":
+				marta = n
+	check(gunter != null and marta != null, "кузнец и трактирщица в деревне")
+	if gunter == null or marta == null:
+		return
+	h.cell = _free_neighbor(s, gunter.cell)
+	s.gold = 200
+	var cost := GameSession.price("gunter", "iron_sword", false)
+	var stock := int(s.trader_stock("gunter").get("iron_sword", 0))
+	check(cost > 0 and stock > 0, "у кузнеца есть меч за %d" % cost)
+	check(s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "gunter", "item": "iron_sword"}) == "", "купить меч")
+	check(s.gold == 200 - cost and s.items.has("iron_sword"), "золото списано, меч в сумке")
+	check(int(s.trader_stock("gunter").get("iron_sword", 0)) == stock - 1, "у кузнеца мечей меньше")
+	s.items["wolf_fang"] = 2
+	var g0 := s.gold
+	check(s.submit(1, {"type": "trade_sell", "unit": h.uid, "npc": "gunter", "item": "wolf_fang"}) == "", "продать клык")
+	check(s.gold == g0 + GameSession.price("gunter", "wolf_fang", true) and int(s.items["wolf_fang"]) == 1, "клык продан")
+	s.items["lado_map"] = 1
+	check(s.submit(1, {"type": "trade_sell", "unit": h.uid, "npc": "gunter", "item": "lado_map"}) != "", "памятные вещи не продаются")
+	s.gold = 0
+	check(s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "gunter", "item": "chainmail"}) != "", "без денег не купить")
+	h.cell = _free_neighbor(s, marta.cell)
+	s.gold = 100
+	for i in 3:
+		s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "marta", "item": "smoked_fish"})
+	check(int(s.items.get("smoked_fish", 0)) == 3 and int(s.trader_stock("marta")["smoked_fish"]) == -1, "рыбы у Марты сколько угодно")
+	h.cell = _free_neighbor(s, gunter.cell)
+	check(s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "marta", "item": "smoked_fish"}) != "", "издалека не торгуют")
+	GameEvents.clear()
+	Story.apply(s, [{"trade": "marta"}])
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "trade_open" and str(ev["npc"]) == "marta"), "из разговора открывается торговля")
+	var m := GameSession.new()
+	m.load_snapshot(s.snapshot())
+	check(int((m.trade_stock.get("gunter", {}) as Dictionary).get("iron_sword", 0)) == stock - 1, "запасы торговцев видны клиенту")
