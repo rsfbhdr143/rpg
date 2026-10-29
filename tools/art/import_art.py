@@ -551,6 +551,9 @@ class Asset:
     pixel_colors: int = 0
     pixel_tone: tuple[float, float] = (1.0, 1.0)     # из подсказки: [яркость, насыщенность] при пикселизации
     pixel_trim: bool = False                         # из подсказки: срезать светлую бумагу снизу и мелкие обрывки
+    painted: bool = False                            # из подсказки: не пикселизовать (портреты, значки из Nano Banana)
+    max_side: int = 0                                # из подсказки: свой предел стороны кадра вместо MAX_FRAME_SIDE
+    doors: bool = False                              # из подсказки: на доме нарисованы двери (игра свои не рисует)
 
     def add_anim(self, anim: Anim) -> None:
         names = {a.name for a in self.anims}
@@ -719,6 +722,9 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             if ov.get("pixel_tone"):
                 asset.pixel_tone = (float(ov["pixel_tone"][0]), float(ov["pixel_tone"][1]))
             asset.pixel_trim = bool(ov.get("pixel_trim", False))
+            asset.painted = bool(ov.get("painted", False))
+            asset.max_side = int(ov.get("max_side", 0))
+            asset.doors = bool(ov.get("doors", False))
             frames = open_frames(path)
             if len(frames) > 1:                       # анимированный GIF / WebP
                 asset.kind = "effect" if "effect" in own | around else "unit"
@@ -1069,7 +1075,9 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None
     rows = len(cells) // cols
     pixel = is_pixel_art(flat)
     target = None
-    if not pixel and pixelate is not None and asset.tiles is None:
+    if asset.max_side:
+        max_side = asset.max_side
+    if not pixel and pixelate is not None and asset.tiles is None and not asset.painted:
         target = asset.pixel_box or pixel_box(asset.kind, (fw, fh), pixelate)
     scale = min(1.0, max_side / max(fw, fh)) if target is None else min(1.0, target[0] / fw, target[1] / fh)
     tw, th = max(1, round(fw * scale)), max(1, round(fh * scale))
@@ -1105,6 +1113,10 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None
     }
     if scale != 1.0:
         entry["scale"] = round(scale, 4)
+    if asset.painted:
+        entry["painted"] = True             # рисованная картинка: игра уменьшает её плавно, без пикселизации
+    if asset.doors:
+        entry["doors"] = True
     if all((np.asarray(f)[..., 3] >= 250).mean() >= 0.97 for f in flat):
         entry["opaque"] = True              # сплошная текстура (пол, стена); скруглённые уголки не мешают
     if anims:

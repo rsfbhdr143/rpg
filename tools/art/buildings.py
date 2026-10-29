@@ -6,8 +6,8 @@
 Все дома — один набор: те же материалы и свет; у церкви, кузни, таверны, хижины Ветлы и склепа свои особенности.
 
 Читает дома из карт (data/locations.json, буквы с "building") и для каждого пишет в art/inbox/buildings/ картинку
-с привязкой props/bld_<id> (в карте дома: "sprite": "bld_<id>", без "flip"). Двери не рисуются: их рисует игра там,
-где они на карте; окна обходят двери. Картинка не обрезается: ближний угол дома — середина нижнего края.
+с привязкой props/bld_<id> (в карте дома: "sprite": "bld_<id>", без "flip"). Двери нарисованы ровно в клетках дверей
+карты (на видимых стенах, как is_front в игре), поэтому игра свою дверь поверх рисунка не рисует; окна обходят двери. Картинка не обрезается: ближний угол дома — середина нижнего края.
 Буква дома, которая стоит не в углу стен (та же буква у мебели внутри другого дома), домом не считается.
 Ещё здесь колокольня (props/bell_tower, место 2×2), колодец (props/well, место 2×2) и доска объявлений
 (props/notice_board, клетка; середина клетки — середина нижнего края) в том же стиле, и большая доска для окна
@@ -397,6 +397,7 @@ def build_house(sc: Scene, w: int, h: int, look: Look, doors: list[tuple[int, in
         cb = B / 2 - 0.9
         box(sc, P(ca, cb, H), P(ca + 0.7, cb + 0.7, ridge_z + 14), lambda u, v, z: stone(u + v, z, look.seed + 9, (112, 104, 96)))
     windows(sc, w, h, look, doors)
+    doors_on_walls(sc, w, h, look, doors)
     return {"apex": P(A, B / 2, ridge_z), "ridge_z": ridge_z, "along_u": along_u}
 
 
@@ -478,6 +479,62 @@ def window(sc: Scene, axis: str, w: int, h: int, mid: float, z0: float, look: Lo
         return
     sc.poly([at(mid - hw - 0.08, z0 - 3, 0.07), at(mid + hw + 0.08, z0 - 3, 0.07), at(mid + hw + 0.08, z0 - 1.5, 0.07),
              at(mid - hw - 0.08, z0 - 1.5, 0.07)], sill, face)
+
+
+DOOR_H = 36.0           # как BuildingArt.DOOR_H в игре
+
+
+def doors_on_walls(sc: Scene, w: int, h: int, look: Look, doors: list[tuple[int, int]]):
+    """Двери на видимых стенах ровно в клетках дверей карты: проём, створка из досок, перемычка, порог.
+    Нижний ряд дома — стена +v (вдоль u), правый столбец — стена +u (вдоль v), как is_front в игре."""
+    for x, y in doors:
+        if y == h - 1:
+            door(sc, "u", w, h, x + 0.5, look)
+        elif x == w - 1:
+            door(sc, "v", w, h, y + 0.5, look)
+
+
+def door(sc: Scene, axis: str, w: int, h: int, mid: float, look: Look):
+    def at(s, z, out):
+        return (s, h + out, z) if axis == "u" else (w + out, s, z)
+    face = LIGHT["+v" if axis == "u" else "+u"]
+    church = look.win == "arch"
+    hw = 0.42 if church else 0.32                      # полуширина створки в клетках
+    top = DOOR_H + (6 if church else 0)
+    stone_wall = look.wall == "stone"
+    frame = shade(STONE, 0.62) if stone_wall else shade(look.beam, 0.85)
+    arch = (lambda s0, s1, z, out: [at(s0, 0, out), at(s1, 0, out), at(s1, z, out), at(mid, z + 9, out), at(s0, z, out)]) \
+        if church else (lambda s0, s1, z, out: [at(s0, 0, out), at(s1, 0, out), at(s1, z, out), at(s0, z, out)])
+    sc.poly(arch(mid - hw - 0.08, mid + hw + 0.08, top + 3, 0.03), flat(frame), face)       # наличник / камень
+    sc.poly(arch(mid - hw, mid + hw, top, 0.04), flat((30, 20, 12)), face)                    # тёмный проём
+    wood = (122, 80, 46) if not church else (98, 60, 36)
+
+    def leaf(u, v, z):
+        s = u if axis == "u" else v
+        k = (s - (mid - hw * 0.9)) / (hw * 1.8)
+        col = shade(wood, 0.92 + 0.14 * noise(np.floor(k * (8 if church else 5)), 0, look.seed + 11))
+        seams = np.abs(k * (8 if church else 5) - np.round(k * (8 if church else 5))) < 0.08
+        col[seams] = shade(wood, 0.5)
+        for zb in (top * 0.22, top * 0.72):                          # поперечины
+            col[np.abs(z - zb) < 1.3] = shade(wood, 0.62)
+        if church:
+            col[np.abs(s - mid) < 0.02] = shade(wood, 0.4)           # две створки
+            col[(np.abs(z - top * 0.47) < 1.1) & (np.abs(np.abs(s - mid) - hw * 0.45) < hw * 0.35)] = (52, 46, 44)
+        knob = (np.abs(s - (mid + hw * (0.12 if church else 0.6))) < 0.035) & (np.abs(z - top * 0.47) < 1.4)
+        col[knob] = (216, 184, 96)
+        return col
+    sc.poly(arch(mid - hw * 0.9, mid + hw * 0.9, top - 1, 0.05), leaf, face)
+    lintel = shade(STONE, 0.75) if stone_wall else shade(look.beam, 1.05)
+    if not church:
+        sc.poly([at(mid - hw - 0.12, top + 3, 0.06), at(mid + hw + 0.12, top + 3, 0.06),
+                 at(mid + hw + 0.12, top + 6, 0.06), at(mid - hw - 0.12, top + 6, 0.06)], flat(lintel), face)
+    # порог: каменная ступенька перед дверью
+    s0, s1 = mid - hw - 0.1, mid + hw + 0.1
+    step = lambda u, v, z: stone(u + v, z, look.seed + 13, (126, 120, 110))
+    if axis == "u":
+        box(sc, (s0, h, 0), (s1, h + 0.22, 3), step, top_col=(150, 144, 132))
+    else:
+        box(sc, (w, s0, 0), (w + 0.22, s1, 3), step, top_col=(150, 144, 132))
 
 
 def k_flowers(mid: float, z0: float, look: Look) -> bool:
@@ -975,6 +1032,8 @@ def save(img: Image.Image, out: Path, sid: str, bind: str, crop: bool = False):
     hint = {"id": sid, "bind": bind, "kind": "image", "cols": 1, "rows_count": 1}
     if not crop:
         hint["crop"] = False
+    if sid.startswith("bld_"):
+        hint["doors"] = True            # двери нарисованы: игра свою дверь поверх не рисует
     (out / (sid + ".art.json")).write_text(json.dumps(hint, ensure_ascii=False) + "\n", encoding="utf-8")
 
 

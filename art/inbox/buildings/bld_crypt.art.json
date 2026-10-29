@@ -1,1 +1,1 @@
-{"id": "bld_crypt", "bind": "props/bld_crypt", "kind": "image", "cols": 1, "rows_count": 1, "crop": false}
+{"id": "bld_crypt", "bind": "props/bld_crypt", "kind": "image", "cols": 1, "rows_count": 1, "crop": false, "doors": true}

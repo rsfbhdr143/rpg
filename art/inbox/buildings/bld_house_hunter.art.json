@@ -1,1 +1,1 @@
-{"id": "bld_house_hunter", "bind": "props/bld_house_hunter", "kind": "image", "cols": 1, "rows_count": 1, "crop": false}
+{"id": "bld_house_hunter", "bind": "props/bld_house_hunter", "kind": "image", "cols": 1, "rows_count": 1, "crop": false, "doors": true}

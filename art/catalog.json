@@ -14,6 +14,7 @@
    "source": [
     "buildings/bld_barn.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -37,6 +38,7 @@
    "source": [
     "buildings/bld_church.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -60,6 +62,7 @@
    "source": [
     "buildings/bld_crypt.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -83,6 +86,7 @@
    "source": [
     "buildings/bld_house_baker.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -106,6 +110,7 @@
    "source": [
     "buildings/bld_house_beekeeper.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -129,6 +134,7 @@
    "source": [
     "buildings/bld_house_boatman.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -152,6 +158,7 @@
    "source": [
     "buildings/bld_house_brzezinski.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -175,6 +182,7 @@
    "source": [
     "buildings/bld_house_carpenter.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -198,6 +206,7 @@
    "source": [
     "buildings/bld_house_chandler.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -221,6 +230,7 @@
    "source": [
     "buildings/bld_house_cooper.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -244,6 +254,7 @@
    "source": [
     "buildings/bld_house_fisher.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -267,6 +278,7 @@
    "source": [
     "buildings/bld_house_headman.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -290,6 +302,7 @@
    "source": [
     "buildings/bld_house_healer.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -313,6 +326,7 @@
    "source": [
     "buildings/bld_house_hunter.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -336,6 +350,7 @@
    "source": [
     "buildings/bld_house_korn.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -359,6 +374,7 @@
    "source": [
     "buildings/bld_house_midwife.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -382,6 +398,7 @@
    "source": [
     "buildings/bld_house_miller.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -405,6 +422,7 @@
    "source": [
     "buildings/bld_house_potter.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -428,6 +446,7 @@
    "source": [
     "buildings/bld_house_shepherd.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -451,6 +470,7 @@
    "source": [
     "buildings/bld_house_shoemaker.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -474,6 +494,7 @@
    "source": [
     "buildings/bld_house_tanner.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -497,6 +518,7 @@
    "source": [
     "buildings/bld_house_weaver.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -520,6 +542,7 @@
    "source": [
     "buildings/bld_house_widow.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -543,6 +566,7 @@
    "source": [
     "buildings/bld_lodge.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -566,6 +590,7 @@
    "source": [
     "buildings/bld_priest_house.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -589,6 +614,7 @@
    "source": [
     "buildings/bld_shaman_hut.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -612,6 +638,7 @@
    "source": [
     "buildings/bld_shed.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -635,6 +662,7 @@
    "source": [
     "buildings/bld_smithy.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -658,6 +686,7 @@
    "source": [
     "buildings/bld_tavern.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
@@ -681,6 +710,7 @@
    "source": [
     "buildings/bld_vetla_hut.png"
    ],
+   "doors": true,
    "animations": {
     "idle": {
      "start": 0,
