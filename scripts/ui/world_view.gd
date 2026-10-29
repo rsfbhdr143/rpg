@@ -1496,6 +1496,7 @@ class UnitNode extends Node2D:
 			var region: Rect2 = fr["region"]
 			var sz: Vector2 = (region.size * float(fr["scale"])).round()
 			var dest := Rect2(Vector2(-roundf(sz.x * 0.5), -sz.y + 2.0), sz)
+			_shadow(Vector2(0, 0), 6.0)
 			draw_texture_rect_region(fr["texture"], dest, region, Color(1, 1, 1, k))
 			rect = dest
 			return
