@@ -1,725 +1,5 @@
 {
  "assets": {
-  "bld_barn": {
-   "sheet": "res://art/sprites/bld_barn.png",
-   "kind": "image",
-   "frame": [
-    278,
-    220
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_barn.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_church": {
-   "sheet": "res://art/sprites/bld_church.png",
-   "kind": "image",
-   "frame": [
-    326,
-    256
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_church.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_crypt": {
-   "sheet": "res://art/sprites/bld_crypt.png",
-   "kind": "image",
-   "frame": [
-    214,
-    162
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_crypt.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_baker": {
-   "sheet": "res://art/sprites/bld_house_baker.png",
-   "kind": "image",
-   "frame": [
-    230,
-    183
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_baker.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_beekeeper": {
-   "sheet": "res://art/sprites/bld_house_beekeeper.png",
-   "kind": "image",
-   "frame": [
-    198,
-    161
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_beekeeper.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_boatman": {
-   "sheet": "res://art/sprites/bld_house_boatman.png",
-   "kind": "image",
-   "frame": [
-    214,
-    193
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_boatman.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_brzezinski": {
-   "sheet": "res://art/sprites/bld_house_brzezinski.png",
-   "kind": "image",
-   "frame": [
-    230,
-    177
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_brzezinski.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_carpenter": {
-   "sheet": "res://art/sprites/bld_house_carpenter.png",
-   "kind": "image",
-   "frame": [
-    214,
-    197
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_carpenter.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_chandler": {
-   "sheet": "res://art/sprites/bld_house_chandler.png",
-   "kind": "image",
-   "frame": [
-    214,
-    172
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_chandler.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_cooper": {
-   "sheet": "res://art/sprites/bld_house_cooper.png",
-   "kind": "image",
-   "frame": [
-    214,
-    172
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_cooper.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_fisher": {
-   "sheet": "res://art/sprites/bld_house_fisher.png",
-   "kind": "image",
-   "frame": [
-    230,
-    201
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_fisher.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_headman": {
-   "sheet": "res://art/sprites/bld_house_headman.png",
-   "kind": "image",
-   "frame": [
-    262,
-    229
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_headman.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_healer": {
-   "sheet": "res://art/sprites/bld_house_healer.png",
-   "kind": "image",
-   "frame": [
-    214,
-    172
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_healer.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_hunter": {
-   "sheet": "res://art/sprites/bld_house_hunter.png",
-   "kind": "image",
-   "frame": [
-    198,
-    164
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_hunter.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_korn": {
-   "sheet": "res://art/sprites/bld_house_korn.png",
-   "kind": "image",
-   "frame": [
-    230,
-    205
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_korn.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_midwife": {
-   "sheet": "res://art/sprites/bld_house_midwife.png",
-   "kind": "image",
-   "frame": [
-    198,
-    164
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_midwife.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_miller": {
-   "sheet": "res://art/sprites/bld_house_miller.png",
-   "kind": "image",
-   "frame": [
-    230,
-    183
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_miller.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_potter": {
-   "sheet": "res://art/sprites/bld_house_potter.png",
-   "kind": "image",
-   "frame": [
-    198,
-    168
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_potter.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_shepherd": {
-   "sheet": "res://art/sprites/bld_house_shepherd.png",
-   "kind": "image",
-   "frame": [
-    230,
-    183
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_shepherd.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_shoemaker": {
-   "sheet": "res://art/sprites/bld_house_shoemaker.png",
-   "kind": "image",
-   "frame": [
-    182,
-    153
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_shoemaker.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_tanner": {
-   "sheet": "res://art/sprites/bld_house_tanner.png",
-   "kind": "image",
-   "frame": [
-    182,
-    155
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_tanner.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_weaver": {
-   "sheet": "res://art/sprites/bld_house_weaver.png",
-   "kind": "image",
-   "frame": [
-    182,
-    153
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_weaver.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_house_widow": {
-   "sheet": "res://art/sprites/bld_house_widow.png",
-   "kind": "image",
-   "frame": [
-    182,
-    153
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_house_widow.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_lodge": {
-   "sheet": "res://art/sprites/bld_lodge.png",
-   "kind": "image",
-   "frame": [
-    214,
-    169
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_lodge.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_priest_house": {
-   "sheet": "res://art/sprites/bld_priest_house.png",
-   "kind": "image",
-   "frame": [
-    214,
-    193
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_priest_house.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_shaman_hut": {
-   "sheet": "res://art/sprites/bld_shaman_hut.png",
-   "kind": "image",
-   "frame": [
-    198,
-    163
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_shaman_hut.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_shed": {
-   "sheet": "res://art/sprites/bld_shed.png",
-   "kind": "image",
-   "frame": [
-    214,
-    182
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_shed.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_smithy": {
-   "sheet": "res://art/sprites/bld_smithy.png",
-   "kind": "image",
-   "frame": [
-    278,
-    207
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_smithy.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_tavern": {
-   "sheet": "res://art/sprites/bld_tavern.png",
-   "kind": "image",
-   "frame": [
-    454,
-    329
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_tavern.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "bld_vetla_hut": {
-   "sheet": "res://art/sprites/bld_vetla_hut.png",
-   "kind": "image",
-   "frame": [
-    230,
-    194
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/bld_vetla_hut.png"
-   ],
-   "doors": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
   "image_notice_board": {
    "sheet": "res://art/sprites/image_notice_board.png",
    "kind": "image",
@@ -733,75 +13,6 @@
    "pixel_art": true,
    "source": [
     "buildings/image_notice_board.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_bell_tower": {
-   "sheet": "res://art/sprites/prop_bell_tower.png",
-   "kind": "image",
-   "frame": [
-    78,
-    244
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/prop_bell_tower.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_notice_board": {
-   "sheet": "res://art/sprites/prop_notice_board.png",
-   "kind": "image",
-   "frame": [
-    66,
-    76
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/prop_notice_board.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_well": {
-   "sheet": "res://art/sprites/prop_well.png",
-   "kind": "image",
-   "frame": [
-    64,
-    87
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "buildings/prop_well.png"
    ],
    "animations": {
     "idle": {
@@ -835,75 +46,6 @@
     }
    }
   },
-  "prop_hay": {
-   "sheet": "res://art/sprites/prop_hay.png",
-   "kind": "image",
-   "frame": [
-    24,
-    32
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_hay.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_herbs": {
-   "sheet": "res://art/sprites/prop_herbs.png",
-   "kind": "image",
-   "frame": [
-    17,
-    32
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_herbs.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_loom": {
-   "sheet": "res://art/sprites/prop_loom.png",
-   "kind": "image",
-   "frame": [
-    21,
-    39
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_loom.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
   "prop_oven": {
    "sheet": "res://art/sprites/prop_oven.png",
    "kind": "image",
@@ -923,98 +65,6 @@
      "start": 0,
      "count": 4,
      "fps": 6.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_pots": {
-   "sheet": "res://art/sprites/prop_pots.png",
-   "kind": "image",
-   "frame": [
-    20,
-    26
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_pots.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_rack": {
-   "sheet": "res://art/sprites/prop_rack.png",
-   "kind": "image",
-   "frame": [
-    18,
-    35
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_rack.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_sacks": {
-   "sheet": "res://art/sprites/prop_sacks.png",
-   "kind": "image",
-   "frame": [
-    16,
-    26
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_sacks.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_workbench": {
-   "sheet": "res://art/sprites/prop_workbench.png",
-   "kind": "image",
-   "frame": [
-    24,
-    29
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "furniture/prop_workbench.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
      "loop": true
     }
    }
@@ -1608,606 +658,6 @@
    ],
    "scale": 0.0625,
    "opaque": true,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_anvil": {
-   "sheet": "res://art/sprites/prop_anvil.png",
-   "kind": "image",
-   "frame": [
-    20,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_anvil.webp"
-   ],
-   "scale": 0.0189,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_barrel": {
-   "sheet": "res://art/sprites/prop_barrel.png",
-   "kind": "image",
-   "frame": [
-    16,
-    19
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_barrel.webp"
-   ],
-   "scale": 0.0181,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_bed": {
-   "sheet": "res://art/sprites/prop_bed.png",
-   "kind": "image",
-   "frame": [
-    32,
-    22
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_bed.webp"
-   ],
-   "scale": 0.025,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_bench": {
-   "sheet": "res://art/sprites/prop_bench.png",
-   "kind": "image",
-   "frame": [
-    26,
-    18
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_bench.webp"
-   ],
-   "scale": 0.0224,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_bone_throne": {
-   "sheet": "res://art/sprites/prop_bone_throne.png",
-   "kind": "image",
-   "frame": [
-    42,
-    43
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_bone_throne.webp"
-   ],
-   "scale": 0.0407,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_bush": {
-   "sheet": "res://art/sprites/prop_bush.png",
-   "kind": "image",
-   "frame": [
-    20,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_bush.webp"
-   ],
-   "scale": 0.0182,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_campfire": {
-   "sheet": "res://art/sprites/prop_campfire.png",
-   "kind": "image",
-   "frame": [
-    22,
-    21
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_campfire.webp"
-   ],
-   "scale": 0.0226,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_chest": {
-   "sheet": "res://art/sprites/prop_chest.png",
-   "kind": "image",
-   "frame": [
-    22,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_chest.webp"
-   ],
-   "scale": 0.0197,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_coffin": {
-   "sheet": "res://art/sprites/prop_coffin.png",
-   "kind": "image",
-   "frame": [
-    14,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_coffin.webp"
-   ],
-   "scale": 0.016,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_crate": {
-   "sheet": "res://art/sprites/prop_crate.png",
-   "kind": "image",
-   "frame": [
-    18,
-    18
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_crate.webp"
-   ],
-   "scale": 0.0171,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_dead_tree": {
-   "sheet": "res://art/sprites/prop_dead_tree.png",
-   "kind": "image",
-   "frame": [
-    42,
-    61
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_dead_tree.webp"
-   ],
-   "scale": 0.0488,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_fence": {
-   "sheet": "res://art/sprites/prop_fence.png",
-   "kind": "image",
-   "frame": [
-    31,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_fence.webp"
-   ],
-   "scale": 0.0253,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_funeral_candles": {
-   "sheet": "res://art/sprites/prop_funeral_candles.png",
-   "kind": "image",
-   "frame": [
-    13,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_funeral_candles.webp"
-   ],
-   "scale": 0.0155,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_open_grave": {
-   "sheet": "res://art/sprites/prop_open_grave.png",
-   "kind": "image",
-   "frame": [
-    18,
-    26
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_open_grave.webp"
-   ],
-   "scale": 0.02,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_pew": {
-   "sheet": "res://art/sprites/prop_pew.png",
-   "kind": "image",
-   "frame": [
-    30,
-    22
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_pew.webp"
-   ],
-   "scale": 0.0258,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_pyre": {
-   "sheet": "res://art/sprites/prop_pyre.png",
-   "kind": "image",
-   "frame": [
-    32,
-    32
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_pyre.webp"
-   ],
-   "scale": 0.0308,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_reeds": {
-   "sheet": "res://art/sprites/prop_reeds.png",
-   "kind": "image",
-   "frame": [
-    21,
-    30
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_reeds.webp"
-   ],
-   "scale": 0.0238,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_rock": {
-   "sheet": "res://art/sprites/prop_rock.png",
-   "kind": "image",
-   "frame": [
-    20,
-    20
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_rock.webp"
-   ],
-   "scale": 0.0201,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_shelf": {
-   "sheet": "res://art/sprites/prop_shelf.png",
-   "kind": "image",
-   "frame": [
-    22,
-    31
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_shelf.webp"
-   ],
-   "scale": 0.0251,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_table": {
-   "sheet": "res://art/sprites/prop_table.png",
-   "kind": "image",
-   "frame": [
-    23,
-    24
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_table.webp"
-   ],
-   "scale": 0.022,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_tent": {
-   "sheet": "res://art/sprites/prop_tent.png",
-   "kind": "image",
-   "frame": [
-    41,
-    42
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_tent.webp"
-   ],
-   "scale": 0.0407,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_tombstone": {
-   "sheet": "res://art/sprites/prop_tombstone.png",
-   "kind": "image",
-   "frame": [
-    18,
-    24
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_tombstone.webp"
-   ],
-   "scale": 0.02,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_totem": {
-   "sheet": "res://art/sprites/prop_totem.png",
-   "kind": "image",
-   "frame": [
-    18,
-    26
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_totem.webp"
-   ],
-   "scale": 0.0202,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_tree": {
-   "sheet": "res://art/sprites/prop_tree.png",
-   "kind": "image",
-   "frame": [
-    50,
-    72
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_tree.webp"
-   ],
-   "scale": 0.0606,
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_waystone": {
-   "sheet": "res://art/sprites/prop_waystone.png",
-   "kind": "image",
-   "frame": [
-    16,
-    23
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "generated/props/prop_waystone.webp"
-   ],
-   "scale": 0.0183,
    "animations": {
     "idle": {
      "start": 0,
@@ -3960,121 +2410,6 @@
     }
    }
   },
-  "prop_altar": {
-   "sheet": "res://art/sprites/prop_altar.png",
-   "kind": "image",
-   "frame": [
-    25,
-    30
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "handmade/prop_altar.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_bones": {
-   "sheet": "res://art/sprites/prop_bones.png",
-   "kind": "image",
-   "frame": [
-    25,
-    13
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "handmade/prop_bones.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_counter": {
-   "sheet": "res://art/sprites/prop_counter.png",
-   "kind": "image",
-   "frame": [
-    28,
-    28
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "handmade/prop_counter.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_grave": {
-   "sheet": "res://art/sprites/prop_grave.png",
-   "kind": "image",
-   "frame": [
-    27,
-    22
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "handmade/prop_grave.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
-  "prop_hearth": {
-   "sheet": "res://art/sprites/prop_hearth.png",
-   "kind": "image",
-   "frame": [
-    26,
-    41
-   ],
-   "pad": 1,
-   "cols": 1,
-   "count": 1,
-   "pixel_art": true,
-   "source": [
-    "handmade/prop_hearth.png"
-   ],
-   "animations": {
-    "idle": {
-     "start": 0,
-     "count": 1,
-     "fps": 8.0,
-     "loop": true
-    }
-   }
-  },
   "prop_lado_tracks": {
    "sheet": "res://art/sprites/prop_lado_tracks.png",
    "kind": "image",
@@ -4089,6 +2424,828 @@
    "source": [
     "handmade/prop_lado_tracks.png"
    ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_barn": {
+   "sheet": "res://art/sprites/bld_barn.png",
+   "kind": "image",
+   "frame": [
+    279,
+    223
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_barn.png"
+   ],
+   "scale": 0.4989,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_church": {
+   "sheet": "res://art/sprites/bld_church.png",
+   "kind": "image",
+   "frame": [
+    327,
+    258
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_church.png"
+   ],
+   "scale": 0.499,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_crypt": {
+   "sheet": "res://art/sprites/bld_crypt.png",
+   "kind": "image",
+   "frame": [
+    216,
+    164
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_crypt.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_baker": {
+   "sheet": "res://art/sprites/bld_house_baker.png",
+   "kind": "image",
+   "frame": [
+    232,
+    186
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_baker.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_beekeeper": {
+   "sheet": "res://art/sprites/bld_house_beekeeper.png",
+   "kind": "image",
+   "frame": [
+    200,
+    163
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_beekeeper.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_boatman": {
+   "sheet": "res://art/sprites/bld_house_boatman.png",
+   "kind": "image",
+   "frame": [
+    216,
+    196
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_boatman.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_brzezinski": {
+   "sheet": "res://art/sprites/bld_house_brzezinski.png",
+   "kind": "image",
+   "frame": [
+    232,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_brzezinski.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_carpenter": {
+   "sheet": "res://art/sprites/bld_house_carpenter.png",
+   "kind": "image",
+   "frame": [
+    216,
+    201
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_carpenter.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_chandler": {
+   "sheet": "res://art/sprites/bld_house_chandler.png",
+   "kind": "image",
+   "frame": [
+    216,
+    182
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_chandler.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_cooper": {
+   "sheet": "res://art/sprites/bld_house_cooper.png",
+   "kind": "image",
+   "frame": [
+    215,
+    176
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_cooper.png"
+   ],
+   "scale": 0.4986,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_fisher": {
+   "sheet": "res://art/sprites/bld_house_fisher.png",
+   "kind": "image",
+   "frame": [
+    232,
+    204
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_fisher.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_headman": {
+   "sheet": "res://art/sprites/bld_house_headman.png",
+   "kind": "image",
+   "frame": [
+    264,
+    231
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_headman.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_healer": {
+   "sheet": "res://art/sprites/bld_house_healer.png",
+   "kind": "image",
+   "frame": [
+    216,
+    174
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_healer.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_hunter": {
+   "sheet": "res://art/sprites/bld_house_hunter.png",
+   "kind": "image",
+   "frame": [
+    200,
+    168
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_hunter.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_korn": {
+   "sheet": "res://art/sprites/bld_house_korn.png",
+   "kind": "image",
+   "frame": [
+    232,
+    207
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_korn.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_midwife": {
+   "sheet": "res://art/sprites/bld_house_midwife.png",
+   "kind": "image",
+   "frame": [
+    200,
+    168
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_midwife.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_miller": {
+   "sheet": "res://art/sprites/bld_house_miller.png",
+   "kind": "image",
+   "frame": [
+    232,
+    186
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_miller.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_potter": {
+   "sheet": "res://art/sprites/bld_house_potter.png",
+   "kind": "image",
+   "frame": [
+    199,
+    170
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_potter.png"
+   ],
+   "scale": 0.4985,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_shepherd": {
+   "sheet": "res://art/sprites/bld_house_shepherd.png",
+   "kind": "image",
+   "frame": [
+    232,
+    185
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_shepherd.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_shoemaker": {
+   "sheet": "res://art/sprites/bld_house_shoemaker.png",
+   "kind": "image",
+   "frame": [
+    184,
+    156
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_shoemaker.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_tanner": {
+   "sheet": "res://art/sprites/bld_house_tanner.png",
+   "kind": "image",
+   "frame": [
+    184,
+    157
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_tanner.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_weaver": {
+   "sheet": "res://art/sprites/bld_house_weaver.png",
+   "kind": "image",
+   "frame": [
+    184,
+    155
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_weaver.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_widow": {
+   "sheet": "res://art/sprites/bld_house_widow.png",
+   "kind": "image",
+   "frame": [
+    184,
+    155
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_house_widow.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_lodge": {
+   "sheet": "res://art/sprites/bld_lodge.png",
+   "kind": "image",
+   "frame": [
+    216,
+    173
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_lodge.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_priest_house": {
+   "sheet": "res://art/sprites/bld_priest_house.png",
+   "kind": "image",
+   "frame": [
+    216,
+    198
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_priest_house.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_shaman_hut": {
+   "sheet": "res://art/sprites/bld_shaman_hut.png",
+   "kind": "image",
+   "frame": [
+    200,
+    168
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_shaman_hut.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_shed": {
+   "sheet": "res://art/sprites/bld_shed.png",
+   "kind": "image",
+   "frame": [
+    216,
+    184
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_shed.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_smithy": {
+   "sheet": "res://art/sprites/bld_smithy.png",
+   "kind": "image",
+   "frame": [
+    280,
+    209
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_smithy.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_tavern": {
+   "sheet": "res://art/sprites/bld_tavern.png",
+   "kind": "image",
+   "frame": [
+    456,
+    363
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_tavern.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_vetla_hut": {
+   "sheet": "res://art/sprites/bld_vetla_hut.png",
+   "kind": "image",
+   "frame": [
+    232,
+    202
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/bld_vetla_hut.png"
+   ],
+   "scale": 0.5,
+   "doors": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bell_tower": {
+   "sheet": "res://art/sprites/prop_bell_tower.png",
+   "kind": "image",
+   "frame": [
+    80,
+    248
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/prop_bell_tower.png"
+   ],
+   "scale": 0.5,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_notice_board": {
+   "sheet": "res://art/sprites/prop_notice_board.png",
+   "kind": "image",
+   "frame": [
+    68,
+    78
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/prop_notice_board.png"
+   ],
+   "scale": 0.296,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_well": {
+   "sheet": "res://art/sprites/prop_well.png",
+   "kind": "image",
+   "frame": [
+    66,
+    95
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/buildings/prop_well.png"
+   ],
+   "scale": 0.3616,
    "animations": {
     "idle": {
      "start": 0,
@@ -4115,6 +3272,918 @@
    "scale": 0.1875,
    "painted": true,
    "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_altar": {
+   "sheet": "res://art/sprites/prop_altar.png",
+   "kind": "image",
+   "frame": [
+    26,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_altar.png"
+   ],
+   "scale": 0.1152,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_anvil": {
+   "sheet": "res://art/sprites/prop_anvil.png",
+   "kind": "image",
+   "frame": [
+    18,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_anvil.png"
+   ],
+   "scale": 0.0856,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_barrel": {
+   "sheet": "res://art/sprites/prop_barrel.png",
+   "kind": "image",
+   "frame": [
+    14,
+    21
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_barrel.png"
+   ],
+   "scale": 0.0795,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bed": {
+   "sheet": "res://art/sprites/prop_bed.png",
+   "kind": "image",
+   "frame": [
+    30,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_bed.png"
+   ],
+   "scale": 0.1154,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bench": {
+   "sheet": "res://art/sprites/prop_bench.png",
+   "kind": "image",
+   "frame": [
+    29,
+    19
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_bench.png"
+   ],
+   "scale": 0.1116,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bone_throne": {
+   "sheet": "res://art/sprites/prop_bone_throne.png",
+   "kind": "image",
+   "frame": [
+    38,
+    44
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_bone_throne.png"
+   ],
+   "scale": 0.1728,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bones": {
+   "sheet": "res://art/sprites/prop_bones.png",
+   "kind": "image",
+   "frame": [
+    26,
+    14
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_bones.png"
+   ],
+   "scale": 0.1008,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bush": {
+   "sheet": "res://art/sprites/prop_bush.png",
+   "kind": "image",
+   "frame": [
+    23,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_bush.png"
+   ],
+   "scale": 0.0868,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_campfire": {
+   "sheet": "res://art/sprites/prop_campfire.png",
+   "kind": "image",
+   "frame": [
+    24,
+    19
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_campfire.png"
+   ],
+   "scale": 0.0902,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_chest": {
+   "sheet": "res://art/sprites/prop_chest.png",
+   "kind": "image",
+   "frame": [
+    25,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_chest.png"
+   ],
+   "scale": 0.095,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_coffin": {
+   "sheet": "res://art/sprites/prop_coffin.png",
+   "kind": "image",
+   "frame": [
+    23,
+    21
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_coffin.png"
+   ],
+   "scale": 0.0868,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_counter": {
+   "sheet": "res://art/sprites/prop_counter.png",
+   "kind": "image",
+   "frame": [
+    31,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_counter.png"
+   ],
+   "scale": 0.1191,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_crate": {
+   "sheet": "res://art/sprites/prop_crate.png",
+   "kind": "image",
+   "frame": [
+    20,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_crate.png"
+   ],
+   "scale": 0.0756,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_dead_tree": {
+   "sheet": "res://art/sprites/prop_dead_tree.png",
+   "kind": "image",
+   "frame": [
+    56,
+    68
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_dead_tree.png"
+   ],
+   "scale": 0.2714,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_fence": {
+   "sheet": "res://art/sprites/prop_fence.png",
+   "kind": "image",
+   "frame": [
+    33,
+    15
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_fence.png"
+   ],
+   "scale": 0.1262,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_funeral_candles": {
+   "sheet": "res://art/sprites/prop_funeral_candles.png",
+   "kind": "image",
+   "frame": [
+    11,
+    18
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_funeral_candles.png"
+   ],
+   "scale": 0.0653,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_grave": {
+   "sheet": "res://art/sprites/prop_grave.png",
+   "kind": "image",
+   "frame": [
+    28,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_grave.png"
+   ],
+   "scale": 0.1071,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_hay": {
+   "sheet": "res://art/sprites/prop_hay.png",
+   "kind": "image",
+   "frame": [
+    25,
+    27
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_hay.png"
+   ],
+   "scale": 0.1018,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_hearth": {
+   "sheet": "res://art/sprites/prop_hearth.png",
+   "kind": "image",
+   "frame": [
+    29,
+    44
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_hearth.png"
+   ],
+   "scale": 0.1736,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_herbs": {
+   "sheet": "res://art/sprites/prop_herbs.png",
+   "kind": "image",
+   "frame": [
+    17,
+    27
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_herbs.png"
+   ],
+   "scale": 0.1027,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_loom": {
+   "sheet": "res://art/sprites/prop_loom.png",
+   "kind": "image",
+   "frame": [
+    32,
+    34
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_loom.png"
+   ],
+   "scale": 0.1322,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_loot_bag": {
+   "sheet": "res://art/sprites/prop_loot_bag.png",
+   "kind": "image",
+   "frame": [
+    13,
+    15
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_loot_bag.png"
+   ],
+   "scale": 0.0529,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_open_grave": {
+   "sheet": "res://art/sprites/prop_open_grave.png",
+   "kind": "image",
+   "frame": [
+    20,
+    27
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_open_grave.png"
+   ],
+   "scale": 0.1017,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pew": {
+   "sheet": "res://art/sprites/prop_pew.png",
+   "kind": "image",
+   "frame": [
+    34,
+    34
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_pew.png"
+   ],
+   "scale": 0.1322,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pots": {
+   "sheet": "res://art/sprites/prop_pots.png",
+   "kind": "image",
+   "frame": [
+    17,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_pots.png"
+   ],
+   "scale": 0.0826,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pyre": {
+   "sheet": "res://art/sprites/prop_pyre.png",
+   "kind": "image",
+   "frame": [
+    34,
+    34
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_pyre.png"
+   ],
+   "scale": 0.1339,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_rack": {
+   "sheet": "res://art/sprites/prop_rack.png",
+   "kind": "image",
+   "frame": [
+    25,
+    34
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_rack.png"
+   ],
+   "scale": 0.1322,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_reeds": {
+   "sheet": "res://art/sprites/prop_reeds.png",
+   "kind": "image",
+   "frame": [
+    20,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_reeds.png"
+   ],
+   "scale": 0.1161,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_rock": {
+   "sheet": "res://art/sprites/prop_rock.png",
+   "kind": "image",
+   "frame": [
+    22,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_rock.png"
+   ],
+   "scale": 0.0811,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_sacks": {
+   "sheet": "res://art/sprites/prop_sacks.png",
+   "kind": "image",
+   "frame": [
+    21,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_sacks.png"
+   ],
+   "scale": 0.0974,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_shelf": {
+   "sheet": "res://art/sprites/prop_shelf.png",
+   "kind": "image",
+   "frame": [
+    24,
+    33
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_shelf.png"
+   ],
+   "scale": 0.1281,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_table": {
+   "sheet": "res://art/sprites/prop_table.png",
+   "kind": "image",
+   "frame": [
+    24,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_table.png"
+   ],
+   "scale": 0.095,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tent": {
+   "sheet": "res://art/sprites/prop_tent.png",
+   "kind": "image",
+   "frame": [
+    41,
+    42
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_tent.png"
+   ],
+   "scale": 0.1639,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tombstone": {
+   "sheet": "res://art/sprites/prop_tombstone.png",
+   "kind": "image",
+   "frame": [
+    19,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_tombstone.png"
+   ],
+   "scale": 0.0934,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_totem": {
+   "sheet": "res://art/sprites/prop_totem.png",
+   "kind": "image",
+   "frame": [
+    19,
+    28
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_totem.png"
+   ],
+   "scale": 0.1069,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tree": {
+   "sheet": "res://art/sprites/prop_tree.png",
+   "kind": "image",
+   "frame": [
+    86,
+    94
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_tree.png"
+   ],
+   "scale": 0.3802,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_waystone": {
+   "sheet": "res://art/sprites/prop_waystone.png",
+   "kind": "image",
+   "frame": [
+    13,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_waystone.png"
+   ],
+   "scale": 0.0965,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_workbench": {
+   "sheet": "res://art/sprites/prop_workbench.png",
+   "kind": "image",
+   "frame": [
+    25,
+    29
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "nano/props/prop_workbench.png"
+   ],
+   "scale": 0.1116,
    "animations": {
     "idle": {
      "start": 0,
