@@ -7,16 +7,23 @@ var _failed := 0
 var _passed := 0
 
 
-func _init() -> void:
-	GameData.reload()
+func _initialize() -> void:
+	(load("res://scripts/ui/hotbar.gd") as GDScript).set("path", "user://test_hotbars.json")   # не трогать раскладку игрока
+	GameData.reload_data()
 	GameLog.echo_to_console = false
 	for t in [
 		"test_data_loaded", "test_derived_stats", "test_status_reactions",
 		"test_surface_reactions", "test_armor_and_resist", "test_progression",
-		"test_auto_battle",
+		"test_auto_battle", "test_serialization", "test_session_commands",
+		"test_story_data", "test_dialogue_engine", "test_npcs_and_items", "test_respawn_and_scripted",
+		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
+		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_corners", "test_village", "test_join_combat",
+		"test_physical_skills", "test_notice_board", "test_tooltips_text", "test_attack_villagers", "test_cleric_skills",
+		"test_loot", "test_equipment_slots", "test_trade",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
+		GameEvents.clear()
 		call(t)
 	print("\nИтого: %d ок, %d ошибок" % [_passed, _failed])
 	quit(1 if _failed > 0 else 0)
@@ -47,6 +54,15 @@ func test_data_loaded() -> void:
 	for ch in GameData.characters:
 		for sk in GameData.character(ch).get("skills", []):
 			check(GameData.skills.has(sk), "%s -> навык %s существует" % [ch, sk])
+	for loc in GameData.locations:
+		var ld := GameData.location(loc)
+		for ex in ld.get("exits", []):
+			var to := str(ex.get("to", ""))
+			check(GameData.locations.has(to) and GameData.location(to).get("spawns", {}).has(str(ex.get("spawn", ""))),
+				"%s -> выход в %s:%s существует" % [loc, to, ex.get("spawn", "")])
+		for enc in ld.get("encounters", []):
+			for e in enc.get("enemies", []):
+				check(GameData.characters.has(str(e["template"])), "%s -> враг %s существует" % [loc, e["template"]])
 
 
 func test_derived_stats() -> void:
@@ -175,3 +191,1151 @@ func test_auto_battle() -> void:
 		if u.xp > 0 or u.level > int(GameData.character(u.template_id).get("level", 1)):
 			winner_xp = true
 	check(winner_xp or combat.winner_faction == "enemy", "победители получили опыт")
+
+
+func test_serialization() -> void:
+	print("serialization")
+	var g := SurfaceGrid.new(10, 6)
+	g.blocked[Vector2i(5, 1)] = true
+	g.set_surface(Vector2i(2, 2), "water")
+	g.set_surface(Vector2i(3, 3), "steam")
+	var k := Character.from_template("knight")
+	var e := Character.from_template("goblin_warrior")
+	k.cell = Vector2i(1, 1)
+	e.cell = Vector2i(8, 4)
+	StatusSystem.apply(k, "wet")
+	var combat := CombatManager.new(g)
+	combat.start([k, e])
+	var copy := CombatManager.from_dict(combat.to_dict())
+	check(copy.units.size() == 2, "персонажи восстановлены")
+	check(copy.current != null and copy.current.uid == combat.current.uid, "текущий ход восстановлен")
+	check(copy.grid.get_ground(Vector2i(2, 2)) == "water" and copy.grid.get_cloud(Vector2i(3, 3)) == "steam", "поверхности восстановлены")
+	check(copy.grid.blocked.has(Vector2i(5, 1)), "стены восстановлены")
+	var ck: Character = copy.units[0]
+	check(ck.has_status("wet") and ck.cell == k.cell and is_equal_approx(ck.hp, k.hp), "статусы, клетка и ОЗ восстановлены")
+	check(is_equal_approx(ck.get_stat("max_hp"), k.get_stat("max_hp")), "производные характеристики совпадают")
+	check(var_to_str(copy.to_dict()) == var_to_str(combat.to_dict()), "повторная сериализация даёт тот же снимок")
+
+
+func test_session_commands() -> void:
+	print("session (multiplayer without network)")
+	var s := GameSession.new()
+	check(s.add_player(1, "Аня") and s.add_player(2, "Борис"), "два игрока")
+	check(s.add_player(3, "Вера") and s.add_player(4, "Гоша"), "до четырёх игроков")
+	check(not s.add_player(5, "Лишний"), "пятый не помещается")
+	s.remove_player(3)
+	s.remove_player(4)
+	s.new_game({1: ["ranger"], 2: ["cleric"]})
+	check(s.heroes.size() == 2, "по герою на игрока")
+	check(s.heroes[0].template_id == "ranger" and s.heroes[1].template_id == "cleric", "герои по выбору игроков")
+	check(s.owner_of(s.heroes[0]) == 1 and s.owner_of(s.heroes[1]) == 2, "герои раздаются игрокам")
+	check(s.location_id == str(GameData.rule("start_location", "")), "игра начинается в стартовой локации")
+	check(s.mode == "dialogue" and str(s.dialogue.get("id", "")) == "funeral", "новая игра начинается с похорон")
+	check(int(s.dialogue["pid"]) == 1, "отвечает лидер")
+	check(s.submit(2, {"type": "dialogue_next"}) != "", "не лидер не листает разговор")
+	var h0: Character = s.heroes[0]
+	check(s.submit(1, {"type": "move", "unit": h0.uid, "cell": [h0.cell.x + 1, h0.cell.y]}) != "", "во время разговора ходить нельзя")
+	_drive(s, true)
+	check(s.mode == "explore" and s.location_id == "village", "после похорон и боя партия в деревне")
+	var target := _free_neighbor(s, h0.cell)
+	check(s.submit(2, {"type": "move", "unit": h0.uid, "cell": [target.x, target.y]}) != "", "чужим героем ходить нельзя")
+	check(s.submit(1, {"type": "move", "unit": h0.uid, "cell": [target.x, target.y]}) == "" and h0.cell == target, "свой герой идёт")
+	check(s.submit(1, {"type": "end_turn"}) != "", "вне боя нет ходов")
+
+	h0.unspent_attribute_points = 1
+	check(s.submit(1, {"type": "raise_attribute", "unit": h0.uid, "attribute": "strength"}) == "", "очко атрибута через команду")
+	check(s.submit(2, {"type": "raise_ability", "unit": h0.uid, "ability": "bow"}) != "", "чужого героя прокачивать нельзя")
+
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(mirror.heroes.size() == 2 and mirror.owner_of(mirror.heroes[1]) == 2, "клиентское зеркало из снимка")
+	check(mirror.grid != null and mirror.location_id == s.location_id, "зеркало знает локацию")
+	check(mirror.quests.get("last_will", "") == s.quests.get("last_will", "x") and mirror.flags.size() == s.flags.size(), "зеркало знает задания и флаги")
+	check(mirror.npcs.size() == s.npcs.size() and mirror.npcs.size() > 0, "зеркало видит NPC")
+	s.remove_player(2)
+	check(s.owner_of(s.heroes[1]) == 1, "герой ушедшего игрока переходит другому")
+
+	var solo := GameSession.new()
+	solo.add_player(1, "Соло")
+	solo.create_party()
+	check(solo.heroes.size() == 2, "одиночка ведёт двух героев, как в D:OS1")
+	solo.create_party({1: ["cleric", "ranger"]})
+	check(solo.heroes[0].template_id == "cleric" and solo.heroes[1].template_id == "ranger", "одиночка выбирает двух героев")
+
+
+func _free_neighbor(s: GameSession, c: Vector2i) -> Vector2i:
+	for d in SurfaceGrid.DIRS:
+		var n: Vector2i = c + d
+		if s.grid.is_walkable(n) and s.unit_at(n) == null and s.exit_at(n).is_empty():
+			return n
+	return c
+
+
+## Ведёт героя к клетке; если путь прервался (бой), возвращает false.
+func _walk(s: GameSession, h: Character, to: Vector2i) -> String:
+	return s.submit(s.owner_of(h), {"type": "move", "unit": h.uid, "cell": [to.x, to.y]})
+
+
+## Проматывает разговоры (первый ещё не выбранный ответ, иначе последний — из «хаба» разговора так можно выйти)
+## и бои (ИИ за всех). strong — герои неуязвимы, чтобы не проиграть.
+func _drive(s: GameSession, strong := false, max_steps := 800) -> void:
+	var guard := 0
+	var tried := {}
+	while guard < max_steps:
+		guard += 1
+		if s.mode == "dialogue":
+			var pid := int(s.dialogue["pid"])
+			var vis := Story.visible_choices(s)
+			if vis.is_empty():
+				s.submit(pid, {"type": "dialogue_next"})
+			else:
+				var where := "%s/%s/" % [s.dialogue["id"], s.dialogue["node"]]
+				var pick: Dictionary = vis[-1]
+				for v in vis:
+					if not tried.has(where + str(v["index"])):
+						pick = v
+						break
+				tried[where + str(pick["index"])] = true
+				s.submit(pid, {"type": "dialogue_choice", "index": int(pick["index"])})
+		elif s.mode == "combat":
+			if strong:
+				for h in s.heroes:
+					h.base_stats["max_hp"] = 900
+					if h.is_alive():
+						h.hp = h.max_hp()
+			s.run_ai_turn(true)
+		else:
+			return
+
+
+func test_story_data() -> void:
+	print("story data")
+	check(not GameData.dialogues.is_empty(), "диалоги сюжета загружены")
+	check(GameData.load_warnings.is_empty(), "карты и сюжет сходятся%s" % ("" if GameData.load_warnings.is_empty() else ": " + "; ".join(GameData.load_warnings)))
+	var bad: Array = []
+	for did in GameData.dialogues:
+		var d := GameData.dialogue(did)
+		var nodes: Dictionary = d.get("nodes", {})
+		if not nodes.has(str(d.get("start", ""))):
+			bad.append("%s: нет стартового узла" % did)
+		for nid in nodes:
+			var n: Dictionary = nodes[nid]
+			var nexts: Array = []
+			for x in [n.get("next")]:
+				nexts.append_array(_next_ids(x))
+			for c in n.get("choices", []):
+				nexts.append_array(_next_ids(c.get("next")))
+				var chk: Dictionary = c.get("check", {})
+				if not chk.is_empty():
+					nexts.append(str(chk.get("fail", "")))
+					if not GameData.attribute_list().has(Story.attribute_id(str(chk.get("attr", "")))):
+						bad.append("%s/%s: проверка неизвестного атрибута %s" % [did, nid, chk.get("attr")])
+			for nx in nexts:
+				if nx != "" and not nodes.has(nx):
+					bad.append("%s/%s: нет узла %s" % [did, nid, nx])
+			var sp := str(n.get("speaker", "narrator"))
+			if not (sp in ["narrator", "hero"] or GameData.characters.has(sp)):
+				bad.append("%s/%s: неизвестный говорящий %s" % [did, nid, sp])
+			var effs: Array = n.get("do", []).duplicate()
+			for c in n.get("choices", []):
+				effs.append_array(c.get("do", []))
+			for e in effs:
+				if e.has("quest") and GameData.quest(str(e["quest"])).is_empty():
+					bad.append("%s/%s: нет задания %s" % [did, nid, e["quest"]])
+				for k in ["give_item", "take_item"]:
+					if e.has(k) and GameData.item(str(e[k])).is_empty():
+						bad.append("%s/%s: нет предмета %s" % [did, nid, e[k]])
+				if e.has("goto"):
+					var loc := GameData.location(str(e["goto"]))
+					if loc.is_empty() or not (loc.get("spawns", {}) as Dictionary).has(str(e.get("spawn", ""))):
+						bad.append("%s/%s: нет точки %s:%s" % [did, nid, e["goto"], e.get("spawn", "")])
+				if e.has("combat") and not _encounter_exists(str(e["combat"])):
+					bad.append("%s/%s: нет встречи %s" % [did, nid, e["combat"]])
+	for nid in GameData.npcs:
+		var dl: Variant = GameData.npc(nid).get("dialogue", "")
+		for opt in (dl if typeof(dl) == TYPE_ARRAY else [dl]):
+			var id := str(opt.get("id", "")) if typeof(opt) == TYPE_DICTIONARY else str(opt)
+			if id != "" and GameData.dialogue(id).is_empty():
+				bad.append("NPC %s: нет диалога %s" % [nid, id])
+	for lid in GameData.locations:
+		var loc := GameData.location(lid)
+		for o in loc.get("objects", []):
+			if o.has("dialogue") and GameData.dialogue(str(o["dialogue"])).is_empty():
+				bad.append("%s: у предмета %s нет диалога %s" % [lid, o.get("id"), o["dialogue"]])
+		if str(loc.get("on_enter", "")) != "" and GameData.dialogue(str(loc["on_enter"])).is_empty():
+			bad.append("%s: нет диалога входа %s" % [lid, loc["on_enter"]])
+	check(bad.is_empty(), "ссылки сюжета целы%s" % ("" if bad.is_empty() else ": " + "; ".join(bad.slice(0, 12))))
+
+
+func _next_ids(x: Variant) -> Array:
+	if x == null:
+		return []
+	if typeof(x) == TYPE_ARRAY:
+		return x.map(func(o): return str(o.get("id", "")) if typeof(o) == TYPE_DICTIONARY else str(o))
+	return [str(x)]
+
+
+func _encounter_exists(id: String) -> bool:
+	for lid in GameData.locations:
+		for enc in GameData.location(lid).get("encounters", []):
+			if str(enc.get("id", "")) == id:
+				return true
+	return false
+
+
+func test_dialogue_engine() -> void:
+	print("dialogue engine")
+	GameData.dialogues["_t"] = {"start": "a", "nodes": {
+		"a": {"speaker": "narrator", "text": "Привет, {hero}.", "do": [{"set_flag": "t_seen"}], "next": "b"},
+		"b": {"speaker": "hero", "text": "Ну?", "choices": [
+			{"text": "Сила", "check": {"attr": "strength", "min": 99, "fail": "f"}, "next": "ok"},
+			{"text": "Тайный", "if": {"flag": "nope"}, "next": "ok"},
+			{"text": "Золото", "do": [{"gold": 5}, {"give_item": "funeral_bread", "count": 2}], "next": [{"if": {"gold_min": 5}, "id": "rich"}, {"id": "f"}]}]},
+		"f": {"speaker": "narrator", "text": "Неудача.", "next": "b"},
+		"rich": {"next": "end"},
+		"end": {"speaker": "narrator", "text": "Конец.", "do": [{"quest": "last_will", "stage": "prepare"}, {"xp": 10}]},
+		"ok": {"speaker": "narrator", "text": "Ок."}}}
+	var s := _story_session()
+	check(s.start_dialogue("_t", 1), "диалог начался")
+	var v := Story.view(s)
+	check(s.mode == "dialogue" and v["text"].contains(s.heroes[0].display_name), "подстановка {hero}")
+	check(s.flags.has("t_seen"), "эффект узла сработал при входе")
+	s.submit(1, {"type": "dialogue_next"})
+	var vis := Story.visible_choices(s)
+	check(vis.size() == 2, "скрытый ответ не показан")
+	s.submit(1, {"type": "dialogue_choice", "index": 0})
+	check(str(s.dialogue["node"]) == "f", "проверка атрибута не прошла -> fail")
+	s.submit(1, {"type": "dialogue_next"})
+	var xp: int = s.heroes[0].xp + s.heroes[0].level * 1000   # опыт даёт узел end при входе
+	s.submit(1, {"type": "dialogue_choice", "index": 2})
+	check(s.gold == 5 and int(s.items.get("funeral_bread", 0)) == 2, "золото и предметы")
+	check(str(s.dialogue["node"]) == "end", "next списком и невидимый узел")
+	s.submit(1, {"type": "dialogue_next"})
+	check(s.mode == "explore" and s.dialogue.is_empty(), "разговор закончился")
+	check(s.quests.get("last_will", "") == "prepare", "стадия задания")
+	check(s.heroes[0].xp + s.heroes[0].level * 1000 > xp, "опыт за диалог")
+	s.set_quest_stage("last_will", "funeral")
+	check(s.quests["last_will"] == "prepare", "стадия задания не откатывается")
+	GameData.dialogues.erase("_t")
+
+
+func _story_session(start := "village", classes: Array = ["knight", "wizard"]) -> GameSession:
+	var s := GameSession.new()
+	s.add_player(1, "Соло")
+	s.create_party({1: classes})
+	s.flags["intro_done"] = true
+	s.quests["last_will"] = "prepare"
+	s.enter_location(start, "from_cemetery" if start == "village" else "from_village")
+	s.mode = "explore"
+	s.dialogue = {}
+	return s
+
+
+func test_npcs_and_items() -> void:
+	print("NPC, talk, items, equipment")
+	var s := _story_session()
+	var marta: Character = null
+	for n in s.npcs:
+		if n.template_id == "marta":
+			marta = n
+	check(marta != null, "Марта в деревне после похорон")
+	check(not s.npcs.any(func(n): return n.template_id == "vetla"), "Ветлы в деревне нет")
+	var h: Character = s.heroes[0]
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": marta.uid}) == "", "заговорить с Мартой")
+	check(s.mode == "dialogue" and str(s.dialogue["id"]) == "marta_village", "разговор с Мартой")
+	check(SurfaceGrid.distance(h.cell, marta.cell) <= 1, "герой подошёл к Марте")
+	_drive(s)
+	check(int(s.items.get("lamp_oil", 0)) > 0 and s.gold >= 40, "Марта дала масло и золото")   # золото — во второй реплике
+	check(s.mode == "explore", "разговор закончен")
+	s.give_item("healing_brew", 1)
+	h.hp = 5
+	StatusSystem.apply(h, "poisoned")
+	check(s.submit(1, {"type": "use_item", "unit": h.uid, "item": "healing_brew"}) == "" and h.hp > 5, "отвар лечит")
+	check(not h.has_status("poisoned") and not s.items.has("healing_brew"), "отвар выводит яд и тратится")
+	var acc := h.get_stat("accuracy")
+	s.give_item("order_of_bravery", 1, "knight")
+	check(h.equipment.has("order_of_bravery") and h.get_stat("accuracy") > acc, "наследство надето на рыцаря и даёт бонус")
+	s.give_item("gravedigger_lantern", 1)
+	check(s.submit(1, {"type": "equip", "unit": h.uid, "item": "gravedigger_lantern"}) == "" and h.equipment.has("gravedigger_lantern"), "надеть предмет из сумки")
+	check(s.submit(1, {"type": "unequip", "unit": h.uid, "item": "gravedigger_lantern"}) == "" and s.items.has("gravedigger_lantern"), "снять предмет в сумку")
+	check(Story.check(s, {"has_item": "order_of_bravery"}), "надетый предмет считается в has_item")
+	var copy := Character.from_dict(h.to_dict())
+	check(copy.equipment.has("order_of_bravery"), "снаряжение сохраняется")
+
+
+func test_respawn_and_scripted() -> void:
+	print("respawn, scripted encounters, on_defeat")
+	var s := _story_session("forest")
+	s.mode = "explore"
+	check(not s.enemies.any(func(e): return e.encounter_id == "forest_scout"), "сценарная встреча не появляется сама")
+	check(s.trigger_radius("forest_scout") == 0, "сценарная встреча не нападает при сближении")
+	var pack: Array = s.enemies.filter(func(e): return e.encounter_id == "forest_wolf_pack")
+	check(not pack.is_empty(), "стая для прокачки на месте")
+	s.start_encounter("forest_wolf_pack")
+	check(s.mode == "combat", "бой со стаей")
+	_drive(s, true)
+	check(s.encounter_defeated("forest_wolf_pack"), "стая побеждена")
+	s.enter_location("village", "from_forest")
+	s.mode = "explore"
+	s.dialogue = {}
+	s.enter_location("forest", "from_village")
+	var again: Array = s.enemies.filter(func(e): return e.encounter_id == "forest_wolf_pack" and e.is_alive())
+	check(not again.is_empty() and not s.encounter_defeated("forest_wolf_pack"), "стая вернулась после перехода (можно качаться)")
+	s.mode = "explore"
+	s.dialogue = {}
+	s.start_encounter("forest_wolves")
+	_drive(s, true, 4)
+	while s.mode == "combat":
+		s.run_ai_turn(true)
+		for hh in s.heroes:
+			hh.base_stats["max_hp"] = 900
+	check(s.mode == "dialogue" and str(s.dialogue.get("id", "")) == "goat_rescue", "после победы — диалог on_defeat")
+
+
+func test_exploration() -> void:
+	print("exploration, transitions, combat on the map, save/load")
+	var s := _story_session()
+	var h0: Character = s.heroes[0]
+	var h1: Character = s.heroes[1]
+
+	# Деревня -> лес через выход.
+	var ex: Dictionary = {}
+	for e in s.location_data()["exits"]:
+		if str(e["to"]) == "forest":
+			ex = e
+	var ec: Array = ex["cells"][0]
+	check(_walk(s, h0, Vector2i(int(ec[0]), int(ec[1]))) == "", "дойти до выхода")
+	check(s.location_id == "forest", "партия перешла в лес")
+	var spawn: Array = s.location_data()["spawns"][str(ex["spawn"])]
+	check(SurfaceGrid.distance(h0.cell, Vector2i(int(spawn[0][0]), int(spawn[0][1]))) <= 2, "герои у точки входа")
+	_drive(s)   # разговор при первом входе в лес
+	check(s.mode == "explore", "можно ходить")
+	var forest_enemies := s.enemies.size()
+	check(forest_enemies > 0, "в лесу есть враги")
+
+	# Спутник идёт следом.
+	var dest := Vector2i(6, 6)
+	_walk(s, h0, dest)
+	check(SurfaceGrid.distance(h1.cell, h0.cell) <= 2, "спутник идёт за героем")
+
+	# Подходим к врагам — начинается бой прямо на карте.
+	var foe: Character = null
+	for e in s.enemies:
+		if e.encounter_id == "forest_wolf_pack":
+			foe = e
+	for i in 3:   # путь может прервать замеченная ловушка — тогда идём дальше
+		if s.mode == "explore":
+			_walk(s, h0, foe.cell + Vector2i(-1, 1))
+	check(s.mode == "combat" and s.combat != null and s.combat.active, "враги заметили партию, начался бой")
+	check(SurfaceGrid.distance(h0.cell, foe.cell) > 1, "движение остановилось, когда враги заметили")
+	var guard := 0
+	while s.mode == "combat" and guard < 400:
+		guard += 1
+		s.run_ai_turn(true)
+	check(s.mode != "combat", "бой закончился (%d ходов)" % guard)
+	if s.mode == "defeat":
+		check(s.submit(1, {"type": "restart"}) == "" and s.mode == "explore", "после поражения — снова у входа")
+	else:
+		check(s.defeated_encounters().size() >= 1, "группа врагов отмечена побеждённой")
+		check(s.heroes.all(func(h): return h.is_alive()), "павшие герои поднялись после победы")
+
+	# Сохранение и загрузка.
+	var path := "user://test_save.json"
+	s.flags["test_flag"] = true
+	s.give_item("funeral_bread", 3)
+	check(s.save_game(path) == "", "сохранение записано")
+	var loc := s.location_id
+	var xp := h0.xp
+	var hp := h0.hp
+	var gold := s.gold
+	h0.xp += 999
+	s.flags.erase("test_flag")
+	s.enter_location("village", "from_forest")
+	s.mode = "explore"
+	s.dialogue = {}
+	check(s.load_game(path) == "", "сохранение загружено")
+	var h0l: Character = s.heroes[0]
+	check(s.location_id == loc and h0l.xp == xp and is_equal_approx(h0l.hp, hp), "локация, опыт и ОЗ восстановлены")
+	check(s.flags.has("test_flag") and int(s.items.get("funeral_bread", 0)) >= 3 and s.gold == gold, "флаги, предметы и золото восстановлены")
+	check(s.quests.get("last_will", "") != "", "задания восстановлены")
+	var uids := {}
+	for u in s.all_units():
+		uids[u.uid] = true
+	check(not uids.has(Character.from_template("wolf").uid), "новые персонажи не повторяют uid загруженных")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+func test_events() -> void:
+	print("presentation events")
+	GameEvents.clear()
+	var s := _story_session("forest")
+	s.mode = "explore"
+	s.start_encounter("forest_wolf_pack")
+	var types := {}
+	for e in GameEvents.list:
+		types[str(e["type"])] = true
+	check(types.has("combat_start") and types.has("turn"), "события начала боя")
+	var guard := 0
+	while s.mode == "combat" and guard < 300:
+		guard += 1
+		s.run_ai_turn(true)
+	for e in GameEvents.list:
+		types[str(e["type"])] = true
+	check(types.has("cast") and (types.has("hit") or types.has("miss")), "события ударов")
+	check(types.has("combat_end"), "событие конца боя")
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(not GameEvents.list.is_empty() and int(GameEvents.list[-1]["seq"]) == GameEvents.seq, "события приходят в снимке")
+
+
+func test_balance() -> void:
+	print("balance (ИИ за обе стороны, только для сведения)")
+	for party in [["knight", "wizard"], ["ranger", "cleric"], ["knight", "wizard", "ranger", "cleric"]]:
+		# третий элемент — уровень, с которым партия обычно приходит к этому бою
+		for enc in [["cemetery", "cemetery_rising", 1], ["forest", "forest_wolf_pack", 2], ["goblin_camp", "camp_gate", 3]]:
+			var wins := 0
+			for i in 10:
+				GameData.rng.seed = 1000 + i
+				var s := GameSession.new()
+				for p in party.size():
+					s.add_player(p + 1, "И%d" % p)
+				var choices := {}
+				for p in party.size():
+					choices[p + 1] = [party[p]]
+				s.create_party(choices)
+				for h in s.heroes:
+					while (h as Character).level < int(enc[2]):
+						Progression.add_xp(h, Progression.xp_to_next((h as Character).level) - (h as Character).xp)
+				s.enter_location(enc[0], "from_village" if enc[0] != "goblin_camp" else "from_forest")
+				s.mode = "explore"
+				s.dialogue = {}
+				s.flags["aggro:" + enc[1]] = true
+				s.start_encounter(enc[1])
+				var guard := 0
+				while s.mode == "combat" and guard < 500:
+					guard += 1
+					s.run_ai_turn(true)
+				if s.mode != "defeat":
+					wins += 1
+			print("    %s (ур. %d) против %s: побед %d из 10" % ["+".join(party), int(enc[2]), enc[1], wins])
+	check(true, "баланс посчитан")
+
+
+func test_sprites() -> void:
+	print("sprites")
+	SpriteLibrary.reload_data()
+	check(typeof(SpriteLibrary.bindings.get("settings")) == TYPE_DICTIONARY, "data/sprites.json загружен")
+	for cat in ["units", "tiles", "surfaces", "skills", "statuses"]:
+		var table: Dictionary = SpriteLibrary.bindings.get(cat, {})
+		for id in table:
+			check(SpriteLibrary.has_sprite(cat, id), "%s/%s -> спрайт есть в art/catalog.json" % [cat, id])
+	for aid in SpriteLibrary.assets:
+		var sheet := str(SpriteLibrary.assets[aid].get("sheet", ""))
+		check(ResourceLoader.exists(sheet) or FileAccess.file_exists(sheet), "лист %s существует" % sheet)
+	check(SpriteLibrary.frame("units", "нет_такого").is_empty(), "без привязки — пустой кадр (рисуется заглушка)")
+
+
+func test_party_and_explore_skills() -> void:
+	print("same classes, hero names, skills outside combat, holy light vs undead")
+	var solo := GameSession.new()
+	solo.add_player(1, "Соло")
+	solo.create_party({1: ["knight", "knight"]})
+	check(solo.heroes.size() == 2 and solo.heroes.all(func(h): return h.template_id == "knight"), "два рыцаря в одном отряде")
+	var names: Array = (GameData.rule("hero_names", {}) as Dictionary).get("knight", [])
+	check(names.size() >= 2 and solo.heroes[0].display_name == str(names[0]) and solo.heroes[1].display_name == str(names[1]),
+		"у героев одного класса разные имена из списка")
+	var duo := GameSession.new()
+	duo.add_player(1, "Аня")
+	duo.add_player(2, "Борис")
+	duo.create_party({1: ["cleric"], 2: ["cleric"]})
+	check(duo.heroes.size() == 2 and duo.heroes.all(func(h): return h.template_id == "cleric"), "два игрока выбрали один класс")
+	check(duo.heroes[0].display_name != duo.heroes[1].display_name, "и у них разные имена")
+
+	var s := _story_session("village", ["cleric", "knight"])
+	var cl: Character = s.heroes[0]
+	var kn: Character = s.heroes[1]
+	kn.hp = 5
+	var ap := cl.ap
+	var heal := {"type": "skill", "unit": cl.uid, "skill": "minor_heal", "cell": [kn.cell.x, kn.cell.y]}
+	check(s.submit(1, heal) == "" and kn.hp > 5, "лечение вне боя")
+	check(s.mode == "explore" and cl.ap == ap, "лечение союзника не начинает бой и не тратит ОД")
+	check(cl.cooldowns.has("minor_heal") and s.submit(1, heal) != "", "навык ушёл на перезарядку")
+	check(s.submit(1, {"type": "skill", "unit": cl.uid, "skill": "battering_ram", "cell": [kn.cell.x, kn.cell.y]}) != "", "чужой навык нельзя")
+	var cd := int(cl.cooldowns["minor_heal"])
+	check(not s.pass_time(1.0) and int(cl.cooldowns["minor_heal"]) == cd, "время копится до «хода»")
+	check(s.pass_time(3.5) and int(cl.cooldowns.get("minor_heal", 0)) == cd - 1, "через несколько секунд перезарядка идёт")
+	for i in cd:
+		s.pass_time(float(GameData.rule("explore_turn_seconds", 4.0)))
+	check(not cl.cooldowns.has("minor_heal") and s.submit(1, heal) == "", "навык снова готов")
+
+	var bone := Character.from_template("skeleton")
+	check(bone.is_undead() and not kn.is_undead(), "скелет — нежить, рыцарь — нет")
+	bone.cell = _free_neighbor(s, cl.cell)
+	var field := s.explore_field()
+	field.units.append(bone)
+	var mend := GameData.skill("minor_heal")
+	check(SkillSystem.target_block_reason(field, cl, mend, bone.cell) == "", "лечение наводится на нежить")
+	var hp0 := bone.hp
+	SkillSystem.execute(field, cl, mend, bone.cell)
+	check(bone.hp < hp0, "лечение жжёт нежить")
+	var wolf := Character.from_template("wolf")
+	wolf.cell = bone.cell
+	bone.cell = Vector2i(-50, -50)
+	field.units.append(wolf)
+	check(SkillSystem.target_block_reason(field, cl, mend, wolf.cell) != "", "живого врага лечить нельзя")
+
+	var hit := {"damage": {"source": "skill", "element": "fire", "multiplier": 1.0}}
+	var zombie := Character.from_template("skeleton")
+	var paladin := Character.from_template("knight")
+	GameData.rng.seed = 77
+	var plain := float(DamageCalc.roll_attack(paladin, zombie, hit)["amount"])
+	StatusSystem.apply(paladin, "blessed")
+	GameData.rng.seed = 77
+	var holy := float(DamageCalc.roll_attack(paladin, zombie, hit)["amount"])
+	check(paladin.has_status("blessed") and holy > plain, "благословлённый бьёт нежить сильнее")
+
+	var f := _story_session("forest", ["wizard", "cleric"])
+	var wz: Character = f.heroes[0]
+	var prey: Character = null
+	for e in f.enemies:
+		if e.encounter_id == "forest_wolf_pack" and e.is_alive():
+			prey = e
+	check(prey != null, "стая в лесу")
+	var spot := wz.cell
+	for c in f.grid.cells_in_radius(prey.cell, 4):
+		if SurfaceGrid.distance(c, prey.cell) >= 3 and f.grid.is_walkable(c) and f.unit_at(c) == null:
+			spot = c
+			break
+	wz.cell = spot
+	check(f.submit(1, {"type": "skill", "unit": wz.uid, "skill": "ice_shard", "cell": [prey.cell.x, prey.cell.y]}) == "", "удар издалека вне боя")
+	check(f.mode == "combat", "удар по врагу начинает бой")
+
+	# напасть первым можно и вплотную, обычным ударом, пока враги ещё не заметили партию
+	var g2 := _story_session("forest", ["knight", "cleric"])
+	var kn2: Character = g2.heroes[0]
+	var wolf2: Character = null
+	for e in g2.enemies:
+		if e.encounter_id == "forest_wolf_pack" and e.is_alive():
+			wolf2 = e
+	kn2.cell = _free_neighbor(g2, wolf2.cell)
+	check(g2.mode == "explore" and g2.submit(1, {"type": "skill", "unit": kn2.uid, "skill": "attack",
+		"cell": [wolf2.cell.x, wolf2.cell.y]}) == "", "удар мечом по волку, который ещё не заметил партию")
+	check(g2.mode == "combat" and g2.combat != null and g2.combat.active, "первым ударом начат бой")
+
+
+## Свободная клетка пола на расстоянии dist от from (без людей, выходов, предметов, ловушек и поверхностей),
+## не ближе far к героям.
+func _floor_cell(s: GameSession, from: Vector2i, dist: int, far := 0) -> Vector2i:
+	for c in s.grid.cells_in_radius(from, dist):
+		if SurfaceGrid.distance(c, from) != dist or not s.grid.is_walkable(c) or s.unit_at(c) != null:
+			continue
+		if not s.exit_at(c).is_empty() or not s.object_at(c).is_empty() or s.grid.traps.has(c) or s.grid.get_ground(c) != "none":
+			continue
+		if s.heroes.any(func(h): return SurfaceGrid.distance(h.cell, c) < far):
+			continue
+		return c
+	return Vector2i(-1, -1)
+
+
+func test_traps_and_surfaces() -> void:
+	print("traps: spot, avoid, disarm, spring, blow up; surfaces outside combat")
+	var cfg: Dictionary = GameData.rules["traps"]
+	var saved := cfg.duplicate()
+	check(GameData.trap("fire_rune").has("surface") and (GameData.location("forest").get("traps", []) as Array).size() >= 2,
+		"виды ловушек загружены, в лесу они стоят")
+
+	var s := _story_session("village", ["ranger", "knight"])
+	var h: Character = s.heroes[0]
+	var k: Character = s.heroes[1]
+	var spot := _floor_cell(s, h.cell, 2)
+	s.grid.traps[spot] = {"type": "spike_plate", "state": "hidden", "rolled": {}}
+	cfg["max_chance"] = 100.0
+	h.base_stats["trap_detect"] = 200
+	check(TrapSystem.look_around(s.grid, h) == [spot] and str(s.grid.traps[spot]["state"]) == "found", "зоркий герой замечает ловушку")
+	check(TrapSystem.look_around(s.grid, h).is_empty(), "второй раз не бросает")
+	var beyond := _floor_cell(s, spot, 2, 3)
+	if beyond.x >= 0:
+		s.submit(1, {"type": "move", "unit": h.uid, "cell": [beyond.x, beyond.y]})
+		check(str(s.grid.traps[spot]["state"]) == "found", "найденную ловушку герои обходят")
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(str(mirror.grid.traps.get(spot, {}).get("state", "")) == "found", "клиент видит найденную ловушку")
+	h.base_stats["trap_disarm"] = 200
+	var xp := h.xp
+	check(s.submit(1, {"type": "disarm", "unit": h.uid, "cell": [spot.x, spot.y]}) == "", "команда обезвредить")
+	check(str(s.grid.traps[spot]["state"]) == "disarmed" and h.xp > xp, "ловушка обезврежена, за неё опыт")
+	check(SurfaceGrid.distance(h.cell, spot) <= 1 and h.cell != spot, "герой подошёл, но не наступил")
+	check(s.submit(1, {"type": "disarm", "unit": h.uid, "cell": [spot.x, spot.y]}) != "", "обезвреженную второй раз не трогают")
+
+	cfg["min_chance"] = 0.0
+	cfg["max_chance"] = 0.0
+	h.base_stats.erase("trap_detect")
+	k.base_stats["trap_detect"] = -500
+	var plate := _floor_cell(s, h.cell, 2)
+	s.grid.traps[plate] = {"type": "spike_plate", "state": "hidden", "rolled": {}}
+	h.hp = 2
+	s.submit(1, {"type": "move", "unit": h.uid, "cell": [plate.x, plate.y]})
+	check(str(s.grid.traps[plate]["state"]) == "sprung" and h.cell == plate, "наступил на спрятанную — сработала")
+	check(h.is_alive() and h.hp >= 1.0, "вне боя ловушка не добивает")
+	check(s.mode == "explore", "в деревне бой не начался")
+
+	cfg["max_chance"] = 100.0
+	var rune := _floor_cell(s, h.cell, 4, 3)
+	s.grid.traps[rune] = {"type": "fire_rune", "state": "found", "rolled": {}}
+	var shot := {"type": "skill", "unit": h.uid, "skill": "arrow_shot", "cell": [rune.x, rune.y]}
+	check(SkillSystem.target_block_reason(s.explore_field(), h, GameData.skill("arrow_shot"), rune) == "", "в найденную ловушку можно целиться")
+	check(s.submit(1, shot) == "" and str(s.grid.traps[rune]["state"]) == "sprung", "выстрел подрывает ловушку издалека")
+	check(s.grid.get_ground(rune) == "fire", "руна выплеснула огонь")
+	for i in 6:
+		s.pass_time(float(GameData.rule("explore_turn_seconds", 4.0)))
+	check(s.grid.get_ground(rune) != "fire", "огонь прогорает и вне боя")
+
+	cfg["max_chance"] = 0.0
+	cfg["fail_spring_pct"] = 100.0
+	var pot := _floor_cell(s, h.cell, 1)
+	s.grid.traps[pot] = {"type": "poison_pot", "state": "found", "rolled": {}}
+	check(TrapSystem.try_disarm(s.explore_field(), h, pot) == "sprung" and s.grid.get_ground(pot) == "poison", "неудача задевает механизм")
+
+	var oil_at := _floor_cell(s, h.cell, 3, 2)
+	s.give_item("lamp_oil", 1)
+	s.give_item("tar_torch", 1)
+	check(s.submit(1, {"type": "use_item", "unit": h.uid, "item": "lamp_oil", "cell": [oil_at.x, oil_at.y]}) == "" and s.grid.get_ground(oil_at) == "oil",
+		"масло разливается и вне боя")
+	check(s.submit(1, {"type": "use_item", "unit": h.uid, "item": "tar_torch", "cell": [oil_at.x, oil_at.y]}) == "" and s.grid.get_ground(oil_at) == "fire",
+		"брошенный факел поджигает масло")
+	check(not s.items.has("lamp_oil") and not s.items.has("tar_torch"), "масло и факел потрачены")
+
+	var restored := GameSession.new()
+	restored.add_player(1, "Соло")
+	restored.from_save(s.to_save())
+	check(str(restored.grid.traps.get(spot, {}).get("state", "")) == "disarmed" and str(restored.grid.traps.get(rune, {}).get("state", "")) == "sprung",
+		"ловушки сохраняются")
+
+	var f := _story_session("forest")
+	var swamp := Vector2i(-1, -1)   # клетка ядовитого болота — с карты: карты меняют размер
+	for sf in GameData.location("forest").get("surfaces", []):
+		if str(sf["id"]) == "poison":
+			swamp = GameSession._cell_of(sf["cell"])
+			break
+	check(f.grid.get_ground(swamp) == "poison" and int(f.grid.layers["ground"][swamp]["turns"]) == -1, "болото с карты не высыхает")
+	check(f.grid.traps.values().all(func(tr): return str(tr["state"]) in ["hidden", "found"]), "ловушки леса взведены")
+	var camp := _story_session("goblin_camp")
+	camp.reveal_traps()
+	check(camp.grid.traps.size() == 2 and camp.grid.traps.values().all(func(tr): return str(tr["state"]) == "found"), "Шмыг показывает ловушки лагеря")
+
+	cfg.clear()
+	cfg.merge(saved)
+
+
+func test_houses_and_travel() -> void:
+	print("houses you can enter, waystones, exits")
+	var v := GameData.location("village")
+	var tavern: Dictionary = {}
+	for b in v.get("buildings", []):
+		if str(b["id"]) == "tavern":
+			tavern = b
+	check(not tavern.is_empty() and not (tavern.get("doors", []) as Array).is_empty(), "в таверну есть дверь")
+	var s := _story_session()
+	var r: Array = tavern["rect"]
+	var door := Vector2i(int(tavern["doors"][0][0]), int(tavern["doors"][0][1]))
+	check(s.grid.is_walkable(door) and not s.grid.is_walkable(Vector2i(int(r[0]), int(r[1]))), "дверь проходима, стена нет")
+	check(s.grid.is_walkable(Vector2i(int(r[0]) + 2, int(r[1]) + 2)) or s.building_at(Vector2i(int(r[0]) + 2, int(r[1]) + 2)) == tavern,
+		"внутри таверны комната")
+	var marta: Character = null
+	for n in s.npcs:
+		if n.template_id == "marta":
+			marta = n
+	check(marta != null and s.building_at(marta.cell) == tavern, "Марта стоит в таверне")
+	var h: Character = s.heroes[0]
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": marta.uid}) == "" and s.mode == "dialogue", "к Марте можно подойти через дверь")
+	check(s.building_at(h.cell) == tavern, "герой вошёл в таверну")
+	s.mode = "explore"
+	s.dialogue = {}
+
+	var ex: Dictionary = s.location_data()["exits"][0]
+	var ec := Vector2i(int(ex["cells"][0][0]), int(ex["cells"][0][1]))
+	check(s._avoid(h, Vector2i(10, 10)).has(ec) and not s._avoid(h, ec).has(ec), "пути обходят выходы, если идти не к ним")
+
+	check(s.known_waypoints().is_empty() or s.known_waypoints().size() == 1, "камни находятся по дороге")
+	check(s.submit(1, {"type": "travel", "to": "waystone_forest"}) != "", "к ненайденному камню нельзя")
+	var stone := s.waypoint("waystone_village")
+	check(not stone.is_empty(), "камень деревни на карте")
+	GameEvents.clear()
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "object": "waystone_village"}) == "", "подойти к камню")
+	check(s.flags.has("wp:waystone_village") and GameEvents.list.any(func(e): return str(e["type"]) == "waypoint_menu"),
+		"камень найден, открылся список камней")
+	s.flags["wp:waystone_forest"] = true
+	check(s.known_waypoints().size() >= 2, "найденные камни в списке")
+	check(s.submit(1, {"type": "travel", "to": "waystone_forest"}) == "" and s.location_id == "forest", "перенос в лес")
+	var fs := s.waypoint("waystone_forest")
+	check(SurfaceGrid.distance(h.cell, _cell_of_any(fs["cell"])) <= 2, "партия у камня в лесу")
+	s.mode = "explore"
+	s.dialogue = {}
+	check(s.submit(1, {"type": "travel", "to": "waystone_village"}) == "" and s.location_id == "village", "и обратно в деревню")
+
+
+func _cell_of_any(v: Variant) -> Vector2i:
+	return Vector2i(int(v[0]), int(v[1]))
+
+
+func test_walking() -> void:
+	print("walking: followers never skip cells, new orders turn the party around mid-walk")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var f: Character = s.heroes[1]
+	var start_h := h.cell
+	var start_f := f.cell
+	GameEvents.clear()
+	var far := _free_neighbor(s, Vector2i(39, 41))
+	check(_walk(s, h, far) == "" and h.cell == far, "партия дошла до площади")
+	var mv: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "move")
+	check(mv.size() == 1, "одно событие ходьбы")
+	var smooth := true
+	for uid in mv[0]["paths"]:
+		var prev := start_h if str(uid) == h.uid else start_f
+		for c in mv[0]["paths"][uid]:
+			var cell := _cell_of_any(c)
+			if SurfaceGrid.distance(prev, cell) > 1:
+				smooth = false
+			prev = cell
+	check(smooth, "каждый шаг — на соседнюю клетку, без прыжков у спутника")
+	check(SurfaceGrid.distance(h.cell, f.cell) <= 2, "спутник дошёл до ведущего")
+
+	var trail_h: Array = s._walks[1]["cells"][h.uid]
+	var trail_f: Array = s._walks[1]["cells"][f.uid]
+	var turn: Vector2i = trail_h[4]
+	var turn_f: Vector2i = trail_f[mini(4, trail_f.size() - 1)]
+	var back := turn
+	for d in SurfaceGrid.DIRS:
+		var n: Vector2i = turn + d
+		if back == turn and s.grid.is_walkable(n) and n != turn_f and s.unit_at(n) == null:
+			back = n
+	GameEvents.clear()
+	var err := s.submit(1, {"type": "move", "unit": h.uid, "cell": [back.x, back.y],
+		"from": {h.uid: [turn.x, turn.y], f.uid: [turn_f.x, turn_f.y]}})
+	check(err == "" and h.cell == back, "новый приказ на ходу выполнен")
+	var rw: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "rewind")
+	check(rw.size() == 1 and rw[0]["units"].has(h.uid), "сервер вернул героя на клетку, к которой он шёл")
+	var mv2: Array = GameEvents.list.filter(func(e): return str(e["type"]) == "move")
+	check(mv2.size() == 1 and SurfaceGrid.distance(turn, _cell_of_any(mv2[0]["paths"][h.uid][0])) <= 1,
+		"новый путь начинается оттуда, а не от старой цели")
+
+	var before_h := h.cell
+	GameEvents.clear()
+	var trail2: Array = s._walks[1]["cells"][h.uid]
+	err = s.submit(1, {"type": "move", "unit": h.uid, "cell": [0, 0], "from": {h.uid: [trail2[0].x, trail2[0].y]}})
+	check(err != "" and h.cell == before_h and GameEvents.list.is_empty(), "приказ не прошёл — возврат отменён")
+	check(s.submit(1, {"type": "move", "unit": h.uid, "cell": [far.x, far.y], "from": {h.uid: [99, 99]}}) == "" and h.cell == far,
+		"чужая клетка в from просто не учитывается")
+
+
+func test_corners() -> void:
+	print("paths: no squeezing past wall corners, straight lines on screen")
+	var g := SurfaceGrid.new(6, 6)
+	g.blocked[Vector2i(2, 1)] = true
+	g.blocked[Vector2i(1, 2)] = true
+	var p := g.find_path(Vector2i(1, 1), Vector2i(2, 2))
+	check(p.is_empty() or p.size() > 1, "между двумя углами по диагонали не протиснуться")
+	g.blocked.erase(Vector2i(1, 2))
+	p = g.find_path(Vector2i(1, 1), Vector2i(2, 2))
+	check(p.size() == 2 and p[0] == Vector2i(1, 2), "мимо угла стены — в обход, а не срезая")
+	var open := SurfaceGrid.new(12, 12)
+	var straight := open.find_path(Vector2i(2, 5), Vector2i(7, 5))
+	check(straight.size() == 5 and straight.all(func(c): return (c as Vector2i).y == 5), "по прямой — прямо, без зигзага")
+
+
+func test_village() -> void:
+	print("village: every door reachable, houses differ, villagers out and about")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var river := 0
+	for c in s.grid.deep:
+		if s.grid.get_ground(c) == "water" and s.grid.blocked.has(c):
+			river += 1
+	check(river > 100, "русло реки — вода, её видно, хоть по ней и не пройти (%d клеток)" % river)
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(mirror.grid.deep.size() == s.grid.deep.size(), "клиент видит реку")
+	var bad: Array = []
+	var sizes := {}
+	for b in s.location_data().get("buildings", []):
+		var r: Array = b["rect"]
+		sizes["%dx%d" % [int(r[2]), int(r[3])]] = true
+		for d in b.get("doors", []):
+			var dc := Vector2i(int(d[0]), int(d[1]))
+			if s.grid.find_path(h.cell, dc, s._occupied(h)).is_empty():
+				bad.append(str(b["id"]))
+	check(bad.is_empty(), "до каждой двери можно дойти (не дойти: %s)" % ", ".join(bad))
+	check(sizes.size() >= 8, "дома разного размера (%d размеров)" % sizes.size())
+	var blds: Array = s.location_data().get("buildings", [])
+	var overlap := false
+	for i in blds.size():
+		for j in range(i + 1, blds.size()):
+			var a: Array = blds[i]["rect"]
+			var b2: Array = blds[j]["rect"]
+			if Rect2i(int(a[0]), int(a[1]), int(a[2]), int(a[3])).intersects(Rect2i(int(b2[0]), int(b2[1]), int(b2[2]), int(b2[3]))):
+				overlap = true
+	check(not overlap, "дома не налезают друг на друга (нет домов-призраков внутри других)")
+	check(blds.all(func(b): return not SpriteLibrary.frame("props", str(b.get("sprite", ""))).is_empty()), "у каждого дома свой рисунок снаружи")
+	var tavern: Dictionary = {}
+	for b in s.location_data().get("buildings", []):
+		if str(b["id"]) == "tavern":
+			tavern = b
+	check(int(tavern["rect"][2]) * int(tavern["rect"][3]) >= 150 and str(tavern.get("music", "")) == "tavern",
+		"таверна большая, в ней своя музыка")
+	var villagers := s.npcs.filter(func(n): return bool(GameData.npc((n as Character).template_id).get("villager", false)))
+	check(villagers.size() >= 10, "по деревне ходят жители (%d)" % villagers.size())
+	var talker: Character = villagers[0]
+	GameEvents.clear()
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "target": talker.uid}) == "" and s.mode == "explore", "житель отвечает, не открывая разговор")
+	check(GameEvents.list.any(func(e): return str(e["type"]) == "bark" and str(e["unit"]) == talker.uid), "реплика жителя")
+	check(SurfaceGrid.distance(h.cell, talker.cell) <= 1, "герой подошёл к жителю")
+	var kinds := {}
+	for dc in s.location_data().get("deco", []):
+		kinds[str(dc[2])] = int(kinds.get(str(dc[2]), 0)) + 1
+	check(int(kinds.get("path", 0)) > 200 and kinds.has("square") and kinds.has("field"), "тропы, мостовая и огороды на земле")
+	check(kinds.has("bridge_x") and kinds.has("stones"), "через реку мост и брод по камням")
+	var bridge := Vector2i(-1, -1)
+	for dc in s.location_data().get("deco", []):
+		if str(dc[2]) == "bridge_x":
+			bridge = Vector2i(int(dc[0]), int(dc[1]))
+	check(s.grid.is_walkable(bridge) and s.grid.get_ground(bridge) == "none", "по мосту идут посуху")
+	var east: Dictionary = {}
+	for e in s.location_data()["exits"]:
+		if str(e["to"]) == "forest":
+			east = e
+	var way := s.grid.find_path(h.cell, _cell_of_any(east["cells"][0]))
+	check(way.any(func(c): return c == bridge or SurfaceGrid.distance(c, bridge) <= 1), "дорога в лес идёт через мост")
+
+
+func test_join_combat() -> void:
+	print("joining a fight: hit an enemy outside the combat and its group joins")
+	var s := _story_session("forest")
+	s.dialogue = {}
+	s.mode = "explore"
+	var groups := {}
+	for e in s.enemies:
+		if (e as Character).is_alive():
+			groups[(e as Character).encounter_id] = true
+	check(groups.size() >= 2, "в лесу несколько отрядов")
+	var first := str(groups.keys()[0])
+	var second := str(groups.keys()[1])
+	s._start_combat(first)
+	check(s.mode == "combat" and s.combat.active, "бой с первым отрядом")
+	var other: Character = null
+	for e in s.enemies:
+		if (e as Character).encounter_id == second and (e as Character).is_alive():
+			other = e
+	check(not s.combat.units.has(other) and s.combat.unit_at(other.cell) == other, "враг вне боя — допустимая цель")
+	var hero: Character = s.heroes[0]
+	check(s.combat.skill_block_reason(hero, "attack", other.cell) in ["", "не ваш ход", "слишком далеко"], "по нему можно целиться")
+	GameEvents.clear()
+	s._pull_into_combat(hero, GameData.skill("attack"), other.cell)
+	var joined := s.enemies.filter(func(e): return (e as Character).encounter_id == second and (e as Character).is_alive())
+	check(joined.all(func(e): return s.combat.units.has(e)), "весь его отряд вступил в бой")
+	check(GameEvents.list.any(func(e): return str(e["type"]) == "combat_join"), "событие о вступлении в бой")
+	check(s.combat.turn_order.has(other), "новички ходят уже в этом раунде")
+	var npc_cell := Vector2i(-5, -5)
+	for n in s.npcs:
+		npc_cell = (n as Character).cell
+	check(npc_cell.x < 0 or s.combat.unit_at(npc_cell) == null, "жители целями не становятся")
+
+
+func test_physical_skills() -> void:
+	print("knight and ranger: more than shooting and hitting — charge, leap, cries, stances, special arrows")
+	for cls in ["knight", "ranger"]:
+		var own: Array = GameData.character(cls).get("skills", [])
+		var learnable := GameData.skills.keys().filter(func(sk): return Progression.skill_block_reason(Character.from_template(cls), str(sk)) == "")
+		check(own.size() >= 5, "%s начинает с %d навыками" % [cls, own.size()])
+		check(learnable.size() >= 1, "%s может сразу выучить ещё %d" % [cls, learnable.size()])
+	for sk in GameData.skills:
+		for st in GameData.skill(str(sk)).get("statuses", []):
+			check(not GameData.status(str((st as Dictionary).get("id", ""))).is_empty(), "%s -> состояние %s есть" % [sk, (st as Dictionary).get("id", "")])
+
+	var g := SurfaceGrid.new(12, 8)
+	var k := Character.from_template("knight")
+	var r := Character.from_template("ranger")
+	var e := Character.from_template("goblin_warrior")
+	k.cell = Vector2i(1, 3)
+	r.cell = Vector2i(1, 5)
+	e.cell = Vector2i(5, 3)
+	var combat := CombatManager.new(g)
+	combat.start([k, r, e])
+	combat.current = k
+	k.ap = 10
+	GameEvents.clear()
+	check(combat.skill_block_reason(k, "rush", e.cell) == "", "рывок до врага в 4 клетках")
+	check(combat.use_skill(k, "rush", e.cell), "рывок выполнен")
+	check(SurfaceGrid.distance(k.cell, e.cell) == 1, "рыцарь добежал до врага: %s" % str(k.cell))
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "move" and not bool(ev.get("leap", true))), "фигурка бежит (событие move)")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) in ["hit", "miss"]), "удар с разбега")
+	e.cell = Vector2i(10, 3)
+	k.cooldowns.clear()
+	k.ap = 10
+	check(combat.skill_block_reason(k, "rush", Vector2i(11, 7)) != "", "рывок в пустую клетку нельзя")
+	check(combat.use_skill(k, "battle_cry", k.cell), "боевой клич")
+	check(k.has_status("rallied") and r.has_status("rallied") == (SurfaceGrid.distance(k.cell, r.cell) <= 3), "клич воодушевляет себя и союзников рядом")
+	k.skills.append("defensive_stance")   # учится в листе героя, с начала его нет
+	var armor := DamageCalc.effective_armor(k)
+	check(combat.use_skill(k, "defensive_stance", k.cell) and DamageCalc.effective_armor(k) > armor, "глухая оборона крепит броню")
+
+	combat.current = r
+	r.ap = 10
+	var to := Vector2i(3, 7)
+	check(combat.skill_block_reason(r, "tactical_retreat", k.cell) != "", "прыгнуть на союзника нельзя")
+	check(combat.use_skill(r, "tactical_retreat", to) and r.cell == to, "следопыт отпрыгнул в клетку")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "move" and bool(ev.get("leap", false))), "прыжок дугой (move с leap)")
+	r.ap = 10
+	e.cell = Vector2i(6, 6)
+	r.skills.append("hunters_mark")
+	check(combat.use_skill(r, "hunters_mark", e.cell) and e.has_status("marked"), "метка охотника")
+	check(e.get_stat("dodge") < Character.from_template("goblin_warrior").get_stat("dodge"), "помеченный хуже уклоняется")
+	r.ap = 10
+	GameEvents.clear()
+	check(combat.use_skill(r, "fire_arrow", e.cell), "огненная стрела")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) in ["hit", "miss"]), "стрела долетела")
+
+
+func test_notice_board() -> void:
+	print("notice board: a drawn board with notes; a quest is taken by tearing its note off")
+	var s := _story_session()
+	check(s.start_dialogue("notice_board", 1), "доска открылась")
+	var v := Story.view(s)
+	var board: Dictionary = v.get("board", {})
+	check(str(v["style"]) == "board" and not board.is_empty(), "стиль доски и её описание приходят в интерфейс")
+	check((board.get("pages", []) as Array).size() == (board.get("notes", []) as Array).size(), "на каждом месте доски свой листок")
+	check(SpriteLibrary.frame("images", str(board.get("image", ""))).size() > 0, "картинка доски есть")
+	check(not str(v["text"]).contains("Зараза"), "текст объявлений не повторяется в окне реплики")
+	var tear: Array = (v["choices"] as Array).filter(func(c): return int((c as Dictionary).get("page", -1)) == 0)
+	check(tear.size() == 1, "объявление о козе можно сорвать (ответ привязан к листку)")
+	s.submit(1, {"type": "dialogue_choice", "index": int(tear[0]["index"])})
+	check(s.quests.get("goat_zaraza", "") == "active" and s.flags.has("note_goat_taken"), "сорванное объявление даёт задание")
+	s.submit(1, {"type": "dialogue_next"})
+	var left: Array = Story.view(s).get("choices", [])
+	check(left.all(func(c): return int((c as Dictionary).get("page", -1)) != 0), "второй раз не сорвать")
+	s.submit(1, {"type": "dialogue_choice", "index": int(left[-1]["index"])})
+	check(s.mode == "explore", "отошли от доски")
+
+
+func test_tooltips_text() -> void:
+	print("tooltips: skill damage, status effects, items and attributes are described")
+	var Describe: GDScript = load("res://scripts/ui/describe.gd")
+	var k := Character.from_template("knight")
+	var w := Character.from_template("wizard")
+	var e := Character.from_template("goblin_warrior")
+	var p := DamageCalc.preview(k, GameData.skill("attack"))
+	check(int(p["min"]) > 0 and int(p["max"]) >= int(p["min"]), "удар рыцаря: %d–%d" % [int(p["min"]), int(p["max"])])
+	var pt := DamageCalc.preview(k, GameData.skill("attack"), e)
+	check(int(pt["max"]) <= int(p["max"]) and float(pt["hit_chance"]) >= 5.0 and float(pt["hit_chance"]) <= 95.0, "по гоблину с бронёй и шансом попасть")
+	for sk in w.skills:
+		var def := GameData.skill(str(sk))
+		if def.has("damage"):
+			check(str(Describe.call("damage_line", w, def)) != "", "урон навыка %s расписан" % sk)
+	var heal := DamageCalc.heal_preview(Character.from_template("cleric"), GameData.skill("minor_heal"))
+	check(int(heal[0]) > 0 and int(heal[1]) >= int(heal[0]), "лечение жрицы: %d–%d" % [int(heal[0]), int(heal[1])])
+	for st in GameData.statuses:
+		check(str(GameData.status(str(st)).get("description", "")) != "", "у состояния %s есть описание" % st)
+		check(str(Describe.call("status_text", str(st), 2, 1)) != "", "состояние %s расписано" % st)
+	check((Describe.call("status_effects", "wet", 1) as PackedStringArray).size() > 0, "мокрый: видно, что меняется")
+	var mask := str(Describe.call("item_text", "mukhoglot_mask", ""))
+	check(mask.contains("Голова") and mask.contains("яд"), "маска Мухоглота: ячейка и защита от яда")
+	for a in GameData.attribute_list():
+		check(str(Describe.call("attribute_effects", str(a))) != "", "атрибут %s: что даёт очко" % a)
+		check(str((GameData.rule("attribute_info", {}) as Dictionary).get(a, "")) != "", "атрибут %s: зачем качать" % a)
+
+
+func test_attack_villagers() -> void:
+	print("attack anyone: a forced hit turns a villager into an enemy, Shmyg starts his own fight")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var target: Character = null
+	for n in s.npcs:
+		var nd := GameData.npc((n as Character).template_id)
+		if bool(nd.get("attackable", true)) and str(nd.get("on_attack", "")) == "" and not nd.has("trade") and not nd.has("dialogue"):
+			target = n
+	check(target != null, "есть житель, на которого можно напасть")
+	if target == null:
+		return
+	h.cell = _free_neighbor(s, target.cell)
+	var cmd := {"type": "skill", "unit": h.uid, "skill": "attack", "cell": [target.cell.x, target.cell.y]}
+	check(s.submit(1, cmd) != "" and s.mode == "explore", "без принуждения по жителю не бьём")
+	cmd["force"] = true
+	check(s.submit(1, cmd) == "", "Ctrl+ЛКМ — удар по жителю")
+	check(s.enemies.has(target) and target.faction == "enemy", "житель стал врагом")
+	check(s.mode == "combat" or not target.is_alive(), "начался бой (или житель пал сразу)")
+	check(s.npc_spot(target.template_id) == null and s.flags.has("attacked:" + target.template_id), "больше он не появится мирным")
+	_drive(s, true)
+	check(not target.is_alive(), "житель побеждён")
+	check(s.loot.has(target.uid), "с тела можно что-то снять")
+
+	var f := _story_session("forest")
+	var shmyg: Character = null
+	for n in f.npcs:
+		if (n as Character).template_id == "shmyg":
+			shmyg = n
+	check(shmyg != null, "Шмыг в лесу")
+	if shmyg == null:
+		return
+	var fh: Character = f.heroes[0]
+	fh.cell = _free_neighbor(f, shmyg.cell)
+	check(f.submit(1, {"type": "skill", "unit": fh.uid, "skill": "attack", "cell": [shmyg.cell.x, shmyg.cell.y], "force": true}) == "", "удар по Шмыгу")
+	check(f.enemies.any(func(x): return (x as Character).encounter_id == "forest_scout"), "Шмыг принимает бой: его сценарный отряд появился")
+	check(f.mode == "combat", "бой со Шмыгом")
+
+
+func test_cleric_skills() -> void:
+	print("priestess: smite, purify, healing circle, resurrect")
+	var own: Array = GameData.character("cleric").get("skills", [])
+	check(own.size() >= 6, "жрица начинает с %d навыками" % own.size())
+	var g := SurfaceGrid.new(10, 8)
+	var c := Character.from_template("cleric")
+	var k := Character.from_template("knight")
+	var wz := Character.from_template("wizard")
+	var sk := Character.from_template("skeleton")
+	c.cell = Vector2i(2, 3)
+	k.cell = Vector2i(3, 3)
+	wz.cell = Vector2i(2, 4)
+	sk.cell = Vector2i(6, 3)
+	for extra in ["healing_circle", "resurrect", "dread"]:
+		c.skills.append(extra)
+	var combat := CombatManager.new(g)
+	combat.start([c, k, wz, sk])
+	combat.current = c
+	c.ap = 30
+	var hp := sk.hp
+	check(combat.use_skill(c, "smite", sk.cell), "кара по скелету")
+	check(sk.hp < hp or GameEvents.list.any(func(ev): return str(ev["type"]) == "miss"), "свет ранит нежить")
+	StatusSystem.apply(k, "poisoned")
+	StatusSystem.apply(k, "burning")
+	GameEvents.clear()
+	check(combat.use_skill(c, "purify", k.cell), "очищение")
+	check(not k.has_status("poisoned") and not k.has_status("burning"), "вредные состояния сняты")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "cleanse"), "событие очищения")
+	c.hp = 5
+	k.hp = 5
+	c.cooldowns.clear()
+	check(combat.use_skill(c, "healing_circle", c.cell), "круг исцеления")
+	check(c.hp > 5 and k.hp > 5, "лечит и саму жрицу, и соседа")
+	wz.hp = 0
+	combat._cleanup_dead()
+	check(not wz.is_alive(), "волшебница пала")
+	check(combat.skill_block_reason(c, "resurrect", k.cell) != "", "живого не воскрешают")
+	check(combat.use_skill(c, "resurrect", wz.cell), "воскрешение")
+	check(wz.is_alive() and wz.hp >= roundf(wz.max_hp() * 0.25), "волшебница поднялась с %d ОЗ" % roundi(wz.hp))
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "revive"), "событие воскрешения")
+	check(not GameData.skill("shield_of_faith").is_empty() and not GameData.status("warded").is_empty(), "щит веры и его состояние")
+
+
+func test_loot() -> void:
+	print("loot: bodies leave bags, take items by hand, leftovers stay on the bodies")
+	check(GameData.loot_table("boss_mukhoglot").any(func(r): return str((r as Dictionary).get("item", "")) == "mukhoglot_mask"), "Мухоглот роняет маску")
+	check(not GameData.loot_table("someone", true).is_empty(), "у жителей без своей записи есть общая добыча")
+	var s := _story_session("forest")
+	for x in s.enemies:
+		var foe: Character = x
+		foe.hp = 0
+	s._roll_loot()
+	check(not s.loot.is_empty(), "с лесных врагов что-то упало (%d мешков)" % s.loot.size())
+	if s.loot.is_empty():
+		return
+	var corpse := str(s.loot.keys()[0])
+	var bag: Dictionary = s.loot[corpse]
+	var h: Character = s.heroes[0]
+	var bc := Vector2i(int(bag["cell"][0]), int(bag["cell"][1]))
+	h.cell = _free_neighbor(s, bc)
+	var gold := s.gold
+	var count := 0
+	for id in s.items:
+		count += int(s.items[id])
+	GameEvents.clear()
+	check(s.submit(1, {"type": "loot", "unit": h.uid, "corpse": corpse}) == "", "обыскать тело")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "loot_open"), "окно добычи открывается")
+	check(s.submit(1, {"type": "loot_take", "unit": h.uid, "corpse": corpse, "item": "all"}) == "", "взять всё")
+	var after := 0
+	for id in s.items:
+		after += int(s.items[id])
+	check(not s.loot.has(corpse) and (after > count or s.gold > gold), "мешок опустел, вещи в сумке")
+	var snap := s.snapshot()
+	var m := GameSession.new()
+	m.load_snapshot(snap)
+	check(m.loot.size() == s.loot.size(), "добыча видна клиенту")
+	var left := s.loot.size()
+	var items_before := s.items.duplicate()
+	s.mode = "explore"
+	s.goto_location("village", "from_forest")
+	var forest_loot: Dictionary = s._locations["forest"]["loot"]
+	check(forest_loot.size() == left and s.items == items_before, "уходя по сюжету, сами ничего не берут: тела ждут обыска")
+
+
+func test_equipment_slots() -> void:
+	print("equipment: DOS1-like slots, two rings, two-handed weapons free the off hand")
+	check(Character.slot_of("mukhoglot_mask") == "head" and Character.slot_of("silver_ring") == "ring", "ячейки предметов")
+	check(Character.slot_capacity("ring") == 2 and Character.slot_capacity("head") == 1, "колец два, шлем один")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	for it in ["silver_ring", "silver_ring", "silver_ring", "iron_sword", "wooden_shield", "hunting_bow", "mukhoglot_mask"]:
+		s.items[it] = int(s.items.get(it, 0)) + 1
+	for i in 3:
+		check(s.submit(1, {"type": "equip", "unit": h.uid, "item": "silver_ring"}) == "", "кольцо %d" % (i + 1))
+	check(h.in_slot("ring").size() == 2 and int(s.items.get("silver_ring", 0)) == 1, "надето два кольца, третье в сумке")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "iron_sword"})
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "wooden_shield"})
+	check(h.equipment.has("iron_sword") and h.equipment.has("wooden_shield"), "меч и щит")
+	check(str(h.effective_weapon().get("name", "")) == str(GameData.item("iron_sword")["name"]), "бьёт надетым мечом")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "hunting_bow"})
+	check(h.equipment.has("hunting_bow") and not h.equipment.has("wooden_shield") and not h.equipment.has("iron_sword"), "лук в две руки: меч и щит в сумку")
+	check(bool(h.effective_weapon().get("ranged", false)), "с луком атака — выстрел")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "wooden_shield"})
+	check(h.equipment.has("wooden_shield") and not h.equipment.has("hunting_bow"), "щит снимает двуручный лук")
+	var res := h.get_resistance("poison")
+	s.submit(1, {"type": "equip", "unit": h.uid, "item": "mukhoglot_mask"})
+	check(h.get_resistance("poison") > res, "маска защищает от яда")
+	s.mode = "combat"
+	check(s.submit(1, {"type": "unequip", "unit": h.uid, "item": "mukhoglot_mask"}) != "", "в бою не переодеться")
+	s.mode = "explore"
+
+
+func test_trade() -> void:
+	print("trade: buy and sell with the smith, the trader and the innkeeper")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var gunter: Character = null
+	var marta: Character = null
+	for n in s.npcs:
+		match (n as Character).template_id:
+			"gunter":
+				gunter = n
+			"marta":
+				marta = n
+	check(gunter != null and marta != null, "кузнец и трактирщица в деревне")
+	if gunter == null or marta == null:
+		return
+	h.cell = _free_neighbor(s, gunter.cell)
+	s.gold = 200
+	var cost := GameSession.price("gunter", "iron_sword", false)
+	var stock := int(s.trader_stock("gunter").get("iron_sword", 0))
+	check(cost > 0 and stock > 0, "у кузнеца есть меч за %d" % cost)
+	check(s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "gunter", "item": "iron_sword"}) == "", "купить меч")
+	check(s.gold == 200 - cost and s.items.has("iron_sword"), "золото списано, меч в сумке")
+	check(int(s.trader_stock("gunter").get("iron_sword", 0)) == stock - 1, "у кузнеца мечей меньше")
+	s.items["wolf_fang"] = 2
+	var g0 := s.gold
+	check(s.submit(1, {"type": "trade_sell", "unit": h.uid, "npc": "gunter", "item": "wolf_fang"}) == "", "продать клык")
+	check(s.gold == g0 + GameSession.price("gunter", "wolf_fang", true) and int(s.items["wolf_fang"]) == 1, "клык продан")
+	s.items["lado_map"] = 1
+	check(s.submit(1, {"type": "trade_sell", "unit": h.uid, "npc": "gunter", "item": "lado_map"}) != "", "памятные вещи не продаются")
+	s.gold = 0
+	check(s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "gunter", "item": "chainmail"}) != "", "без денег не купить")
+	h.cell = _free_neighbor(s, marta.cell)
+	s.gold = 100
+	for i in 3:
+		s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "marta", "item": "smoked_fish"})
+	check(int(s.items.get("smoked_fish", 0)) == 3 and int(s.trader_stock("marta")["smoked_fish"]) == -1, "рыбы у Марты сколько угодно")
+	h.cell = _free_neighbor(s, gunter.cell)
+	check(s.submit(1, {"type": "trade_buy", "unit": h.uid, "npc": "marta", "item": "smoked_fish"}) != "", "издалека не торгуют")
+	GameEvents.clear()
+	Story.apply(s, [{"trade": "marta"}])
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "trade_open" and str(ev["npc"]) == "marta"), "из разговора открывается торговля")
+	var m := GameSession.new()
+	m.load_snapshot(s.snapshot())
+	check(int((m.trade_stock.get("gunter", {}) as Dictionary).get("iron_sword", 0)) == stock - 1, "запасы торговцев видны клиенту")

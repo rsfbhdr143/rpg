@@ -45,6 +45,55 @@ static func mitigate(target: Character, amount: float, element: String, attacker
 	return amount * (1.0 - target.get_resistance(element) / 100.0)
 
 
+## Разброс урона навыка без бросков, для подсказок: {"min", "max", "element", "crit_chance", "crit_multiplier",
+## "hit_chance"}. С целью — уже после её брони или сопротивления (и с шансом попасть по ней).
+static func preview(attacker: Character, skill_def: Dictionary, target: Character = null) -> Dictionary:
+	var dmg: Dictionary = skill_def.get("damage", {})
+	if dmg.is_empty():
+		return {}
+	var element := str(dmg.get("element", "physical"))
+	var lo := 0.0
+	var hi := 0.0
+	if str(dmg.get("source", "skill")) == "weapon":
+		var w := attacker.effective_weapon()
+		lo = float(w.get("min", 1))
+		hi = float(w.get("max", 2))
+		if not dmg.has("element"):
+			element = str(w.get("element", "physical"))
+	else:
+		var cfg: Dictionary = GameData.rule("skill_damage", {})
+		var base := base_skill_damage(attacker.level)
+		lo = base * (1.0 - float(cfg.get("variance", 0.0)))
+		hi = base * (1.0 + float(cfg.get("variance", 0.0)))
+	var bonus_stat: String = "physical_damage_pct" if element == "physical" else "magic_damage_pct"
+	var k := (1.0 + attacker.get_stat(bonus_stat) / 100.0) * float(dmg.get("multiplier", 1.0))
+	if target != null and target.is_undead():
+		for st in attacker.statuses:
+			k *= 1.0 + float(GameData.status(str(st)).get("vs_undead_damage", 0)) / 100.0
+	lo *= k
+	hi *= k
+	var out := {"element": element, "crit_chance": 0.0, "crit_multiplier": maxf(1.0, attacker.get_stat("crit_multiplier")),
+		"hit_chance": 100.0}
+	if bool(skill_def.get("can_crit", false)):
+		out["crit_chance"] = clampf(attacker.get_stat("crit_chance"), 0.0, 100.0)
+	if target != null:
+		lo = maxf(0.0, mitigate(target, lo, element, attacker.level))
+		hi = maxf(0.0, mitigate(target, hi, element, attacker.level))
+		if bool(skill_def.get("can_miss", false)):
+			out["hit_chance"] = hit_chance(attacker, target)
+	out["min"] = roundi(lo)
+	out["max"] = roundi(hi)
+	return out
+
+
+## Разброс лечения навыка: [min, max].
+static func heal_preview(caster: Character, skill_def: Dictionary) -> Array:
+	var cfg: Dictionary = GameData.rule("skill_damage", {})
+	var v := float(cfg.get("variance", 0.0))
+	var base := base_skill_damage(caster.level) * float((skill_def.get("heal", {}) as Dictionary).get("multiplier", 1.0))
+	return [roundi(base * (1.0 - v)), roundi(base * (1.0 + v))]
+
+
 ## Полный расчёт атаки навыком. Возвращает
 ## {"hit": bool, "crit": bool, "amount": float, "element": String}
 static func roll_attack(attacker: Character, target: Character, skill_def: Dictionary) -> Dictionary:
@@ -59,7 +108,7 @@ static func roll_attack(attacker: Character, target: Character, skill_def: Dicti
 	var element := str(dmg.get("element", "physical"))
 	var raw := 0.0
 	if str(dmg.get("source", "skill")) == "weapon":
-		var w := attacker.weapon
+		var w := attacker.effective_weapon()
 		raw = GameData.rng.randf_range(float(w.get("min", 1)), float(w.get("max", 2)))
 		if not dmg.has("element"):
 			element = str(w.get("element", "physical"))
@@ -69,6 +118,9 @@ static func roll_attack(attacker: Character, target: Character, skill_def: Dicti
 	var bonus_stat: String = "physical_damage_pct" if element == "physical" else "magic_damage_pct"
 	raw *= 1.0 + attacker.get_stat(bonus_stat) / 100.0
 	raw *= float(dmg.get("multiplier", 1.0))
+	if target.is_undead():   # благословлённые бьют нежить сильнее
+		for st in attacker.statuses:
+			raw *= 1.0 + float(GameData.status(str(st)).get("vs_undead_damage", 0)) / 100.0
 
 	if bool(skill_def.get("can_crit", false)) and GameData.rng.randf() * 100.0 < attacker.get_stat("crit_chance"):
 		result["crit"] = true

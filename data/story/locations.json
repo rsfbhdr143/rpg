@@ -1,0 +1,358 @@
+{
+  "cemetery": {
+    "name": "Старый погост",
+    "enter_text": "Старый погост. Покосившиеся надгробия, кривые вязы и вороньё.",
+    "on_enter": "funeral",
+    "music": "funeral",
+    "ambient": "amb_cemetery",
+    "objects": [
+      {
+        "id": "fresh_grave",
+        "name": "Свежая могила",
+        "dialogue": "fresh_grave",
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "prepare",
+            "find_barrow",
+            "burn_body",
+            "farewell",
+            "return",
+            "done"
+          ]
+        }
+      }
+    ],
+    "encounters": [
+      {
+        "id": "cemetery_rising",
+        "script": true,
+        "on_defeat": "after_rising",
+        "music": "combat_undead",
+        "tips": [
+          "Мертвецы хорошо горят. Свечи у могил тоже огонь.",
+          "Яд мертвецов лечит. Не поливайте их ядом.",
+          "Мокрую цель молния оглушает, а холод замораживает. После дождя здесь полно луж."
+        ],
+        "enemies": [
+          {
+            "template": "risen"
+          },
+          {
+            "template": "risen"
+          },
+          {
+            "template": "skeleton",
+            "min_party": 3
+          },
+          {
+            "template": "risen",
+            "min_party": 3
+          },
+          {
+            "template": "skeleton",
+            "min_party": 4
+          }
+        ]
+      },
+      {
+        "id": "cemetery_restless",
+        "respawn": true,
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "prepare",
+            "find_barrow",
+            "burn_body"
+          ]
+        },
+        "music": "combat_undead",
+        "enemies": [
+          {
+            "template": "risen"
+          },
+          {
+            "template": "risen"
+          },
+          {
+            "template": "skeleton",
+            "min_party": 3
+          },
+          {
+            "template": "risen",
+            "min_party": 4
+          }
+        ]
+      }
+    ]
+  },
+  "village": {
+    "name": "Вороний Брод",
+    "enter_text": "Вороний Брод. Ставни закрыты, но в таверне ещё горит свет.",
+    "music": "village",
+    "ambient": "amb_village",
+    "objects": [
+      {
+        "id": "bell_tower",
+        "name": "Колокольня",
+        "dialogue": "bell_tower"
+      },
+      {
+        "id": "notice_board",
+        "name": "Доска объявлений",
+        "dialogue": "notice_board"
+      },
+      {
+        "id": "tadeush_table",
+        "name": "Стол в доме священника",
+        "dialogue": "tadeush_table",
+        "if": {
+          "flag": "epilogue_open"
+        }
+      },
+      {
+        "id": "chest_headman",
+        "name": "Сундук старосты",
+        "dialogue": "chest_headman"
+      },
+      {
+        "id": "chest_korn",
+        "name": "Сундук Корнов",
+        "dialogue": "chest_korn"
+      },
+      {
+        "id": "chest_fisher",
+        "name": "Короб рыбака",
+        "dialogue": "chest_fisher"
+      },
+      {
+        "id": "chest_potter",
+        "name": "Сундук гончара",
+        "dialogue": "chest_potter"
+      },
+      {
+        "id": "chest_family",
+        "name": "Сундук Бжезинских",
+        "dialogue": "chest_family"
+      },
+      {
+        "id": "chest_baker",
+        "name": "Ларь пекаря",
+        "dialogue": "chest_baker"
+      },
+      {
+        "id": "chest_barn",
+        "name": "Ящик в амбаре",
+        "dialogue": "chest_barn"
+      }
+    ],
+    "encounters": []
+  },
+  "forest": {
+    "name": "Туманный Ольшаник",
+    "enter_text": "Туманный Ольшаник. Чёрная вода, кочки и туман по колено.",
+    "on_enter": "forest_enter",
+    "music": "forest",
+    "ambient": "amb_forest",
+    "objects": [
+      {
+        "id": "lado_tracks",
+        "name": "Следы босых ног",
+        "dialogue": "lado_tracks"
+      }
+    ],
+    "encounters": [
+      {
+        "id": "forest_wolves",
+        "on_defeat": "goat_rescue",
+        "anchor": "goat_stump",
+        "enemies": [
+          {
+            "template": "wolf"
+          },
+          {
+            "template": "wolf"
+          },
+          {
+            "template": "wolf",
+            "min_party": 3
+          },
+          {
+            "template": "wolf",
+            "min_party": 4
+          }
+        ]
+      },
+      {
+        "id": "forest_drowned",
+        "tips": [
+          "Утопленники мокрые насквозь. Молния по воде бьёт всех, кто в ней стоит. Включая вас."
+        ],
+        "enemies": [
+          {
+            "template": "drowned"
+          },
+          {
+            "template": "drowned"
+          },
+          {
+            "template": "risen"
+          },
+          {
+            "template": "drowned",
+            "min_party": 3
+          },
+          {
+            "template": "risen",
+            "min_party": 4
+          }
+        ]
+      },
+      {
+        "id": "forest_scout",
+        "script": true,
+        "anchor": "goblin_trail",
+        "enemies": [
+          {
+            "template": "goblin_scout"
+          }
+        ]
+      },
+      {
+        "id": "forest_wolf_pack",
+        "respawn": true,
+        "enemies": [
+          {
+            "template": "wolf"
+          },
+          {
+            "template": "wolf"
+          },
+          {
+            "template": "wolf",
+            "min_party": 3
+          }
+        ]
+      },
+      {
+        "id": "forest_bog_dead",
+        "respawn": true,
+        "enemies": [
+          {
+            "template": "drowned"
+          },
+          {
+            "template": "risen"
+          },
+          {
+            "template": "risen",
+            "min_party": 3
+          },
+          {
+            "template": "drowned",
+            "min_party": 4
+          }
+        ]
+      }
+    ]
+  },
+  "goblin_camp": {
+    "name": "Кривой Курган",
+    "enter_text": "Кривой Курган. Бухают гоблинские барабаны.",
+    "on_enter": "camp_enter",
+    "music": "goblin_camp",
+    "ambient": "amb_camp",
+    "objects": [
+      {
+        "id": "bone_throne",
+        "name": "Трон из костей",
+        "dialogue": "bone_throne",
+        "if": {
+          "flag": "body_burned"
+        }
+      },
+      {
+        "id": "pyre",
+        "name": "Погребальный костёр",
+        "dialogue": "pyre",
+        "if": {
+          "flag": "body_burned"
+        }
+      }
+    ],
+    "encounters": [
+      {
+        "id": "camp_gate",
+        "if": {
+          "not_flag": "back_path"
+        },
+        "enemies": [
+          {
+            "template": "goblin_warrior"
+          },
+          {
+            "template": "goblin_warrior",
+            "min_party": 3
+          },
+          {
+            "template": "goblin_shaman"
+          },
+          {
+            "template": "goblin_warrior",
+            "if": {
+              "flag": "shmyg_fled"
+            }
+          },
+          {
+            "template": "goblin_warrior",
+            "min_party": 4
+          }
+        ]
+      },
+      {
+        "id": "camp_boss",
+        "script": true,
+        "boss": true,
+        "on_defeat": "pyre_lighting",
+        "music": "boss_lado",
+        "anchor": "bone_throne",
+        "tips": [
+          "Яд шамана лечит тело Ладо. Подожгите ядовитые лужи, гоблинам тоже достанется.",
+          "Бочки с маслом в лагере горят очень хорошо."
+        ],
+        "enemies": [
+          {
+            "template": "boss_mukhoglot"
+          },
+          {
+            "template": "lado_body"
+          },
+          {
+            "template": "goblin_warrior"
+          },
+          {
+            "template": "goblin_shaman",
+            "min_party": 2,
+            "if": {
+              "not_flag": "goblins_scattered"
+            }
+          },
+          {
+            "template": "goblin_warrior",
+            "min_party": 3,
+            "if": {
+              "not_flag": "goblins_scattered"
+            }
+          },
+          {
+            "template": "goblin_warrior",
+            "min_party": 4,
+            "if": {
+              "not_flag": "goblins_scattered"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

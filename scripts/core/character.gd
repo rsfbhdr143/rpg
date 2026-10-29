@@ -6,6 +6,11 @@ extends RefCounted
 
 static var _next_uid := 1
 
+## Ячейки снаряжения, как в D:OS1. В кольцах два места, в остальных по одному.
+const SLOTS := ["head", "amulet", "chest", "weapon", "offhand", "hands", "belt", "legs", "feet", "ring"]
+const SLOT_NAMES := {"head": "Голова", "amulet": "Амулет", "chest": "Тело", "weapon": "Оружие",
+	"offhand": "Вторая рука", "hands": "Руки", "belt": "Пояс", "legs": "Ноги", "feet": "Ступни", "ring": "Кольцо"}
+
 var uid: String = ""
 var template_id: String = ""
 var display_name: String = ""
@@ -20,6 +25,8 @@ var talents: Array = []           # id талантов
 var skills: Array = []            # id навыков
 var weapon: Dictionary = {}       # {"name","min","max","element"}
 var base_stats: Dictionary = {}   # плоские прибавки от экипировки/шаблона: {"armor": 10, "fire_res": 20}
+var equipment: Array = []         # id надетых предметов (data/story/items.json): их "stats" складываются,
+                                  # предмет с "weapon" заменяет оружие
 
 var unspent_attribute_points: int = 0
 var unspent_ability_points: int = 0
@@ -31,6 +38,7 @@ var statuses: Dictionary = {}     # status_id -> {"turns": int, "level": int}
 var cooldowns: Dictionary = {}    # skill_id -> оставшиеся ходы
 var cell: Vector2i = Vector2i.ZERO
 var death_handled := false
+var encounter_id := ""            # к какой группе врагов локации относится (для врагов)
 
 
 static func from_template(template_id: String) -> Character:
@@ -100,7 +108,43 @@ func _modifier_sum(stat: String) -> float:
 	for st in statuses:
 		var smods: Dictionary = GameData.status(st).get("modifiers", {})
 		s += float(smods.get(stat, 0.0))
+	for it in equipment:
+		var istats: Dictionary = GameData.item(str(it)).get("stats", {})
+		s += float(istats.get(stat, 0.0))
 	return s
+
+
+## Ячейка предмета ("slot" в items.json; у старых записей без него оружие — в руку, прочее — амулет) или "".
+static func slot_of(item_id: String) -> String:
+	var d := GameData.item(item_id)
+	if d.has("slot"):
+		return str(d["slot"])
+	if d.has("weapon"):
+		return "weapon"
+	return "amulet" if d.has("stats") else ""
+
+
+static func slot_capacity(slot: String) -> int:
+	return 2 if slot == "ring" else 1
+
+
+## Что надето в ячейку (для колец — до двух).
+func in_slot(slot: String) -> Array:
+	return equipment.filter(func(it): return slot_of(str(it)) == slot)
+
+
+## Оружие держит обе руки (двуручное своё или надетое): вторая рука занята.
+func two_handed() -> bool:
+	return bool(effective_weapon().get("two_handed", false)) and not in_slot("weapon").is_empty()
+
+
+## Оружие с учётом надетых предметов.
+func effective_weapon() -> Dictionary:
+	for it in equipment:
+		var w: Dictionary = GameData.item(str(it)).get("weapon", {})
+		if not w.is_empty():
+			return w
+	return weapon
 
 
 ## Сопротивление стихии в процентах, ограниченное ±resistance_cap.
@@ -128,6 +172,16 @@ func has_flag(flag: String) -> bool:
 
 func ability_rank(ability_id: String) -> int:
 	return int(abilities.get(ability_id, 0))
+
+
+## Класс героя («Рыцарь»): имя у героя своё, класс берётся из шаблона.
+func class_title() -> String:
+	return str(GameData.character(template_id).get("name", template_id))
+
+
+## Нежить ("type": "undead" в шаблоне): лечение и благословение её жгут.
+func is_undead() -> bool:
+	return str(GameData.character(template_id).get("type", "")) == "undead"
 
 
 # --- Состояние ----------------------------------------------------------------
@@ -171,3 +225,69 @@ func full_restore() -> void:
 
 func describe() -> String:
 	return "%s (ур. %d)" % [display_name, level]
+
+
+# --- Сериализация (сеть, сохранения) -----------------------------------------
+
+func to_dict() -> Dictionary:
+	return {
+		"uid": uid, "template_id": template_id, "name": display_name, "faction": faction,
+		"level": level, "xp": xp, "xp_reward": xp_reward,
+		"attributes": attributes.duplicate(), "abilities": abilities.duplicate(),
+		"talents": talents.duplicate(), "skills": skills.duplicate(),
+		"weapon": weapon.duplicate(), "base_stats": base_stats.duplicate(), "equipment": equipment.duplicate(),
+		"points": [unspent_attribute_points, unspent_ability_points, unspent_talent_points],
+		"hp": hp, "ap": ap,
+		"statuses": statuses.duplicate(true), "cooldowns": cooldowns.duplicate(),
+		"cell": [cell.x, cell.y], "death_handled": death_handled,
+		"encounter": encounter_id,
+	}
+
+
+static func from_dict(d: Dictionary) -> Character:
+	var c := Character.new()
+	c.uid = str(d.get("uid", ""))
+	c.template_id = str(d.get("template_id", ""))
+	c.display_name = str(d.get("name", ""))
+	c.faction = str(d.get("faction", "neutral"))
+	c.level = int(d.get("level", 1))
+	c.xp = int(d.get("xp", 0))
+	c.xp_reward = int(d.get("xp_reward", 0))
+	var attrs: Dictionary = d.get("attributes", {})
+	for a in attrs:
+		c.attributes[a] = int(attrs[a])
+	var abs_d: Dictionary = d.get("abilities", {})
+	for ab in abs_d:
+		c.abilities[ab] = int(abs_d[ab])
+	var t: Array = d.get("talents", [])
+	c.talents = t.duplicate()
+	var s: Array = d.get("skills", [])
+	c.skills = s.duplicate()
+	var w: Dictionary = d.get("weapon", {})
+	c.weapon = w.duplicate()
+	var bs: Dictionary = d.get("base_stats", {})
+	c.base_stats = bs.duplicate()
+	var eq: Array = d.get("equipment", [])
+	c.equipment = eq.duplicate()
+	var pts: Array = d.get("points", [0, 0, 0])
+	c.unspent_attribute_points = int(pts[0])
+	c.unspent_ability_points = int(pts[1])
+	c.unspent_talent_points = int(pts[2])
+	c.hp = float(d.get("hp", 1.0))
+	c.ap = int(d.get("ap", 0))
+	var sts: Dictionary = d.get("statuses", {})
+	for id in sts:
+		var st: Dictionary = sts[id]
+		c.statuses[id] = {"turns": int(st.get("turns", 1)), "level": int(st.get("level", 1))}
+	var cds: Dictionary = d.get("cooldowns", {})
+	for sk in cds:
+		c.cooldowns[sk] = int(cds[sk])
+	var cl: Array = d.get("cell", [0, 0])
+	c.cell = Vector2i(int(cl[0]), int(cl[1]))
+	c.death_handled = bool(d.get("death_handled", false))
+	c.encounter_id = str(d.get("encounter", ""))
+	# Новые персонажи не должны получить uid, уже занятый загруженными.
+	var n := int(c.uid.get_slice("#", 1))
+	if n >= _next_uid:
+		_next_uid = n + 1
+	return c

@@ -1,2 +1,14 @@
 .godot/
 *.import
+build/
+art/review/
+art/generated/
+__pycache__/
+*.whl
+# Исходные записи музыки (≈100 МБ) не храним в git: в игру идут OGG из tools/audio/import_tracks.py.
+assets/audio/game-music/*.mp3
+assets/audio/game-music/*.wav
+assets/audio/game-music/*.flac
+assets/audio/game-music/*.m4a
+art/nano/jobs/
+art/nano/out/

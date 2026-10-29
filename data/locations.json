@@ -1,0 +1,1098 @@
+{
+  "cemetery": {
+    "style": {
+      "wall": "stone",
+      "floor": [
+        "#3b4232",
+        "#353c2d"
+      ],
+      "tint": "#d8d4e8"
+    },
+    "rows": [
+      "####################################",
+      "#TTg..........g.t................gT#",
+      "#...g....................C======...#",
+      "#.tT.g..tgq.t.t...g.tT.t.=k_Z_k=...#",
+      "#.g.g..gt.tTt.g.g.g.t....=_____=...#",
+      "#..g.gq.......T..........=_____=...#",
+      "#........................===+===..t#",
+      "#.t.g.g.g....T..g.g.g.g............#",
+      "#.t..........r.........r......@.T..#",
+      "#....g..g.................g.....gg.#",
+      "#....g....g....S,..,...............#",
+      "#.................O.P...,.......bb.1",
+      "#.....g......,.....M............bb.1",
+      "#.............u.a.a...N............#",
+      "#....q.....r.....a.a...............#",
+      "#..............,.....,........g....#",
+      "#..L======.............r...........#",
+      "#..=D_Y_I=.......r.................#",
+      "#..=_____+..g.g...g...g...g.gg.tg..#",
+      "#..=_U___=..q.gT....g...g...t.tgt.g#",
+      "#g.=======........T..T.........g...#",
+      "#............Tg.g...t.g.gT..t.g.g..#",
+      "#T........T..g........T...T......TT#",
+      "####################################"
+    ],
+    "legend": {
+      "T": {
+        "prop": "dead_tree"
+      },
+      "g": {
+        "prop": "grave"
+      },
+      "t": {
+        "prop": "tombstone"
+      },
+      ",": {
+        "prop": "funeral_candles",
+        "block": false
+      },
+      "O": {
+        "object": "fresh_grave"
+      },
+      "S": {
+        "npc": "sych"
+      },
+      "P": {
+        "npc": "tadeush"
+      },
+      "M": {
+        "npc": "marta"
+      },
+      "N": {
+        "npc": "pipin"
+      },
+      "u": {
+        "npc": "gunter"
+      },
+      "a": {
+        "spawn": "start"
+      },
+      "b": {
+        "spawn": "from_village"
+      },
+      "1": {
+        "exit": "to_village"
+      },
+      "r": {
+        "encounter": "cemetery_rising"
+      },
+      "q": {
+        "encounter": "cemetery_restless"
+      },
+      "@": {
+        "object": "waystone_cemetery",
+        "waypoint": true,
+        "name": "Ворота погоста"
+      },
+      "L": {
+        "building": "lodge",
+        "size": [
+          7,
+          5
+        ],
+        "name": "Сторожка Сыча",
+        "material": "log",
+        "roof": "thatch",
+        "chimney": true,
+        "sprite": "bld_lodge"
+      },
+      "C": {
+        "building": "crypt",
+        "size": [
+          7,
+          5
+        ],
+        "name": "Старый склеп",
+        "material": "stone",
+        "roof": "slate",
+        "sprite": "bld_crypt"
+      },
+      "D": {
+        "prop": "bed"
+      },
+      "Y": {
+        "prop": "table"
+      },
+      "U": {
+        "prop": "barrel"
+      },
+      "I": {
+        "prop": "shelf"
+      },
+      "k": {
+        "prop": "coffin"
+      },
+      "Z": {
+        "prop": "altar"
+      }
+    },
+    "exits": [
+      {
+        "id": "to_village",
+        "to": "village",
+        "spawn": "from_cemetery",
+        "name": "Дорога в деревню"
+      }
+    ],
+    "encounters": [
+      {
+        "id": "cemetery_rising",
+        "trigger_radius": 3
+      },
+      {
+        "id": "cemetery_restless",
+        "trigger_radius": 3
+      }
+    ]
+  },
+  "village": {
+    "style": {
+      "wall": "fence",
+      "floor": [
+        "#4b5434",
+        "#444d2f"
+      ],
+      "path": [
+        "#76643f",
+        "#685838"
+      ]
+    },
+    "rows": [
+      "####################################################################################################",
+      "#....T...TT...T.T.T...............T..TTT.T....TT.T..T.T..T....T.T...TT...vvvvjT....TTTTT....T.T..T.#",
+      "#.TT,TTT.,T.TTTT.T....TTT.E======..TT.TT...T.TT.TTT..TT.TT...TTT....TT..Tvvvv.T...TT.TTTTT...TTTT..#",
+      "#T...TT.T....,T.T.......T.=D__kI=.o....TTT,T.........T.T....T.TTT,.T.o....vvvv.TTT.T..T.TTTT....T.T#",
+      "#T.TTTT.T....T...T..,,.T..=U____=....T..T..T.T.....T.....T............T...vvvv..,....T..T.T..T..T..#",
+      "#..TT.T...................=_____=..,......T..TTT...,........i=====........vvvv...........T.....T..T#",
+      "#T.TT.....C==========.....===+===.....j.j.T.TT..............=D_VI=.......jvvvv...........T..T,...TT#",
+      "#.TT......=I___Z___I=....`````.....Tjvvvvvvj.TT.............=____=.,TT.Tjvvvv.....................T#",
+      "#T..T.....=___cP____=....`,......T.ovvvvvvvvj..T........T...=I__Y=.....Tovvvv......................#",
+      "#T........=_pp___pp_=....`........TvvvvvvvvvvjT.............=____=.TT..Tvvvvj..............x=====..#",
+      "#.TT......=_pp___pp_=..5h`......,..Tvvvvvvvv.........T......==+===......vvvvj..............=D_V[=..#",
+      "#T........=_pp___pp_=..hh`........TTjvvvvvvj..............T...`......T.vvvv.........T......=____=.T#",
+      "#T.e====..=_________=....`..........T..j.j......,.............`.,....jvvvvj.....,......T...=___Y=.T#",
+      "#..=D_V=..=====+=====....`....,....T...............N======.````......ovvvv...T........T....==+===.T#",
+      "#T.=___=.`````````````````.........................=DD_V$=.`\"\",\"\"...ovvvv...........T........`.....#",
+      "#..=___=``\",\"\"\"....................................=_____=.`\"\"\"\"\"..jvvvvj.........T..T.......`...T.#",
+      "#..==+==`%\"\"\"%\".....%.....T........................=D__YJ=.`\"\",,\"...vvvvj.........T.T.TT.....`,..T.#",
+      "#T...``%`.\"%\"\"\"...%..............R===============..=____X=.`.......ovvvv..........T.TT.......`.T.TT#",
+      "#.....```..T.....................=UUIIU__VV__IUU=..===+===``.......jvvvv...........T.........`.T.TT#",
+      "#.TT...)`%...........%...T.T.T...=X_____________=``````````X......jvvvvj........o............`.....#",
+      "#.T,T...`...%......%...T.T.T.....=U__M_______J__=`.......T.......T.vvvvj.....................`.....#",
+      "#TTT....`........................=_QQQQQ_JYJ_Y__=`..............T.ovvvvj..,..................`...T.#",
+      "#T......``.................T..T..=______K___r___+`.....а..o.......jvvvv.................,....`...TT#",
+      "#T.H=====`..o......T.............=______________=`.........,......jvvvvj...,...O=======......`.TTT.#",
+      "#T.=D_VU=``................,.....=_JYJ___JYJJYJ_=`,..............jvvvvo........=D_V_[!=.o....`....o#",
+      "#T.=____=U`......................=U_____________=`.....F========.jvvvv.......T.=______=.\"\"\"\"\"`.T...#",
+      "#..=U_>_+````````..B=======......=U____________X=`.....=U_VV__X=.vvvv..........=___X_U=U,\"\"\"\"`.TT,T#",
+      "#T.=U___=..t====`..=DD_V_I=......=======+========`....X=_______=jvvvvj.........==+=====.\",\",\"`.TTTT#",
+      "#T.======..=D_V=`..=_____&=.............`........`.....=ua__A_X=.vvvv.T..........`.........```TT.TT#",
+      "#T.........=___=`..=I_JYJ_=.............`........`.....=______U=jvvvv............`..,.....``..T..T.#",
+      "#..T,......={__+`..=U_____=.........'''''''''''.``.T...=I______=Uvvvv.......(..T.`........`...TT.TT#",
+      "#T.\"\",\"\"...=:__=`..=_____U=.U.....,''''''X'б'U''`......====+====jvvvvj...........`....T...`......T.#",
+      "#TT\"\"G\",...=====`..====+===.......''n'''''QQQ''''..........`ж....vvvvo.......,...`........`....T..T#",
+      "#.T\"\"\",\"........`,.....`.........'''''''''''''''''.........```````||||````.......`...,....`.T..T...#",
+      "1``\"\"\",\"........`е..T..`.........'''''''''''''''''...`````````````||||````````````.o......`T...T.TT#",
+      "1`bb````.T..,...`...o..`.-.......'''''''''''''}'''`````````````````||||````````````````...`...T....#",
+      "1`bb`````````...`......`.........'''''''Wh''''''''``````````.......ovvvv..``````````````````.T.....#",
+      "#TT`````````````````...`.........'''''''hh''''''''`3======..........ovvvv........``````````````````#",
+      "#.TTT...`````````````````````````''''ss'''''''''''.=D7]]*=...,.......jvvvvj...........``````````ff`2",
+      "#TT.TT.....в.````````````````````''''ss'''''''''''.=_____=.............vvvvj....,.....`.....````ff`2",
+      "#TT,............`...`````````````'''''''''''''''''.=*__YJ=............jvvvv...........`.....T.T..T.2",
+      "#.T.T...........`............,\"\",\"'''''''''''@''''.=____U=U.............vvvv..........`......TT...T#",
+      "#...............`............\"\",\"\"'''''''''''''''..===+===......,...,...vvvvj.........`....T....T..#",
+      "#..S======......`..................'''''''''''''```````.........T........vvvv.........`........T.T.#",
+      "#..=D_V_<=......`L====..............'''''''''''.....`,......,...........jvvvv.w======.`..........TT#",
+      "#..=_____=.,,...`=D_;=....,..............`..........`.........,.,.......jvvvvj=D_V_[=.`...6=====..T#",
+      "#T.=__YJ_+```````=___=.............T.....`..........`.г...........T.....jvvvv.=_____=.`...=XU_<=...#",
+      "#T.=X____=..`...`=___=....d=====.........`.....0====`............\"\",\"..jvvvv..=X___U=X`...=X___=.<T#",
+      "#T.=======..`...`==+==....=D_VX=....q====`,....=DDD=`......T.....,\"\"\"..jvvvvj.===+===``...=____=.T.#",
+      "#...........`...````......=____=....=D_V=`.....=___=`.....T..,...\"\",\"..ovvvvT....`````....=____=.TT#",
+      "#.T.........`......./.....=>__X=....=___=`.....=9__+`.......TT..........vvvv.T...`...`....===+==...#",
+      "#TT#########`.............=X___=....=___=`.....=___=.......T..To.......Tvvvvj....`...`...<...`...T.#",
+      "#.T#.......#`.......,.....===+==...X==+==`,....=___=.......T..T.....,.,jvvvvT....`...`````````.T.T.#",
+      "#..#.<.....#`................`````````````.....=__X=...........T.......jvvvvj....`...............TT#",
+      "#.T#........`..................,....`..........=====............,.......vvvvj...T`.................#",
+      "#.T#T..,<..#`.......................`\"\"\"\"...................,...........vvvv.....`.............T.TT#",
+      "#.T#.o.....#`..4========.....T......`\"\"\"\"...,\"\"\"\".........,............vvvv......`.............T..T#",
+      "#TT#########`..=<<___U<=............`\",\",,..\"\",\"\"......................vvvv..,...`l======.........T#",
+      "#TT.........`..=*_____8=.<..........`.......,\",\"\".....................jvvvvj.,...`=D_V_*=..........#",
+      "#T.........,`..=_______=............`.......\"\"\"\"\"..........z====......vvvv.......`=____*=.....T..T.#",
+      "#.T.........`<.=_______=.<..........`......................=D_[=......~~~~.......`=U__Y_=......T...#",
+      "#T.T........`..=X______=......m=====`````````````.......,..=___=X..``°°°°`````````=*____=....,\"\"\"T.#",
+      "#.T..g====..`..====+====......=D_]^=`.....y=====`..........=___=..``~~~~.........`===+===....\",,\"..#",
+      "#TT..=D__=``````````..........=____=`.....=D_:{=`...,......==+==.``vvvv..........`````.......\"\"\"\"..#",
+      "#T.T.=___+`...................=?___=`.....=____=`............`````jvvvvj.....................\",\"\"TT#",
+      "#TT..=I__=...,.......д........===+==`.....=I___+`................Tvvvvj......,.................TTT.#",
+      "#TT..=U_Y=............,..........````.....={___=.................vvvvj..............o..........T..T#",
+      "#T...=====...............T................======.T.............TTvvvv................,..o.......TT.#",
+      "#...............TT......TT......T.................TTT........TT.vvvv..........T..............T.TTTT#",
+      "#o....\"\"\",\"T.T.TT.....,T.TTT.T.....TT..TT....T...T.TTTT.T...TTTovvvvj....T.....,.....T...T...T.T.T.#",
+      "#TT...\"\"\"\"\"....T.....T.T.T...T.,....T.TTT.T........T.TTT.TT....jvvvvjT.......T....T...T............#",
+      "#..TT.\"\",\",.T..T..TT.TTTT.TTT..T...TTTTT.T.TT.TTTT.T.T.TTT....TTvvvvj.T.TT...T...TTTT.T.TT.TT...T.T#",
+      "#TT.TT.TT..T.TT..TT.....T..TT.TTT..T.TTT.T..T..TTTTTT.T..TT..T...vvvvj.TT.T...TTTTTTT.TT..TT..T...T#",
+      "####################################################################################################"
+    ],
+    "legend": {
+      "T": {
+        "prop": "tree"
+      },
+      ",": {
+        "prop": "bush",
+        "block": false
+      },
+      "j": {
+        "prop": "reeds",
+        "block": false
+      },
+      "o": {
+        "prop": "rock"
+      },
+      "~": {
+        "surface": "water"
+      },
+      "v": {
+        "surface": "water",
+        "solid": true
+      },
+      "h": {
+        "solid": true
+      },
+      "`": {
+        "deco": "path"
+      },
+      "'": {
+        "deco": "square"
+      },
+      "\"": {
+        "deco": "field"
+      },
+      "|": {
+        "deco": "bridge_x"
+      },
+      "°": {
+        "deco": "stones",
+        "surface": "water"
+      },
+      "%": {
+        "prop": "tombstone"
+      },
+      "C": {
+        "building": "church",
+        "size": [
+          11,
+          8
+        ],
+        "name": "Церковь Тихого Берега",
+        "material": "stone",
+        "roof": "slate",
+        "cross": true,
+        "sprite": "bld_church"
+      },
+      "E": {
+        "building": "priest_house",
+        "size": [
+          7,
+          5
+        ],
+        "name": "Дом священника",
+        "material": "timber",
+        "roof": "thatch",
+        "sprite": "bld_priest_house"
+      },
+      "R": {
+        "building": "tavern",
+        "size": [
+          16,
+          11
+        ],
+        "name": "Таверна «Пьяный Ворон»",
+        "material": "timber",
+        "roof": "shingle",
+        "chimney": true,
+        "sprite": "bld_tavern",
+        "music": "tavern"
+      },
+      "F": {
+        "building": "smithy",
+        "size": [
+          9,
+          7
+        ],
+        "name": "Кузня Гюнтера",
+        "material": "stone",
+        "roof": "slate",
+        "chimney": true,
+        "sprite": "bld_smithy"
+      },
+      "5": {
+        "object": "bell_tower",
+        "size": [
+          2,
+          2
+        ]
+      },
+      "k": {
+        "object": "tadeush_table"
+      },
+      "n": {
+        "object": "notice_board"
+      },
+      "W": {
+        "prop": "well",
+        "size": [
+          2,
+          2
+        ]
+      },
+      "@": {
+        "object": "waystone_village",
+        "waypoint": true,
+        "name": "Площадь Вороньего Брода"
+      },
+      "Z": {
+        "prop": "altar"
+      },
+      "p": {
+        "prop": "pew"
+      },
+      "P": {
+        "npc": "tadeush"
+      },
+      "M": {
+        "npc": "marta"
+      },
+      "r": {
+        "npc": "pipin"
+      },
+      "u": {
+        "npc": "gunter"
+      },
+      "c": {
+        "anchor": "church"
+      },
+      "K": {
+        "anchor": "tavern"
+      },
+      "G": {
+        "anchor": "cemetery_gate"
+      },
+      "A": {
+        "anchor": "smithy"
+      },
+      "b": {
+        "spawn": "from_cemetery"
+      },
+      "1": {
+        "exit": "to_cemetery"
+      },
+      "f": {
+        "spawn": "from_forest"
+      },
+      "2": {
+        "exit": "to_forest"
+      },
+      "s": {
+        "spawn": "start"
+      },
+      "D": {
+        "prop": "bed"
+      },
+      "V": {
+        "prop": "hearth"
+      },
+      "I": {
+        "prop": "shelf"
+      },
+      "U": {
+        "prop": "barrel"
+      },
+      "X": {
+        "prop": "crate"
+      },
+      "Y": {
+        "prop": "table"
+      },
+      "J": {
+        "prop": "bench"
+      },
+      "Q": {
+        "prop": "counter"
+      },
+      "a": {
+        "prop": "anvil"
+      },
+      "*": {
+        "prop": "sacks"
+      },
+      "<": {
+        "prop": "hay"
+      },
+      ">": {
+        "prop": "workbench"
+      },
+      "?": {
+        "prop": "pots"
+      },
+      ";": {
+        "prop": "loom"
+      },
+      ":": {
+        "prop": "cauldron"
+      },
+      "[": {
+        "prop": "rack"
+      },
+      "]": {
+        "prop": "oven"
+      },
+      "{": {
+        "prop": "herbs"
+      },
+      "B": {
+        "building": "house_headman",
+        "size": [
+          8,
+          7
+        ],
+        "name": "Дом старосты Яцека",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_headman"
+      },
+      "H": {
+        "building": "house_cooper",
+        "size": [
+          6,
+          6
+        ],
+        "name": "Дом бондаря",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_cooper"
+      },
+      "L": {
+        "building": "house_weaver",
+        "size": [
+          5,
+          5
+        ],
+        "name": "Дом ткачихи Ганны",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_weaver"
+      },
+      "N": {
+        "building": "house_korn",
+        "size": [
+          7,
+          6
+        ],
+        "name": "Дом Корнов",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_korn"
+      },
+      "O": {
+        "building": "house_fisher",
+        "size": [
+          8,
+          5
+        ],
+        "name": "Дом рыбака Савки",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_fisher"
+      },
+      "S": {
+        "building": "house_shepherd",
+        "size": [
+          7,
+          6
+        ],
+        "name": "Дом пастуха",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_house_shepherd"
+      },
+      "d": {
+        "building": "house_carpenter",
+        "size": [
+          6,
+          6
+        ],
+        "name": "Дом плотника",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_carpenter"
+      },
+      "e": {
+        "building": "house_widow",
+        "size": [
+          5,
+          5
+        ],
+        "name": "Дом вдовы Агаты",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_widow"
+      },
+      "g": {
+        "building": "house_beekeeper",
+        "size": [
+          5,
+          6
+        ],
+        "name": "Дом пасечника",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_house_beekeeper"
+      },
+      "i": {
+        "building": "house_chandler",
+        "size": [
+          6,
+          6
+        ],
+        "name": "Дом свечника",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_chandler"
+      },
+      "l": {
+        "building": "house_miller",
+        "size": [
+          7,
+          6
+        ],
+        "name": "Дом мельника",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_miller"
+      },
+      "m": {
+        "building": "house_potter",
+        "size": [
+          6,
+          5
+        ],
+        "name": "Дом гончара",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_potter"
+      },
+      "q": {
+        "building": "house_shoemaker",
+        "size": [
+          5,
+          5
+        ],
+        "name": "Дом сапожника",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_shoemaker"
+      },
+      "t": {
+        "building": "house_midwife",
+        "size": [
+          5,
+          6
+        ],
+        "name": "Дом повитухи Божены",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_house_midwife"
+      },
+      "w": {
+        "building": "house_boatman",
+        "size": [
+          7,
+          5
+        ],
+        "name": "Дом лодочника",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_boatman"
+      },
+      "x": {
+        "building": "house_hunter",
+        "size": [
+          6,
+          5
+        ],
+        "name": "Дом охотника",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_house_hunter"
+      },
+      "y": {
+        "building": "house_healer",
+        "size": [
+          6,
+          6
+        ],
+        "name": "Дом знахаря",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_house_healer"
+      },
+      "z": {
+        "building": "house_tanner",
+        "size": [
+          5,
+          5
+        ],
+        "name": "Дом кожевника",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_tanner"
+      },
+      "0": {
+        "building": "house_brzezinski",
+        "size": [
+          5,
+          8
+        ],
+        "name": "Дом семьи Бжезинских",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_brzezinski"
+      },
+      "3": {
+        "building": "house_baker",
+        "size": [
+          7,
+          6
+        ],
+        "name": "Дом пекаря",
+        "material": "timber",
+        "roof": "shingle",
+        "sprite": "bld_house_baker"
+      },
+      "4": {
+        "building": "barn",
+        "size": [
+          9,
+          7
+        ],
+        "name": "Амбар",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_barn"
+      },
+      "6": {
+        "building": "shed",
+        "size": [
+          6,
+          6
+        ],
+        "name": "Сарай",
+        "material": "log",
+        "roof": "thatch",
+        "sprite": "bld_shed"
+      },
+      "7": {
+        "object": "chest_baker",
+        "look": "chest"
+      },
+      "8": {
+        "object": "chest_barn",
+        "look": "chest"
+      },
+      "9": {
+        "object": "chest_family",
+        "look": "chest"
+      },
+      "!": {
+        "object": "chest_fisher",
+        "look": "chest"
+      },
+      "&": {
+        "object": "chest_headman",
+        "look": "chest"
+      },
+      "$": {
+        "object": "chest_korn",
+        "look": "chest"
+      },
+      "^": {
+        "object": "chest_potter",
+        "look": "chest"
+      },
+      "-": {
+        "npc": "jacek"
+      },
+      "/": {
+        "npc": "hanna"
+      },
+      "(": {
+        "npc": "savka"
+      },
+      ")": {
+        "npc": "agata"
+      },
+      "}": {
+        "npc": "yurek"
+      },
+      "а": {
+        "npc": "bolek"
+      },
+      "б": {
+        "npc": "zbyszek"
+      },
+      "в": {
+        "npc": "matey"
+      },
+      "г": {
+        "npc": "tomash"
+      },
+      "д": {
+        "npc": "vlasta"
+      },
+      "е": {
+        "npc": "bozhena"
+      },
+      "ж": {
+        "npc": "stefan"
+      }
+    },
+    "exits": [
+      {
+        "id": "to_cemetery",
+        "to": "cemetery",
+        "spawn": "from_village",
+        "name": "Назад на погост"
+      },
+      {
+        "id": "to_forest",
+        "to": "forest",
+        "spawn": "from_village",
+        "name": "Тропа в Туманный Ольшаник"
+      }
+    ]
+  },
+  "forest": {
+    "style": {
+      "wall": "tree",
+      "floor": [
+        "#36482c",
+        "#314227"
+      ],
+      "tint": "#d0e0d0"
+    },
+    "rows": [
+      "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+      "T.TT..T,TTT..TTTTTTT..TT.,TT.TTT.T.T..T.TT.,TT...TT.b..T",
+      "T.TTTT,T..,T..T.T.b,....,TT.TT.TT.....T.TTT..TTT.TTb.T.T",
+      "TTTTTb.T.T........T..T...............T.TTTT....TT..T.TTT",
+      "TTT..T.TT.T.TT.TT...T..............T.T,..TT...T.,.TT.T.T",
+      "T.bT.T..TT..b..TTTTT.......w.w.....T,..,.T..T.T.T.bT,..T",
+      "TT.T..b.bT..TT.T.TTTT.......w.......T.T.Tb..bT.,.TTT...T",
+      "T..T......T.T...T.TT...............T.b.TbT..TTbTTTTT.T.T",
+      "T.TTT....T.T.T.TTT..TT.............TTT.T...........,TT.T",
+      "TTTTTTT.T...TT...T........................T..........bTT",
+      "TT..TT...TTTTTT.T.........................TT.........TbT",
+      "T..T...T.T..T..TTT.......................TTT...G...TTT.T",
+      "TTTTbT.T...TT....T.........................T..........TT",
+      "T.T.TT.T.TT.TTTb,TT..T.TT.,.,,..,T........TT.......Tb,TT",
+      "T...T..bTb.TT...T..TT..Tv.,~~~~~~v,v.......T.........TbT",
+      "T.......................,~~~d~~~~~~,...................T",
+      "T........L.............T~~~x~~~d~~~~,........^.........T",
+      "1.ff...................v~~~~~~~~~x~~v...............gg.2",
+      "1.ff....................~~~~~d~~~~~~v...............gg.2",
+      "T.......................~~~~~~~x~d~~,...........%......T",
+      "T......................T~~x~~~~~~~~~v..................T",
+      "T,T.Tb......@...T......v.~~~~~d~~~~T,T.T.....T.T..T..b.T",
+      "T..T.T...........T........b~~x~~~,.T..T......,Tb.TT.T.TT",
+      "TTTb...........TTT.........,v.vv.TT..........T.Tb.TT...T",
+      "T.............................................T.T.,..TTT",
+      "TTT,.V======....TT....................q.......T..TTTTT.T",
+      "T.T..=O___I=.................................b...TTTT..T",
+      "TT.T.=_____=......o.......o....T.TT.*...q....,T.,TTTTT.T",
+      "TT...=__A__=....................TbT..q......TbT.T.....TT",
+      "T,...=D__UY=..........S........TT........q...T.TTTT..TTT",
+      "Tb.T.===+===..........Z........T.T...........TTTTT..T.TT",
+      "T..T...............o.....o.....Tb.T.........T.TbbT.TTT.T",
+      "TT..T...........................T..T..TTTT..T.TT...TT.TT",
+      "T.T.............................T.T.TT.TTT.TTTbTTT.,..TT",
+      "TT...T...T....TT.bbTT..T...TT.T.T...,TTbT.T.b.T..T.TTT.T",
+      "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+    ],
+    "legend": {
+      "^": {
+        "trap": "poison_pot"
+      },
+      "*": {
+        "trap": "frost_glyph"
+      },
+      "%": {
+        "trap": "spike_plate"
+      },
+      "T": {
+        "wall": true
+      },
+      "b": {
+        "prop": "bush",
+        "block": false
+      },
+      ",": {
+        "prop": "reeds",
+        "block": false
+      },
+      "v": {
+        "prop": "reeds",
+        "block": false
+      },
+      "~": {
+        "surface": "water"
+      },
+      "x": {
+        "surface": "poison"
+      },
+      "V": {
+        "building": "vetla_hut",
+        "size": [
+          7,
+          6
+        ],
+        "name": "Хижина Ветлы",
+        "material": "log",
+        "roof": "moss",
+        "chimney": true,
+        "sprite": "bld_vetla_hut"
+      },
+      "O": {
+        "prop": "hearth"
+      },
+      "I": {
+        "prop": "shelf"
+      },
+      "D": {
+        "prop": "bed"
+      },
+      "Y": {
+        "prop": "table"
+      },
+      "U": {
+        "prop": "barrel"
+      },
+      "S": {
+        "prop": "goat_stump"
+      },
+      "L": {
+        "object": "lado_tracks",
+        "block": false
+      },
+      "A": {
+        "anchor": "vetla_hut"
+      },
+      "Z": {
+        "anchor": "goat_stump"
+      },
+      "G": {
+        "anchor": "goblin_trail"
+      },
+      "w": {
+        "encounter": "forest_wolf_pack"
+      },
+      "o": {
+        "encounter": "forest_wolves"
+      },
+      "d": {
+        "encounter": "forest_drowned",
+        "surface": "water"
+      },
+      "q": {
+        "encounter": "forest_bog_dead"
+      },
+      "f": {
+        "spawn": "from_village"
+      },
+      "1": {
+        "exit": "to_village"
+      },
+      "g": {
+        "spawn": "from_camp"
+      },
+      "2": {
+        "exit": "to_camp"
+      },
+      "@": {
+        "object": "waystone_forest",
+        "waypoint": true,
+        "name": "Ольшаник, у тропы к Ветле"
+      }
+    },
+    "exits": [
+      {
+        "id": "to_village",
+        "to": "village",
+        "spawn": "from_forest",
+        "name": "Назад в Вороний Брод"
+      },
+      {
+        "id": "to_camp",
+        "to": "goblin_camp",
+        "spawn": "from_forest",
+        "name": "К Кривому Кургану"
+      }
+    ],
+    "encounters": [
+      {
+        "id": "forest_wolves",
+        "trigger_radius": 3
+      },
+      {
+        "id": "forest_wolf_pack",
+        "trigger_radius": 4
+      },
+      {
+        "id": "forest_drowned",
+        "trigger_radius": 3
+      },
+      {
+        "id": "forest_bog_dead",
+        "trigger_radius": 3
+      }
+    ]
+  },
+  "goblin_camp": {
+    "style": {
+      "wall": "palisade",
+      "floor": [
+        "#4a3f2c",
+        "#433826"
+      ],
+      "tint": "#f0d8c0"
+    },
+    "rows": [
+      "############################################",
+      "#.......,.k...k..............b.............#",
+      "#............b..............A.......A...,..#",
+      "#...............k..S=====.......,..........#",
+      "#.....G............=t__U=....kkkkkk.kkkk...#",
+      "#..........A.......=__,_=....k.kkkkkkkkk.k.#",
+      "#.k..........A...,.=____=....k.t.....t.k...#",
+      "#..................==+===....k...mBm...k.k.#",
+      "#.k........,.................k...XKX...k...#",
+      "#...........b....t.b..Ak.,.A.k...m.m...k...#",
+      "#................t,.kb.......k.........k...#",
+      "#....@.......................kkkk...kkkk...#",
+      "#..............g...........................#",
+      "#........^.......g....T..................b.#",
+      "1.ff.........................,..,..........#",
+      "1.ff............g..........................#",
+      "#...............................k..........#",
+      "#..........*.....g......................k..#",
+      "#..............g...........P.......,.......#",
+      "#....................k.....Q.....b..k...k..#",
+      "#...k.............k................T....A..#",
+      "#......t...................................#",
+      "#.....b.......k..b.........................#",
+      "#......t........................k....A.k...#",
+      "#..........AT............k.k......k....k...#",
+      "#...A.A....b........A....t...b....b.A......#",
+      "#...................t....,.......,.........#",
+      "#..,.,,.k............,t.....tA.....b.......#",
+      "#....b..k........k.........................#",
+      "############################################"
+    ],
+    "legend": {
+      "^": {
+        "trap": "spike_plate"
+      },
+      "*": {
+        "trap": "poison_pot"
+      },
+      "A": {
+        "prop": "tent"
+      },
+      "t": {
+        "prop": "totem"
+      },
+      "k": {
+        "prop": "rock"
+      },
+      "b": {
+        "prop": "bones",
+        "block": false
+      },
+      ",": {
+        "prop": "bones",
+        "block": false
+      },
+      "T": {
+        "prop": "campfire"
+      },
+      "B": {
+        "object": "bone_throne"
+      },
+      "P": {
+        "object": "pyre"
+      },
+      "K": {
+        "anchor": "bone_throne"
+      },
+      "Q": {
+        "anchor": "pyre"
+      },
+      "G": {
+        "anchor": "goblin_trail"
+      },
+      "X": {
+        "encounter": "camp_boss"
+      },
+      "m": {
+        "encounter": "camp_boss"
+      },
+      "g": {
+        "encounter": "camp_gate"
+      },
+      "f": {
+        "spawn": "from_forest"
+      },
+      "1": {
+        "exit": "to_forest"
+      },
+      "S": {
+        "building": "shaman_hut",
+        "size": [
+          6,
+          5
+        ],
+        "name": "Шалаш Мухоглота",
+        "material": "log",
+        "roof": "moss",
+        "sprite": "bld_shaman_hut"
+      },
+      "U": {
+        "prop": "barrel"
+      },
+      "@": {
+        "object": "waystone_camp",
+        "waypoint": true,
+        "name": "Подножие Кривого Кургана"
+      }
+    },
+    "exits": [
+      {
+        "id": "to_forest",
+        "to": "forest",
+        "spawn": "from_camp",
+        "name": "Назад в Ольшаник"
+      }
+    ],
+    "encounters": [
+      {
+        "id": "camp_gate",
+        "trigger_radius": 4
+      },
+      {
+        "id": "camp_boss",
+        "trigger_radius": 3
+      }
+    ]
+  }
+}

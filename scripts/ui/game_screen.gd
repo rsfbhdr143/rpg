@@ -1,0 +1,1815 @@
+extends Control
+## Экран игры. Мир (WorldView) рисуется в маленьком SubViewport и увеличивается без сглаживания,
+## интерфейс (Hud, DialogueBox, окна) — поверх в полном разрешении.
+## Состояние берётся из Net.session (у хоста — живая сессия, у клиента — зеркало со снимка),
+## события GameEvents проигрываются по очереди: ходьба, удары, цифры, звуки, сообщения.
+## Пока очередь не пуста, ИИ на этом компьютере ждёт (Net.presentation_busy).
+## Действия игрока уходят командами Net.send_command(); справка по клавишам — H.
+
+const TITLE_SCENE := "res://scenes/title.tscn"
+const Describe = preload("res://scripts/ui/describe.gd")
+const LootWindow := preload("res://scripts/ui/loot_window.gd")
+const TradeWindow := preload("res://scripts/ui/trade_window.gd")
+
+var session: GameSession
+var world: WorldView
+var hud: Hud
+var dialogue_box: DialogueBox
+var sheet: CharSheet
+var journal: Journal
+var loot_window: LootWindow
+var trade_window: TradeWindow
+var settings: SettingsPanel
+var pause_panel: PanelContainer
+var defeat_panel: PanelContainer
+var travel_panel: PanelContainer
+var end_panel: Control
+var container: SubViewportContainer
+var viewport: SubViewport
+var post_mat: ShaderMaterial
+
+var selected_uid := ""
+var selected_skill := ""
+var selected_item := ""
+var bar_hover: Dictionary = {}
+var ui_tip := ""   # подсказку у курсора ставят окна (лист героя, торговля, добыча): BBCode, "" — нет
+
+var _bg: ColorRect
+var _queue: Array = []
+var _last_seq := 0
+var _wait := 0.0
+var _pending: Array = []
+var _labels: Control   # надписи над миром (цифры урона, выходы) в полном разрешении
+var _mouse_on_world := false
+var _drag := false
+var _drag_last := Vector2.ZERO
+var _fade := 0.0
+var _fade_target := 0.0
+var _last_skill := ""
+var _music_back_at := -1.0
+var _house_music := ""            # музыка дома, в котором стоит герой (или "", если своей нет)
+var _bark_at := 5.0                # когда кто-нибудь из жителей рядом скажет реплику
+var _reach: Dictionary = {}
+var _reach_key := ""
+var _preview_ap := 0
+var _end_shown := false
+var _pixel_scale := 2      # во сколько раз картинка мира увеличена на экране (stretch_shrink), меняется колесом
+var _ps_setting := 2       # «Размер пикселя» из настроек: с него начинается приближение
+# Ступени приближения колесом: [stretch_shrink, zoom камеры] — экранных пикселей на пиксель мира 1, 2, 3, 4.
+# Самая дальняя (1) показывает вдвое больше обычного.
+const ZOOM_STEPS := [[1, 1], [2, 1], [3, 1], [2, 2]]
+var _time := 0.0
+var _last_current := ""
+var _xp_toast := {}
+
+
+func _ready() -> void:
+	UiTheme.fill_parent(self)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	theme = UiTheme.theme()
+	GameData.ensure_loaded()
+	SpriteLibrary.ensure_loaded()
+	GameSettings.ensure_loaded()
+	_ps_setting = int(GameSettings.get_value("pixel_scale"))
+	_pixel_scale = _ps_setting
+	container = SubViewportContainer.new()
+	UiTheme.fill_parent(container)
+	container.stretch = true
+	container.stretch_shrink = _pixel_scale
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	container.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	post_mat = ShaderMaterial.new()
+	post_mat.shader = load("res://shaders/post.gdshader")
+	container.material = post_mat
+	add_child(container)
+	viewport = SubViewport.new()
+	viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+	viewport.snap_2d_transforms_to_pixel = true
+	viewport.snap_2d_vertices_to_pixel = true
+	viewport.handle_input_locally = false
+	viewport.audio_listener_enable_2d = false
+	container.add_child(viewport)
+	var bg_layer := CanvasLayer.new()
+	bg_layer.layer = -10
+	viewport.add_child(bg_layer)
+	_bg = ColorRect.new()
+	UiTheme.fill_parent(_bg)
+	_bg.color = Color("0b0a0c")
+	bg_layer.add_child(_bg)
+	world = WorldView.new()
+	viewport.add_child(world)
+	_labels = Control.new()
+	UiTheme.fill_parent(_labels)
+	_labels.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_labels.draw.connect(_draw_world_labels)
+	add_child(_labels)
+
+	hud = Hud.new()
+	hud.screen = self
+	add_child(hud)
+	dialogue_box = DialogueBox.new()
+	dialogue_box.screen = self
+	add_child(dialogue_box)
+	sheet = CharSheet.new()
+	sheet.screen = self
+	add_child(sheet)
+	journal = Journal.new()
+	journal.screen = self
+	add_child(journal)
+	loot_window = LootWindow.new()
+	loot_window.screen = self
+	add_child(loot_window)
+	trade_window = TradeWindow.new()
+	trade_window.screen = self
+	add_child(trade_window)
+	_build_pause()
+	_build_defeat()
+	_build_end()
+	travel_panel = UiTheme.panel(Vector2(460, 0))
+	UiTheme.center(travel_panel, Vector2(460, 300))
+	travel_panel.visible = false
+	add_child(travel_panel)
+	settings = SettingsPanel.new()
+	settings.visible = false
+	settings.closed.connect(func() -> void: settings.visible = false)
+	add_child(settings)
+
+	Net.notice.connect(_on_notice)
+	Net.disconnected.connect(_on_disconnected)
+	session = Net.session
+	if session != null and session.grid != null:
+		world.build(session)
+		_location_audio()
+
+
+# --- Кадр ------------------------------------------------------------------------------
+
+func _process(delta: float) -> void:
+	_time += delta
+	session = Net.session
+	if session == null or session.grid == null:
+		hud.refresh(null)
+		return
+	var ps := int(GameSettings.get_value("pixel_scale"))
+	if ps != _ps_setting:
+		_ps_setting = ps
+		_pixel_scale = ps
+		world.zoom = 1
+		container.stretch_shrink = ps
+	_pull_events()
+	_run_queue(delta)
+	var idle := _queue.is_empty() and _wait <= 0.0
+	world.idle = idle
+	Net.presentation_busy = not idle or world.busy_fx()
+	if world.session != session or (idle and world.loc_id != session.location_id):
+		_rebuild_world()
+	if world.loc_id == session.location_id:
+		world.sync_units()
+		if idle:
+			world.update_cells()
+	_labels.queue_redraw()
+	_update_selection()
+	_update_hover()
+	_update_highlights()
+	_update_focus(delta)
+	_update_post(delta)
+	_update_dialogue(idle)
+	_update_overlays(idle)
+	hud.refresh(session)
+	_update_tooltip()
+	if idle and not world.busy_fx() and not _pending.is_empty():
+		var next: Dictionary = _pending.pop_front()
+		# удар после подхода вне боя: если враги заметили раньше и начался бой, он не нужен
+		if not next.has("explore") or session.mode == "explore":
+			next.erase("explore")
+			send(next)
+	if _music_back_at > 0.0 and _time > _music_back_at:
+		_music_back_at = -1.0
+		if session.mode != "combat":
+			_location_audio()
+	# жители рядом с партией иногда что-то говорят сами
+	if idle and session.mode == "explore" and _time > _bark_at:
+		_bark_at = _time + randf_range(6.0, 11.0)
+		_ambient_bark()
+	# вошли в дом со своей музыкой (таверна) или вышли из него — сменить музыку
+	if idle and session.mode == "explore" and _music_back_at < 0.0 and _building_music() != _house_music:
+		_location_audio()
+
+
+func _pull_events() -> void:
+	var evs := GameEvents.since(_last_seq)
+	if evs.is_empty():
+		return
+	_last_seq = int(evs[-1]["seq"])
+	for e in evs:
+		if str(e["type"]) == "death":
+			var n := world.unit_node(str(e.get("unit", "")))
+			if n != null:
+				n.death_pending = true
+		_queue.append(e)
+
+
+func _run_queue(delta: float) -> void:
+	var speed := 1.0
+	if _queue.size() > 24 or Input.is_key_pressed(KEY_SHIFT):
+		speed = 3.0
+	if _wait > 0.0:
+		_wait -= delta * speed
+	var guard := 0
+	while _wait <= 0.0 and not _queue.is_empty() and guard < 60:
+		guard += 1
+		var e: Dictionary = _queue.pop_front()
+		_wait += _present(e)
+
+
+func _rebuild_world() -> void:
+	world.build(session)
+	world.pan = Vector2.ZERO
+	_update_focus(0.0)
+	world.snap_camera()
+	_location_audio()
+
+
+func _location_audio() -> void:
+	if session == null:
+		return
+	var data := session.location_data()
+	_bg.color = world.bg_color
+	if session.mode != "combat":
+		_house_music = _building_music()
+		GameAudio.music(_house_music if _house_music != "" else str(data.get("music", "")))
+	GameAudio.ambient(str(data.get("ambient", "")))
+
+
+## Реплика случайного жителя рядом с выбранным героем (из "barks" в data/story/npcs.json), видна только на этом экране.
+func _ambient_bark() -> void:
+	var me := session.unit_by_uid(selected_uid)
+	if me == null:
+		return
+	var near: Array = []
+	for n in session.npcs:
+		var ch: Character = n
+		var node := world.unit_node(ch.uid)
+		if node == null or not node.visible or world.speech.has(ch.uid) or SurfaceGrid.distance(ch.cell, _shown_cell(me)) > 7:
+			continue
+		if not (GameData.npc(ch.template_id).get("barks", []) as Array).is_empty():
+			near.append(ch)
+	if near.is_empty():
+		return
+	var who: Character = near[randi() % near.size()]
+	var barks: Array = GameData.npc(who.template_id).get("barks", [])
+	world.say(who.uid, str(barks[randi() % barks.size()]))
+
+
+## Своя музыка дома ("music" у дома в locations.json, например в таверне), в котором на экране стоит выбранный герой.
+func _building_music() -> String:
+	if session == null or world.loc_id != session.location_id or selected_uid == "":
+		return ""
+	var b := session.building_at(WorldView.world_to_cell(world.unit_pos(selected_uid)))
+	return str(b.get("music", ""))
+
+
+# --- События -> анимации, звуки, сообщения --------------------------------------------------
+
+## Показать событие. Возвращает, сколько секунд ждать до следующего.
+func _present(e: Dictionary) -> float:
+	var uid := str(e.get("unit", ""))
+	match str(e["type"]):
+		"location":
+			var id := str(e.get("id", ""))
+			if world.loc_id != id or world.session != session:
+				if world.loc_id == "":
+					_rebuild_world()
+					return 0.0
+				_fade_target = 1.0
+				_queue.push_front({"type": "_rebuild"})
+				return 0.35
+			if not bool(e.get("first", false)):
+				_fade = 1.0
+				_fade_target = 0.0
+			_location_audio()
+			return 0.0
+		"_rebuild":
+			if world.loc_id != session.location_id or world.session != session:
+				_rebuild_world()
+			_fade_target = 0.0
+			return 0.3
+		"transition":
+			GameAudio.sfx("transition")
+			return world.walk_time_left()   # сначала партия доходит до края карты, потом смена локации
+		"bark":
+			world.say(uid, str(e.get("text", "")))
+			return 0.0
+		"rewind":
+			var back: Dictionary = e.get("units", {})
+			for u in back:
+				world.cut_walk(str(u), Vector2i(int(back[u][0]), int(back[u][1])))
+			return 0.0
+		"narrate":
+			var title := str(e.get("title", ""))
+			var text := str(e.get("text", ""))
+			if bool(e.get("short", false)) or title == "":
+				hud.toast(text, UiTheme.TEXT, 4.0)
+			elif session.mode != "dialogue":
+				hud.show_card(title, text)
+			return 0.0
+		"move":
+			var paths: Dictionary = e.get("paths", {})
+			var longest := 0.0
+			var k := 0.85 if session.mode == "combat" else 1.0
+			for u in paths:
+				longest = maxf(longest, world.leap(str(u), paths[u]) if bool(e.get("leap", false)) else world.walk(str(u), paths[u], k))
+			# рывок и прыжок навыком (есть ключ leap) дожидаются и вне боя: удар — когда фигурка добежала
+			return longest if session.mode == "combat" or e.has("leap") else minf(longest, 0.6)
+		"cast":
+			return _present_cast(e)
+		"hit":
+			var crit := bool(e.get("crit", false))
+			var element := str(e.get("element", ""))
+			world.hit_fx(uid, int(e.get("amount", 0)), element, crit)
+			if str(e.get("src", "")) != "" and _last_skill != "":
+				GameAudio.skill_impact(_last_skill, crit)
+			else:
+				GameAudio.sfx({"fire": "fire_impact", "poison": "poison_impact", "water": "water_impact",
+					"air": "lightning_impact", "earth": "bone_crunch"}.get(element, "hurt"))
+			world.update_cells()
+			return 0.12
+		"miss":
+			world.miss_fx(uid)
+			GameAudio.skill_miss(_last_skill if _last_skill != "" else "attack")
+			return 0.12
+		"heal":
+			world.heal_fx(uid, int(e.get("amount", 0)))
+			return 0.06
+		"revive":
+			var rn := world.unit_node(uid)
+			if rn != null:
+				rn.death_pending = false
+				rn.appear = 0.0
+				rn.rising = true
+			world.heal_fx(uid, int(e.get("amount", 0)))
+			GameAudio.sfx("bless")
+			return 0.4
+		"cleanse":
+			if int(e.get("count", 0)) > 0:
+				world.float_text(world.unit_pos(uid) + Vector2(0, -44), "Очищен", Color("bfe8ff"), 8)
+				world.burst(world.unit_pos(uid) + Vector2(0, -12), Color("bfe8ff"), 10, 26.0)
+			return 0.1
+		"loot_open", "trade_open":
+			# окно открывается, когда герой дошёл до тела или торговца
+			if world.walk_time_left() > 0.05 and not e.has("_waited"):
+				e["_waited"] = true
+				_queue.push_front(e)
+				return world.walk_time_left()
+			if int(e.get("pid", -1)) == Net.my_id():
+				open_panel("")
+				if str(e["type"]) == "loot_open":
+					loot_window.open(str(e.get("corpse", "")), uid)
+				else:
+					trade_window.open(str(e.get("npc", "")), uid if uid != "" else selected_uid)
+			return 0.0
+		"trade_done":
+			GameAudio.sfx("coin")
+			return 0.0
+		"waypoint_found":
+			hud.toast("Путевой камень: %s" % str(e.get("name", "")), UiTheme.GOLD, 3.0)
+			GameAudio.sfx("bell")
+			return 0.1
+		"waypoint_menu":
+			if int(e.get("pid", -1)) == Net.my_id():
+				_open_travel(str(e.get("from", "")))
+			return 0.0
+		"teleport":
+			for h in e.get("heroes", []):
+				var n := world.unit_node(str(h))
+				if n != null:
+					n.snap()
+			world.snap_camera()
+			_fade = 1.0
+			_fade_target = 0.0
+			return 0.2
+		"trap_found":
+			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Ловушка!", Color("ff9a60"))
+			if uid != "":
+				world.float_text(world.unit_pos(uid) + Vector2(0, -44), "!", Color("ffd860"), 10)
+			GameAudio.sfx("trap_found")
+			return 0.25
+		"trap":
+			world.trap_fx(Vector2i(int(e["cell"][0]), int(e["cell"][1])), str(e.get("type", "")))
+			GameAudio.sfx("trap_spring")
+			world.update_cells()
+			return 0.3
+		"trap_disarmed":
+			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Обезврежена", Color("a8e070"))
+			GameAudio.sfx("trap_disarm")
+			return 0.2
+		"trap_fail":
+			world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), "Не вышло", Color("e0a070"))
+			GameAudio.sfx("ui_error")
+			return 0.15
+		"explosion":
+			world.explosion_fx(Vector2i(int(e["cell"][0]), int(e["cell"][1])))
+			GameAudio.sfx("explosion")
+			world.update_cells()
+			return 0.3
+		"death":
+			world.death_fx(uid)
+			var u := session.unit_by_uid(uid)
+			if u != null and session.heroes.has(u):
+				GameAudio.sfx("death")
+			elif u != null and u.template_id in ["skeleton", "risen", "lado_body"]:
+				GameAudio.sfx("bone_crunch")
+			else:
+				GameAudio.sfx("enemy_death")
+			return 0.35
+		"status":
+			world.status_fx(uid, str(e.get("status", "")), bool(e.get("negative", false)))
+			GameAudio.status(str(e.get("status", "")))
+			return 0.05
+		"reaction":
+			var text := str(e.get("text", ""))
+			if e.has("cell"):
+				world.text_at_cell(Vector2i(int(e["cell"][0]), int(e["cell"][1])), text, Color("f0e0a0"))
+			elif uid != "":
+				world.float_text(world.unit_pos(uid) + Vector2(0, -44), text, Color("f0e0a0"), 8)
+			world.update_cells()
+			return 0.15
+		"turn":
+			var u := session.unit_by_uid(uid)
+			if u == null:
+				return 0.0
+			_last_current = uid
+			if session.owner_of(u) == Net.my_id() and session.heroes.has(u):
+				hud.show_sub_banner("Ваш ход: %s" % u.display_name)
+				GameAudio.sfx("turn_start")
+				selected_uid = uid
+				return 0.3
+			hud.hide_sub_banner()
+			return 0.35
+		"combat_start":
+			hud.show_banner("БОЙ!", "", Color("ff8a5a"), 0.7)
+			GameAudio.sfx("enemy_alert")
+			GameAudio.music(str(e.get("music", "combat")))
+			_music_back_at = -1.0
+			_cancel_targeting()
+			world.pan = Vector2.ZERO
+			return 1.0
+		"combat_join":
+			hud.toast("В бой вступают новые враги!", Color("ff8a5a"), 3.0)
+			GameAudio.sfx("enemy_alert")
+			return 0.5
+		"combat_end":
+			if str(e.get("winner", "")) == "player":
+				hud.show_banner("ПОБЕДА!", "", UiTheme.GOLD, 1.1)
+				GameAudio.stinger("victory")
+				_music_back_at = _time + 3.5
+			else:
+				hud.show_banner("ПОРАЖЕНИЕ", "", UiTheme.RED, 1.5)
+				GameAudio.stinger("defeat")
+			_cancel_targeting()
+			return 1.2
+		"xp":
+			var amount := int(e.get("amount", 0))
+			# опыт получает вся партия разом: одна надпись над первым героем и одно сообщение
+			if int(_xp_toast.get(amount, -9999)) < Time.get_ticks_msec() - 800:
+				_xp_toast[amount] = Time.get_ticks_msec()
+				hud.toast("Опыт +%d" % amount, Color("a8b4ff"), 2.0)
+				if uid != "" and world.unit_node(uid) != null:
+					world.float_text(world.unit_pos(uid) + Vector2(0, -50), "+%d опыта" % amount, Color("a8b4ff"), 8)
+			return 0.0
+		"level_up":
+			var u := session.unit_by_uid(uid)
+			world.level_up_fx(uid, int(e.get("level", 0)))
+			GameAudio.stinger("level_up")
+			if u != null:
+				hud.toast("%s: уровень %d · очки в листе героя (C)" % [u.display_name, int(e.get("level", u.level))], UiTheme.GOLD, 4.5)
+			return 0.4
+		"quest":
+			var qn := str(GameData.quest(str(e.get("quest", ""))).get("name", e.get("quest", "")))
+			if bool(e.get("done", false)):
+				hud.toast("Задание выполнено: «%s»" % qn, UiTheme.GREEN, 4.0)
+				GameAudio.stinger("quest_done")
+			elif bool(e.get("failed", false)):
+				hud.toast("Задание провалено: «%s»" % qn, UiTheme.RED, 4.0)
+			elif bool(e.get("new", false)):
+				hud.toast("Новое задание: «%s»" % qn, Color("f0dcae"), 4.0)
+				GameAudio.stinger("quest")
+			else:
+				hud.toast("Журнал обновлён: «%s»" % qn, UiTheme.TEXT_DIM, 3.0)
+				GameAudio.sfx("page")
+			return 0.1
+		"item":
+			var count := int(e.get("count", 1))
+			var name := str(GameData.item(str(e.get("item", ""))).get("name", e.get("item", "")))
+			if uid != "":
+				var u := session.unit_by_uid(uid)
+				hud.toast("%s получает: %s" % [u.display_name if u != null else "Герой", name], Color("f0dcae"))
+				GameAudio.sfx("pickup")
+			elif count > 0:
+				hud.toast("Получено: %s%s" % [name, " ×%d" % count if count > 1 else ""], Color("f0dcae"))
+				GameAudio.sfx("pickup")
+			else:
+				hud.toast("Отдано: %s" % name, UiTheme.TEXT_DIM)
+			return 0.05
+		"gold":
+			var amount := int(e.get("amount", 0))
+			hud.toast("%+d золота" % amount, Color("f0c860"))
+			GameAudio.sfx("coin")
+			return 0.05
+		"check":
+			var attr := Story.attribute_name(str(e.get("attr", "")))
+			var ok := bool(e.get("success", false))
+			hud.toast("Проверка: %s — %s" % [attr, "успех" if ok else "не вышло"], UiTheme.GREEN if ok else UiTheme.RED)
+			GameAudio.ui("ui_confirm" if ok else "ui_error")
+			return 0.1
+		"tip":
+			hud.add_tip(str(e.get("text", "")))
+			return 0.0
+		"saved":
+			hud.toast("Игра сохранена", UiTheme.GREEN)
+			return 0.0
+		"heal_party":
+			hud.toast("Отряд отдохнул и залечил раны", UiTheme.GREEN)
+			GameAudio.sfx("heal")
+			return 0.0
+		"music":
+			_music_back_at = -1.0
+			GameAudio.music(str(e.get("id", "")))
+			return 0.0
+		"ambient":
+			GameAudio.ambient(str(e.get("id", "")))
+			return 0.0
+		"sfx":
+			GameAudio.sfx(str(e.get("id", "")))
+			return 0.0
+		"stinger":
+			GameAudio.stinger(str(e.get("id", "")))
+			return 0.0
+		"shake":
+			world.shake(2.0 * float(e.get("power", 1.0)), 0.5)
+			return 0.0
+	return 0.0
+
+
+func _present_cast(e: Dictionary) -> float:
+	var uid := str(e.get("unit", ""))
+	var skill := str(e.get("skill", ""))
+	_last_skill = skill
+	var def := GameData.skill(skill)
+	var cell := Vector2i(int(e["cell"][0]), int(e["cell"][1]))
+	var target := WorldView.cell_center(cell)
+	var from := world.unit_pos(uid)
+	GameAudio.skill(skill)
+	var tt := str(def.get("target", "enemy"))
+	var element := str((def.get("damage", {}) as Dictionary).get("element", (def.get("surface", {}) as Dictionary).get("element", "")))
+	if def.has("heal"):
+		element = "heal"
+	var col := UiTheme.element_color(element)
+	if tt == "self":
+		world.cast_glow(uid, col)
+		return 0.3
+	if def.has("move"):   # рывок и прыжок: дальше фигурку ведёт событие move
+		world.cast_glow(uid, col)
+		var mover := world.unit_node(uid)
+		if mover != null:
+			mover.face_to(target)
+		return 0.12
+	var rng := int(def.get("range", 1))
+	if rng <= 1 and tt == "enemy":
+		world.lunge(uid, target)
+		return 0.16
+	world.cast_glow(uid, col)
+	var n := world.unit_node(uid)
+	if n != null:
+		n.face_to(target)
+	if tt == "ally":
+		var tn := session.unit_at(cell)
+		if tn != null:
+			world.cast_glow(tn.uid, col)
+		return 0.3
+	var kind := "bolt"
+	if (def.get("damage", {}) as Dictionary).get("source", "") == "weapon":
+		kind = "arrow"
+	return world.shoot(from + Vector2(0, -16), target + Vector2(0, -10), col, kind) + 0.05
+
+
+# --- Выбор, наведение, подсветка ----------------------------------------------------------
+
+func is_my_turn() -> bool:
+	return session != null and session.mode == "combat" and session.combat != null and session.combat.active \
+		and session.combat.current != null and session.owner_of(session.combat.current) == Net.my_id() \
+		and session.heroes.has(session.combat.current)
+
+
+func bar_unit() -> Character:
+	if session == null:
+		return null
+	if is_my_turn():
+		return session.combat.current
+	return session.unit_by_uid(selected_uid)
+
+
+func preview_ap_cost() -> int:
+	return _preview_ap
+
+
+func _update_selection() -> void:
+	var mine := session.heroes_of(Net.my_id())
+	var sel := session.unit_by_uid(selected_uid)
+	if sel == null or not mine.has(sel) or (not sel.is_alive() and session.mode == "explore"):
+		var alive: Array = mine.filter(func(h): return h.is_alive())
+		var pick: Array = alive if not alive.is_empty() else mine
+		selected_uid = (pick[0] as Character).uid if not pick.is_empty() else ""
+	var cur := ""
+	if session.mode == "combat" and session.combat != null and session.combat.current != null:
+		cur = session.combat.current.uid
+	world.current_uid = cur
+	world.selected_uid = selected_uid if session.mode == "explore" else ""
+	var can_aim := is_my_turn() or session.mode == "explore"
+	if not can_aim and (selected_skill != "" or selected_item != ""):
+		_cancel_targeting()
+
+
+func _modal_open() -> bool:
+	return _window_open() or pause_panel.visible or settings.visible or end_panel.visible or travel_panel.visible \
+		or hud.help_panel.visible
+
+
+## Открыто окно, которое само ставит подсказку у курсора (ui_tip).
+func _window_open() -> bool:
+	return sheet.visible or journal.visible or loot_window.visible or trade_window.visible
+
+
+func _update_hover() -> void:
+	if not _mouse_on_world or _modal_open() or dialogue_box.visible:
+		world.hover_uid = ""
+		world.hover_object = ""
+		world.hover_cell = Vector2i(-99, -99)
+		world.hover_point = Vector2(-9999, -9999)
+		world.hover_house = ""
+		return
+	var vp := (get_global_mouse_position() - container.global_position) / float(_pixel_scale)
+	world.pick_prefer = _pick_prefer()
+	var pk := world.pick(world.viewport_to_world(vp))
+	world.hover_uid = str(pk.get("uid", ""))
+	world.hover_object = str(pk.get("object", ""))
+	world.hover_house = str(pk.get("house", ""))
+	world.hover_cell = pk.get("cell", Vector2i(-99, -99))
+
+
+## Кого выбирать при перекрытии фигур: с союзным навыком — своих, иначе врагов и жителей.
+func _pick_prefer() -> String:
+	return "ally" if str(GameData.skill(_aim_skill()).get("target", "")) == "ally" else "foe"
+
+
+## Навык, которым сейчас целимся: выбранный навык или навык выбранного предмета ("" — не целимся).
+func _aim_skill() -> String:
+	if selected_skill == "" and selected_item != "":
+		return str((GameData.item(selected_item).get("use", {}) as Dictionary).get("skill", ""))
+	return selected_skill
+
+
+func _update_highlights() -> void:
+	world.hl_move = {}
+	world.hl_range = {}
+	world.hl_aoe = {}
+	world.hl_path = []
+	world.target_uids = {}
+	_preview_ap = 0
+	world.grid_lines = session.mode == "combat"
+	if session.mode == "explore" and _aim_skill() != "":
+		_explore_aim_highlights()
+		return
+	if not is_my_turn() or not world.idle or world.busy_fx():
+		return
+	var cm := session.combat
+	var cur := cm.current
+	var hover := world.hover_cell
+	var hover_unit: Character = session.unit_at(hover) if world.hover_uid == "" else session.unit_by_uid(world.hover_uid)
+	if hover_unit != null and world.hover_uid != "":
+		hover = hover_unit.cell
+	var skill_id := selected_skill
+	var def: Dictionary = {}
+	if selected_item != "":
+		def = GameData.skill(str((GameData.item(selected_item).get("use", {}) as Dictionary).get("skill", "")))
+		_preview_ap = int(GameData.item(selected_item).get("ap", def.get("ap", 2)))
+	elif skill_id != "":
+		def = GameData.skill(skill_id)
+		_preview_ap = int(def.get("ap", 0))
+	if not def.is_empty():
+		var rng := SkillSystem.skill_range(cur, def)
+		for c in cm.grid.cells_in_radius(cur.cell, rng):
+			world.hl_range[c] = true
+		if SkillSystem.target_block_reason(cm, cur, def, hover) == "":
+			var r := int(def.get("aoe_radius", 0))
+			for c in cm.grid.cells_in_radius(hover, r):
+				world.hl_aoe[c] = true
+				var t := cm.unit_at(c)
+				if t != null:
+					world.target_uids[t.uid] = true
+		return
+	# перемещение и атака по клику
+	var key := "%s|%s|%d|%d" % [cur.uid, cur.cell, cur.ap, cm.round_number]
+	if key != _reach_key:
+		_reach_key = key
+		_reach = _reachable(cur)
+	world.hl_move = _reach
+	if hover_unit != null and hover_unit.is_alive() and hover_unit.faction != cur.faction and session.enemies.has(hover_unit):
+		var atk := _attack_skill(cur)
+		if atk != "":
+			world.target_uids[hover_unit.uid] = true
+			var adef := GameData.skill(atk)
+			_preview_ap = int(adef.get("ap", 0))
+			if SkillSystem.target_block_reason(cm, cur, adef, hover_unit.cell) != "":
+				var path := _approach_path(cur, hover_unit.cell)
+				if not path.is_empty():
+					world.hl_path = path
+					_preview_ap += cm.move_cost(cur, path.size())
+	elif _reach.has(hover):
+		var path := cm.grid.find_path(cur.cell, hover, cm.occupied_cells(cur))
+		world.hl_path = path
+		_preview_ap = cm.move_cost(cur, path.size())
+
+
+func _reachable(u: Character) -> Dictionary:
+	var cm := session.combat
+	var steps := cm.max_move_steps(u)
+	var occ := cm.occupied_cells(u)
+	var dist := {u.cell: 0}
+	var queue: Array = [u.cell]
+	var out := {}
+	while not queue.is_empty():
+		var c: Vector2i = queue.pop_front()
+		var d := int(dist[c])
+		if d >= steps:
+			continue
+		for dir in SurfaceGrid.DIRS:
+			var n: Vector2i = c + dir
+			if dist.has(n) or not cm.grid.can_step(c, dir) or occ.has(n):
+				continue
+			dist[n] = d + 1
+			out[n] = true
+			queue.append(n)
+	return out
+
+
+func _attack_skill(u: Character) -> String:
+	# с луком в руках обычная атака — выстрел (как в D:OS), иначе удар оружием
+	if bool(u.effective_weapon().get("ranged", false)):
+		for sk in u.skills:
+			var d := GameData.skill(str(sk))
+			if str((d.get("damage", {}) as Dictionary).get("source", "")) == "weapon" and int(d.get("range", 1)) > 1 \
+					and int(d.get("cooldown", 0)) == 0 and not d.has("statuses"):
+				return str(sk)
+	if u.skills.has("attack"):
+		return "attack"
+	for sk in u.skills:
+		var def := GameData.skill(str(sk))
+		if str(def.get("target", "")) == "enemy" and def.has("damage"):
+			return str(sk)
+	return ""
+
+
+## Путь до клетки рядом с целью, откуда можно ударить (самый короткий из доступных).
+func _approach_path(u: Character, target: Vector2i) -> Array:
+	var cm := session.combat
+	var best: Array = []
+	for dir in SurfaceGrid.DIRS:
+		var n: Vector2i = target + dir
+		if n == u.cell:
+			return []
+		if not _reach.has(n):
+			continue
+		var p := cm.grid.find_path(u.cell, n, cm.occupied_cells(u))
+		if not p.is_empty() and (best.is_empty() or p.size() < best.size()):
+			best = p
+	return best
+
+
+func _update_focus(delta: float) -> void:
+	var f := Vector2.ZERO
+	var have := false
+	if session.mode == "combat" and session.combat != null and session.combat.current != null:
+		f = world.unit_pos(session.combat.current.uid)
+		have = true
+	elif session.mode == "dialogue" and not session.dialogue.is_empty():
+		var npc_id := str(session.dialogue.get("npc", ""))
+		for n in session.npcs:
+			if (n as Character).template_id == npc_id:
+				f = world.unit_pos((n as Character).uid)
+				have = true
+		if not have:
+			f = world.unit_pos(str(session.dialogue.get("hero", "")))
+			have = f != Vector2.ZERO
+	if not have and selected_uid != "":
+		f = world.unit_pos(selected_uid)
+		have = true
+	if have:
+		world.focus = f + Vector2(0, -12)
+	# камера стрелками и WASD
+	var mv := Vector2.ZERO
+	if not _modal_open():
+		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+			mv.x -= 1
+		if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+			mv.x += 1
+		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+			mv.y -= 1
+		if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+			mv.y += 1
+	if mv != Vector2.ZERO:
+		world.pan += mv.normalized() * 220.0 * delta / float(world.zoom)
+
+
+func _update_post(delta: float) -> void:
+	_fade = move_toward(_fade, _fade_target, delta * 3.5)
+	post_mat.set_shader_parameter("fade", _fade)
+	post_mat.set_shader_parameter("posterize", bool(GameSettings.get_value("posterize")))
+	var style: Dictionary = session.location_data().get("style", {})
+	post_mat.set_shader_parameter("tint", Color(str(style.get("tint", "ffffff"))))
+
+
+func _update_dialogue(idle: bool) -> void:
+	if session.mode == "dialogue" and not session.dialogue.is_empty():
+		if idle and not world.busy_fx() and _fade < 0.05:
+			var v := Story.view(session)
+			if not v.is_empty():
+				var pid := int(v.get("pid", 0))
+				dialogue_box.present(v, pid == Net.my_id(), session.player_name(pid))
+	elif dialogue_box.visible:
+		dialogue_box.close()
+
+
+func _update_overlays(idle: bool) -> void:
+	defeat_panel.visible = session.mode == "defeat" and idle
+	if session.flags.has("demo_end") and not _end_shown and session.mode == "explore" and idle:
+		_end_shown = true
+		_show_end()
+
+
+# --- Подсказка у курсора ----------------------------------------------------------------------
+
+func _update_tooltip() -> void:
+	var text := ""
+	var st_tip := hud.status_tip_at(get_global_mouse_position())
+	if ui_tip != "" and not _window_open():
+		ui_tip = ""   # окно закрыли, пока мышь была над вещью
+	if ui_tip != "":
+		text = ui_tip
+	elif not bar_hover.is_empty():
+		text = _slot_tip(bar_hover)
+	elif st_tip != "":
+		text = st_tip
+	elif _mouse_on_world and not _modal_open() and not dialogue_box.visible:
+		text = _world_tip()
+	hud.set_tooltip(text, get_global_mouse_position())
+
+
+func _slot_tip(slot: Dictionary) -> String:
+	var id := str(slot.get("id", ""))
+	if str(slot.get("kind", "")) == "skill":
+		return skill_tip(id, bar_unit())
+	return Describe.item_text(id) + _item_use_line(id)
+
+
+## Подсказка навыка: дальность, урон или лечение с учётом героя u, статусы с их действием, поверхность.
+func skill_tip(id: String, u: Character) -> String:
+	var def := GameData.skill(id)
+	var lines := PackedStringArray()
+	lines.append("[b]%s[/b]  [color=#9ad248]%d ОД[/color]" % [def.get("name", id), int(def.get("ap", 0))])
+	var info := "Дальность %d" % (SkillSystem.skill_range(u, def) if u != null else int(def.get("range", 1)))
+	if int(def.get("aoe_radius", 0)) > 0:
+		info += " · область %d" % int(def["aoe_radius"])
+	if int(def.get("cooldown", 0)) > 0:
+		info += " · перезарядка %d" % int(def["cooldown"])
+	lines.append(info)
+	if u != null and def.has("damage"):
+		var dl := Describe.damage_line(u, def)
+		lines.append("Урон: " + dl)
+		if bool(def.get("can_miss", false)):
+			lines.append("[color=#6e6454]Может промахнуться: точность против уклонения цели[/color]")
+	if u != null and def.has("heal"):
+		var hp: Array = DamageCalc.heal_preview(u, def)
+		lines.append("Лечит: [color=#9ad248]%d–%d[/color]" % [int(hp[0]), int(hp[1])])
+	if def.has("move"):
+		lines.append("Рывок к цели и удар с разбега" if str(def["move"]) == "charge" else "Прыжок в выбранную клетку")
+	if bool(def.get("cleanse", false)):
+		lines.append("Снимает с цели все вредные состояния")
+	if def.has("revive"):
+		lines.append("Поднимает павшего союзника с %d%% здоровья" % int((def["revive"] as Dictionary).get("hp_pct", 30)))
+	for st in def.get("statuses", []):
+		lines.append(Describe.status_short(st, u.level if u != null else 1))
+	if def.has("surface"):
+		var sf: Dictionary = def["surface"]
+		var sid := GameData.element_surface(str(sf.get("element", "")))
+		if bool(sf.get("create", false)) and sid != "":
+			lines.append("[color=#a89a80]Оставляет на земле: %s[/color]" % str(GameData.surface(sid).get("name", sid)).to_lower())
+	if def.has("description"):
+		lines.append("[color=#a89a80]%s[/color]" % str(def["description"]))
+	if def.has("vs_undead") and u != null:
+		var vs: Dictionary = def["vs_undead"]
+		var vl := Describe.damage_line(u, vs)
+		lines.append("[color=#fff0a8]По нежити вместо этого: %s[/color]" % (vl if vl != "" else "святой свет"))
+	if session != null and session.mode == "explore":
+		lines.append("[color=#6e6454]Вне боя — без ОД; удар по врагу начнёт бой[/color]")
+	return "\n".join(lines)
+
+
+func _item_use_line(id: String) -> String:
+	var idef := GameData.item(id)
+	var use: Dictionary = idef.get("use", {})
+	if use.has("skill"):
+		return "\n[color=#c8a060]Выберите и укажите клетку · в бою %d ОД, вне боя даром[/color]" % int(idef.get("ap", GameData.skill(str(use["skill"])).get("ap", 2)))
+	if not use.is_empty():
+		return "\n[color=#c8a060]ЛКМ — использовать[/color]"
+	return ""
+
+
+func _world_tip() -> String:
+	if world.hover_uid != "":
+		var u := session.unit_by_uid(world.hover_uid)
+		if u == null:
+			return ""
+		var lines := PackedStringArray()
+		if not u.is_alive() and session.loot.has(u.uid):
+			var bag: Dictionary = session.loot[u.uid]
+			var n := (bag.get("items", {}) as Dictionary).size() + (1 if int(bag.get("gold", 0)) > 0 else 0)
+			return "[b]Тело: %s[/b]\n[color=#a89a80]Здесь что-то есть (%d)[/color]\n[color=#c8a060]ЛКМ — обыскать[/color]" % [bag.get("name", u.display_name), n]
+		if session.is_npc(u):
+			var nd := GameData.npc(u.template_id)
+			lines.append("[b]%s[/b]" % u.display_name)
+			if nd.has("title"):
+				lines.append("[color=#a89a80]%s[/color]" % str(nd["title"]))
+			if session.mode == "explore" and session.npc_dialogue(u.template_id) != "":
+				lines.append("[color=#c8a060]ЛКМ — поговорить%s[/color]" % (" и поторговать" if nd.has("trade") else ""))
+			elif session.mode == "explore" and nd.has("trade"):
+				lines.append("[color=#c8a060]ЛКМ — торговать[/color]")
+			if bool(nd.get("attackable", true)):
+				if _aim_skill() != "" and _offensive(GameData.skill(_aim_skill())):
+					lines.append("[color=#d8573f]ЛКМ — напасть: житель станет врагом[/color]")
+				else:
+					lines.append("[color=#8a7a6a]Ctrl+ЛКМ — напасть[/color]")
+			return "\n".join(lines)
+		var hero := session.heroes.has(u)
+		var cls := " · " + u.class_title().to_lower() if hero else ""
+		lines.append("[b][color=%s]%s[/color][/b]%s  ур. %d" % ["#ecdfc2" if hero else "#e8806a", u.display_name, cls, u.level])
+		if not u.is_alive():
+			lines.append("Пал")
+			return "\n".join(lines)
+		lines.append("Здоровье %d/%d · броня %d" % [roundi(u.hp), roundi(u.max_hp()), roundi(DamageCalc.effective_armor(u))])
+		for sid in u.statuses:
+			var st: Dictionary = u.statuses[sid]
+			var sd := GameData.status(str(sid))
+			var fx := Describe.status_effects(str(sid), int(st.get("level", 1)))
+			lines.append("[color=%s]%s[/color] [color=#a89a80](%d х.)[/color] %s" % [
+				Describe.BAD if bool(sd.get("negative", false)) else Describe.GOOD, sd.get("name", sid),
+				int(st.get("turns", 0)), "; ".join(fx) if fx.size() <= 2 else "; ".join(fx.slice(0, 2))])
+		if is_my_turn() and not hero:
+			var cur := session.combat.current
+			var sk := selected_skill if selected_skill != "" else _attack_skill(cur)
+			var def := GameData.skill(sk)
+			if not def.is_empty():
+				var reason := SkillSystem.target_block_reason(session.combat, cur, def, u.cell)
+				if reason == "" or selected_skill == "":
+					if bool(def.get("can_miss", false)):
+						lines.append("Шанс попасть: %d%%" % roundi(DamageCalc.hit_chance(cur, u)))
+					if def.has("damage"):
+						lines.append("Урон по цели: " + Describe.damage_line(cur, def, u))
+					lines.append("[color=#c8a060]ЛКМ — %s (%d ОД)[/color]" % [def.get("name", sk), _preview_ap])
+				else:
+					lines.append("[color=#d8573f]Нельзя: %s[/color]" % reason)
+		elif hero and session.mode == "explore" and session.owner_of(u) == Net.my_id() and u.uid != selected_uid:
+			lines.append("[color=#c8a060]ЛКМ — выбрать[/color]")
+		elif not hero and session.mode == "explore" and session.enemies.has(u):
+			var me := bar_unit()
+			var sk := _aim_skill()
+			if sk == "" and me != null:
+				sk = _attack_skill(me)
+			var def := GameData.skill(sk)
+			if me != null and def.has("damage"):
+				if bool(def.get("can_miss", false)):
+					lines.append("Шанс попасть: %d%%" % roundi(DamageCalc.hit_chance(me, u)))
+				lines.append("Урон по цели: " + Describe.damage_line(me, def, u))
+			lines.append("[color=#c8a060]ЛКМ — напасть первым%s[/color]" % (" (%s)" % def.get("name", sk) if sk != "" else ""))
+		return "\n".join(lines)
+	if world.hover_object != "":
+		for o in session.location_data().get("objects", []):
+			if str(o.get("id", "")) == world.hover_object:
+				var t := "[b]%s[/b]" % str(o.get("name", world.hover_object))
+				var vis: bool = session.visible_objects().any(func(v): return str(v.get("id", "")) == world.hover_object)
+				if vis and session.mode == "explore":
+					if bool(o.get("waypoint", false)):
+						t += "\n[color=#a89a80]Путевой камень[/color]\n[color=#c8a060]ЛКМ — перенестись к другому камню[/color]"
+					else:
+						t += "\n[color=#c8a060]ЛКМ — осмотреть[/color]"
+				return t
+		return ""
+	var c := world.hover_cell
+	if session.grid.in_bounds(c):
+		var tr: Dictionary = session.grid.traps.get(c, {})
+		if str(tr.get("state", "hidden")) != "hidden":
+			return _trap_tip(tr)
+		var bld := session.building_at(c)
+		if not bld.is_empty() and not session.heroes_of(Net.my_id()).any(func(h): return session.building_at(h.cell) == bld):
+			var tip := "[b]%s[/b]" % str(bld.get("name", bld.get("id", "")))
+			if session.mode == "explore":
+				tip += "\n[color=#c8a060]ЛКМ — войти[/color]"
+			return tip
+		var ex := session.exit_at(c)
+		if not ex.is_empty():
+			var dest := str(GameData.location(str(ex.get("to", ""))).get("name", ex.get("to", "")))
+			return "[b]%s[/b]\n[color=#a89a80]Выход: %s[/color]\n[color=#c8a060]ЛКМ — перейти всей партией[/color]" % [str(ex.get("name", dest)), dest]
+		if is_my_turn() and selected_skill == "" and selected_item == "" and not world.hl_path.is_empty():
+			var t := "Идти: %d ОД" % _preview_ap
+			var g := session.grid.get_ground(c)
+			if g != "none":
+				t += "\n[color=#a89a80]%s[/color]" % str(GameData.surface(g).get("name", g))
+			return t
+		var gs := session.grid.get_ground(c)
+		if gs != "none" and session.mode == "combat":
+			return str(GameData.surface(gs).get("name", gs))
+	return ""
+
+
+func _trap_tip(tr: Dictionary) -> String:
+	var tt := str(tr["type"])
+	var d := GameData.trap(tt)
+	var lines := PackedStringArray(["[b][color=#ff9a60]%s[/color][/b]" % TrapSystem.name_of(tt)])
+	match str(tr["state"]):
+		"found":
+			if d.has("description"):
+				lines.append("[color=#a89a80]%s[/color]" % str(d["description"]))
+			var u := bar_unit()
+			if session.mode == "explore" and u != null and selected_skill == "" and selected_item == "":
+				lines.append("[color=#c8a060]ЛКМ — обезвредить: %s, шанс %d%%[/color]" % [u.display_name, roundi(TrapSystem.disarm_chance(u, tt))])
+			lines.append("[color=#6e6454]Можно подорвать издалека любым ударом[/color]")
+		"disarmed":
+			lines.append("Обезврежена")
+		_:
+			lines.append("Сработала")
+	return "\n".join(lines)
+
+
+# --- Ввод ---------------------------------------------------------------------------------
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		_mouse_on_world = false   # если интерфейс не заберёт движение, _unhandled_input вернёт true
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	var mm := event as InputEventMouseMotion
+	if mm != null:
+		_mouse_on_world = true
+		if _drag:
+			world.pan -= (mm.position - _drag_last) / float(_pixel_scale * world.zoom)
+			_drag_last = mm.position
+		return
+	var mb := event as InputEventMouseButton
+	if mb != null:
+		_on_mouse(mb)
+		return
+	var key := event as InputEventKey
+	if key != null and key.pressed and not key.echo:
+		_on_key(key)
+
+
+func _on_mouse(mb: InputEventMouseButton) -> void:
+	if session == null or session.grid == null:
+		return
+	match mb.button_index:
+		MOUSE_BUTTON_LEFT:
+			if not mb.pressed:
+				return
+			if dialogue_box.visible:
+				dialogue_box.advance()
+				return
+			if _modal_open():
+				return
+			_on_world_click()
+		MOUSE_BUTTON_RIGHT:
+			if mb.pressed and (selected_skill != "" or selected_item != ""):
+				_cancel_targeting()
+				return
+			_drag = mb.pressed
+			_drag_last = mb.position
+		MOUSE_BUTTON_MIDDLE:
+			_drag = mb.pressed
+			_drag_last = mb.position
+		MOUSE_BUTTON_WHEEL_UP:
+			if mb.pressed:
+				_zoom_step(1)
+		MOUSE_BUTTON_WHEEL_DOWN:
+			if mb.pressed:
+				_zoom_step(-1)
+
+
+## Приблизить (dir > 0) или отдалить камеру на ступень ZOOM_STEPS.
+func _zoom_step(dir: int) -> void:
+	var cur := 0
+	for i in ZOOM_STEPS.size():
+		if int(ZOOM_STEPS[i][0]) * int(ZOOM_STEPS[i][1]) <= _pixel_scale * world.zoom:
+			cur = i
+	var next := clampi(cur + dir, 0, ZOOM_STEPS.size() - 1)
+	if next == cur:
+		return
+	_pixel_scale = int(ZOOM_STEPS[next][0])
+	world.zoom = int(ZOOM_STEPS[next][1])
+	container.stretch_shrink = _pixel_scale
+
+
+func _on_world_click() -> void:
+	var c := world.hover_cell
+	var hu: Character = null
+	if world.hover_uid != "":
+		hu = session.unit_by_uid(world.hover_uid)
+	if session.mode == "explore":
+		if _aim_skill() != "":
+			_cast_explore((hu.cell if hu != null else c), hu)
+			return
+		if hu != null and session.heroes.has(hu) and session.owner_of(hu) == Net.my_id():
+			select_hero(hu.uid, false)
+			return
+		if selected_uid == "":
+			return
+		if hu != null and not hu.is_alive() and session.loot.has(hu.uid):
+			_queue_or_send({"type": "loot", "unit": selected_uid, "corpse": hu.uid})
+			return
+		if hu != null and hu.is_alive() and session.enemies.has(hu):
+			_explore_attack(hu)
+			return
+		if hu != null and session.is_npc(hu) and Input.is_key_pressed(KEY_CTRL):
+			_explore_attack(hu, true)   # как в D:OS: Ctrl+ЛКМ — напасть на жителя
+			return
+		if hu != null and session.is_npc(hu):
+			_queue_or_send({"type": "talk", "unit": selected_uid, "target": hu.uid})
+			return
+		if world.hover_object != "":
+			var vis: bool = session.visible_objects().any(func(v): return str(v.get("id", "")) == world.hover_object)
+			if vis:
+				_queue_or_send({"type": "talk", "unit": selected_uid, "object": world.hover_object})
+				return
+		if hu == null and str(session.grid.traps.get(c, {}).get("state", "")) == "found":
+			_queue_or_send({"type": "disarm", "unit": selected_uid, "cell": [c.x, c.y]})
+			return
+		if hu != null:
+			c = hu.cell
+		var target := _walk_target(c)
+		if target.x > -90:
+			world.pan = Vector2.ZERO
+			_queue_or_send({"type": "move", "unit": selected_uid, "cell": [target.x, target.y]})
+		return
+	if not is_my_turn() or not world.idle or world.busy_fx():
+		return
+	var cur := session.combat.current
+	if selected_item != "":
+		var cell := hu.cell if hu != null else c
+		send({"type": "use_item", "unit": cur.uid, "item": selected_item, "cell": [cell.x, cell.y]})
+		_cancel_targeting()
+		return
+	if selected_skill != "":
+		var cell := hu.cell if hu != null else c
+		if session.is_npc(hu) and _offensive(GameData.skill(selected_skill)):
+			send({"type": "skill", "skill": selected_skill, "cell": [cell.x, cell.y], "force": true})
+			_cancel_targeting()
+			return
+		var reason := session.combat.skill_block_reason(cur, selected_skill, cell)
+		if reason != "":
+			_on_notice(reason)
+			return
+		send({"type": "skill", "skill": selected_skill, "cell": [cell.x, cell.y]})
+		_cancel_targeting()
+		return
+	if session.is_npc(hu) and hu.is_alive() and Input.is_key_pressed(KEY_CTRL):
+		var natk := _attack_skill(cur)
+		if natk != "" and SurfaceGrid.distance(cur.cell, hu.cell) <= SkillSystem.skill_range(cur, GameData.skill(natk)):
+			send({"type": "skill", "skill": natk, "cell": [hu.cell.x, hu.cell.y], "force": true})
+		else:
+			_on_notice("слишком далеко")
+		return
+	if hu != null and hu.is_alive() and hu.faction != cur.faction and session.enemies.has(hu):
+		var atk := _attack_skill(cur)
+		if atk == "":
+			return
+		var reason := session.combat.skill_block_reason(cur, atk, hu.cell)
+		if reason == "":
+			send({"type": "skill", "skill": atk, "cell": [hu.cell.x, hu.cell.y]})
+		elif reason == "слишком далеко":
+			var path := _approach_path(cur, hu.cell)
+			if path.is_empty():
+				_on_notice("не подойти")
+				return
+			var dest: Vector2i = path[-1]
+			send({"type": "move", "unit": cur.uid, "cell": [dest.x, dest.y]})
+			_pending.append({"type": "skill", "skill": atk, "cell": [hu.cell.x, hu.cell.y]})
+		else:
+			_on_notice(reason)
+		return
+	if session.grid.in_bounds(c):
+		send({"type": "move", "unit": cur.uid, "cell": [c.x, c.y]})
+
+
+## Удар по врагу вне боя, как в D:OS: герой подходит на расстояние удара и бьёт первым — с этого начинается бой.
+## Так можно напасть и на тех, кто ещё не заметил партию.
+func _explore_attack(foe: Character, force := false) -> void:
+	var me := session.unit_by_uid(selected_uid)
+	if me == null:
+		return
+	var atk := _attack_skill(me)
+	if atk == "":
+		return
+	var cmd := {"type": "skill", "unit": me.uid, "skill": atk, "cell": [foe.cell.x, foe.cell.y]}
+	if force:
+		cmd["force"] = true
+	_strike(me, GameData.skill(atk), foe.cell, cmd, force)
+
+
+## Навык или удар вне боя по клетке target: достаёт — сразу, далеко — герой сам подходит на расстояние навыка
+## и тогда бьёт (молния, стрела, удар мечом — всё равно). force — цель житель: проверку «нужен враг» делает сервер.
+func _strike(me: Character, def: Dictionary, target: Vector2i, cmd: Dictionary, force := false) -> void:
+	var from := _shown_cell(me)
+	var reach := SkillSystem.skill_range(me, def)
+	var reason := ""
+	if SurfaceGrid.distance(from, target) > reach:
+		reason = "слишком далеко"   # герой, может, ещё идёт: дальность считаем от клетки, к которой он идёт
+	elif from == me.cell and not force:
+		reason = SkillSystem.target_block_reason(session.explore_field(), me, def, target)
+	if reason == "":
+		_queue_or_send(cmd)
+		return
+	if reason != "слишком далеко" or str(def.get("move", "")) != "":
+		_on_notice(reason)
+		return
+	var spot := _strike_spot(me, target, reach, from)
+	if spot.x < -90:
+		_on_notice("не подойти")
+		return
+	world.pan = Vector2.ZERO
+	_queue_or_send({"type": "move", "unit": me.uid, "cell": [spot.x, spot.y]})
+	cmd["explore"] = true
+	_pending.append(cmd)
+
+
+## Навык против кого-то: по жителю таким можно ударить (он станет врагом), лечением и благословением — нет.
+static func _offensive(def: Dictionary) -> bool:
+	var tt := str(def.get("target", "enemy"))
+	return tt != "ally" and tt != "self" and (def.has("damage") or def.has("statuses"))
+
+
+## Ближайшая по пути свободная клетка, откуда герой достаёт цель навыком с дальностью reach.
+func _strike_spot(me: Character, target: Vector2i, reach: int, from: Vector2i) -> Vector2i:
+	var g := session.grid
+	var occ := {}
+	for u in session.all_units():
+		if (u as Character).is_alive() and u != me:
+			occ[(u as Character).cell] = true
+	var cand: Array = []
+	for n in g.cells_in_radius(target, maxi(1, reach)):
+		var cell: Vector2i = n
+		if cell != target and g.is_walkable(cell) and not occ.has(cell):
+			cand.append(cell)
+	cand.sort_custom(func(a, b): return SurfaceGrid.distance(a, from) < SurfaceGrid.distance(b, from))
+	var best := Vector2i(-99, -99)
+	var best_len := 99999
+	for i in mini(cand.size(), 12):
+		var path := g.find_path(from, cand[i], occ)
+		if not path.is_empty() and path.size() < best_len:
+			best_len = path.size()
+			best = cand[i]
+	return best
+
+
+## Куда идти, если кликнули по занятой клетке: на ближайшую свободную рядом.
+func _walk_target(c: Vector2i) -> Vector2i:
+	var g := session.grid
+	if not g.in_bounds(c):
+		return Vector2i(-99, -99)
+	# клик по закрытому дому (стена, крыша) — идти к ближайшей двери
+	var house := world.house_at(c) if not g.is_walkable(c) else {}
+	var b := session.building_at(c)
+	if not b.is_empty() and (house.is_empty() or float(house.get("open", 0.0)) < 0.5):
+		var me0 := session.unit_by_uid(selected_uid)
+		var at := _shown_cell(me0) if me0 != null else c
+		var door := Vector2i(-99, -99)
+		for d in b.get("doors", []):
+			var dc := Vector2i(int(d[0]), int(d[1]))
+			if door.x < -90 or SurfaceGrid.distance(dc, at) < SurfaceGrid.distance(door, at):
+				door = dc
+		var inside_now := false
+		for h in session.heroes_of(Net.my_id()):
+			if session.building_at((h as Character).cell) == b:
+				inside_now = true
+		if door.x > -90 and not inside_now:
+			return door
+	var occ := {}
+	for u in session.all_units():
+		if (u as Character).is_alive() and (u as Character).uid != selected_uid:
+			occ[(u as Character).cell] = true
+	if g.is_walkable(c) and not occ.has(c):
+		return c
+	var me := session.unit_by_uid(selected_uid)
+	var best := Vector2i(-99, -99)
+	var best_d := 999
+	for r in [1, 2]:
+		for n in g.cells_in_radius(c, r):
+			var cell: Vector2i = n
+			if occ.has(cell) or not g.is_walkable(cell):
+				continue
+			var d := SurfaceGrid.distance(cell, _shown_cell(me)) if me != null else 0
+			if d < best_d:
+				best_d = d
+				best = cell
+		if best.x > -90:
+			break
+	return best
+
+
+## Надписи мира поверх увеличенной картинки: чёткий текст того же шрифта, что и интерфейс.
+func _draw_world_labels() -> void:
+	if session == null or world.session != session or world.loc_id != session.location_id:
+		return
+	var f := UiTheme.font("bold")
+	var k := float(_pixel_scale) * float(world.zoom)
+	for lb in world.labels():
+		var size := maxi(14, roundi(float(lb["size"]) * k))
+		var text := str(lb["text"])
+		var col: Color = lb["col"]
+		var p: Vector2 = container.position + world.world_to_viewport(lb["pos"]) * float(_pixel_scale)
+		var w := f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+		var pos := (p - Vector2(w * 0.5, 0)).round()
+		if bool(lb.get("bubble", false)):
+			_draw_bubble(f, p, text, size, col)
+			continue
+		_labels.draw_string_outline(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, maxi(3, size / 5), Color(0.05, 0.03, 0.02, col.a))
+		_labels.draw_string(f, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+
+
+## Облачко реплики: светлый пергамент с тёмной рамкой и хвостиком к голове, длинная фраза в две строки.
+func _draw_bubble(f: Font, tip: Vector2, text: String, size: int, col: Color) -> void:
+	var max_w := 360.0
+	var lines: Array = [text]
+	if f.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > max_w:
+		var cut := text.rfind(" ", text.length() / 2 + 6)
+		if cut > 0:
+			lines = [text.substr(0, cut), text.substr(cut + 1)]
+	var lh := f.get_height(size)
+	var w := 0.0
+	for ln in lines:
+		w = maxf(w, f.get_string_size(str(ln), HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+	var pad := Vector2(12, 7)
+	var box := Rect2(tip - Vector2(w * 0.5 + pad.x, lh * lines.size() + pad.y * 2.0 + 8.0), Vector2(w + pad.x * 2.0, lh * lines.size() + pad.y * 2.0)).abs()
+	box.position = box.position.round()
+	var a := col.a
+	var paper := Color(0.94, 0.89, 0.77, 0.96 * a)
+	var ink := Color(0.23, 0.16, 0.09, a)
+	_labels.draw_rect(box.grow(2.0), ink)
+	_labels.draw_rect(box, paper)
+	var t0 := Vector2(tip.x - 7.0, box.end.y)
+	_labels.draw_colored_polygon(PackedVector2Array([t0 + Vector2(-2, 0), t0 + Vector2(16, 0), tip + Vector2(0, -2)]), ink)
+	_labels.draw_colored_polygon(PackedVector2Array([t0 + Vector2(0, -1), t0 + Vector2(13, -1), tip + Vector2(0, -5)]), paper)
+	for i in lines.size():
+		var ln := str(lines[i])
+		var lw := f.get_string_size(ln, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+		var pos := Vector2(box.position.x + (box.size.x - lw) * 0.5, box.position.y + pad.y + f.get_ascent(size) + lh * i).round()
+		_labels.draw_string(f, pos, ln, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+
+
+func _queue_or_send(cmd: Dictionary) -> void:
+	if world.idle and not world.busy_fx():
+		send(cmd)
+	elif world.idle and session.mode == "explore" and world.only_walking():
+		# смена цели на ходу: сервер вернёт героев на клетки, к которым они сейчас идут, и поведёт оттуда
+		var from := world.walk_heads(session.heroes_of(Net.my_id()).map(func(h): return (h as Character).uid))
+		if not from.is_empty():
+			cmd["from"] = from
+		_pending.clear()
+		send(cmd)
+	else:
+		_pending = [cmd]
+
+
+## Клетка, откуда герой на экране сейчас продолжит путь: куда он идёт, если идёт, иначе где стоит.
+func _shown_cell(u: Character) -> Vector2i:
+	var n := world.unit_node(u.uid)
+	if n != null and not n.path.is_empty():
+		return WorldView.world_to_cell(n.path[0])
+	return u.cell
+
+
+func _on_key(key: InputEventKey) -> void:
+	var k := key.keycode
+	if k == KEY_F11:
+		GameSettings.set_value("fullscreen", not bool(GameSettings.get_value("fullscreen")))
+		return
+	if k == KEY_ESCAPE:
+		_on_escape()
+		return
+	if settings.visible or end_panel.visible:
+		return
+	if dialogue_box.visible:
+		if k == KEY_SPACE or k == KEY_ENTER or k == KEY_KP_ENTER:
+			dialogue_box.advance()
+		elif k >= KEY_1 and k <= KEY_9:
+			dialogue_box.choose_number(k - KEY_1)
+		return
+	match k:
+		KEY_H, KEY_F1:
+			hud.toggle_help()
+		KEY_C:
+			open_panel("sheet")
+		KEY_J:
+			open_panel("journal")
+		KEY_I:
+			open_panel("bag")
+		KEY_K, KEY_F5:
+			send({"type": "save"})
+		KEY_L, KEY_F9:
+			send({"type": "load"})
+		KEY_R:
+			if session != null and session.mode == "defeat":
+				send({"type": "restart"})
+		KEY_Z, KEY_HOME:
+			world.pan = Vector2.ZERO
+		KEY_TAB:
+			_next_hero()
+		KEY_SPACE:
+			end_turn()
+		_:
+			# 1–9 и 0 — ячейки текущей линейки панели умений
+			if k >= KEY_0 and k <= KEY_9 and (is_my_turn() or (session != null and session.mode == "explore")):
+				var idx: int = 9 if k == KEY_0 else k - KEY_1
+				var slot: Dictionary = hud.action_bar.slot_for_key(idx)
+				if not slot.is_empty():
+					activate_slot(slot)
+
+
+func _on_escape() -> void:
+	if settings.visible:
+		settings.visible = false
+	elif travel_panel.visible:
+		travel_panel.visible = false
+	elif hud.help_panel.visible:
+		hud.help_panel.visible = false
+	elif _window_open():
+		open_panel("")
+	elif pause_panel.visible:
+		pause_panel.visible = false
+	elif selected_skill != "" or selected_item != "":
+		_cancel_targeting()
+	elif dialogue_box.visible:
+		dialogue_box.skip()
+	elif not end_panel.visible:
+		pause_panel.visible = true
+		GameAudio.ui("ui_open")
+
+
+func _next_hero() -> void:
+	if session == null:
+		return
+	if session.mode == "combat":
+		world.pan = Vector2.ZERO
+		return
+	var mine: Array = session.heroes_of(Net.my_id()).filter(func(h): return h.is_alive())
+	if mine.is_empty():
+		return
+	var idx := mine.find(session.unit_by_uid(selected_uid))
+	select_hero((mine[(idx + 1) % mine.size()] as Character).uid, false)
+
+
+# --- Действия (их зовут HUD и окна) ---------------------------------------------------------------
+
+func send(cmd: Dictionary) -> void:
+	Net.send_command(cmd)
+
+
+func select_hero(uid: String, open_sheet: bool) -> void:
+	if session == null:
+		return
+	var u := session.unit_by_uid(uid)
+	if u == null:
+		return
+	if session.owner_of(u) == Net.my_id() and session.mode != "combat":
+		selected_uid = uid
+		world.pan = Vector2.ZERO
+		GameAudio.ui("ui_click")
+	if open_sheet:
+		sheet.open(uid)
+		journal.visible = false
+
+
+func select_skill(skill_id: String) -> void:
+	if session != null and session.mode == "explore":
+		_select_explore_skill(skill_id)
+		return
+	if not is_my_turn():
+		return
+	var u := session.combat.current
+	var def := GameData.skill(skill_id)
+	var reason := session.combat.skill_block_reason(u, skill_id, u.cell) if str(def.get("target", "")) == "self" else ""
+	if int(def.get("ap", 0)) > u.ap:
+		_on_notice("не хватает ОД")
+		return
+	if u.cooldowns.has(skill_id):
+		_on_notice("перезарядка %d" % int(u.cooldowns[skill_id]))
+		return
+	if str(def.get("target", "")) == "self":
+		if reason != "":
+			_on_notice(reason)
+			return
+		send({"type": "skill", "skill": skill_id, "cell": [u.cell.x, u.cell.y]})
+		_cancel_targeting()
+		return
+	selected_item = ""
+	selected_skill = "" if selected_skill == skill_id else skill_id
+	GameAudio.ui("ui_click")
+
+
+# --- Навыки вне боя -----------------------------------------------------------------------
+
+func _select_explore_skill(skill_id: String) -> void:
+	var u := bar_unit()
+	if u == null or not u.is_alive():
+		return
+	if u.cooldowns.has(skill_id):
+		_on_notice("перезарядка %d" % int(u.cooldowns[skill_id]))
+		return
+	selected_item = ""
+	if str(GameData.skill(skill_id).get("target", "")) == "self":
+		_cancel_targeting()
+		_queue_or_send({"type": "skill", "unit": u.uid, "skill": skill_id, "cell": [u.cell.x, u.cell.y]})
+		return
+	selected_skill = "" if selected_skill == skill_id else skill_id
+	GameAudio.ui("ui_click")
+
+
+func _cast_explore(cell: Vector2i, hu: Character = null) -> void:
+	var u := bar_unit()
+	if u == null:
+		return
+	var def := GameData.skill(_aim_skill())
+	var cmd := {"type": "skill", "unit": u.uid, "skill": selected_skill, "cell": [cell.x, cell.y]}
+	if selected_item != "":
+		cmd = {"type": "use_item", "unit": u.uid, "item": selected_item, "cell": [cell.x, cell.y]}
+	var force := session.is_npc(hu) and _offensive(def)
+	if force:
+		cmd["force"] = true
+	_strike(u, def, cell, cmd, force)
+	_cancel_targeting()
+
+
+## Подсветка прицела вне боя: дальность навыка и область под курсором.
+func _explore_aim_highlights() -> void:
+	var u := bar_unit()
+	if u == null:
+		return
+	var def := GameData.skill(_aim_skill())
+	var field := session.explore_field()
+	for c in session.grid.cells_in_radius(u.cell, SkillSystem.skill_range(u, def)):
+		world.hl_range[c] = true
+	var hover := world.hover_cell
+	var hu := session.unit_by_uid(world.hover_uid)
+	if hu != null:
+		hover = hu.cell
+	if SkillSystem.target_block_reason(field, u, def, hover) == "":
+		for c in session.grid.cells_in_radius(hover, int(def.get("aoe_radius", 0))):
+			world.hl_aoe[c] = true
+			var t := field.unit_at(c)
+			if t != null:
+				world.target_uids[t.uid] = true
+
+
+func activate_slot(slot: Dictionary) -> void:
+	var id := str(slot.get("id", ""))
+	if str(slot.get("kind", "")) == "skill":
+		if session.mode != "combat" and session.mode != "explore":
+			return
+		select_skill(id)
+		return
+	var def := GameData.item(id)
+	var use: Dictionary = def.get("use", {})
+	if use.has("skill"):
+		if not is_my_turn() and session.mode != "explore":
+			_on_notice("сейчас нельзя")
+			return
+		selected_skill = ""
+		selected_item = "" if selected_item == id else id
+		return
+	var u := bar_unit()
+	if u == null:
+		return
+	send({"type": "use_item", "unit": u.uid, "item": id})
+
+
+func set_bar_hover(slot: Dictionary) -> void:
+	bar_hover = slot
+
+
+func end_turn() -> void:
+	if is_my_turn():
+		_cancel_targeting()
+		send({"type": "end_turn"})
+
+
+func dialogue_next() -> void:
+	send({"type": "dialogue_next"})
+
+
+func dialogue_choice(index: int) -> void:
+	send({"type": "dialogue_choice", "index": index})
+
+
+func dialogue_skip() -> void:
+	send({"type": "dialogue_skip"})
+
+
+func open_panel(which: String) -> void:
+	var was_sheet := sheet.visible
+	var was_journal := journal.visible
+	sheet.visible = false
+	journal.visible = false
+	pause_panel.visible = false
+	if loot_window.visible:
+		loot_window.close()
+	if trade_window.visible:
+		trade_window.close()
+	ui_tip = ""
+	match which:
+		"sheet", "bag":   # сумка — в окне героя, рядом с силуэтом
+			if not was_sheet:
+				sheet.open(selected_uid)
+		"journal":
+			if not was_journal:
+				journal.open("quests")
+		"menu":
+			pause_panel.visible = true
+	if which != "":
+		GameAudio.ui("ui_open")
+
+
+func _cancel_targeting() -> void:
+	selected_skill = ""
+	selected_item = ""
+
+
+func _on_notice(text: String) -> void:
+	if hud != null:
+		hud.toast(text.substr(0, 1).to_upper() + text.substr(1), UiTheme.RED, 2.2)
+	GameAudio.ui("ui_error")
+
+
+func _on_disconnected(reason: String) -> void:
+	Net.presentation_busy = false
+	TitleScreen.message = reason
+	get_tree().change_scene_to_file(TITLE_SCENE)
+
+
+func _to_title() -> void:
+	Net.leave()
+
+
+# --- Меню паузы, поражение, конец пролога ------------------------------------------------------------
+
+func _build_pause() -> void:
+	pause_panel = UiTheme.panel(Vector2(360, 0))
+	UiTheme.center(pause_panel, Vector2(360, 420))
+	pause_panel.visible = false
+	add_child(pause_panel)
+	var v := UiTheme.vbox(8)
+	pause_panel.add_child(v)
+	var t := UiTheme.label("Пауза", 22, UiTheme.GOLD, "bold")
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	v.add_child(UiTheme.button("Продолжить", _close_pause, 20))
+	v.add_child(UiTheme.button("Сохранить (K)", _pause_send.bind({"type": "save"}), 20))
+	v.add_child(UiTheme.button("Загрузить (L)", _pause_send.bind({"type": "load"}), 20))
+	v.add_child(UiTheme.button("Настройки", _open_settings, 20))
+	v.add_child(UiTheme.button("Управление (H)", _pause_help, 20))
+	v.add_child(UiTheme.button("В главное меню", _to_title, 20))
+	if not OS.has_feature("web"):
+		v.add_child(UiTheme.button("Выйти из игры", _quit, 20))
+
+
+func _close_pause() -> void:
+	pause_panel.visible = false
+
+
+func _pause_send(cmd: Dictionary) -> void:
+	send(cmd)
+	pause_panel.visible = false
+
+
+func _open_settings() -> void:
+	settings.visible = true
+
+
+func _pause_help() -> void:
+	pause_panel.visible = false
+	hud.toggle_help()
+
+
+func _quit() -> void:
+	get_tree().quit()
+
+
+func _build_defeat() -> void:
+	defeat_panel = UiTheme.panel(Vector2(520, 0))
+	UiTheme.center(defeat_panel, Vector2(520, 220))
+	defeat_panel.visible = false
+	add_child(defeat_panel)
+	var v := UiTheme.vbox(10)
+	defeat_panel.add_child(v)
+	var t := UiTheme.label("Отряд пал", 24, UiTheme.RED, "title")
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	var l := UiTheme.label("Но это ещё не конец. Герои очнутся у входа в локацию, враги тоже переведут дух.", 18, UiTheme.TEXT)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.custom_minimum_size = Vector2(500, 0)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(l)
+	var h := UiTheme.hbox(8)
+	h.alignment = BoxContainer.ALIGNMENT_CENTER
+	v.add_child(h)
+	h.add_child(UiTheme.button("Очнуться (R)", func() -> void: send({"type": "restart"}), 18))
+	h.add_child(UiTheme.button("Загрузить", func() -> void: send({"type": "load"}), 18))
+	h.add_child(UiTheme.button("В меню", _to_title, 18))
+
+
+func _build_end() -> void:
+	end_panel = ColorRect.new()
+	(end_panel as ColorRect).color = Color(0.02, 0.015, 0.02, 0.92)
+	UiTheme.fill_parent(end_panel)
+	end_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	end_panel.visible = false
+	add_child(end_panel)
+
+
+## Путевые камни: куда можно перенестись (все найденные, кроме того, у которого стоим).
+func _open_travel(from_id: String) -> void:
+	for c in travel_panel.get_children():
+		c.queue_free()
+	var v := UiTheme.vbox(8)
+	travel_panel.add_child(v)
+	var t := UiTheme.label("Путевые камни", 22, UiTheme.GOLD, "title")
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	var any := false
+	var last_loc := ""
+	for wp in session.known_waypoints():
+		if str(wp["id"]) == from_id:
+			continue
+		if str(wp["location"]) != last_loc:
+			last_loc = str(wp["location"])
+			v.add_child(UiTheme.label(str(wp["location_name"]), 16, UiTheme.TEXT_DIM))
+		any = true
+		var id := str(wp["id"])
+		v.add_child(UiTheme.button(str(wp["name"]), _travel_to.bind(id), 18))
+	if not any:
+		var l := UiTheme.label("Других камней вы пока не нашли. Камень запоминается, когда герой подходит к нему.", 17, UiTheme.TEXT)
+		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		l.custom_minimum_size = Vector2(420, 0)
+		v.add_child(l)
+	v.add_child(UiTheme.button("Закрыть", func() -> void: travel_panel.visible = false, 16))
+	travel_panel.visible = true
+	GameAudio.ui("ui_open")
+
+
+func _travel_to(id: String) -> void:
+	travel_panel.visible = false
+	send({"type": "travel", "to": id})
+
+
+func _show_end() -> void:
+	for c in end_panel.get_children():
+		c.queue_free()
+	var v := UiTheme.vbox(14)
+	v.custom_minimum_size = Vector2(840, 0)
+	UiTheme.center(v, Vector2(840, 460))
+	end_panel.add_child(v)
+	var t := UiTheme.label("Конец пролога", 32, UiTheme.GOLD, "title")
+	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(t)
+	var sub := UiTheme.label("Пепельные стражи · «Последняя воля»", 20, UiTheme.TEXT_DIM)
+	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(sub)
+	var done := 0
+	for q in session.quests:
+		if Story.is_done_stage(str(q), str(session.quests[q])):
+			done += 1
+	var lvl := 0
+	for h in session.heroes:
+		lvl = maxi(lvl, (h as Character).level)
+	var text := UiTheme.label(("Ладо ушёл на Тихий Берег, а у вас в кармане тлеет его уголь и чужая тайна.\n" +
+		"Выполнено заданий: %d из %d · уровень отряда: %d · золото: %d\n\n" +
+		"Это прототип: две с половиной локации, один босс и много заглушек. Если хочется узнать, что было дальше, " +
+		"значит, идея работает.") % [done, session.quests.size(), lvl, session.gold], 19, UiTheme.TEXT)
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	text.custom_minimum_size = Vector2(840, 0)
+	v.add_child(text)
+	var h := UiTheme.hbox(10)
+	h.alignment = BoxContainer.ALIGNMENT_CENTER
+	v.add_child(h)
+	h.add_child(UiTheme.button("Бродить дальше", func() -> void: end_panel.visible = false, 20))
+	h.add_child(UiTheme.button("В главное меню", _to_title, 20))
+	end_panel.visible = true
+	GameAudio.music("epilogue")
