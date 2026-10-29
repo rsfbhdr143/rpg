@@ -270,6 +270,18 @@ static func draw_shell_door(ci: CanvasItem, house: Dictionary, cell: Vector2i, c
 	ci.draw_rect(Rect2(lamp - Vector2(1, 2), Vector2(2, 3)), Color(1.0, 0.82, 0.42, fl))
 
 
+## Только тёплый свет фонаря над дверью, когда сама дверь нарисована на рисунке дома.
+static func draw_door_glow(ci: CanvasItem, house: Dictionary, cell: Vector2i, c: PackedVector2Array, t: float) -> void:
+	var r := _rect(house)
+	var along_x := cell.y == r.end.y - 1
+	var a: Vector2 = c[3] if along_x else c[2]
+	var b: Vector2 = c[2] if along_x else c[1]
+	var lamp := a.lerp(b, 0.5) + Vector2(0, -DOOR_H - 12.0)
+	var fl := 0.75 + 0.25 * sin(t * 5.0 + float(cell.x * 7 + cell.y))
+	ci.draw_circle(lamp, 12.0, Color(1.0, 0.7, 0.3, 0.1 * fl))
+	ci.draw_circle(lamp, 6.0, Color(1.0, 0.75, 0.35, 0.12 * fl))
+
+
 ## Дощатый пол комнаты. c — ромб клетки в координатах мира.
 static func draw_floor(ci: CanvasItem, c: PackedVector2Array, variant: int, alpha := 1.0) -> void:
 	var wood := Color("5a3e26") if variant % 2 else Color("624430")

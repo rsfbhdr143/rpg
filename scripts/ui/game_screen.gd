@@ -47,7 +47,11 @@ var _reach: Dictionary = {}
 var _reach_key := ""
 var _preview_ap := 0
 var _end_shown := false
-var _pixel_scale := 2
+var _pixel_scale := 2      # во сколько раз картинка мира увеличена на экране (stretch_shrink), меняется колесом
+var _ps_setting := 2       # «Размер пикселя» из настроек: с него начинается приближение
+# Ступени приближения колесом: [stretch_shrink, zoom камеры] — экранных пикселей на пиксель мира 1, 2, 3, 4.
+# Самая дальняя (1) показывает вдвое больше обычного.
+const ZOOM_STEPS := [[1, 1], [2, 1], [3, 1], [2, 2]]
 var _time := 0.0
 var _last_current := ""
 var _xp_toast := {}
@@ -60,7 +64,8 @@ func _ready() -> void:
 	GameData.ensure_loaded()
 	SpriteLibrary.ensure_loaded()
 	GameSettings.ensure_loaded()
-	_pixel_scale = int(GameSettings.get_value("pixel_scale"))
+	_ps_setting = int(GameSettings.get_value("pixel_scale"))
+	_pixel_scale = _ps_setting
 	container = SubViewportContainer.new()
 	UiTheme.fill_parent(container)
 	container.stretch = true
@@ -134,8 +139,10 @@ func _process(delta: float) -> void:
 		hud.refresh(null)
 		return
 	var ps := int(GameSettings.get_value("pixel_scale"))
-	if ps != _pixel_scale:
+	if ps != _ps_setting:
+		_ps_setting = ps
 		_pixel_scale = ps
+		world.zoom = 1
 		container.stretch_shrink = ps
 	_pull_events()
 	_run_queue(delta)
@@ -992,10 +999,24 @@ func _on_mouse(mb: InputEventMouseButton) -> void:
 			_drag_last = mb.position
 		MOUSE_BUTTON_WHEEL_UP:
 			if mb.pressed:
-				world.zoom = 2
+				_zoom_step(1)
 		MOUSE_BUTTON_WHEEL_DOWN:
 			if mb.pressed:
-				world.zoom = 1
+				_zoom_step(-1)
+
+
+## Приблизить (dir > 0) или отдалить камеру на ступень ZOOM_STEPS.
+func _zoom_step(dir: int) -> void:
+	var cur := 0
+	for i in ZOOM_STEPS.size():
+		if int(ZOOM_STEPS[i][0]) * int(ZOOM_STEPS[i][1]) <= _pixel_scale * world.zoom:
+			cur = i
+	var next := clampi(cur + dir, 0, ZOOM_STEPS.size() - 1)
+	if next == cur:
+		return
+	_pixel_scale = int(ZOOM_STEPS[next][0])
+	world.zoom = int(ZOOM_STEPS[next][1])
+	container.stretch_shrink = _pixel_scale
 
 
 func _on_world_click() -> void:

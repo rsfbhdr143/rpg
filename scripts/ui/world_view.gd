@@ -1228,13 +1228,17 @@ class PropNode extends Node2D:
 			draw_set_transform(off, 0.0, Vector2(-1, 1))
 		draw_texture_rect_region(fr["texture"], dest, region)
 		draw_set_transform(off)
+		var drawn := bool(fr.get("doors", false))   # двери нарисованы на самом доме: поверх только свет фонаря
 		for d in house.get("doors", {}):
 			var dc: Vector2i = d
 			if BuildingArt.is_front(house, dc):
 				var c := WorldView.corners(dc)
 				for i in c.size():
 					c[i] -= base
-				BuildingArt.draw_shell_door(self, house, dc, c, t)
+				if drawn:
+					BuildingArt.draw_door_glow(self, house, dc, c, t)
+				else:
+					BuildingArt.draw_shell_door(self, house, dc, c, t)
 		return dest
 
 	## Курсор (точка мира p) на непрозрачной части рисунка дома, а не на пустом месте вокруг.

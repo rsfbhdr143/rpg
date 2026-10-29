@@ -36,6 +36,8 @@ static func texture(id: String) -> Texture2D:
 			_farewell(img)
 		"epilogue":
 			_epilogue(img)
+		"bell_tower_view":
+			_tower_view(img)
 		_:
 			_marsh(img)
 	var tex := ImageTexture.create_from_image(img)
@@ -57,7 +59,7 @@ static func draw(ci: CanvasItem, id: String, rect: Rect2, t: float) -> void:
 			_fog(ci, dest, px, t)
 			if id == "title":
 				_crows(ci, dest, px, t, 3)
-		"intro_1", "intro_2", "intro_3", "":
+		"intro_1", "intro_2", "intro_3", "bell_tower_view", "":
 			_crows(ci, dest, px, t, 6 if id == "intro_3" else 3)
 		"farewell":
 			_embers(ci, dest, px, t, Vector2(128, 92))
@@ -336,6 +338,39 @@ static func _bell(img: Image) -> void:
 	_fill(img, 125, 55, 2, 2, Color("e0b040"))
 	_house(img, 170, 132, 26, 14, 12, tc)
 	_ground(img, 132, Color("120c10"))
+
+
+## Вид с колокольни: внизу крыши Брода и река с бродом, дальше чёрная полоса Ольшаника и горбы курганов,
+## сверху край колокола, спереди выломанные перила.
+static func _tower_view(img: Image) -> void:
+	_sky(img, Color("2a2438"), Color("c0704a"), 70)
+	_hills(img, 62, 4.0, 0.07, 0.6, Color("3a2a34"))   # курганы
+	_mound(img, 196, 62, 30, 9, Color("2e2028"))
+	_hills(img, 76, 3.0, 0.11, 2.1, Color("141810"))   # Ольшаник
+	_ground(img, 78, Color("4a3a24"))
+	for y in range(78, H):   # поля темнее к низу
+		for x in W:
+			if _bayer(x, y) < float(y - 78) / 120.0:
+				img.set_pixel(x, y, Color("3a2c1c"))
+	for y in range(80, H):   # река с бродом
+		var rx := 150 + int(round(6.0 * sin(y / 9.0))) - (y - 80) / 3
+		var ford := y > 104 and y < 110
+		_fill(img, rx, y, 9 + (y - 80) / 8, 1, Color("8a7a5a") if ford else Color("3a5a7a"))
+	var roofs := [[20, 104, 22, 10, "6a3a24"], [52, 112, 26, 12, "5a4a2a"], [90, 100, 18, 8, "6a3a24"],
+		[180, 112, 24, 11, "4a4a5a"], [214, 102, 20, 9, "6a3a24"], [36, 130, 30, 13, "5a4a2a"], [196, 132, 28, 12, "6a3a24"],
+		[110, 122, 22, 10, "5a4a2a"]]
+	for r in roofs:
+		_house(img, int(r[0]), int(r[1]), int(r[2]), int(r[3]) - 4, int(r[3]) / 2 + 3, Color(str(r[4])), Color("e0a040"))
+	_fill(img, 0, 0, W, 10, Color("0e0a0c"))        # край крыши колокольни
+	_disc(img, 128, 2, 22, Color("6a5030"))          # колокол
+	_disc(img, 128, 0, 19, Color("8a6a3a"))
+	_fill(img, 0, 128, W, 4, Color("2a1c14"))       # перила
+	for x in range(6, W, 22):
+		if x > 150 and x < 200:
+			continue                                 # выломаны
+		_fill(img, x, 118, 3, 26, Color("2a1c14"))
+	_line(img, 150, 128, 162, 140, Color("2a1c14"))  # обломки
+	_line(img, 198, 128, 188, 141, Color("2a1c14"))
 
 
 static func _empty_grave(img: Image) -> void:
