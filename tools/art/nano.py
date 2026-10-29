@@ -274,6 +274,23 @@ def tree(dead: bool = False, bush_only: bool = False) -> Image.Image:
     return im.resize((W, H), Image.LANCZOS)
 
 
+def parchment(size: int = 256, seed: int = 7) -> Image.Image:
+    """Бесшовный пергамент: шум, сглаженный через БПФ (он периодичен сам), крупные пятна и мелкие волокна."""
+    rng = np.random.default_rng(seed)
+    fy, fx = np.meshgrid(np.fft.fftfreq(size), np.fft.fftfreq(size), indexing="ij")
+
+    def smooth(sigma_y, sigma_x):
+        spec = np.fft.fft2(rng.standard_normal((size, size)))
+        f = np.real(np.fft.ifft2(spec * np.exp(-(fx / sigma_x) ** 2 - (fy / sigma_y) ** 2)))
+        return (f - f.mean()) / (f.std() + 1e-9)
+    blot = smooth(0.012, 0.012) * 0.7 + smooth(0.03, 0.03) * 0.3       # крупные пятна
+    grain = smooth(0.25, 0.25)                                         # зерно
+    fiber = smooth(0.35, 0.02)                                         # волокна вдоль листа
+    base = np.array([228, 210, 172], float)
+    tone = blot[..., None] * np.array([9, 11, 15]) + grain[..., None] * 3 + fiber[..., None] * 2.5
+    return Image.fromarray(np.clip(base - tone, 0, 255).astype(np.uint8), "RGB")
+
+
 # --- Что рисуем ------------------------------------------------------------------------------------------------
 
 UNIT_KIND = {"wolf": "wolf", "zaraza": "goat", "training_dummy": "dummy", "yurek": "child",
@@ -589,6 +606,13 @@ def build_sheets(style_src: Path) -> None:
         "engraved outline of a standing human figure seen from the front (arms slightly away from the body), drawn in "
         "thin brown ink like an anatomical sketch, no face details, no clothes, no armour; the parchment fills the "
         "whole canvas with soft darker edges. " + STYLE_NOTE + " No text, no labels.", batch=3)
+
+    # пергамент для окон рисует код сразу во входящие: бесшовность Gemini не держит
+    dest = INBOX / "images"
+    dest.mkdir(parents=True, exist_ok=True)
+    parchment().save(dest / "image_ui_parchment.png")
+    json.dump({"id": "image_ui_parchment", "bind": "images/ui_parchment", "kind": "image", "painted": True,
+               "crop": False, "max_side": 256}, open(dest / "image_ui_parchment.art.json", "w", encoding="utf-8"))
 
     json.dump(jobs, open(JOBS / "jobs.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump(layout, open(JOBS / "layout.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
