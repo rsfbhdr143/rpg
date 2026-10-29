@@ -6,7 +6,8 @@
      Пишет в art/nano/jobs/: картинки листов, style.jpg (образец стиля) и jobs.json — запрос к Gemini на каждый лист.
   2. На ПК сессия Claude открывает gemini.google.com, к каждому листу прикрепляет его картинку и образец стиля,
      отправляет запрос из jobs.json и сохраняет ответ в art/nano/out/<лист>.jpg.
-  3. `python tools/art/nano.py cut` — режет ответы обратно на картинки по раскладке (art/nano/jobs/layout.json),
+  3. `python tools/art/nano.py cut` — режет ответы обратно на картинки по раскладке отправленных листов
+     (art/nano/layout.json — копия art/nano/jobs/layout.json на момент отправки),
      убирает фон и кладёт во входящие art/inbox/nano/ вместе с подсказками *.art.json. Дальше — import_art.py.
 
 Дом из Gemini встаёт на карту, потому что лист — это те же картинки домов из кода: тот же холст, те же двери и окна.
@@ -28,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[2]
 JOBS = ROOT / "art" / "nano" / "jobs"
 OUT = ROOT / "art" / "nano" / "out"
 INBOX = ROOT / "art" / "inbox" / "nano"
+SENT = ROOT / "art" / "nano" / "layout.json"   # раскладка листов, которые ушли в Gemini: по ней режутся ответы
 MAGENTA = (255, 0, 255)
 WHITE = (255, 255, 255)
 SHEET_SIDE = 1400        # длинная сторона листа для Gemini
@@ -403,19 +405,24 @@ PROP_TEXT = {
 }
 
 
+def subject(v, default: str) -> str:
+    """Запись prompts.json бывает строкой или словарём для генератора: Gemini нужна только суть."""
+    return v if isinstance(v, str) else (v or {}).get("subject", default)
+
+
 def unit_text(uid: str, prompts: dict) -> str:
-    return EXTRA_UNITS.get(uid) or prompts["units"].get(uid, uid.replace("_", " "))
+    return EXTRA_UNITS.get(uid) or subject(prompts["units"].get(uid), uid.replace("_", " "))
 
 
 def portrait_text(pid: str, prompts: dict) -> str:
-    return prompts["portraits"].get(pid) or EXTRA_PORTRAITS.get(pid, pid)
+    return subject(prompts["portraits"].get(pid), "") or EXTRA_PORTRAITS.get(pid, pid)
 
 
 def icon_text(iid: str, prompts: dict) -> str:
     for sec in ("skills", "statuses", "items"):
         if iid in prompts.get(sec, {}):
             v = prompts[sec][iid]
-            return v if isinstance(v, str) else v.get("subject", iid)
+            return subject(v, iid)
     return NEW_SKILLS.get(iid) or NEW_STATUSES.get(iid) or ITEMS.get(iid) or iid.replace("_", " ")
 
 
@@ -434,7 +441,7 @@ HOUSE_GROUPS = [
 def prop_text(pid: str, prompts: dict) -> str:
     v = prompts["props"].get(pid)
     if v:
-        return v if isinstance(v, str) else v.get("subject", pid)
+        return subject(v, pid)
     return PROP_TEXT.get(pid) or icon_text(pid, prompts)
 
 
@@ -495,12 +502,16 @@ def build_sheets(style_src: Path) -> None:
     prop_ids += [k for k in PROPS_CODE if k not in prop_ids]
     cell = (200, 200)
     pcells, pitems = [], []
+    sent = json.load(open(SENT, encoding="utf-8")) if SENT.exists() else {}
+    sent_box = {it["id"]: it["art"]["pixel_box"] for v in sent.values() for it in v["items"]
+                if it["mode"] == "cut" and "pixel_box" in it["art"]}
     for pid in prop_ids:
         sid = sprites["props"].get(pid, "prop_" + pid)
         if pid in PROPS_CODE:
             im = PROPS_CODE[pid]()
         else:
-            found = [p for p in (ROOT / "art/inbox").rglob(f"{sid}.*") if p.suffix in (".png", ".webp")]
+            found = [p for p in (ROOT / "art/inbox").rglob(f"{sid}.*")       # эталон — не своя же перерисовка
+                     if p.suffix in (".png", ".webp") and INBOX not in p.parents]
             if not found:
                 print("  ! нет картинки для", pid)
                 continue
@@ -508,6 +519,8 @@ def build_sheets(style_src: Path) -> None:
             bb = im.getbbox()
             im = im.crop(bb) if bb else im
         fr = catalog.get(sid, {}).get("frame") or ([16, 14] if pid == "loot_bag" else [32, 32])
+        if str((catalog.get(sid, {}).get("source") or [""])[0]).startswith("nano/"):   # кадр уже из Gemini:
+            fr = sent_box.get(sid, fr)                                                    # берём прежний размер
         pcells.append(fit(im, cell))
         pitems.append({"id": sid, "pid": pid, "dir": "props", "mode": "cut",
                        "art": {"id": sid, "bind": f"props/{pid}", "kind": "image", "pixel_box": fr}})
@@ -699,9 +712,10 @@ def find_items(out: Image.Image, info: dict) -> tuple[list[dict], float]:
         x0, y0, x1, y1 = (v * k for v in it["rect"])
         ys, xs = np.nonzero(fs[y0:y1, x0:x1])
         found.append({"exp": (x0 + xs.min(), y0 + ys.min(), x0 + xs.max() + 1, y0 + ys.max() + 1) if len(xs)
-                      else (x0, y0, x1, y1), "box": None, "mask": None})
+                      else (x0, y0, x1, y1), "box": None, "mask": None, "core": None,
+                      "exp_top": y0 + body_top(fs[y0:y1, x0:x1][ys.min():ys.max() + 1]) if len(xs) else y0})
     a = np.asarray(out)
-    fo = ndimage.binary_opening(~bg_mask(a, bg), iterations=4)        # дымок, волоски и шум отпадают
+    fo = ndimage.binary_opening(~paper_mask(a, bg), iterations=4)     # дымок, волоски и шум отпадают
     lab, n = ndimage.label(fo)
     side = min(out.size)
     comps = []
@@ -725,17 +739,45 @@ def find_items(out: Image.Image, info: dict) -> tuple[list[dict], float]:
     for i, b in comps:                                                # пятно — ближайшему предмету
         cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
         d = [max(m[0] - cx, 0, cx - m[2]) ** 2 + max(m[1] - cy, 0, cy - m[3]) ** 2 for m in mapped]
-        groups.setdefault(int(np.argmin(d)), []).append((i, b))
+        j = int(np.argmin(d))
+        if d[j] > (0.35 * max(mapped[j][2] - mapped[j][0], mapped[j][3] - mapped[j][1])) ** 2:
+            continue                                                  # лишнее: пустая клетка, подпись, клякса
+        groups.setdefault(j, []).append((i, b))
     for j, f in enumerate(found):
         g = groups.get(j)
         if not g:
             continue
         bs = np.array([b for _, b in g])
         f["box"] = (int(bs[:, 0].min()), int(bs[:, 1].min()), int(bs[:, 2].max()), int(bs[:, 3].max()))
-        f["mask"] = ndimage.binary_dilation(np.isin(lab, [i for i, _ in g]), iterations=10)
+        f["core"] = np.isin(lab, [i for i, _ in g])
+        f["mask"] = ndimage.binary_dilation(f["core"], iterations=10)
     sc = [((f["box"][2] - f["box"][0]) / (f["exp"][2] - f["exp"][0]) +
            (f["box"][3] - f["box"][1]) / (f["exp"][3] - f["exp"][1])) / 2 for f in found if f["box"]]
     return found, float(np.median(sc)) if sc else (gx + gy) / 2
+
+
+def paper_mask(a: np.ndarray, bg) -> np.ndarray:
+    """Фон для поиска предметов. Вместо белого Gemini иногда кладёт кремовый фон или пергамент:
+    тогда фон — всё, что близко к цвету краёв картинки и связано с краем."""
+    from scipy import ndimage
+    if tuple(bg) == MAGENTA:
+        return bg_mask(a, bg)
+    border = np.concatenate([a[0], a[-1], a[:, 0], a[:, -1]]).astype(np.int16)
+    c = np.median(border, axis=0)
+    cand = np.abs(a.astype(np.int16) - c).max(axis=2) < 32
+    lab, _ = ndimage.label(cand)
+    edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+    return np.isin(lab, list(edge)) | bg_mask(a, bg)
+
+
+def body_top(mask: np.ndarray) -> int:
+    """Верх тела (макушка или шапка) в обрезанной по фигуре маске: первая сверху строка, где фигура хоть
+    вполовину так широка, как голова. Посох, поднятый меч или лук над головой тоньше и не считаются."""
+    rows = mask.sum(axis=1)
+    mid = rows[int(len(rows) * 0.35):int(len(rows) * 0.65)]
+    ref = float(np.median(mid)) if len(mid) else float(rows.max(initial=0))
+    idx = np.nonzero(rows >= 0.2 * ref)[0]
+    return int(idx[0]) if len(idx) else 0
 
 
 def crop_bg(out: Image.Image, box, bg) -> Image.Image:
@@ -759,7 +801,7 @@ def masked_cutout(out: Image.Image, box, bg, mask) -> Image.Image:
 
 
 def cut(only: list[str] | None = None) -> None:
-    layout = json.load(open(JOBS / "layout.json", encoding="utf-8"))
+    layout = json.load(open(SENT if SENT.exists() else JOBS / "layout.json", encoding="utf-8"))
     report = []
     for job, info in layout.items():
         if only and job not in only:
@@ -778,9 +820,6 @@ def cut(only: list[str] | None = None) -> None:
         lost = [it["id"] for it, f in zip(info["items"], found) if not f["box"]]
         if lost:
             report.append(f"{job}: не нашёл {', '.join(lost)} — режу по раскладке")
-        if info["items"][0]["mode"] == "unit":                      # один масштаб на лист: рост как у манекенов
-            hs = [(f["box"][3] - f["box"][1]) / (f["exp"][3] - f["exp"][1]) for f in found if f["box"]]
-            g = float(np.median(hs)) if hs else g
         for it, f in zip(info["items"], found):
             if it["id"] in KEEP_ANIMATED:
                 continue
@@ -794,7 +833,7 @@ def cut(only: list[str] | None = None) -> None:
             if mode == "house":
                 piece, art = place_house(out, box, f["mask"], it, art, bg)
             elif mode == "unit":
-                piece = place_unit(out, box, f, it, k, g, bg)
+                piece, art = place_unit(out, box, f, it, k, bg, art)
             elif mode == "cut":
                 m = round(0.03 * max(box[2] - box[0], box[3] - box[1]))
                 piece = masked_cutout(out, (box[0] - m, box[1] - m, box[2] + m, box[3] + m), bg, f["mask"])
@@ -807,16 +846,22 @@ def cut(only: list[str] | None = None) -> None:
                         nw, nh = nw * lim, nh * lim
                     art["pixel_box"] = [max(4, round(nw)), max(4, round(nh))]
             elif mode == "square":
+                art.update(crop=False, background="keep")             # картинка во весь квадрат: края не срезать
+                if f.get("core") is not None:                         # сам квадрат: перо или искры за краем не в счёт
+                    c = f["core"][box[1]:box[3], box[0]:box[2]]
+                    xs, ys = np.nonzero(c.mean(axis=0) > 0.6)[0], np.nonzero(c.mean(axis=1) > 0.6)[0]
+                    if len(xs) and len(ys):
+                        box = (box[0] + xs[0], box[1] + ys[0], box[0] + xs[-1] + 1, box[1] + ys[-1] + 1)
                 cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
-                half = max(box[2] - box[0], box[3] - box[1]) / 2 * 0.975
+                half = min(box[2] - box[0], box[3] - box[1]) / 2 * 0.975
                 piece = crop_bg(out, (cx - half, cy - half, cx + half, cy + half), bg)
             else:
+                art.update(crop=False, background="keep")
                 piece = out.crop(tuple(round(v) for v in box)).resize(
                     (round(bw / max(bw, bh) * max(out.size)), round(bh / max(bw, bh) * max(out.size))), Image.LANCZOS)
-            if mode in ("house", "unit", "cut"):                      # в игре они мельче: хранить с запасом
-                big = max(256, 2 * max(art.get("pixel_box") or [256]))
-                if max(piece.size) > big:
-                    piece = fit(piece, (big, big))
+            big = min(1600, max(128, 2 * (art.get("max_side") or max(art.get("pixel_box") or [128]))))
+            if max(piece.size) > big:                                 # в игре мельче: хранить с запасом вдвое
+                piece = fit(piece, (big, big))
             dest = INBOX / it["dir"]
             dest.mkdir(parents=True, exist_ok=True)
             piece.save(dest / f"{it['id']}.png", optimize=True)
@@ -849,21 +894,35 @@ def place_house(out: Image.Image, box, mask, it: dict, art: dict, bg) -> tuple[I
     return piece, art
 
 
-def place_unit(out: Image.Image, box, f: dict, it: dict, k: int, g: float, bg) -> Image.Image:
-    """Фигура на холст манекена: ступни туда же, где у манекена, масштаб общий для листа — все одного роста."""
+def place_unit(out: Image.Image, box, f: dict, it: dict, k: int, bg, art: dict) -> tuple[Image.Image, dict]:
+    """Фигура на холст манекена: ступни туда же, где у манекена, а рост тела (от ступней до макушки, без
+    поднятого оружия) — как у манекена. Gemini рисует фигуры то выше, то ниже, а в игре все взрослые одного роста.
+    Лук, посох или раскинутые руки за краем холста не уменьшают фигуру: холст растёт вширь вокруг ступней
+    и вверх (в игре кадр стоит низом по центру), pixel_box растёт так же."""
     x0, y0, x1, y1 = (v * k for v in it["rect"])
     e = f.get("exp") or (x0, y0, x1, y1)
-
-    def feet_x(mask, b):
-        band = mask[max(0, int(b[3] - 0.06 * (b[3] - b[1]))):int(b[3]), int(b[0]):int(b[2])]
-        xs = np.nonzero(band)[1]
-        return b[0] + xs.mean() if len(xs) else (b[0] + b[2]) / 2
-
     ex = (e[0] + e[2]) / 2                                          # манекен симметричен: ступни посередине
-    fx = feet_x(f.get("mask"), box) if f.get("box") else (box[0] + box[2]) / 2
-    left = fx - (ex - x0) * g
-    top = box[3] - (e[3] - y0) * g
-    return masked_cutout(out, (left, top, left + (x1 - x0) * g, top + (y1 - y0) * g), bg, f.get("mask"))
+    if not f.get("box"):
+        return masked_cutout(out, box, bg, None), art
+    bx0, by0, bx1, by1 = box
+    core = f["core"][by0:by1, bx0:bx1]
+    if UNIT_KIND.get(it["id"]) in ("goat", "wolf"):                  # зверь сбоку: мерка — длина тела
+        s = (bx1 - bx0) / max(1, e[2] - e[0])
+    else:
+        s = (by1 - by0 - body_top(core)) / max(1, e[3] - f["exp_top"])
+    band = core[max(0, int(0.94 * (by1 - by0))):]                     # ступни: середина нижних 6% фигуры
+    xs = np.nonzero(band)[1]
+    fx = bx0 + xs.mean() if len(xs) else (bx0 + bx1) / 2
+    pad = 0.02 * (x1 - x0)
+    hw = max(ex - x0, x1 - ex, (fx - bx0) / s + pad, (bx1 - fx) / s + pad)
+    up = max(e[3] - y0, (by1 - by0) / s + pad)                       # от ступней до верха холста
+    down = y1 - e[3]
+    w, h = 2 * hw, up + down
+    if w > (x1 - x0) * 1.01 or h > (y1 - y0) * 1.01:
+        print(f"  {it['id']}: холст шире или выше манекена ({w / (x1 - x0):.2f} × {h / (y1 - y0):.2f})")
+    pb = art.get("pixel_box") or [36, 50]
+    art["pixel_box"] = [round(pb[0] * w / (x1 - x0)), round(pb[1] * h / (y1 - y0))]
+    return masked_cutout(out, (fx - hw * s, by1 - up * s, fx + hw * s, by1 + down * s), bg, f.get("mask")), art
 
 
 def main() -> None:

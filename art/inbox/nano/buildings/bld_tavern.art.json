@@ -1,1 +1,1 @@
-{"id": "bld_tavern", "bind": "props/bld_tavern", "kind": "image", "crop": false, "pixel_box": [454, 361], "pixel_colors": 48, "doors": true}
+{"id": "bld_tavern", "bind": "props/bld_tavern", "kind": "image", "crop": false, "pixel_box": [454, 359], "pixel_colors": 48, "doors": true}

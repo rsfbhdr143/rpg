@@ -1,0 +1,5349 @@
+{
+ "h01": {
+  "base": [
+   638,
+   525
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_tavern",
+    "rect": [
+     40,
+     40,
+     494,
+     369
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     454,
+     329
+    ],
+    "art": {
+     "id": "bld_tavern",
+     "bind": "props/bld_tavern",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      454,
+      329
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "prop_well",
+    "rect": [
+     534,
+     282,
+     598,
+     369
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     64,
+     87
+    ],
+    "art": {
+     "id": "prop_well",
+     "bind": "props/well",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      64,
+      87
+     ],
+     "pixel_colors": 48,
+     "doors": false
+    }
+   },
+   {
+    "id": "prop_notice_board",
+    "rect": [
+     234,
+     409,
+     300,
+     485
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     66,
+     76
+    ],
+    "art": {
+     "id": "prop_notice_board",
+     "bind": "props/notice_board",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      66,
+      76
+     ],
+     "pixel_colors": 48,
+     "doors": false
+    }
+   }
+  ]
+ },
+ "h02": {
+  "base": [
+   524,
+   538
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_church",
+    "rect": [
+     40,
+     40,
+     366,
+     296
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     326,
+     256
+    ],
+    "art": {
+     "id": "bld_church",
+     "bind": "props/bld_church",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      326,
+      256
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "prop_bell_tower",
+    "rect": [
+     406,
+     52,
+     484,
+     296
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     78,
+     244
+    ],
+    "art": {
+     "id": "prop_bell_tower",
+     "bind": "props/bell_tower",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      78,
+      244
+     ],
+     "pixel_colors": 48,
+     "doors": false
+    }
+   },
+   {
+    "id": "bld_crypt",
+    "rect": [
+     96,
+     336,
+     310,
+     498
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     162
+    ],
+    "art": {
+     "id": "bld_crypt",
+     "bind": "props/bld_crypt",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      162
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h03": {
+  "base": [
+   676,
+   569
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_smithy",
+    "rect": [
+     40,
+     53,
+     318,
+     260
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     278,
+     207
+    ],
+    "art": {
+     "id": "bld_smithy",
+     "bind": "props/bld_smithy",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      278,
+      207
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_barn",
+    "rect": [
+     358,
+     40,
+     636,
+     260
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     278,
+     220
+    ],
+    "art": {
+     "id": "bld_barn",
+     "bind": "props/bld_barn",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      278,
+      220
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_headman",
+    "rect": [
+     48,
+     300,
+     310,
+     529
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     262,
+     229
+    ],
+    "art": {
+     "id": "bld_house_headman",
+     "bind": "props/bld_house_headman",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      262,
+      229
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_korn",
+    "rect": [
+     382,
+     324,
+     612,
+     529
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     205
+    ],
+    "art": {
+     "id": "bld_house_korn",
+     "bind": "props/bld_house_korn",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      205
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h04": {
+  "base": [
+   580,
+   504
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_house_fisher",
+    "rect": [
+     40,
+     40,
+     270,
+     241
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     201
+    ],
+    "art": {
+     "id": "bld_house_fisher",
+     "bind": "props/bld_house_fisher",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      201
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_shepherd",
+    "rect": [
+     310,
+     58,
+     540,
+     241
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     183
+    ],
+    "art": {
+     "id": "bld_house_shepherd",
+     "bind": "props/bld_house_shepherd",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      183
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_miller",
+    "rect": [
+     40,
+     281,
+     270,
+     464
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     183
+    ],
+    "art": {
+     "id": "bld_house_miller",
+     "bind": "props/bld_house_miller",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      183
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_brzezinski",
+    "rect": [
+     310,
+     287,
+     540,
+     464
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     177
+    ],
+    "art": {
+     "id": "bld_house_brzezinski",
+     "bind": "props/bld_house_brzezinski",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      177
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h05": {
+  "base": [
+   580,
+   507
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_house_baker",
+    "rect": [
+     40,
+     51,
+     270,
+     234
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     183
+    ],
+    "art": {
+     "id": "bld_house_baker",
+     "bind": "props/bld_house_baker",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      183
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_vetla_hut",
+    "rect": [
+     310,
+     40,
+     540,
+     234
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     230,
+     194
+    ],
+    "art": {
+     "id": "bld_vetla_hut",
+     "bind": "props/bld_vetla_hut",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      230,
+      194
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_lodge",
+    "rect": [
+     48,
+     298,
+     262,
+     467
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     169
+    ],
+    "art": {
+     "id": "bld_lodge",
+     "bind": "props/bld_lodge",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      169
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_priest_house",
+    "rect": [
+     318,
+     274,
+     532,
+     467
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     193
+    ],
+    "art": {
+     "id": "bld_priest_house",
+     "bind": "props/bld_priest_house",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      193
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h06": {
+  "base": [
+   548,
+   510
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_house_cooper",
+    "rect": [
+     40,
+     65,
+     254,
+     237
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     172
+    ],
+    "art": {
+     "id": "bld_house_cooper",
+     "bind": "props/bld_house_cooper",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      172
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_carpenter",
+    "rect": [
+     294,
+     40,
+     508,
+     237
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     197
+    ],
+    "art": {
+     "id": "bld_house_carpenter",
+     "bind": "props/bld_house_carpenter",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      197
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_chandler",
+    "rect": [
+     40,
+     298,
+     254,
+     470
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     172
+    ],
+    "art": {
+     "id": "bld_house_chandler",
+     "bind": "props/bld_house_chandler",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      172
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_boatman",
+    "rect": [
+     294,
+     277,
+     508,
+     470
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     193
+    ],
+    "art": {
+     "id": "bld_house_boatman",
+     "bind": "props/bld_house_boatman",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      193
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h07": {
+  "base": [
+   548,
+   470
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_shed",
+    "rect": [
+     40,
+     40,
+     254,
+     222
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     182
+    ],
+    "art": {
+     "id": "bld_shed",
+     "bind": "props/bld_shed",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      182
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_healer",
+    "rect": [
+     294,
+     50,
+     508,
+     222
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     214,
+     172
+    ],
+    "art": {
+     "id": "bld_house_healer",
+     "bind": "props/bld_house_healer",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      214,
+      172
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_beekeeper",
+    "rect": [
+     48,
+     269,
+     246,
+     430
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     198,
+     161
+    ],
+    "art": {
+     "id": "bld_house_beekeeper",
+     "bind": "props/bld_house_beekeeper",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      198,
+      161
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_potter",
+    "rect": [
+     302,
+     262,
+     500,
+     430
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     198,
+     168
+    ],
+    "art": {
+     "id": "bld_house_potter",
+     "bind": "props/bld_house_potter",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      198,
+      168
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h08": {
+  "base": [
+   516,
+   447
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_house_midwife",
+    "rect": [
+     40,
+     40,
+     238,
+     204
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     198,
+     164
+    ],
+    "art": {
+     "id": "bld_house_midwife",
+     "bind": "props/bld_house_midwife",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      198,
+      164
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_hunter",
+    "rect": [
+     278,
+     40,
+     476,
+     204
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     198,
+     164
+    ],
+    "art": {
+     "id": "bld_house_hunter",
+     "bind": "props/bld_house_hunter",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      198,
+      164
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_shaman_hut",
+    "rect": [
+     40,
+     244,
+     238,
+     407
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     198,
+     163
+    ],
+    "art": {
+     "id": "bld_shaman_hut",
+     "bind": "props/bld_shaman_hut",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      198,
+      163
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_weaver",
+    "rect": [
+     286,
+     254,
+     468,
+     407
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     182,
+     153
+    ],
+    "art": {
+     "id": "bld_house_weaver",
+     "bind": "props/bld_house_weaver",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      182,
+      153
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "h09": {
+  "base": [
+   484,
+   428
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "bld_house_widow",
+    "rect": [
+     40,
+     40,
+     222,
+     193
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     182,
+     153
+    ],
+    "art": {
+     "id": "bld_house_widow",
+     "bind": "props/bld_house_widow",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      182,
+      153
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_shoemaker",
+    "rect": [
+     262,
+     40,
+     444,
+     193
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     182,
+     153
+    ],
+    "art": {
+     "id": "bld_house_shoemaker",
+     "bind": "props/bld_house_shoemaker",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      182,
+      153
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   },
+   {
+    "id": "bld_house_tanner",
+    "rect": [
+     40,
+     233,
+     222,
+     388
+    ],
+    "dir": "buildings",
+    "mode": "house",
+    "size": [
+     182,
+     155
+    ],
+    "art": {
+     "id": "bld_house_tanner",
+     "bind": "props/bld_house_tanner",
+     "kind": "image",
+     "crop": false,
+     "pixel_box": [
+      182,
+      155
+     ],
+     "pixel_colors": 48,
+     "doors": true
+    }
+   }
+  ]
+ },
+ "x01": {
+  "base": [
+   642,
+   520
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_coffin",
+    "pid": "coffin",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_coffin",
+     "bind": "props/coffin",
+     "kind": "image",
+     "pixel_box": [
+      14,
+      20
+     ]
+    },
+    "rect": [
+     73,
+     40,
+     207,
+     240
+    ]
+   },
+   {
+    "id": "prop_dead_tree",
+    "pid": "dead_tree",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_dead_tree",
+     "bind": "props/dead_tree",
+     "kind": "image",
+     "pixel_box": [
+      42,
+      61
+     ]
+    },
+    "rect": [
+     280,
+     40,
+     420,
+     240
+    ]
+   },
+   {
+    "id": "prop_funeral_candles",
+    "pid": "funeral_candles",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_funeral_candles",
+     "bind": "props/funeral_candles",
+     "kind": "image",
+     "pixel_box": [
+      13,
+      20
+     ]
+    },
+    "rect": [
+     472,
+     40,
+     590,
+     240
+    ]
+   },
+   {
+    "id": "prop_grave",
+    "pid": "grave",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_grave",
+     "bind": "props/grave",
+     "kind": "image",
+     "pixel_box": [
+      27,
+      22
+     ]
+    },
+    "rect": [
+     40,
+     317,
+     240,
+     480
+    ]
+   },
+   {
+    "id": "prop_open_grave",
+    "pid": "open_grave",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_open_grave",
+     "bind": "props/open_grave",
+     "kind": "image",
+     "pixel_box": [
+      18,
+      26
+     ]
+    },
+    "rect": [
+     284,
+     280,
+     416,
+     480
+    ]
+   },
+   {
+    "id": "prop_tombstone",
+    "pid": "tombstone",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_tombstone",
+     "bind": "props/tombstone",
+     "kind": "image",
+     "pixel_box": [
+      18,
+      24
+     ]
+    },
+    "rect": [
+     460,
+     280,
+     602,
+     480
+    ]
+   }
+  ]
+ },
+ "x02": {
+  "base": [
+   760,
+   517
+  ],
+  "k": 1,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_fence",
+    "pid": "fence",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_fence",
+     "bind": "props/fence",
+     "kind": "image",
+     "pixel_box": [
+      31,
+      20
+     ]
+    },
+    "rect": [
+     40,
+     117,
+     240,
+     240
+    ]
+   },
+   {
+    "id": "prop_bone_throne",
+    "pid": "bone_throne",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_bone_throne",
+     "bind": "props/bone_throne",
+     "kind": "image",
+     "pixel_box": [
+      42,
+      43
+     ]
+    },
+    "rect": [
+     282,
+     40,
+     478,
+     240
+    ]
+   },
+   {
+    "id": "prop_bones",
+    "pid": "bones",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_bones",
+     "bind": "props/bones",
+     "kind": "image",
+     "pixel_box": [
+      25,
+      13
+     ]
+    },
+    "rect": [
+     520,
+     136,
+     720,
+     240
+    ]
+   },
+   {
+    "id": "prop_campfire",
+    "pid": "campfire",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_campfire",
+     "bind": "props/campfire",
+     "kind": "image",
+     "pixel_box": [
+      22,
+      21
+     ]
+    },
+    "rect": [
+     40,
+     292,
+     240,
+     477
+    ]
+   },
+   {
+    "id": "prop_chest",
+    "pid": "chest",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_chest",
+     "bind": "props/chest",
+     "kind": "image",
+     "pixel_box": [
+      22,
+      20
+     ]
+    },
+    "rect": [
+     280,
+     310,
+     480,
+     477
+    ]
+   },
+   {
+    "id": "prop_pyre",
+    "pid": "pyre",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_pyre",
+     "bind": "props/pyre",
+     "kind": "image",
+     "pixel_box": [
+      32,
+      32
+     ]
+    },
+    "rect": [
+     520,
+     280,
+     720,
+     477
+    ]
+   }
+  ]
+ },
+ "x03": {
+  "base": [
+   693,
+   520
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_rock",
+    "pid": "rock",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_rock",
+     "bind": "props/rock",
+     "kind": "image",
+     "pixel_box": [
+      20,
+      20
+     ]
+    },
+    "rect": [
+     40,
+     43,
+     240,
+     240
+    ]
+   },
+   {
+    "id": "prop_tent",
+    "pid": "tent",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_tent",
+     "bind": "props/tent",
+     "kind": "image",
+     "pixel_box": [
+      41,
+      42
+     ]
+    },
+    "rect": [
+     281,
+     40,
+     478,
+     240
+    ]
+   },
+   {
+    "id": "prop_totem",
+    "pid": "totem",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_totem",
+     "bind": "props/totem",
+     "kind": "image",
+     "pixel_box": [
+      18,
+      26
+     ]
+    },
+    "rect": [
+     520,
+     40,
+     653,
+     240
+    ]
+   },
+   {
+    "id": "prop_tree",
+    "pid": "tree",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_tree",
+     "bind": "props/tree",
+     "kind": "image",
+     "pixel_box": [
+      50,
+      72
+     ]
+    },
+    "rect": [
+     70,
+     280,
+     210,
+     480
+    ]
+   },
+   {
+    "id": "prop_bush",
+    "pid": "bush",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_bush",
+     "bind": "props/bush",
+     "kind": "image",
+     "pixel_box": [
+      20,
+      20
+     ]
+    },
+    "rect": [
+     280,
+     330,
+     480,
+     480
+    ]
+   },
+   {
+    "id": "prop_reeds",
+    "pid": "reeds",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_reeds",
+     "bind": "props/reeds",
+     "kind": "image",
+     "pixel_box": [
+      21,
+      30
+     ]
+    },
+    "rect": [
+     520,
+     280,
+     652,
+     480
+    ]
+   }
+  ]
+ },
+ "x04": {
+  "base": [
+   759,
+   520
+  ],
+  "k": 1,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_anvil",
+    "pid": "anvil",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_anvil",
+     "bind": "props/anvil",
+     "kind": "image",
+     "pixel_box": [
+      20,
+      20
+     ]
+    },
+    "rect": [
+     41,
+     40,
+     238,
+     240
+    ]
+   },
+   {
+    "id": "prop_barrel",
+    "pid": "barrel",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_barrel",
+     "bind": "props/barrel",
+     "kind": "image",
+     "pixel_box": [
+      16,
+      19
+     ]
+    },
+    "rect": [
+     296,
+     40,
+     463,
+     240
+    ]
+   },
+   {
+    "id": "prop_bed",
+    "pid": "bed",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_bed",
+     "bind": "props/bed",
+     "kind": "image",
+     "pixel_box": [
+      32,
+      22
+     ]
+    },
+    "rect": [
+     519,
+     103,
+     719,
+     240
+    ]
+   },
+   {
+    "id": "prop_bench",
+    "pid": "bench",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_bench",
+     "bind": "props/bench",
+     "kind": "image",
+     "pixel_box": [
+      26,
+      18
+     ]
+    },
+    "rect": [
+     40,
+     348,
+     240,
+     480
+    ]
+   },
+   {
+    "id": "prop_crate",
+    "pid": "crate",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_crate",
+     "bind": "props/crate",
+     "kind": "image",
+     "pixel_box": [
+      18,
+      18
+     ]
+    },
+    "rect": [
+     280,
+     280,
+     479,
+     480
+    ]
+   },
+   {
+    "id": "prop_hearth",
+    "pid": "hearth",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_hearth",
+     "bind": "props/hearth",
+     "kind": "image",
+     "pixel_box": [
+      26,
+      41
+     ]
+    },
+    "rect": [
+     555,
+     280,
+     682,
+     480
+    ]
+   }
+  ]
+ },
+ "x05": {
+  "base": [
+   727,
+   520
+  ],
+  "k": 1,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_pew",
+    "pid": "pew",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_pew",
+     "bind": "props/pew",
+     "kind": "image",
+     "pixel_box": [
+      30,
+      22
+     ]
+    },
+    "rect": [
+     40,
+     99,
+     240,
+     240
+    ]
+   },
+   {
+    "id": "prop_shelf",
+    "pid": "shelf",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_shelf",
+     "bind": "props/shelf",
+     "kind": "image",
+     "pixel_box": [
+      22,
+      31
+     ]
+    },
+    "rect": [
+     294,
+     40,
+     432,
+     240
+    ]
+   },
+   {
+    "id": "prop_table",
+    "pid": "table",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_table",
+     "bind": "props/table",
+     "kind": "image",
+     "pixel_box": [
+      23,
+      24
+     ]
+    },
+    "rect": [
+     489,
+     40,
+     684,
+     240
+    ]
+   },
+   {
+    "id": "prop_waystone",
+    "pid": "waystone",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_waystone",
+     "bind": "props/waystone",
+     "kind": "image",
+     "pixel_box": [
+      16,
+      23
+     ]
+    },
+    "rect": [
+     74,
+     280,
+     206,
+     480
+    ]
+   },
+   {
+    "id": "prop_altar",
+    "pid": "altar",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_altar",
+     "bind": "props/altar",
+     "kind": "image",
+     "pixel_box": [
+      25,
+      30
+     ]
+    },
+    "rect": [
+     280,
+     280,
+     447,
+     480
+    ]
+   },
+   {
+    "id": "prop_counter",
+    "pid": "counter",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_counter",
+     "bind": "props/counter",
+     "kind": "image",
+     "pixel_box": [
+      28,
+      28
+     ]
+    },
+    "rect": [
+     487,
+     280,
+     687,
+     480
+    ]
+   }
+  ]
+ },
+ "x06": {
+  "base": [
+   714,
+   520
+  ],
+  "k": 1,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_cauldron",
+    "pid": "cauldron",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_cauldron",
+     "bind": "props/cauldron",
+     "kind": "image",
+     "pixel_box": [
+      24,
+      26
+     ]
+    },
+    "rect": [
+     40,
+     226,
+     240,
+     240
+    ]
+   },
+   {
+    "id": "prop_hay",
+    "pid": "hay",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_hay",
+     "bind": "props/hay",
+     "kind": "image",
+     "pixel_box": [
+      24,
+      32
+     ]
+    },
+    "rect": [
+     305,
+     40,
+     455,
+     240
+    ]
+   },
+   {
+    "id": "prop_herbs",
+    "pid": "herbs",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_herbs",
+     "bind": "props/herbs",
+     "kind": "image",
+     "pixel_box": [
+      17,
+      32
+     ]
+    },
+    "rect": [
+     544,
+     40,
+     650,
+     240
+    ]
+   },
+   {
+    "id": "prop_loom",
+    "pid": "loom",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_loom",
+     "bind": "props/loom",
+     "kind": "image",
+     "pixel_box": [
+      21,
+      39
+     ]
+    },
+    "rect": [
+     86,
+     280,
+     194,
+     480
+    ]
+   },
+   {
+    "id": "prop_oven",
+    "pid": "oven",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_oven",
+     "bind": "props/oven",
+     "kind": "image",
+     "pixel_box": [
+      28,
+      37
+     ]
+    },
+    "rect": [
+     280,
+     460,
+     480,
+     480
+    ]
+   },
+   {
+    "id": "prop_pots",
+    "pid": "pots",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_pots",
+     "bind": "props/pots",
+     "kind": "image",
+     "pixel_box": [
+      20,
+      26
+     ]
+    },
+    "rect": [
+     520,
+     280,
+     674,
+     480
+    ]
+   }
+  ]
+ },
+ "x07": {
+  "base": [
+   649,
+   520
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "prop_rack",
+    "pid": "rack",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_rack",
+     "bind": "props/rack",
+     "kind": "image",
+     "pixel_box": [
+      18,
+      35
+     ]
+    },
+    "rect": [
+     88,
+     40,
+     191,
+     240
+    ]
+   },
+   {
+    "id": "prop_sacks",
+    "pid": "sacks",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_sacks",
+     "bind": "props/sacks",
+     "kind": "image",
+     "pixel_box": [
+      16,
+      26
+     ]
+    },
+    "rect": [
+     280,
+     40,
+     403,
+     240
+    ]
+   },
+   {
+    "id": "prop_workbench",
+    "pid": "workbench",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_workbench",
+     "bind": "props/workbench",
+     "kind": "image",
+     "pixel_box": [
+      24,
+      29
+     ]
+    },
+    "rect": [
+     443,
+     40,
+     609,
+     240
+    ]
+   },
+   {
+    "id": "prop_loot_bag",
+    "pid": "loot_bag",
+    "dir": "props",
+    "mode": "cut",
+    "art": {
+     "id": "prop_loot_bag",
+     "bind": "props/loot_bag",
+     "kind": "image",
+     "pixel_box": [
+      16,
+      14
+     ]
+    },
+    "rect": [
+     40,
+     280,
+     240,
+     480
+    ]
+   }
+  ]
+ },
+ "u01": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "knight",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "knight",
+     "bind": "units/knight",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "cleric",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "cleric",
+     "bind": "units/cleric",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "ranger",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "ranger",
+     "bind": "units/ranger",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "wizard",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "wizard",
+     "bind": "units/wizard",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u02": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "tadeush",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "tadeush",
+     "bind": "units/tadeush",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "marta",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "marta",
+     "bind": "units/marta",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "pipin",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "pipin",
+     "bind": "units/pipin",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "sych",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "sych",
+     "bind": "units/sych",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u03": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "gunter",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "gunter",
+     "bind": "units/gunter",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "vetla",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "vetla",
+     "bind": "units/vetla",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "shmyg",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "shmyg",
+     "bind": "units/shmyg",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "mukhoglot",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "mukhoglot",
+     "bind": "units/mukhoglot",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u04": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "lado_body",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "lado_body",
+     "bind": "units/lado_body",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "lado_ghost",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "lado_ghost",
+     "bind": "units/lado_ghost",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "zaraza",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "zaraza",
+     "bind": "units/zaraza",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "wolf",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "wolf",
+     "bind": "units/wolf",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u05": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "jacek",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "jacek",
+     "bind": "units/jacek",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "hanna",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "hanna",
+     "bind": "units/hanna",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "savka",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "savka",
+     "bind": "units/savka",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "agata",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "agata",
+     "bind": "units/agata",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u06": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "yurek",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "yurek",
+     "bind": "units/yurek",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "bolek",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "bolek",
+     "bind": "units/bolek",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "zbyszek",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "zbyszek",
+     "bind": "units/zbyszek",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "matey",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "matey",
+     "bind": "units/matey",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u07": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "tomash",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "tomash",
+     "bind": "units/tomash",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "vlasta",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "vlasta",
+     "bind": "units/vlasta",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "bozhena",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "bozhena",
+     "bind": "units/bozhena",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "stefan",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "stefan",
+     "bind": "units/stefan",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u08": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "goblin_warrior",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "goblin_warrior",
+     "bind": "units/goblin_warrior",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "goblin_shaman",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "goblin_shaman",
+     "bind": "units/goblin_shaman",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "goblin_scout",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "goblin_scout",
+     "bind": "units/goblin_scout",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "skeleton",
+    "rect": [
+     192,
+     248,
+     336,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "skeleton",
+     "bind": "units/skeleton",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "u09": {
+  "base": [
+   360,
+   472
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   0,
+   255
+  ],
+  "items": [
+   {
+    "id": "risen",
+    "rect": [
+     24,
+     24,
+     168,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "risen",
+     "bind": "units/risen",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "drowned",
+    "rect": [
+     192,
+     24,
+     336,
+     224
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "drowned",
+     "bind": "units/drowned",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   },
+   {
+    "id": "training_dummy",
+    "rect": [
+     24,
+     248,
+     168,
+     448
+    ],
+    "dir": "units",
+    "mode": "unit",
+    "art": {
+     "id": "training_dummy",
+     "bind": "units/training_dummy",
+     "kind": "unit",
+     "crop": false,
+     "pixel_box": [
+      36,
+      50
+     ],
+     "pixel_colors": 32
+    }
+   }
+  ]
+ },
+ "p01": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_knight",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_knight",
+     "bind": "portraits/knight",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_cleric",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_cleric",
+     "bind": "portraits/cleric",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_ranger",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_ranger",
+     "bind": "portraits/ranger",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_wizard",
+    "rect": [
+     180,
+     180,
+     312,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_wizard",
+     "bind": "portraits/wizard",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "p02": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_tadeush",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_tadeush",
+     "bind": "portraits/tadeush",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_marta",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_marta",
+     "bind": "portraits/marta",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_pipin",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_pipin",
+     "bind": "portraits/pipin",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_sych",
+    "rect": [
+     180,
+     180,
+     312,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_sych",
+     "bind": "portraits/sych",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "p03": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_gunter",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_gunter",
+     "bind": "portraits/gunter",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_vetla",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_vetla",
+     "bind": "portraits/vetla",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_shmyg",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_shmyg",
+     "bind": "portraits/shmyg",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_mukhoglot",
+    "rect": [
+     180,
+     180,
+     312,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_mukhoglot",
+     "bind": "portraits/mukhoglot",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "p04": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_lado",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_lado",
+     "bind": "portraits/lado",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_lado_ghost",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_lado_ghost",
+     "bind": "portraits/lado_ghost",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_zaraza",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_zaraza",
+     "bind": "portraits/zaraza",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "p05": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_jacek",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_jacek",
+     "bind": "portraits/jacek",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_hanna",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_hanna",
+     "bind": "portraits/hanna",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_savka",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_savka",
+     "bind": "portraits/savka",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_agata",
+    "rect": [
+     180,
+     180,
+     312,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_agata",
+     "bind": "portraits/agata",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "p06": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_yurek",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_yurek",
+     "bind": "portraits/yurek",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_bolek",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_bolek",
+     "bind": "portraits/bolek",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_zbyszek",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_zbyszek",
+     "bind": "portraits/zbyszek",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_matey",
+    "rect": [
+     180,
+     180,
+     312,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_matey",
+     "bind": "portraits/matey",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "p07": {
+  "base": [
+   336,
+   336
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "portrait_tomash",
+    "rect": [
+     24,
+     24,
+     156,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_tomash",
+     "bind": "portraits/tomash",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_vlasta",
+    "rect": [
+     180,
+     24,
+     312,
+     156
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_vlasta",
+     "bind": "portraits/vlasta",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_bozhena",
+    "rect": [
+     24,
+     180,
+     156,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_bozhena",
+     "bind": "portraits/bozhena",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   },
+   {
+    "id": "portrait_stefan",
+    "rect": [
+     180,
+     180,
+     312,
+     312
+    ],
+    "dir": "portraits",
+    "mode": "square",
+    "art": {
+     "id": "portrait_stefan",
+     "bind": "portraits/stefan",
+     "kind": "portrait",
+     "painted": true,
+     "max_side": 264
+    }
+   }
+  ]
+ },
+ "i01": {
+  "base": [
+   592,
+   592
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "fireball",
+    "rect": [
+     16,
+     16,
+     144,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "fireball",
+     "bind": "skills/fireball",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "arrow_shot",
+    "rect": [
+     160,
+     16,
+     288,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "arrow_shot",
+     "bind": "skills/arrow_shot",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "attack",
+    "rect": [
+     304,
+     16,
+     432,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "attack",
+     "bind": "skills/attack",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "battering_ram",
+    "rect": [
+     448,
+     16,
+     576,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "battering_ram",
+     "bind": "skills/battering_ram",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "flare",
+    "rect": [
+     16,
+     160,
+     144,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "flare",
+     "bind": "skills/flare",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "ice_shard",
+    "rect": [
+     160,
+     160,
+     288,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "ice_shard",
+     "bind": "skills/ice_shard",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "whirlwind",
+    "rect": [
+     304,
+     160,
+     432,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "whirlwind",
+     "bind": "skills/whirlwind",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "bless",
+    "rect": [
+     448,
+     160,
+     576,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "bless",
+     "bind": "skills/bless",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "curse",
+    "rect": [
+     16,
+     304,
+     144,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "curse",
+     "bind": "skills/curse",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "lightning_bolt",
+    "rect": [
+     160,
+     304,
+     288,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "lightning_bolt",
+     "bind": "skills/lightning_bolt",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "minor_heal",
+    "rect": [
+     304,
+     304,
+     432,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "minor_heal",
+     "bind": "skills/minor_heal",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "oil_slick",
+    "rect": [
+     448,
+     304,
+     576,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "oil_slick",
+     "bind": "skills/oil_slick",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "poison_dart",
+    "rect": [
+     16,
+     448,
+     144,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "poison_dart",
+     "bind": "skills/poison_dart",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "rain",
+    "rect": [
+     160,
+     448,
+     288,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "rain",
+     "bind": "skills/rain",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "shocking_touch",
+    "rect": [
+     304,
+     448,
+     432,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "shocking_touch",
+     "bind": "skills/shocking_touch",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "crippling_blow",
+    "rect": [
+     448,
+     448,
+     576,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "crippling_blow",
+     "bind": "skills/crippling_blow",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   }
+  ]
+ },
+ "i02": {
+  "base": [
+   592,
+   592
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "rush",
+    "rect": [
+     16,
+     16,
+     144,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "rush",
+     "bind": "skills/rush",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "battle_cry",
+    "rect": [
+     160,
+     16,
+     288,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "battle_cry",
+     "bind": "skills/battle_cry",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "defensive_stance",
+    "rect": [
+     304,
+     16,
+     432,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "defensive_stance",
+     "bind": "skills/defensive_stance",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "rage",
+    "rect": [
+     448,
+     16,
+     576,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "rage",
+     "bind": "skills/rage",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "ground_slam",
+    "rect": [
+     16,
+     160,
+     144,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "ground_slam",
+     "bind": "skills/ground_slam",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "pinning_shot",
+    "rect": [
+     160,
+     160,
+     288,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "pinning_shot",
+     "bind": "skills/pinning_shot",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "fire_arrow",
+    "rect": [
+     304,
+     160,
+     432,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "fire_arrow",
+     "bind": "skills/fire_arrow",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "hunters_mark",
+    "rect": [
+     448,
+     160,
+     576,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "hunters_mark",
+     "bind": "skills/hunters_mark",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "arrow_rain",
+    "rect": [
+     16,
+     304,
+     144,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "arrow_rain",
+     "bind": "skills/arrow_rain",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "tactical_retreat",
+    "rect": [
+     160,
+     304,
+     288,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "tactical_retreat",
+     "bind": "skills/tactical_retreat",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "dirty_trick",
+    "rect": [
+     304,
+     304,
+     432,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "dirty_trick",
+     "bind": "skills/dirty_trick",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "regenerate",
+    "rect": [
+     448,
+     304,
+     576,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "regenerate",
+     "bind": "skills/regenerate",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "purify",
+    "rect": [
+     16,
+     448,
+     144,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "purify",
+     "bind": "skills/purify",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "smite",
+    "rect": [
+     160,
+     448,
+     288,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "smite",
+     "bind": "skills/smite",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "shield_of_faith",
+    "rect": [
+     304,
+     448,
+     432,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "shield_of_faith",
+     "bind": "skills/shield_of_faith",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "healing_circle",
+    "rect": [
+     448,
+     448,
+     576,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "healing_circle",
+     "bind": "skills/healing_circle",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   }
+  ]
+ },
+ "i03": {
+  "base": [
+   592,
+   592
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "dread",
+    "rect": [
+     16,
+     16,
+     144,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "dread",
+     "bind": "skills/dread",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "resurrect",
+    "rect": [
+     160,
+     16,
+     288,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "resurrect",
+     "bind": "skills/resurrect",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "torch_throw",
+    "rect": [
+     304,
+     16,
+     432,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "torch_throw",
+     "bind": "skills/torch_throw",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "blessed",
+    "rect": [
+     448,
+     16,
+     576,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "blessed",
+     "bind": "statuses/blessed",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "burning",
+    "rect": [
+     16,
+     160,
+     144,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "burning",
+     "bind": "statuses/burning",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "chilled",
+    "rect": [
+     160,
+     160,
+     288,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "chilled",
+     "bind": "statuses/chilled",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "cursed",
+    "rect": [
+     304,
+     160,
+     432,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "cursed",
+     "bind": "statuses/cursed",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "frozen",
+    "rect": [
+     448,
+     160,
+     576,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "frozen",
+     "bind": "statuses/frozen",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "knocked_down",
+    "rect": [
+     16,
+     304,
+     144,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "knocked_down",
+     "bind": "statuses/knocked_down",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "poisoned",
+    "rect": [
+     160,
+     304,
+     288,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "poisoned",
+     "bind": "statuses/poisoned",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "regenerating",
+    "rect": [
+     304,
+     304,
+     432,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "regenerating",
+     "bind": "statuses/regenerating",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "shocked",
+    "rect": [
+     448,
+     304,
+     576,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "shocked",
+     "bind": "statuses/shocked",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "slowed",
+    "rect": [
+     16,
+     448,
+     144,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "slowed",
+     "bind": "statuses/slowed",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "stunned",
+    "rect": [
+     160,
+     448,
+     288,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "stunned",
+     "bind": "statuses/stunned",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "wet",
+    "rect": [
+     304,
+     448,
+     432,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "wet",
+     "bind": "statuses/wet",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "bleeding",
+    "rect": [
+     448,
+     448,
+     576,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "bleeding",
+     "bind": "statuses/bleeding",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   }
+  ]
+ },
+ "i04": {
+  "base": [
+   592,
+   592
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "marked",
+    "rect": [
+     16,
+     16,
+     144,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "marked",
+     "bind": "statuses/marked",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "rallied",
+    "rect": [
+     160,
+     16,
+     288,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "rallied",
+     "bind": "statuses/rallied",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "fortified",
+    "rect": [
+     304,
+     16,
+     432,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "fortified",
+     "bind": "statuses/fortified",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "enraged",
+    "rect": [
+     448,
+     16,
+     576,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "enraged",
+     "bind": "statuses/enraged",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "warded",
+    "rect": [
+     16,
+     160,
+     144,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "warded",
+     "bind": "statuses/warded",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "terrified",
+    "rect": [
+     160,
+     160,
+     288,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "terrified",
+     "bind": "statuses/terrified",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_gold",
+    "rect": [
+     304,
+     160,
+     432,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_gold",
+     "bind": "items/gold",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_potion",
+    "rect": [
+     448,
+     160,
+     576,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_potion",
+     "bind": "items/potion",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_order_of_bravery",
+    "rect": [
+     16,
+     304,
+     144,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_order_of_bravery",
+     "bind": "items/order_of_bravery",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_own_grimoire",
+    "rect": [
+     160,
+     304,
+     288,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_own_grimoire",
+     "bind": "items/own_grimoire",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_lado_map",
+    "rect": [
+     304,
+     304,
+     432,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_lado_map",
+     "bind": "items/lado_map",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_copper_raven",
+    "rect": [
+     448,
+     304,
+     576,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_copper_raven",
+     "bind": "items/copper_raven",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_lamp_oil",
+    "rect": [
+     16,
+     448,
+     144,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_lamp_oil",
+     "bind": "items/lamp_oil",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_tar_torch",
+    "rect": [
+     160,
+     448,
+     288,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_tar_torch",
+     "bind": "items/tar_torch",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_juniper_bottle",
+    "rect": [
+     304,
+     448,
+     432,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_juniper_bottle",
+     "bind": "items/juniper_bottle",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_black_bead",
+    "rect": [
+     448,
+     448,
+     576,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_black_bead",
+     "bind": "items/black_bead",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   }
+  ]
+ },
+ "i05": {
+  "base": [
+   592,
+   592
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "item_smith_hammer",
+    "rect": [
+     16,
+     16,
+     144,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_smith_hammer",
+     "bind": "items/smith_hammer",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_gravedigger_lantern",
+    "rect": [
+     160,
+     16,
+     288,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_gravedigger_lantern",
+     "bind": "items/gravedigger_lantern",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_smoldering_seal",
+    "rect": [
+     304,
+     16,
+     432,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_smoldering_seal",
+     "bind": "items/smoldering_seal",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_funeral_bread",
+    "rect": [
+     448,
+     16,
+     576,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_funeral_bread",
+     "bind": "items/funeral_bread",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_healing_brew",
+    "rect": [
+     16,
+     160,
+     144,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_healing_brew",
+     "bind": "items/healing_brew",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_smoked_fish",
+    "rect": [
+     160,
+     160,
+     288,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_smoked_fish",
+     "bind": "items/smoked_fish",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_honey_cake",
+    "rect": [
+     304,
+     160,
+     432,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_honey_cake",
+     "bind": "items/honey_cake",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_wolf_fang",
+    "rect": [
+     448,
+     160,
+     576,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_wolf_fang",
+     "bind": "items/wolf_fang",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_wolf_pelt",
+    "rect": [
+     16,
+     304,
+     144,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_wolf_pelt",
+     "bind": "items/wolf_pelt",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_grave_ash",
+    "rect": [
+     160,
+     304,
+     288,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_grave_ash",
+     "bind": "items/grave_ash",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_bone_charm",
+    "rect": [
+     304,
+     304,
+     432,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_bone_charm",
+     "bind": "items/bone_charm",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_river_pearl",
+    "rect": [
+     448,
+     304,
+     576,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_river_pearl",
+     "bind": "items/river_pearl",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_goblin_knife",
+    "rect": [
+     16,
+     448,
+     144,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_goblin_knife",
+     "bind": "items/goblin_knife",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_goblin_shield",
+    "rect": [
+     160,
+     448,
+     288,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_goblin_shield",
+     "bind": "items/goblin_shield",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_fly_totem",
+    "rect": [
+     304,
+     448,
+     432,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_fly_totem",
+     "bind": "items/fly_totem",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_mukhoglot_mask",
+    "rect": [
+     448,
+     448,
+     576,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_mukhoglot_mask",
+     "bind": "items/mukhoglot_mask",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   }
+  ]
+ },
+ "i06": {
+  "base": [
+   592,
+   592
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "item_iron_sword",
+    "rect": [
+     16,
+     16,
+     144,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_iron_sword",
+     "bind": "items/iron_sword",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_hunting_bow",
+    "rect": [
+     160,
+     16,
+     288,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_hunting_bow",
+     "bind": "items/hunting_bow",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_oak_staff",
+    "rect": [
+     304,
+     16,
+     432,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_oak_staff",
+     "bind": "items/oak_staff",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_wooden_shield",
+    "rect": [
+     448,
+     16,
+     576,
+     144
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_wooden_shield",
+     "bind": "items/wooden_shield",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_leather_cap",
+    "rect": [
+     16,
+     160,
+     144,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_leather_cap",
+     "bind": "items/leather_cap",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_iron_helm",
+    "rect": [
+     160,
+     160,
+     288,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_iron_helm",
+     "bind": "items/iron_helm",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_padded_jacket",
+    "rect": [
+     304,
+     160,
+     432,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_padded_jacket",
+     "bind": "items/padded_jacket",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_chainmail",
+    "rect": [
+     448,
+     160,
+     576,
+     288
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_chainmail",
+     "bind": "items/chainmail",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_leather_gloves",
+    "rect": [
+     16,
+     304,
+     144,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_leather_gloves",
+     "bind": "items/leather_gloves",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_leather_boots",
+    "rect": [
+     160,
+     304,
+     288,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_leather_boots",
+     "bind": "items/leather_boots",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_wool_trousers",
+    "rect": [
+     304,
+     304,
+     432,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_wool_trousers",
+     "bind": "items/wool_trousers",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_leather_belt",
+    "rect": [
+     448,
+     304,
+     576,
+     432
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_leather_belt",
+     "bind": "items/leather_belt",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_silver_ring",
+    "rect": [
+     16,
+     448,
+     144,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_silver_ring",
+     "bind": "items/silver_ring",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_amber_amulet",
+    "rect": [
+     160,
+     448,
+     288,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_amber_amulet",
+     "bind": "items/amber_amulet",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   },
+   {
+    "id": "item_letter",
+    "rect": [
+     304,
+     448,
+     432,
+     576
+    ],
+    "dir": "icons",
+    "mode": "square",
+    "art": {
+     "id": "item_letter",
+     "bind": "items/letter",
+     "kind": "icon",
+     "painted": true,
+     "max_side": 64
+    }
+   }
+  ]
+ },
+ "s01": {
+  "base": [
+   320,
+   180
+  ],
+  "k": 4,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "image_bell_tower_view",
+    "rect": [
+     0,
+     0,
+     320,
+     180
+    ],
+    "dir": "images",
+    "mode": "full",
+    "art": {
+     "id": "image_bell_tower_view",
+     "bind": "images/bell_tower_view",
+     "kind": "scene",
+     "painted": true,
+     "max_side": 1280,
+     "crop": false
+    }
+   }
+  ]
+ },
+ "s02": {
+  "base": [
+   420,
+   240
+  ],
+  "k": 3,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "image_ui_frame",
+    "rect": [
+     20,
+     20,
+     201,
+     201
+    ],
+    "dir": "images",
+    "mode": "square",
+    "art": {
+     "id": "image_ui_frame",
+     "bind": "images/ui_frame",
+     "kind": "image",
+     "painted": true,
+     "max_side": 48,
+     "crop": false
+    }
+   },
+   {
+    "id": "image_ui_slot",
+    "rect": [
+     250,
+     60,
+     371,
+     181
+    ],
+    "dir": "images",
+    "mode": "square",
+    "art": {
+     "id": "image_ui_slot",
+     "bind": "images/ui_slot",
+     "kind": "image",
+     "painted": true,
+     "max_side": 24,
+     "crop": false
+    }
+   }
+  ]
+ },
+ "s03": {
+  "base": [
+   328,
+   524
+  ],
+  "k": 2,
+  "bg": [
+   255,
+   255,
+   255
+  ],
+  "items": [
+   {
+    "id": "image_ui_paperdoll",
+    "rect": [
+     0,
+     0,
+     328,
+     524
+    ],
+    "dir": "images",
+    "mode": "full",
+    "art": {
+     "id": "image_ui_paperdoll",
+     "bind": "images/ui_paperdoll",
+     "kind": "image",
+     "painted": true,
+     "max_side": 524,
+     "crop": false
+    }
+   }
+  ]
+ }
+}
