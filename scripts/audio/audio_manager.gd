@@ -386,6 +386,9 @@ func _stream(path: String) -> AudioStream:
 	var s: AudioStream = null
 	if ResourceLoader.exists(full):
 		s = load(full) as AudioStream
+	elif full.get_extension() == "ogg" and FileAccess.file_exists(full):
+		# проект открыт, а импорт ещё не дошёл до звука: играем сам файл, чтобы музыка не пропадала
+		s = AudioStreamOggVorbis.load_from_file(full)
 	if s == null:
 		push_warning("Audio: нет файла %s" % full)
 	_streams[full] = s
