@@ -220,24 +220,21 @@ static func frame(fill: Color, border: Color, outline: Color, inner: Color, alph
 				c.a *= d
 			img.set_pixel(x, y, c)
 	_corner_plates(img, n, border)
-	_art_border(img, "ui_frame", 11)
-	var sb := _smooth_box(img, 12, pad)
+	var ring := 11
+	var painted := _art_border(img, "ui_frame", ring)
+	var sb := _smooth_box(img, ring + 3 if painted else 12, pad)
+	if painted:
+		sb.set_content_margin_all(maxf(pad * PX, ring + 3))   # текст не заезжает на широкую рисованную кайму
 	_boxes[key] = sb
 	return sb
 
 
 ## Рисованная рамка (images/<id>, тот же размер, что у рамки кодом) поверх рамки кодом — только кайма шириной ring:
 ## внутри у рисунка светлый пергамент, а светлый текст окон читается на тёмном дереве, поэтому середина остаётся своей.
-static func _art_border(img: Image, id: String, ring: int) -> void:
-	var fr := SpriteLibrary.frame("images", id)
-	if fr.is_empty():
-		return
-	var src := (fr["texture"] as Texture2D).get_image()
-	if src == null:
-		return
-	if src.is_compressed():
-		src.decompress()
-	var art := src.get_region(Rect2i(fr["region"]))
+static func _art_border(img: Image, id: String, ring: int) -> bool:
+	var art := _art_image(id)
+	if art == null:
+		return false
 	if art.get_size() != img.get_size():
 		art.resize(img.get_width(), img.get_height(), Image.INTERPOLATE_NEAREST)
 	art.convert(Image.FORMAT_RGBA8)
@@ -250,6 +247,20 @@ static func _art_border(img: Image, id: String, ring: int) -> void:
 				img.set_pixel(x, y, art.get_pixel(x, y))
 			elif d < ring + 3:
 				img.set_pixel(x, y, img.get_pixel(x, y).darkened(0.12 * float(ring + 3 - d)))   # тень под кромкой
+	return true
+
+
+## Кадр images/<id> отдельной картинкой, без прозрачной рамки листа (иначе при повторе она просвечивает тёмными полосами).
+static func _art_image(id: String) -> Image:
+	var fr := SpriteLibrary.frame("images", id)
+	if fr.is_empty():
+		return null
+	var src := (fr["texture"] as Texture2D).get_image()
+	if src == null:
+		return null
+	if src.is_compressed():
+		src.decompress()
+	return src.get_region(Rect2i(fr["region"]))
 
 
 ## Латунные накладки на углах окна: уголок с заклёпкой.
@@ -377,24 +388,23 @@ static func parchment(pad := 8) -> StyleBoxTexture:
 
 ## Картинка интерфейса из потока картинок (images/<id>) как 9 ломтей; поля — "ui_margin" в каталоге (или 24).
 static func _art_box(id: String, pad: int) -> StyleBoxTexture:
-	var fr := SpriteLibrary.frame("images", id)
-	if fr.is_empty():
+	var img := _art_image(id)
+	if img == null:
 		return null
-	var region: Rect2 = fr["region"]
-	var tex: Texture2D = fr["texture"]
-	var m := floorf(minf(24.0, region.size.x * 0.3))
+	var m := floorf(minf(24.0, img.get_width() * 0.3))
+	var mode := StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
 	if id == "ui_parchment":
-		m = 0.0   # бесшовный лист без края: просто повторяется на всю панель
+		m = 0.0   # бесшовный лист без края: повторяется на всю панель в родном размере
+		mode = StyleBoxTexture.AXIS_STRETCH_MODE_TILE
 	var sb := StyleBoxTexture.new()
-	sb.texture = tex
-	sb.region_rect = region
-	sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
-	sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
+	sb.texture = ImageTexture.create_from_image(img)
+	sb.axis_stretch_horizontal = mode
+	sb.axis_stretch_vertical = mode
 	sb.texture_margin_left = m
 	sb.texture_margin_right = m
 	sb.texture_margin_top = m
 	sb.texture_margin_bottom = m
-	sb.set_content_margin_all(pad * PX + maxf(4.0, m * 0.5))
+	sb.set_content_margin_all(pad * PX + (maxf(4.0, m * 0.5) if m > 0.0 else 0.0))
 	return sb
 
 
