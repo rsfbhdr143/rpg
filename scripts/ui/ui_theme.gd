@@ -359,15 +359,19 @@ static func _art_box(id: String, pad: int) -> StyleBoxTexture:
 		return null
 	var region: Rect2 = fr["region"]
 	var tex: Texture2D = fr["texture"]
-	var m := minf(24.0, region.size.x * 0.3)
+	var m := floorf(minf(24.0, region.size.x * 0.3))
+	if id == "ui_parchment":
+		m = 0.0   # бесшовный лист без края: просто повторяется на всю панель
 	var sb := StyleBoxTexture.new()
 	sb.texture = tex
 	sb.region_rect = region
+	sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
+	sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
 	sb.texture_margin_left = m
 	sb.texture_margin_right = m
 	sb.texture_margin_top = m
 	sb.texture_margin_bottom = m
-	sb.set_content_margin_all(pad * PX + m * 0.5)
+	sb.set_content_margin_all(pad * PX + maxf(4.0, m * 0.5))
 	return sb
 
 
