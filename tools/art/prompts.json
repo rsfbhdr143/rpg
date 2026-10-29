@@ -756,6 +756,13 @@
       ],
       "lora_strength": 0.4,
       "negative": "room, interior, walls, floor, window, people, several pieces of furniture, rows of pews"
+    },
+    "loot_bag": {
+      "subject": "a small tied canvas sack lying on the ground",
+      "px": [
+        16,
+        14
+      ]
     }
   },
   "images": {
@@ -768,7 +775,8 @@
       "subject": "night, a tall funeral pyre burning with bright eerie (cyan blue flames:1.4) on top of a small burial mound, a glowing pale blue (translucent ghost:1.3) of a young man in a doublet rising out of the blue fire, villagers watching from the dark",
       "negative": "orange fire, yellow fire, daylight, sunny sky, procession, crowd of monks"
     },
-    "epilogue": "a table in an empty priest's house, a guttering candle, scattered black prayer beads and a folded letter, dim light"
+    "epilogue": "a table in an empty priest's house, a guttering candle, scattered black prayer beads and a folded letter, dim light",
+    "ui_paperdoll": "a faded ink drawing of a standing human silhouette on parchment, front view, arms slightly apart, no face details"
   },
   "items": {
     "potion": "a small glass bottle of red healing potion with a cork",
@@ -776,6 +784,44 @@
       "subject": "a small heap of shiny gold coins",
       "lora_strength": 0.4,
       "negative": "card, plaque, frame, border, square, tile, parchment, paper, background texture, coin purse, chest"
-    }
+    },
+    "funeral_bread": "a round loaf of dark rye bread wrapped in a white cloth",
+    "healing_brew": "a small glass bottle of green herbal healing brew with a cork",
+    "lamp_oil": "a clay flask of lamp oil with a rope handle",
+    "tar_torch": "a wooden torch with a burning tar-soaked head",
+    "juniper_bottle": "a squat glass bottle of juniper vodka with a wax seal",
+    "black_bead": "a single black rosary bead on a broken thread",
+    "smith_hammer": "a heavy two-handed blacksmith hammer",
+    "gravedigger_lantern": "an old iron gravedigger's lantern with a candle inside",
+    "lado_map": "a folded hand-drawn map on old parchment",
+    "order_of_bravery": "a bronze military medal on a faded ribbon",
+    "own_grimoire": "a small leather-bound spellbook with a brass clasp",
+    "copper_raven": "a copper pendant shaped like a raven",
+    "smoldering_seal": "a wax seal that smolders with embers",
+    "wolf_fang": "a large curved wolf fang",
+    "wolf_pelt": "a rolled grey wolf pelt",
+    "grave_ash": "a small heap of grey grave ash",
+    "river_pearl": "a single lustrous river pearl in an open mussel shell",
+    "bone_charm": "a charm of small bones tied with red thread",
+    "goblin_knife": "a crude jagged goblin knife",
+    "goblin_shield": "a small round goblin shield of planks and hide",
+    "fly_totem": "a little totem of twigs with dried flies and a tiny skull",
+    "mukhoglot_mask": "a grotesque green goblin shaman mask shaped like a fly face",
+    "iron_sword": "a plain iron arming sword",
+    "hunting_bow": "a wooden hunting longbow",
+    "oak_staff": "a gnarled oak wizard staff",
+    "wooden_shield": "a round wooden shield with an iron boss",
+    "leather_cap": "a simple leather cap",
+    "iron_helm": "an iron nasal helmet",
+    "padded_jacket": "a quilted padded gambeson jacket",
+    "chainmail": "a chainmail hauberk",
+    "leather_gloves": "a pair of leather gloves",
+    "leather_boots": "a pair of leather boots",
+    "wool_trousers": "a pair of grey wool trousers",
+    "leather_belt": "a leather belt with a brass buckle and a small pouch",
+    "silver_ring": "a plain silver ring",
+    "amber_amulet": "an amber amulet on a leather cord",
+    "smoked_fish": "a smoked fish on a string",
+    "honey_cake": "a round honey cake"
   }
 }
