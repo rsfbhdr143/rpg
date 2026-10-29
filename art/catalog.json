@@ -1,0 +1,4072 @@
+{
+ "assets": {
+  "bld_barn": {
+   "sheet": "res://art/sprites/bld_barn.png",
+   "kind": "image",
+   "frame": [
+    278,
+    220
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_barn.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_church": {
+   "sheet": "res://art/sprites/bld_church.png",
+   "kind": "image",
+   "frame": [
+    326,
+    256
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_church.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_crypt": {
+   "sheet": "res://art/sprites/bld_crypt.png",
+   "kind": "image",
+   "frame": [
+    214,
+    162
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_crypt.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_baker": {
+   "sheet": "res://art/sprites/bld_house_baker.png",
+   "kind": "image",
+   "frame": [
+    230,
+    183
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_baker.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_beekeeper": {
+   "sheet": "res://art/sprites/bld_house_beekeeper.png",
+   "kind": "image",
+   "frame": [
+    198,
+    161
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_beekeeper.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_boatman": {
+   "sheet": "res://art/sprites/bld_house_boatman.png",
+   "kind": "image",
+   "frame": [
+    214,
+    193
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_boatman.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_brzezinski": {
+   "sheet": "res://art/sprites/bld_house_brzezinski.png",
+   "kind": "image",
+   "frame": [
+    230,
+    177
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_brzezinski.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_carpenter": {
+   "sheet": "res://art/sprites/bld_house_carpenter.png",
+   "kind": "image",
+   "frame": [
+    214,
+    197
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_carpenter.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_chandler": {
+   "sheet": "res://art/sprites/bld_house_chandler.png",
+   "kind": "image",
+   "frame": [
+    214,
+    172
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_chandler.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_cooper": {
+   "sheet": "res://art/sprites/bld_house_cooper.png",
+   "kind": "image",
+   "frame": [
+    214,
+    172
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_cooper.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_fisher": {
+   "sheet": "res://art/sprites/bld_house_fisher.png",
+   "kind": "image",
+   "frame": [
+    230,
+    201
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_fisher.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_headman": {
+   "sheet": "res://art/sprites/bld_house_headman.png",
+   "kind": "image",
+   "frame": [
+    262,
+    229
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_headman.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_healer": {
+   "sheet": "res://art/sprites/bld_house_healer.png",
+   "kind": "image",
+   "frame": [
+    214,
+    172
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_healer.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_hunter": {
+   "sheet": "res://art/sprites/bld_house_hunter.png",
+   "kind": "image",
+   "frame": [
+    198,
+    164
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_hunter.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_korn": {
+   "sheet": "res://art/sprites/bld_house_korn.png",
+   "kind": "image",
+   "frame": [
+    230,
+    205
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_korn.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_midwife": {
+   "sheet": "res://art/sprites/bld_house_midwife.png",
+   "kind": "image",
+   "frame": [
+    198,
+    164
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_midwife.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_miller": {
+   "sheet": "res://art/sprites/bld_house_miller.png",
+   "kind": "image",
+   "frame": [
+    230,
+    183
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_miller.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_potter": {
+   "sheet": "res://art/sprites/bld_house_potter.png",
+   "kind": "image",
+   "frame": [
+    198,
+    168
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_potter.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_shepherd": {
+   "sheet": "res://art/sprites/bld_house_shepherd.png",
+   "kind": "image",
+   "frame": [
+    230,
+    183
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_shepherd.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_shoemaker": {
+   "sheet": "res://art/sprites/bld_house_shoemaker.png",
+   "kind": "image",
+   "frame": [
+    182,
+    153
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_shoemaker.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_tanner": {
+   "sheet": "res://art/sprites/bld_house_tanner.png",
+   "kind": "image",
+   "frame": [
+    182,
+    155
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_tanner.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_weaver": {
+   "sheet": "res://art/sprites/bld_house_weaver.png",
+   "kind": "image",
+   "frame": [
+    182,
+    153
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_weaver.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_house_widow": {
+   "sheet": "res://art/sprites/bld_house_widow.png",
+   "kind": "image",
+   "frame": [
+    182,
+    153
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_house_widow.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_lodge": {
+   "sheet": "res://art/sprites/bld_lodge.png",
+   "kind": "image",
+   "frame": [
+    214,
+    169
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_lodge.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_priest_house": {
+   "sheet": "res://art/sprites/bld_priest_house.png",
+   "kind": "image",
+   "frame": [
+    214,
+    193
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_priest_house.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_shaman_hut": {
+   "sheet": "res://art/sprites/bld_shaman_hut.png",
+   "kind": "image",
+   "frame": [
+    198,
+    163
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_shaman_hut.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_shed": {
+   "sheet": "res://art/sprites/bld_shed.png",
+   "kind": "image",
+   "frame": [
+    214,
+    182
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_shed.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_smithy": {
+   "sheet": "res://art/sprites/bld_smithy.png",
+   "kind": "image",
+   "frame": [
+    278,
+    207
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_smithy.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_tavern": {
+   "sheet": "res://art/sprites/bld_tavern.png",
+   "kind": "image",
+   "frame": [
+    454,
+    329
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_tavern.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bld_vetla_hut": {
+   "sheet": "res://art/sprites/bld_vetla_hut.png",
+   "kind": "image",
+   "frame": [
+    230,
+    194
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/bld_vetla_hut.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_notice_board": {
+   "sheet": "res://art/sprites/image_notice_board.png",
+   "kind": "image",
+   "frame": [
+    400,
+    280
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/image_notice_board.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bell_tower": {
+   "sheet": "res://art/sprites/prop_bell_tower.png",
+   "kind": "image",
+   "frame": [
+    78,
+    244
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/prop_bell_tower.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_notice_board": {
+   "sheet": "res://art/sprites/prop_notice_board.png",
+   "kind": "image",
+   "frame": [
+    66,
+    76
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/prop_notice_board.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_well": {
+   "sheet": "res://art/sprites/prop_well.png",
+   "kind": "image",
+   "frame": [
+    64,
+    87
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "buildings/prop_well.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_cauldron": {
+   "sheet": "res://art/sprites/prop_cauldron.png",
+   "kind": "image",
+   "frame": [
+    24,
+    26
+   ],
+   "pad": 1,
+   "cols": 4,
+   "count": 4,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_cauldron.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 4,
+     "fps": 6.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_hay": {
+   "sheet": "res://art/sprites/prop_hay.png",
+   "kind": "image",
+   "frame": [
+    24,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_hay.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_herbs": {
+   "sheet": "res://art/sprites/prop_herbs.png",
+   "kind": "image",
+   "frame": [
+    17,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_herbs.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_loom": {
+   "sheet": "res://art/sprites/prop_loom.png",
+   "kind": "image",
+   "frame": [
+    21,
+    39
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_loom.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_oven": {
+   "sheet": "res://art/sprites/prop_oven.png",
+   "kind": "image",
+   "frame": [
+    28,
+    37
+   ],
+   "pad": 1,
+   "cols": 4,
+   "count": 4,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_oven.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 4,
+     "fps": 6.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pots": {
+   "sheet": "res://art/sprites/prop_pots.png",
+   "kind": "image",
+   "frame": [
+    20,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_pots.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_rack": {
+   "sheet": "res://art/sprites/prop_rack.png",
+   "kind": "image",
+   "frame": [
+    18,
+    35
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_rack.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_sacks": {
+   "sheet": "res://art/sprites/prop_sacks.png",
+   "kind": "image",
+   "frame": [
+    16,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_sacks.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_workbench": {
+   "sheet": "res://art/sprites/prop_workbench.png",
+   "kind": "image",
+   "frame": [
+    24,
+    29
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "furniture/prop_workbench.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_epilogue": {
+   "sheet": "res://art/sprites/image_epilogue.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_epilogue.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_farewell": {
+   "sheet": "res://art/sprites/image_farewell.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_farewell.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_1": {
+   "sheet": "res://art/sprites/image_intro_1.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_1.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_2": {
+   "sheet": "res://art/sprites/image_intro_2.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_2.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_3": {
+   "sheet": "res://art/sprites/image_intro_3.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_3.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_intro_4": {
+   "sheet": "res://art/sprites/image_intro_4.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_intro_4.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "image_title": {
+   "sheet": "res://art/sprites/image_title.png",
+   "kind": "scene",
+   "frame": [
+    315,
+    180
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/images/image_title.webp"
+   ],
+   "scale": 0.2344,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "item_gold": {
+   "sheet": "res://art/sprites/item_gold.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/items/item_gold.webp"
+   ],
+   "scale": 0.026,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "item_potion": {
+   "sheet": "res://art/sprites/item_potion.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/items/item_potion.webp"
+   ],
+   "scale": 0.0277,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_cleric": {
+   "sheet": "res://art/sprites/portrait_cleric.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_cleric.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_gunter": {
+   "sheet": "res://art/sprites/portrait_gunter.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_gunter.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_knight": {
+   "sheet": "res://art/sprites/portrait_knight.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_knight.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_lado": {
+   "sheet": "res://art/sprites/portrait_lado.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_lado.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_lado_ghost": {
+   "sheet": "res://art/sprites/portrait_lado_ghost.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_lado_ghost.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_marta": {
+   "sheet": "res://art/sprites/portrait_marta.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_marta.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_mukhoglot": {
+   "sheet": "res://art/sprites/portrait_mukhoglot.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_mukhoglot.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_pipin": {
+   "sheet": "res://art/sprites/portrait_pipin.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_pipin.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_ranger": {
+   "sheet": "res://art/sprites/portrait_ranger.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_ranger.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_shmyg": {
+   "sheet": "res://art/sprites/portrait_shmyg.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_shmyg.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_sych": {
+   "sheet": "res://art/sprites/portrait_sych.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_sych.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_tadeush": {
+   "sheet": "res://art/sprites/portrait_tadeush.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_tadeush.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_vetla": {
+   "sheet": "res://art/sprites/portrait_vetla.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_vetla.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_wizard": {
+   "sheet": "res://art/sprites/portrait_wizard.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_wizard.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "portrait_zaraza": {
+   "sheet": "res://art/sprites/portrait_zaraza.png",
+   "kind": "portrait",
+   "frame": [
+    66,
+    66
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/portraits/portrait_zaraza.webp"
+   ],
+   "scale": 0.0625,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_anvil": {
+   "sheet": "res://art/sprites/prop_anvil.png",
+   "kind": "image",
+   "frame": [
+    20,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_anvil.webp"
+   ],
+   "scale": 0.0189,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_barrel": {
+   "sheet": "res://art/sprites/prop_barrel.png",
+   "kind": "image",
+   "frame": [
+    16,
+    19
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_barrel.webp"
+   ],
+   "scale": 0.0181,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bed": {
+   "sheet": "res://art/sprites/prop_bed.png",
+   "kind": "image",
+   "frame": [
+    32,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bed.webp"
+   ],
+   "scale": 0.025,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bench": {
+   "sheet": "res://art/sprites/prop_bench.png",
+   "kind": "image",
+   "frame": [
+    26,
+    18
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bench.webp"
+   ],
+   "scale": 0.0224,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bone_throne": {
+   "sheet": "res://art/sprites/prop_bone_throne.png",
+   "kind": "image",
+   "frame": [
+    42,
+    43
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bone_throne.webp"
+   ],
+   "scale": 0.0407,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bush": {
+   "sheet": "res://art/sprites/prop_bush.png",
+   "kind": "image",
+   "frame": [
+    20,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_bush.webp"
+   ],
+   "scale": 0.0182,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_campfire": {
+   "sheet": "res://art/sprites/prop_campfire.png",
+   "kind": "image",
+   "frame": [
+    22,
+    21
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_campfire.webp"
+   ],
+   "scale": 0.0226,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_chest": {
+   "sheet": "res://art/sprites/prop_chest.png",
+   "kind": "image",
+   "frame": [
+    22,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_chest.webp"
+   ],
+   "scale": 0.0197,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_coffin": {
+   "sheet": "res://art/sprites/prop_coffin.png",
+   "kind": "image",
+   "frame": [
+    14,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_coffin.webp"
+   ],
+   "scale": 0.016,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_crate": {
+   "sheet": "res://art/sprites/prop_crate.png",
+   "kind": "image",
+   "frame": [
+    18,
+    18
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_crate.webp"
+   ],
+   "scale": 0.0171,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_dead_tree": {
+   "sheet": "res://art/sprites/prop_dead_tree.png",
+   "kind": "image",
+   "frame": [
+    42,
+    61
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_dead_tree.webp"
+   ],
+   "scale": 0.0488,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_fence": {
+   "sheet": "res://art/sprites/prop_fence.png",
+   "kind": "image",
+   "frame": [
+    31,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_fence.webp"
+   ],
+   "scale": 0.0253,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_funeral_candles": {
+   "sheet": "res://art/sprites/prop_funeral_candles.png",
+   "kind": "image",
+   "frame": [
+    13,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_funeral_candles.webp"
+   ],
+   "scale": 0.0155,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_open_grave": {
+   "sheet": "res://art/sprites/prop_open_grave.png",
+   "kind": "image",
+   "frame": [
+    18,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_open_grave.webp"
+   ],
+   "scale": 0.02,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pew": {
+   "sheet": "res://art/sprites/prop_pew.png",
+   "kind": "image",
+   "frame": [
+    30,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_pew.webp"
+   ],
+   "scale": 0.0258,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_pyre": {
+   "sheet": "res://art/sprites/prop_pyre.png",
+   "kind": "image",
+   "frame": [
+    32,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_pyre.webp"
+   ],
+   "scale": 0.0308,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_reeds": {
+   "sheet": "res://art/sprites/prop_reeds.png",
+   "kind": "image",
+   "frame": [
+    21,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_reeds.webp"
+   ],
+   "scale": 0.0238,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_rock": {
+   "sheet": "res://art/sprites/prop_rock.png",
+   "kind": "image",
+   "frame": [
+    20,
+    20
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_rock.webp"
+   ],
+   "scale": 0.0201,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_shelf": {
+   "sheet": "res://art/sprites/prop_shelf.png",
+   "kind": "image",
+   "frame": [
+    22,
+    31
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_shelf.webp"
+   ],
+   "scale": 0.0251,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_table": {
+   "sheet": "res://art/sprites/prop_table.png",
+   "kind": "image",
+   "frame": [
+    23,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_table.webp"
+   ],
+   "scale": 0.022,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tent": {
+   "sheet": "res://art/sprites/prop_tent.png",
+   "kind": "image",
+   "frame": [
+    41,
+    42
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_tent.webp"
+   ],
+   "scale": 0.0407,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tombstone": {
+   "sheet": "res://art/sprites/prop_tombstone.png",
+   "kind": "image",
+   "frame": [
+    18,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_tombstone.webp"
+   ],
+   "scale": 0.02,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_totem": {
+   "sheet": "res://art/sprites/prop_totem.png",
+   "kind": "image",
+   "frame": [
+    18,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_totem.webp"
+   ],
+   "scale": 0.0202,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_tree": {
+   "sheet": "res://art/sprites/prop_tree.png",
+   "kind": "image",
+   "frame": [
+    50,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_tree.webp"
+   ],
+   "scale": 0.0606,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_waystone": {
+   "sheet": "res://art/sprites/prop_waystone.png",
+   "kind": "image",
+   "frame": [
+    16,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/props/prop_waystone.webp"
+   ],
+   "scale": 0.0183,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "arrow_shot": {
+   "sheet": "res://art/sprites/arrow_shot.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/arrow_shot.webp"
+   ],
+   "scale": 0.0248,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "attack": {
+   "sheet": "res://art/sprites/attack.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/attack.webp"
+   ],
+   "scale": 0.0239,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "battering_ram": {
+   "sheet": "res://art/sprites/battering_ram.png",
+   "kind": "icon",
+   "frame": [
+    25,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/battering_ram.webp"
+   ],
+   "scale": 0.0248,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "bless": {
+   "sheet": "res://art/sprites/bless.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/bless.webp"
+   ],
+   "scale": 0.0242,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "curse": {
+   "sheet": "res://art/sprites/curse.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/curse.webp"
+   ],
+   "scale": 0.0236,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "fireball": {
+   "sheet": "res://art/sprites/fireball.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/fireball.webp"
+   ],
+   "scale": 0.0238,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "flare": {
+   "sheet": "res://art/sprites/flare.png",
+   "kind": "icon",
+   "frame": [
+    25,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/flare.webp"
+   ],
+   "scale": 0.0268,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "ice_shard": {
+   "sheet": "res://art/sprites/ice_shard.png",
+   "kind": "icon",
+   "frame": [
+    21,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/ice_shard.webp"
+   ],
+   "scale": 0.0279,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "lightning_bolt": {
+   "sheet": "res://art/sprites/lightning_bolt.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/lightning_bolt.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "minor_heal": {
+   "sheet": "res://art/sprites/minor_heal.png",
+   "kind": "icon",
+   "frame": [
+    20,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/minor_heal.webp"
+   ],
+   "scale": 0.0265,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "oil_slick": {
+   "sheet": "res://art/sprites/oil_slick.png",
+   "kind": "icon",
+   "frame": [
+    25,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/oil_slick.webp"
+   ],
+   "scale": 0.028,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poison_dart": {
+   "sheet": "res://art/sprites/poison_dart.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/poison_dart.webp"
+   ],
+   "scale": 0.025,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "rain": {
+   "sheet": "res://art/sprites/rain.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    25
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/rain.webp"
+   ],
+   "scale": 0.0268,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "shocking_touch": {
+   "sheet": "res://art/sprites/shocking_touch.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/shocking_touch.webp"
+   ],
+   "scale": 0.0237,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "whirlwind": {
+   "sheet": "res://art/sprites/whirlwind.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/skills/whirlwind.webp"
+   ],
+   "scale": 0.0265,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "blessed": {
+   "sheet": "res://art/sprites/blessed.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/blessed.webp"
+   ],
+   "scale": 0.0245,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "burning": {
+   "sheet": "res://art/sprites/burning.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/burning.webp"
+   ],
+   "scale": 0.0263,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "chilled": {
+   "sheet": "res://art/sprites/chilled.png",
+   "kind": "icon",
+   "frame": [
+    24,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/chilled.webp"
+   ],
+   "scale": 0.0236,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "cursed": {
+   "sheet": "res://art/sprites/cursed.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/cursed.webp"
+   ],
+   "scale": 0.0248,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "frozen": {
+   "sheet": "res://art/sprites/frozen.png",
+   "kind": "icon",
+   "frame": [
+    25,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/frozen.webp"
+   ],
+   "scale": 0.0244,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poisoned": {
+   "sheet": "res://art/sprites/poisoned.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/poisoned.webp"
+   ],
+   "scale": 0.0237,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "regenerating": {
+   "sheet": "res://art/sprites/regenerating.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/regenerating.webp"
+   ],
+   "scale": 0.0268,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "shocked": {
+   "sheet": "res://art/sprites/shocked.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/shocked.webp"
+   ],
+   "scale": 0.0244,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "slowed": {
+   "sheet": "res://art/sprites/slowed.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    19
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/slowed.webp"
+   ],
+   "scale": 0.0317,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "stunned": {
+   "sheet": "res://art/sprites/stunned.png",
+   "kind": "icon",
+   "frame": [
+    26,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/stunned.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "wet": {
+   "sheet": "res://art/sprites/wet.png",
+   "kind": "icon",
+   "frame": [
+    24,
+    26
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/statuses/wet.webp"
+   ],
+   "scale": 0.0271,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "blood": {
+   "sheet": "res://art/sprites/blood.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/blood.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "electrified_blood": {
+   "sheet": "res://art/sprites/electrified_blood.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/electrified_blood.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "electrified_steam": {
+   "sheet": "res://art/sprites/electrified_steam.png",
+   "kind": "effect",
+   "frame": [
+    24,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/electrified_steam.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "electrified_water": {
+   "sheet": "res://art/sprites/electrified_water.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/electrified_water.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "fire": {
+   "sheet": "res://art/sprites/fire.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/fire.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "ice": {
+   "sheet": "res://art/sprites/ice.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/ice.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "oil": {
+   "sheet": "res://art/sprites/oil.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/oil.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poison": {
+   "sheet": "res://art/sprites/poison.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/poison.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "poison_cloud": {
+   "sheet": "res://art/sprites/poison_cloud.png",
+   "kind": "effect",
+   "frame": [
+    24,
+    24
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/poison_cloud.webp"
+   ],
+   "scale": 0.0234,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "steam": {
+   "sheet": "res://art/sprites/steam.png",
+   "kind": "effect",
+   "frame": [
+    24,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/steam.webp"
+   ],
+   "scale": 0.0262,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "water": {
+   "sheet": "res://art/sprites/water.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/surfaces/water.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "cemetery_floor": {
+   "sheet": "res://art/sprites/cemetery_floor.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/cemetery_floor.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "cemetery_wall": {
+   "sheet": "res://art/sprites/cemetery_wall.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/cemetery_wall.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "forest_floor": {
+   "sheet": "res://art/sprites/forest_floor.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/forest_floor.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "forest_wall": {
+   "sheet": "res://art/sprites/forest_wall.png",
+   "kind": "image",
+   "frame": [
+    42,
+    61
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/forest_wall.webp"
+   ],
+   "scale": 0.0491,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_camp_floor": {
+   "sheet": "res://art/sprites/goblin_camp_floor.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/goblin_camp_floor.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_camp_wall": {
+   "sheet": "res://art/sprites/goblin_camp_wall.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/goblin_camp_wall.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "masonry": {
+   "sheet": "res://art/sprites/masonry.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/masonry.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "planks": {
+   "sheet": "res://art/sprites/planks.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/planks.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "village_floor": {
+   "sheet": "res://art/sprites/village_floor.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/village_floor.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "village_wall": {
+   "sheet": "res://art/sprites/village_wall.png",
+   "kind": "tile",
+   "frame": [
+    72,
+    72
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/tiles/village_wall.webp"
+   ],
+   "scale": 0.0703,
+   "opaque": true,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "cleric": {
+   "sheet": "res://art/sprites/cleric.png",
+   "kind": "unit",
+   "frame": [
+    33,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/cleric.webp"
+   ],
+   "scale": 0.0375,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "drowned": {
+   "sheet": "res://art/sprites/drowned.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/drowned.webp"
+   ],
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_scout": {
+   "sheet": "res://art/sprites/goblin_scout.png",
+   "kind": "unit",
+   "frame": [
+    25,
+    36
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/goblin_scout.webp"
+   ],
+   "scale": 0.0295,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_shaman": {
+   "sheet": "res://art/sprites/goblin_shaman.png",
+   "kind": "unit",
+   "frame": [
+    22,
+    38
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/goblin_shaman.webp"
+   ],
+   "scale": 0.0312,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "goblin_warrior": {
+   "sheet": "res://art/sprites/goblin_warrior.png",
+   "kind": "unit",
+   "frame": [
+    24,
+    36
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/goblin_warrior.webp"
+   ],
+   "scale": 0.0303,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "gunter": {
+   "sheet": "res://art/sprites/gunter.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    50
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/gunter.webp"
+   ],
+   "scale": 0.0416,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "knight": {
+   "sheet": "res://art/sprites/knight.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/knight.webp"
+   ],
+   "scale": 0.0451,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "lado_body": {
+   "sheet": "res://art/sprites/lado_body.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/lado_body.webp"
+   ],
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "lado_ghost": {
+   "sheet": "res://art/sprites/lado_ghost.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/lado_ghost.webp"
+   ],
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "marta": {
+   "sheet": "res://art/sprites/marta.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/marta.webp"
+   ],
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "mukhoglot": {
+   "sheet": "res://art/sprites/mukhoglot.png",
+   "kind": "unit",
+   "frame": [
+    34,
+    50
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/mukhoglot.webp"
+   ],
+   "scale": 0.0412,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "pipin": {
+   "sheet": "res://art/sprites/pipin.png",
+   "kind": "unit",
+   "frame": [
+    26,
+    36
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/pipin.webp"
+   ],
+   "scale": 0.0289,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "ranger": {
+   "sheet": "res://art/sprites/ranger.png",
+   "kind": "unit",
+   "frame": [
+    29,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/ranger.webp"
+   ],
+   "scale": 0.0378,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "risen": {
+   "sheet": "res://art/sprites/risen.png",
+   "kind": "unit",
+   "frame": [
+    33,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/risen.webp"
+   ],
+   "scale": 0.0377,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "shmyg": {
+   "sheet": "res://art/sprites/shmyg.png",
+   "kind": "unit",
+   "frame": [
+    23,
+    34
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/shmyg.webp"
+   ],
+   "scale": 0.0282,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "skeleton": {
+   "sheet": "res://art/sprites/skeleton.png",
+   "kind": "unit",
+   "frame": [
+    27,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/skeleton.webp"
+   ],
+   "scale": 0.0381,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "sych": {
+   "sheet": "res://art/sprites/sych.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/sych.webp"
+   ],
+   "scale": 0.0371,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "tadeush": {
+   "sheet": "res://art/sprites/tadeush.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/tadeush.webp"
+   ],
+   "scale": 0.0362,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "training_dummy": {
+   "sheet": "res://art/sprites/training_dummy.png",
+   "kind": "image",
+   "frame": [
+    26,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/training_dummy.webp"
+   ],
+   "scale": 0.0376,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "vetla": {
+   "sheet": "res://art/sprites/vetla.png",
+   "kind": "unit",
+   "frame": [
+    25,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/vetla.webp"
+   ],
+   "scale": 0.0389,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "wizard": {
+   "sheet": "res://art/sprites/wizard.png",
+   "kind": "unit",
+   "frame": [
+    32,
+    46
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/wizard.webp"
+   ],
+   "scale": 0.0391,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "wolf": {
+   "sheet": "res://art/sprites/wolf.png",
+   "kind": "unit",
+   "frame": [
+    29,
+    32
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/wolf.webp"
+   ],
+   "scale": 0.0349,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "zaraza": {
+   "sheet": "res://art/sprites/zaraza.png",
+   "kind": "unit",
+   "frame": [
+    22,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "generated/units/zaraza.webp"
+   ],
+   "scale": 0.028,
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "item_letter": {
+   "sheet": "res://art/sprites/item_letter.png",
+   "kind": "icon",
+   "frame": [
+    22,
+    16
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/item_letter.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "knocked_down": {
+   "sheet": "res://art/sprites/knocked_down.png",
+   "kind": "icon",
+   "frame": [
+    22,
+    23
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/knocked_down.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_altar": {
+   "sheet": "res://art/sprites/prop_altar.png",
+   "kind": "image",
+   "frame": [
+    25,
+    30
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_altar.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_bones": {
+   "sheet": "res://art/sprites/prop_bones.png",
+   "kind": "image",
+   "frame": [
+    25,
+    13
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_bones.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_counter": {
+   "sheet": "res://art/sprites/prop_counter.png",
+   "kind": "image",
+   "frame": [
+    28,
+    28
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_counter.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_grave": {
+   "sheet": "res://art/sprites/prop_grave.png",
+   "kind": "image",
+   "frame": [
+    27,
+    22
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_grave.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_hearth": {
+   "sheet": "res://art/sprites/prop_hearth.png",
+   "kind": "image",
+   "frame": [
+    26,
+    41
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_hearth.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  },
+  "prop_lado_tracks": {
+   "sheet": "res://art/sprites/prop_lado_tracks.png",
+   "kind": "image",
+   "frame": [
+    31,
+    11
+   ],
+   "pad": 1,
+   "cols": 1,
+   "count": 1,
+   "pixel_art": true,
+   "source": [
+    "handmade/prop_lado_tracks.png"
+   ],
+   "animations": {
+    "idle": {
+     "start": 0,
+     "count": 1,
+     "fps": 8.0,
+     "loop": true
+    }
+   }
+  }
+ }
+}

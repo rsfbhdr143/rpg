@@ -2,6 +2,7 @@ extends Control
 ## Главное меню и лобби (временный интерфейс, собирается из кода).
 ## Запуск выделенного сервера без графики:
 ##   godot --headless --path . -- --server --port 8910
+## Сразу одиночная игра, минуя меню: godot --path . -- --solo
 
 const GAME_SCENE := "res://scenes/game.tscn"
 
@@ -24,6 +25,8 @@ func _ready() -> void:
 	Net.game_started.connect(_on_game_started)
 	Net.disconnected.connect(_on_disconnected)
 	_refresh()
+	if OS.get_cmdline_user_args().has("--solo"):   # godot --path . -- --solo: сразу одиночная игра
+		_on_solo.call_deferred()
 
 
 func _is_dedicated_launch() -> bool:

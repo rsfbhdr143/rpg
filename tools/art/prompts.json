@@ -1,0 +1,772 @@
+{
+  "_readme": "Что рисует tools/art/generate.py. Описания на английском: так Stable Diffusion понимает лучше. Можно менять любое описание, стиль и настройки; новая запись — новая картинка. Вид (kind) задаётся сам: персонажи — unit, навыки, статусы и предметы — icon, поверхности — texture или cloud, пол — texture, стена — wall, портреты — portrait, объекты на клетке (props) — object, дома — building, заставки (images) — scene; поменять: {\"kind\": \"object\", \"subject\": \"...\"}. px — размер в игровых пикселях [ширина, высота], в который картинка уменьшится при импорте (пиксельный вид, data/sprites.json → settings.pixelate). bind — своя привязка, например одна картинка на два id: [\"units/mukhoglot\", \"units/boss_mukhoglot\"]. Картинки, которые генератор не осилил (могила, кости, письмо, «сбит с ног», следы Ладо, стойка таверны, алтарь, очаг), нарисованы пиксель-артом вручную в art/inbox/handmade и отсюда убраны.",
+  "settings": {
+    "style": "color",
+    "variants": 2,
+    "retries": 2,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "lora": "auto",
+    "lora_strength": 0.9,
+    "trigger": "wdct",
+    "steps": 22,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "comfy_url": [
+      "http://127.0.0.1:8188",
+      "http://127.0.0.1:8000"
+    ],
+    "comfy_app": "",
+    "comfy_dir": "C:/ComfyUI",
+    "comfy_args": [],
+    "models": {
+      "turbo": {
+        "steps": 8,
+        "cfg": 2.0,
+        "sampler": "dpmpp_sde",
+        "scheduler": "karras"
+      },
+      "lightning": {
+        "steps": 8,
+        "cfg": 1.5,
+        "sampler": "euler",
+        "scheduler": "sgm_uniform"
+      }
+    }
+  },
+  "styles": {
+    "color": "hand-colored woodcut engraving, bold black ink linework, fine hatching, soft watercolor tints, rich muted colors",
+    "plain": "woodcut engraving, black ink on white paper, fine cross-hatching, clean bold lines"
+  },
+  "negative": "photo, photorealistic, 3d render, blurry, lowres, jpeg artifacts, text, letters, watermark, signature, frame, border, black border",
+  "kinds": {
+    "unit": {
+      "size": [
+        832,
+        1216
+      ],
+      "variants": 3,
+      "prompt": "{style}, {subject}, vivid colors, full body, standing, seen from slightly above, three-quarter view, simple clear silhouette, single character, centered, isolated on a plain white background",
+      "negative": "multiple characters, multiple views, cropped, cut off, scenery, landscape, ground, floor, ground patch, pedestal, cast shadow, parchment, aged paper, floating objects, floating weapon, floating shield, shield, extra weapons, two weapons, double-bladed weapon, extra limbs, extra arms, extra hands, extra fingers, deformed hands, malformed weapon, bent sword, broken blade, weapon through body, horse, rider, mounted knight, castle, building, landscape background, scene, night sky, stars, moon, clouds, hills, horizon, sky, black and white, monochrome, grayscale",
+      "px": [
+        32,
+        44
+      ],
+      "lora_strength": 0.6
+    },
+    "object": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{style}, {subject}, the whole object, isometric three-quarter view from above, single object, centered, isolated on a plain white background",
+      "negative": "multiple objects, cropped, cut off, scenery, landscape, ground, ground patch, cast shadow, parchment, aged paper, floating objects, horse, castle, building, landscape background, scene, night sky, stars, moon, hills, horizon, sky, frame, vignette",
+      "px": [
+        48,
+        72
+      ],
+      "lora_strength": 0.45,
+      "clear_holes": true
+    },
+    "building": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{style}, {subject}, the whole building, isometric three-quarter view from above, single building, no ground, no yard, centered, isolated on a plain white background",
+      "negative": "multiple buildings, village, street, cropped, cut off, scenery, landscape, ground patch, cast shadow, parchment, aged paper, people, horse, sky, clouds, trees, landscape background, night sky, stars, moon, hills, horizon, frame, vignette, diorama, base, platform, plinth, ground plate, paved yard, cobblestone yard, courtyard, garden, terrain tile, isometric tile",
+      "px": [
+        72,
+        72
+      ],
+      "lora_strength": 0.45,
+      "clear_holes": true,
+      "tone": [
+        0.75,
+        1.35
+      ],
+      "trim": true,
+      "pixel_colors": 32
+    },
+    "icon": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{style}, game ability icon, {subject}, single emblem, centered, bold simple shapes, vivid colors, high contrast, isolated on a plain white background",
+      "negative": "multiple icons, icon grid, cropped, scenery",
+      "lora_strength": 0.7
+    },
+    "texture": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{style}, seamless repeating pattern of {subject}, flat 2d game texture viewed straight from above, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+      "negative": "landscape, scenery, perspective, horizon, sky, road, path, buildings, houses, trees, characters, people, frame, border, vignette, paper edge, ship, boat, sail, sea horizon, sun, sunset, moon, clouds, castle, horse, figure, scene, illustration",
+      "tileable": true,
+      "lora_strength": 0.4
+    },
+    "wall": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{style}, seamless repeating pattern of {subject}, flat 2d game texture, straight-on view, the pattern fills the entire frame edge to edge, no objects, evenly lit",
+      "negative": "landscape, scenery, perspective, sky, ground, whole building, house, roof, door, window, trees, characters, people, frame, border, vignette, paper edge, ship, sea, sun, sunset, castle, horse, figure, scene, illustration",
+      "tileable": true,
+      "lora_strength": 0.4
+    },
+    "cloud": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{subject}, a soft wispy drifting cloud, glowing, isolated on a pure black background",
+      "negative": "sky, landscape, ground, horizon, sea, frame, border, paper, cropped",
+      "alpha_from_black": true,
+      "lora_strength": 0
+    },
+    "portrait": {
+      "size": [
+        1024,
+        1024
+      ],
+      "prompt": "{style}, head and shoulders portrait of {subject}, facing the viewer, expressive face, centered, simple dark muted background",
+      "negative": "multiple people, full body, hands, cropped head, frame, border, text",
+      "lora_strength": 0.7,
+      "px": [
+        64,
+        64
+      ]
+    },
+    "scene": {
+      "size": [
+        1344,
+        768
+      ],
+      "prompt": "{style}, {subject}, wide view, gloomy late autumn, fog, northern borderland village",
+      "negative": "frame, border, black border, text, letters, modern, cars",
+      "lora_strength": 0.8,
+      "px": [
+        320,
+        180
+      ],
+      "pixel_colors": 32
+    }
+  },
+  "units": {
+    "knight": "a stern medieval knight in plate armor and a deep blue tabard, both hands resting on the crossguard of a greatsword planted point-down in front of him",
+    "wizard": "a young female wizard in a long crimson robe, holding one plain straight wooden staff upright in her right hand, left hand empty",
+    "ranger": {
+      "subject": "a hooded ranger in a deep purple hooded cloak over dark brown leather armor, a longbow in his left hand, a quiver on his back",
+      "clear_holes": true
+    },
+    "cleric": "a female cleric in white and gold vestments, holding one simple mace in her right hand, a holy pendant on her chest",
+    "wolf": {
+      "subject": "a lean dark brown-grey wolf, snarling, standing on four legs, side view",
+      "px": [
+        44,
+        30
+      ]
+    },
+    "goblin_warrior": {
+      "subject": "a small green goblin warrior in ragged brown leather, gripping one short crude cleaver in his right hand, left hand empty",
+      "px": [
+        30,
+        34
+      ]
+    },
+    "goblin_shaman": {
+      "subject": "a hunched green goblin shaman with a bone necklace and a feathered headdress, leaning on one crooked wooden walking stick",
+      "px": [
+        32,
+        36
+      ]
+    },
+    "training_dummy": {
+      "kind": "object",
+      "subject": "a straw training dummy on a wooden post with a burlap sack head",
+      "size": [
+        832,
+        1216
+      ],
+      "px": [
+        30,
+        44
+      ]
+    },
+    "risen": "a risen corpse in a torn white burial shroud, grey rotting skin, both arms reaching forward, shambling",
+    "skeleton": {
+      "subject": "an undead skeleton warrior, bare bones, empty eye sockets, bald skull, tattered grey loincloth rags, holding one rusty short sword in his right hand",
+      "negative": "hat, straw hat, helmet, spear, staff, polearm, bow, two weapons"
+    },
+    "drowned": {
+      "subject": "a drowned corpse in soaked dark tattered rags draped with green pond weed, bloated grey-blue skin, open mouth, arms hanging",
+      "negative": "pond, puddle, water surface, lake, ground, reeds, statue, stone"
+    },
+    "goblin_scout": {
+      "subject": "a skinny green goblin scout in a hooded ragged cloak, holding one short bow in his left hand",
+      "px": [
+        30,
+        34
+      ]
+    },
+    "lado_body": {
+      "subject": "a pale dead young nobleman with empty white eyes in an elegant dark red doublet, holding one thin rapier, a crude crown of bones on his head",
+      "clear_holes": true,
+      "negative": "cape, cloak, banner, sheet, cloth behind"
+    },
+    "lado_ghost": {
+      "subject": "the translucent ghost of a young nobleman in an elegant doublet, pale blue-white glowing ethereal body, sad face, no hat",
+      "negative": "interior, room, two people, hat, tricorn, colorful clothes"
+    },
+    "mukhoglot": {
+      "subject": "a fat green goblin shaman wearing a cracked animal skull as a mask, black flies buzzing around him, holding one bone staff",
+      "bind": [
+        "units/mukhoglot",
+        "units/boss_mukhoglot"
+      ],
+      "px": [
+        40,
+        48
+      ]
+    },
+    "tadeush": {
+      "subject": "a gaunt old man in a long plain black robe with a small white collar, holding a censer on a chain",
+      "negative": "church, interior, altar, pews, room, columns, windows, arches, yellow robe, golden vestments, colorful robe"
+    },
+    "marta": {
+      "subject": "a sturdy red-haired woman tavern keeper in a dark red dress and a white apron, arms crossed, stern",
+      "negative": "kitchen, interior, room, table, shelves"
+    },
+    "pipin": {
+      "subject": "a tiny fussy notary man in a pince-nez and a brown coat, holding a rolled scroll",
+      "px": [
+        26,
+        34
+      ]
+    },
+    "sych": "a hunched old gravedigger in a patched coat holding a shovel and a lantern",
+    "gunter": {
+      "subject": "a huge burly bald blacksmith in a leather apron holding one hammer",
+      "px": [
+        36,
+        48
+      ]
+    },
+    "vetla": {
+      "subject": "a bent old woman in a grey shawl and a brown skirt leaning on a gnarled walking stick, a small pouch on her belt",
+      "negative": "tree, trees, garden, plants, bushes, flowers, landscape"
+    },
+    "zaraza": {
+      "subject": "an angry shaggy goat with dirty off-white fur and one broken horn, standing on four legs, side view",
+      "px": [
+        34,
+        28
+      ]
+    },
+    "shmyg": {
+      "subject": "a skinny cowardly green goblin, hunched, nervous grin, ragged loincloth, empty hands",
+      "px": [
+        26,
+        32
+      ]
+    },
+    "jacek": {
+      "subject": "a portly middle-aged village headman with a short grey beard in a long dark green wool caftan with copper buttons, holding a small ledger book",
+      "negative": "interior, room, house, table, furniture"
+    },
+    "hanna": {
+      "subject": "a thin middle-aged village weaver woman in a plain grey dress and a white headscarf, holding a ball of grey wool yarn, a sewing needle tucked behind her ear",
+      "negative": "interior, room, house, table, furniture, loom, spinning wheel"
+    },
+    "savka": {
+      "subject": "a weathered fisherman in wet high leather boots and a patched brown tunic, a fishing net slung over his shoulder, squinting",
+      "negative": "interior, room, house, table, furniture, boat, river, water, fish"
+    },
+    "agata": {
+      "subject": "a tiny frail old widow in a black dress and a black headscarf, holding a small bouquet of dried yellow flowers",
+      "negative": "interior, room, house, table, furniture, garden, flowers field, plants"
+    },
+    "yurek": {
+      "subject": "a barefoot scruffy village boy with messy hair in a simple linen shirt and short brown trousers, holding a small wooden toy sword",
+      "px": [
+        28,
+        34
+      ],
+      "negative": "interior, room, house, table, furniture, adult, man, armor, real sword"
+    },
+    "bolek": {
+      "subject": "a scruffy village drunkard with a red nose in a crumpled brown felt hat and an untucked shirt, holding a wooden beer mug",
+      "negative": "interior, room, house, table, furniture, tavern, barrel, bottles"
+    },
+    "zbyszek": {
+      "subject": "a dandy young man in a burgundy velvet beret with a feather and a fitted burgundy velvet doublet, golden rings on his fingers, smug",
+      "negative": "interior, room, house, table, furniture, sword, armor"
+    },
+    "matey": {
+      "subject": "a grey-haired old veteran village guard in a worn padded gambeson and a dented iron kettle helmet, holding an old halberd upright",
+      "negative": "interior, room, house, table, furniture, shield, plate armor, knight"
+    },
+    "tomash": {
+      "subject": "a plump village baker covered in flour in a white shirt and a white apron, holding a round loaf of bread",
+      "negative": "interior, room, house, table, furniture, oven, kitchen, bread pile"
+    },
+    "vlasta": {
+      "subject": "a rosy-cheeked young peasant girl with a long blond braid in a simple embroidered linen dress, holding a thin willow switch",
+      "negative": "interior, room, house, table, furniture, geese, animals, farm"
+    },
+    "bozhena": {
+      "subject": "a plump calm middle-aged village midwife in a brown dress, a white apron and a white headscarf, holding a small bundle of chamomile flowers",
+      "negative": "interior, room, house, table, furniture, baby, child, garden"
+    },
+    "stefan": {
+      "subject": "a broad-shouldered young blacksmith apprentice in a scorched leather apron over a shirt with rolled sleeves, holding long iron tongs",
+      "negative": "interior, room, house, table, furniture, anvil, forge, hammer, bald"
+    }
+  },
+  "tiles": {
+    "cemetery/floor": "dry autumn grass with fallen yellow leaves and patches of dark earth",
+    "cemetery/wall": "old mossy fieldstone wall",
+    "village/floor": "packed brown dirt with sparse tufts of short grass and small pebbles",
+    "village/wall": "whitewashed plaster between dark oak timber beams",
+    "forest/floor": "boggy marsh ground with moss, small dark puddles and fallen alder leaves",
+    "forest/wall": {
+      "kind": "object",
+      "subject": "a gnarled black alder tree with a crooked trunk and sparse autumn leaves",
+      "px": [
+        40,
+        64
+      ],
+      "size": [
+        832,
+        1216
+      ]
+    },
+    "goblin_camp/floor": "trampled mud of an ancient burial mound with dry grass, small bones and ash",
+    "goblin_camp/wall": "sharpened wooden logs standing side by side, bound with rope",
+    "planks": "worn dark wooden floor planks laid side by side, visible nails and wood grain",
+    "masonry": {
+      "kind": "wall",
+      "subject": "rough grey fieldstone masonry with dark mortar"
+    }
+  },
+  "surfaces": {
+    "water": "small gentle blue water ripples",
+    "blood": "dark red blood with splatters",
+    "oil": "thick black oil with glossy swirls",
+    "poison": "bubbling green poison sludge",
+    "fire": "a carpet of bright orange and yellow flames",
+    "ice": "cracked pale blue ice with frost",
+    "electrified_water": "shallow water crackling with blue lightning sparks",
+    "electrified_blood": "dark red blood crackling with violet lightning sparks",
+    "steam": "white hot steam",
+    "electrified_steam": "white steam crackling with small blue lightning",
+    "poison_cloud": "sickly green poison gas"
+  },
+  "skills": {
+    "attack": "a crossed sword and axe",
+    "battering_ram": {
+      "subject": "a heavy iron-shod battering ram log smashing into a cracked wooden shield, star-shaped impact burst",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "whirlwind": {
+      "subject": "a steel sword spinning in a circular blur inside a swirling blue-grey wind vortex",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "arrow_shot": "a single flying arrow with motion lines",
+    "flare": "a small burst of fire above an open palm",
+    "fireball": "a blazing fireball",
+    "rain": "a dark rain cloud pouring rain",
+    "ice_shard": "a sharp shard of blue ice",
+    "minor_heal": "a glowing hand with droplets of healing water",
+    "shocking_touch": "a hand crackling with lightning",
+    "lightning_bolt": "a jagged lightning bolt",
+    "poison_dart": "a dart dripping green poison",
+    "oil_slick": {
+      "subject": "a tipped clay jug spilling a wide glossy black oil puddle with a rainbow sheen, seen from above",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands, fire, water"
+    },
+    "bless": "a radiant golden sun with rays",
+    "curse": "a dark purple skull under a crescent moon",
+    "crippling_blow": {
+      "subject": "a sword blade striking a dented iron leg greave, small impact sparks",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "rush": {
+      "subject": "a charging bull's horns and a speeding steel sword with long motion streaks",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "battle_cry": {
+      "subject": "a curved war horn blowing golden sound waves",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "defensive_stance": {
+      "subject": "a big round iron-rimmed shield in front of a crossed sword, glowing steel outline",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "rage": {
+      "subject": "a red-hot glowing battle axe wreathed in angry red flames",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "ground_slam": {
+      "subject": "a heavy warhammer slamming into cracked ground, rocks and dust flying",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "pinning_shot": {
+      "subject": "an arrow pinning a piece of torn cloth to a wooden plank",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "fire_arrow": {
+      "subject": "a flying arrow with a burning flaming arrowhead",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "hunters_mark": {
+      "subject": "a red hunter's target mark with a feather and an arrowhead",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "arrow_rain": {
+      "subject": "many arrows falling from the sky in a dense volley",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "tactical_retreat": {
+      "subject": "a leather boot leaping with a curved motion arc and dust puff",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    },
+    "dirty_trick": {
+      "subject": "a curved dagger dripping red blood drops",
+      "lora_strength": 0.5,
+      "negative": "person, man, knight, warrior, figure, body, legs, arms, face, hands"
+    }
+  },
+  "statuses": {
+    "wet": "a blue water droplet",
+    "burning": {
+      "subject": "one big bright orange and yellow flame filling the whole icon",
+      "lora_strength": 0.5,
+      "negative": "candle, torch, small flame, campfire, logs, wood"
+    },
+    "poisoned": "a green skull with bubbles",
+    "chilled": "a pale blue snowflake",
+    "frozen": "a block of ice",
+    "shocked": "a small yellow lightning spark",
+    "stunned": "circling stars",
+    "slowed": "a snail shell",
+    "blessed": "a golden halo",
+    "cursed": "a purple evil eye",
+    "regenerating": "a green leaf with a small heart",
+    "bleeding": "dark red blood drops",
+    "marked": "a red target crosshair mark",
+    "rallied": "a golden war banner",
+    "fortified": "a small iron shield with a glowing rim",
+    "enraged": "an angry red flame shaped like a fist"
+  },
+  "portraits": {
+    "knight": "a stern medieval knight with short grey hair and a scar, plate armor and a deep blue tabard",
+    "wizard": "a young female wizard with dark braided hair in a crimson hooded robe",
+    "ranger": "a hooded ranger with a short beard in a deep purple hooded cloak",
+    "cleric": "a female cleric in white and gold vestments with a holy pendant, calm face",
+    "tadeush": "a gaunt elderly priest in a black cassock, sunken cheeks, thin grey hair",
+    "marta": "a sturdy red-haired woman tavern keeper, freckles, stern eyes, white apron",
+    "pipin": "a tiny fussy notary in a pince-nez and a brown coat, nervous",
+    "sych": "an old hunched gravedigger with a grey stubble and a patched cap",
+    "gunter": "a huge burly bald blacksmith with a thick beard and a leather apron",
+    "vetla": "a wrinkled old herbalist woman in a shawl with sharp eyes and herbs in her hair",
+    "zaraza": "an angry white goat with one broken horn, glaring",
+    "shmyg": "a skinny cowardly green goblin with big ears and a nervous grin",
+    "mukhoglot": "a fat green goblin shaman wearing a cracked animal skull as a mask, black flies around",
+    "lado": "a cheerful young nobleman with a rakish grin and a thin mustache, elegant dark red doublet",
+    "lado_ghost": "the glowing pale blue-white ghost of a young nobleman with a sad smile"
+  },
+  "props": {
+    "tombstone": {
+      "subject": "a weathered mossy stone tombstone",
+      "px": [
+        16,
+        22
+      ]
+    },
+    "open_grave": {
+      "subject": "a freshly dug open grave pit with a pile of earth and a shovel stuck in it",
+      "px": [
+        36,
+        24
+      ],
+      "bind": [
+        "props/open_grave",
+        "props/fresh_grave"
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "negative": "trees, spruce, fir"
+    },
+    "coffin": {
+      "subject": "a closed plain wooden coffin",
+      "px": [
+        32,
+        18
+      ],
+      "size": [
+        1216,
+        832
+      ]
+    },
+    "funeral_candles": {
+      "subject": "a group of three tall funeral candles burning",
+      "px": [
+        14,
+        18
+      ]
+    },
+    "fence": {
+      "subject": "a short straight section of an old wooden picket fence, five pickets and two rails, side view",
+      "px": [
+        32,
+        18
+      ],
+      "size": [
+        1216,
+        832
+      ]
+    },
+    "dead_tree": {
+      "subject": "a dead leafless tree with gnarled dark grey-brown bark and bare twisted branches",
+      "px": [
+        40,
+        68
+      ],
+      "size": [
+        832,
+        1216
+      ],
+      "tone": [
+        0.65,
+        1.2
+      ],
+      "trim": true
+    },
+    "tree": {
+      "subject": "an autumn tree with orange and yellow leaves",
+      "px": [
+        48,
+        72
+      ],
+      "size": [
+        832,
+        1216
+      ]
+    },
+    "bush": {
+      "subject": "a single round leafy shrub with orange and red autumn leaves, roots hidden",
+      "px": [
+        24,
+        18
+      ],
+      "lora_strength": 0.35,
+      "negative": "pot, planter, flower pot, vase, basket, landscape, field, meadow, tree trunk, tall tree"
+    },
+    "reeds": {
+      "subject": "a single tuft of tall green and brown reeds with a few brown cattails, growing from a small clump of roots",
+      "px": [
+        20,
+        28
+      ],
+      "size": [
+        832,
+        1216
+      ],
+      "lora_strength": 0.35,
+      "negative": "lake, pond, water, reflection, swamp landscape, river bank, birds, boat, sky"
+    },
+    "rock": {
+      "subject": "a mossy grey boulder",
+      "px": [
+        24,
+        18
+      ]
+    },
+    "tent": {
+      "subject": "a crude goblin tent made of patched hides on poles",
+      "px": [
+        48,
+        40
+      ]
+    },
+    "campfire": {
+      "subject": "a small campfire with burning logs",
+      "px": [
+        20,
+        22
+      ]
+    },
+    "totem": {
+      "subject": "a crude goblin totem pole with animal skulls and feathers",
+      "px": [
+        16,
+        44
+      ],
+      "size": [
+        832,
+        1216
+      ]
+    },
+    "chest": {
+      "subject": "a small iron-bound wooden treasure chest",
+      "px": [
+        20,
+        18
+      ]
+    },
+    "pyre": {
+      "subject": "a funeral pyre of stacked logs",
+      "px": [
+        36,
+        30
+      ]
+    },
+    "bone_throne": {
+      "subject": "a crude throne made of bones and skulls",
+      "px": [
+        40,
+        44
+      ]
+    },
+    "waystone": {
+      "subject": "a single tall standing stone menhir with a glowing pale blue carved rune on its face",
+      "px": [
+        14,
+        34
+      ],
+      "size": [
+        832,
+        1216
+      ],
+      "negative": "stone circle, several stones, landscape, field, sky"
+    },
+    "table": {
+      "subject": "a sturdy rough wooden table",
+      "px": [
+        28,
+        22
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, chairs, food"
+    },
+    "bench": {
+      "subject": "a long simple wooden bench without backrest",
+      "px": [
+        28,
+        16
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture"
+    },
+    "barrel": {
+      "subject": "a single wooden barrel with iron hoops",
+      "px": [
+        14,
+        18
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, several barrels"
+    },
+    "crate": {
+      "subject": "a single closed wooden crate",
+      "px": [
+        16,
+        16
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, stack of crates"
+    },
+    "bed": {
+      "subject": "a simple wooden bed with a straw mattress and a brown woollen blanket",
+      "px": [
+        30,
+        22
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, person sleeping"
+    },
+    "shelf": {
+      "subject": "a tall wooden shelf with clay jars and pots",
+      "px": [
+        20,
+        32
+      ],
+      "size": [
+        832,
+        1216
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture"
+    },
+    "anvil": {
+      "subject": "a blacksmith iron anvil on a wooden stump",
+      "px": [
+        18,
+        18
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, blacksmith, hammer in hand"
+    },
+    "pew": {
+      "subject": "a single wooden church pew bench with a backrest",
+      "px": [
+        28,
+        20
+      ],
+      "size": [
+        1216,
+        832
+      ],
+      "lora_strength": 0.4,
+      "negative": "room, interior, walls, floor, window, people, several pieces of furniture, rows of pews"
+    }
+  },
+  "images": {
+    "title": "a wooden village bell tower at dusk with crows sitting on its railing, behind it a misty alder forest and a humpbacked burial mound with a small red smoldering light on its top",
+    "intro_1": "a grey marshy plain in fog at sunset, a small village by a river ford with a bell tower, humpbacked burial mounds on the horizon, a flock of crows in the sky",
+    "intro_2": "a funeral at an old cemetery on a hill under a low red sun, a coffin beside a fresh grave pit, a gaunt priest in a black cassock with prayer beads, a sturdy red-haired woman, a tiny notary in a pince-nez with a scroll, villagers behind them, crows on crooked elms",
+    "intro_3": "an old cemetery right after sunset under a crimson sky, crows bursting from the trees, old graves cracking open, hands and corpses in burial shrouds climbing out of the earth, villagers running to the fence",
+    "intro_4": "a collapsed grave at night under the moon, at the bottom a coffin split open from inside and empty, a straight trail of bare footprints leading from the pit across the cemetery to a misty forest",
+    "farewell": {
+      "subject": "night, a tall funeral pyre burning with bright eerie (cyan blue flames:1.4) on top of a small burial mound, a glowing pale blue (translucent ghost:1.3) of a young man in a doublet rising out of the blue fire, villagers watching from the dark",
+      "negative": "orange fire, yellow fire, daylight, sunny sky, procession, crowd of monks"
+    },
+    "epilogue": "a table in an empty priest's house, a guttering candle, scattered black prayer beads and a folded letter, dim light"
+  },
+  "items": {
+    "potion": "a small glass bottle of red healing potion with a cork",
+    "gold": {
+      "subject": "a small heap of shiny gold coins",
+      "lora_strength": 0.4,
+      "negative": "card, plaque, frame, border, square, tile, parchment, paper, background texture, coin purse, chest"
+    }
+  }
+}
