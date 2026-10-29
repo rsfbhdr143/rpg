@@ -1143,7 +1143,12 @@ func _walk_party(u: Character, path: Array) -> String:
 		var fc: Character = f
 		var spot := _follow_spot(path, reserved, blockers)
 		reserved[spot] = true
-		var fp := grid.find_path(fc.cell, spot, blockers)
+		# Через клетку цели ведущего спутник не идёт, иначе встанет туда первым (и на ловушку под ней).
+		var fblock := blockers.duplicate()
+		fblock[dest] = true
+		var fp := grid.find_path(fc.cell, spot, fblock)
+		if fp.is_empty():
+			fp = grid.find_path(fc.cell, spot, blockers)
 		if not fp.is_empty():
 			fpaths[fc.uid] = fp
 	var walked := {u.uid: []}

@@ -7,7 +7,7 @@ var _failed := 0
 var _passed := 0
 
 
-func _init() -> void:
+func _initialize() -> void:
 	(load("res://scripts/ui/hotbar.gd") as GDScript).set("path", "user://test_hotbars.json")   # не трогать раскладку игрока
 	GameData.reload_data()
 	GameLog.echo_to_console = false
