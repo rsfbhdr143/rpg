@@ -1,0 +1,587 @@
+{
+  "tadeush": {
+    "name": "Отец Тадеуш",
+    "title": "священник",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Сухой пожилой священник в чёрной рясе. Пахнет ладаном и всё время перебирает чётки из чёрного камня.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "if": {
+          "flag": "tadeush_gone"
+        },
+        "id": null
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "tadeush_village",
+    "barks": [
+      "Да хранит вас Тихий Берег.",
+      "(Щёлк. Щёлк.)",
+      "Перевозчик терпелив."
+    ],
+    "anchor": "church"
+  },
+  "marta": {
+    "name": "Марта Корн",
+    "title": "хозяйка таверны «Пьяный Ворон»",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Старшая сестра Ладо: рыжая, крепкая, громкая. Умеет плакать и ругаться одновременно.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": [
+      {
+        "if": {
+          "flag": "epilogue_open"
+        },
+        "id": "marta_after"
+      },
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "return",
+            "done"
+          ]
+        },
+        "id": "marta_epilogue"
+      },
+      {
+        "id": "marta_village"
+      }
+    ],
+    "barks": [
+      "Масло не забыли?",
+      "Дурак ты, Ладо. Какой же ты дурак.",
+      "Ешьте. Потом спасёте мир."
+    ],
+    "anchor": "tavern",
+    "trade": {
+      "buy": 1.0,
+      "sell": 0.3,
+      "stock": {
+        "funeral_bread": -1,
+        "smoked_fish": -1,
+        "honey_cake": 6,
+        "lamp_oil": 4,
+        "healing_brew": 2
+      }
+    }
+  },
+  "pipin": {
+    "name": "Пипин Шмель",
+    "title": "нотариус из Сольгарда",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Маленький, в пенсне, ужасно серьёзный. Гонорар получен вперёд.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "pipin_village",
+    "barks": [
+      "Гонорар уплачен, совесть чиста.",
+      "Где-то тут была клякса... А, это подпись."
+    ],
+    "anchor": "tavern"
+  },
+  "sych": {
+    "name": "Сыч",
+    "title": "могильщик",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Сгорбленный старик с лопатой и фонарём. Знает каждого покойника по имени.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "sych_village",
+    "barks": [
+      "Лежи, Йозеф. Лежи.",
+      "Сорок лет копаю...",
+      "Болото неспокойно, я ж говорил."
+    ],
+    "anchor": "cemetery_gate"
+  },
+  "gunter": {
+    "name": "Гюнтер",
+    "title": "кузнец",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Здоровяк в кожаном фартуке. Говорит мало, думает основательно.",
+    "location": [
+      {
+        "if": {
+          "quest": "last_will",
+          "stage": [
+            "funeral",
+            "rising"
+          ]
+        },
+        "id": "cemetery"
+      },
+      {
+        "id": "village"
+      }
+    ],
+    "dialogue": "gunter_village",
+    "barks": [
+      "Хм.",
+      "...",
+      "Лопату так и не вернул."
+    ],
+    "anchor": "smithy",
+    "trade": {
+      "buy": 1.0,
+      "sell": 0.35,
+      "stock": {
+        "iron_sword": 2,
+        "wooden_shield": 2,
+        "iron_helm": 1,
+        "chainmail": 1,
+        "tar_torch": 4
+      }
+    }
+  },
+  "vetla": {
+    "name": "Бабка Ветла",
+    "title": "травница",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Старуха с клюкой и пучками трав за поясом. Язвительная, видит больше, чем говорит.",
+    "location": "forest",
+    "dialogue": "vetla",
+    "barks": [
+      "Под ноги смотри, не на меня.",
+      "Зараза! Зара-а-аза!"
+    ],
+    "anchor": "vetla_hut"
+  },
+  "zaraza": {
+    "name": "Зараза",
+    "title": "коза",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Белая злющая коза с обломанным рогом.",
+    "location": "forest",
+    "dialogue": [
+      {
+        "if": {
+          "flag": "goat_rescued"
+        },
+        "id": "zaraza_home"
+      },
+      {
+        "id": "zaraza_stump"
+      }
+    ],
+    "barks": [
+      "Бе-е-е!"
+    ],
+    "anchor": [
+      {
+        "if": {
+          "flag": "goat_rescued"
+        },
+        "id": "vetla_hut"
+      },
+      {
+        "id": "goat_stump"
+      }
+    ],
+    "angry": [
+      "Бе-е-е!!!",
+      "МЕ-Е-Е!"
+    ]
+  },
+  "shmyg": {
+    "name": "Шмыг",
+    "title": "гоблин-дозорный",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Тощий трусливый гоблин с ушами как лопухи.",
+    "location": [
+      {
+        "if": {
+          "flag": "back_path"
+        },
+        "id": "goblin_camp"
+      },
+      {
+        "if": {
+          "flag": "shmyg_fled"
+        },
+        "id": null
+      },
+      {
+        "if": {
+          "flag": "shmyg_fought"
+        },
+        "id": null
+      },
+      {
+        "id": "forest"
+      }
+    ],
+    "dialogue": [
+      {
+        "if": {
+          "flag": "back_path"
+        },
+        "id": "shmyg_follow"
+      },
+      {
+        "id": "shmyg"
+      }
+    ],
+    "barks": [
+      "Я куст. Я очень куст.",
+      "Шмыг сзади. Шмыг прикрывает."
+    ],
+    "anchor": "goblin_trail",
+    "on_attack": "forest_scout"
+  },
+  "mukhoglot": {
+    "name": "Шаман Мухоглот",
+    "title": "шаман Гнилозубов",
+    "faction": "neutral",
+    "level": 3,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Толстый гоблин-шаман в маске из черепа. Вокруг жужжат мухи.",
+    "location": [
+      {
+        "if": {
+          "flag": "body_burned"
+        },
+        "id": null
+      },
+      {
+        "id": "goblin_camp"
+      }
+    ],
+    "dialogue": "mukhoglot_throne",
+    "barks": [
+      "Бог молчит! Бог согласен!",
+      "Пойте громче, бог не слышит!"
+    ],
+    "anchor": "bone_throne",
+    "on_attack": "camp_boss"
+  },
+  "lado_ghost": {
+    "name": "Ладо Корн",
+    "title": "призрак",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Полупрозрачный голубоватый призрак в парадном камзоле.",
+    "location": "goblin_camp",
+    "dialogue": "lado_ghost_idle",
+    "barks": [],
+    "anchor": "pyre",
+    "hidden": true,
+    "attackable": false
+  },
+  "jacek": {
+    "name": "Яцек",
+    "title": "староста Вороньего Брода",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Грузный, в суконном кафтане с медными пуговицами. Считает всё: овец, налоги, покойников.",
+    "location": "village",
+    "barks": [
+      "Похороны похоронами, а налог в Сольгард сам себя не соберёт.",
+      "Ладо был шалопай, но наш шалопай.",
+      "Если опять нежить — я в погребе."
+    ],
+    "villager": true
+  },
+  "hanna": {
+    "name": "Ганна",
+    "title": "ткачиха",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Худая, с иглой за ухом и мотком серой шерсти в руках.",
+    "location": "village",
+    "barks": [
+      "Говорят, в лесу опять видели огни.",
+      "Не стой столбом, проходи.",
+      "Нитка тонкая, а держит крепко. Как обещание."
+    ],
+    "villager": true
+  },
+  "savka": {
+    "name": "Савка",
+    "title": "рыбак",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Мокрые сапоги, сеть через плечо, глаза вечно щурятся на воду.",
+    "location": "village",
+    "barks": [
+      "Ворожея нынче мутная — к беде.",
+      "Брод держит, если не зевать.",
+      "Рыба ушла на дно. Чует что-то."
+    ],
+    "villager": true
+  },
+  "agata": {
+    "name": "Агата",
+    "title": "вдова",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Сухонькая старушка в чёрном платке, с букетиком бессмертника.",
+    "location": "village",
+    "barks": [
+      "Каждый день хожу к мужу на погост. Он не жалуется.",
+      "Свечку за Ладо поставила.",
+      "Мёртвые должны лежать спокойно."
+    ],
+    "villager": true
+  },
+  "yurek": {
+    "name": "Юрек",
+    "title": "мальчишка",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Вихрастый, босой, с деревянным мечом.",
+    "location": "village",
+    "barks": [
+      "А вы правда рыцари?",
+      "Я видел гоблина! Ну, почти.",
+      "Мамка не велит к речке ходить."
+    ],
+    "villager": true,
+    "angry": [
+      "Мама-а-а!",
+      "Я всё расскажу старосте!"
+    ]
+  },
+  "bolek": {
+    "name": "Болек",
+    "title": "завсегдатай таверны",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Красный нос, мятая шляпа, кружка всегда при нём.",
+    "location": "village",
+    "barks": [
+      "За Ладо! …И за пиво.",
+      "Я не пьяный, я скорблю.",
+      "Марта, ещё кружечку!"
+    ],
+    "villager": true
+  },
+  "zbyszek": {
+    "name": "Збышек",
+    "title": "торговец из Сольгарда",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Щеголеватый, в бархатном берете, пальцы в перстнях.",
+    "location": "village",
+    "barks": [
+      "Товар отличный, цены — грабёж. Мой грабёж.",
+      "Дороги нынче опасные. Наценка за риск.",
+      "В Сольгарде о вашей деревне уже судачат."
+    ],
+    "villager": true,
+    "trade": {
+      "buy": 1.0,
+      "sell": 0.4,
+      "stock": {
+        "leather_cap": 2,
+        "padded_jacket": 2,
+        "leather_gloves": 2,
+        "leather_boots": 2,
+        "wool_trousers": 2,
+        "leather_belt": 2,
+        "silver_ring": 1,
+        "amber_amulet": 1,
+        "hunting_bow": 1,
+        "oak_staff": 1,
+        "healing_brew": 3,
+        "lamp_oil": 3,
+        "tar_torch": 3
+      }
+    }
+  },
+  "matey": {
+    "name": "Матей",
+    "title": "сторож у ворот",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Седой ветеран с алебардой, которую давно не точил.",
+    "location": "village",
+    "barks": [
+      "От погоста ночью лучше держаться подальше.",
+      "Ворота закрываем на закате.",
+      "Ходят тут всякие… А, это вы."
+    ],
+    "villager": true
+  },
+  "tomash": {
+    "name": "Томаш",
+    "title": "пекарь",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Весь в муке, пахнет тёплым хлебом.",
+    "location": "village",
+    "barks": [
+      "Свежий хлеб к утру!",
+      "Мука отсырела — к дождю.",
+      "Для поминок испёк лучшие караваи."
+    ],
+    "villager": true
+  },
+  "vlasta": {
+    "name": "Власта",
+    "title": "гусятница",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Румяная девушка с хворостиной.",
+    "location": "village",
+    "barks": [
+      "Гуси шипят на лес — не к добру.",
+      "Не наступи на гусёнка!",
+      "Зараза опять сбежала? Ветла с ума сойдёт."
+    ],
+    "villager": true
+  },
+  "bozhena": {
+    "name": "Божена",
+    "title": "повитуха",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Полная, спокойная, руки пахнут ромашкой.",
+    "location": "village",
+    "barks": [
+      "Половину деревни я на свет приняла.",
+      "Ладо тоже я принимала. Орал громче всех.",
+      "Береги себя, касатик."
+    ],
+    "villager": true
+  },
+  "stefan": {
+    "name": "Стефан",
+    "title": "подмастерье кузнеца",
+    "faction": "neutral",
+    "level": 1,
+    "attributes": {},
+    "skills": [],
+    "base_stats": {},
+    "description": "Широкоплечий парень в прожжённом фартуке.",
+    "location": "village",
+    "barks": [
+      "Гюнтер говорит, меч надо слушать.",
+      "Жар в горне не гасим ни днём, ни ночью.",
+      "Подковать кого?"
+    ],
+    "villager": true
+  }
+}

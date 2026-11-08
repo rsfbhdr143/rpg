@@ -1,0 +1,58 @@
+{
+  "_": "Синонимы для автопривязки: файл, в имени которого есть все слова фразы, привязывается к этому id. Сами id и русские названия из data/*.json учитываются без этого списка.",
+  "units": {
+    "knight": ["warrior", "paladin", "swordsman", "fighter", "воин"],
+    "wizard": ["mage", "sorcerer", "sorceress", "witch", "маг", "чародейка"],
+    "ranger": ["archer", "hunter", "лучник", "лучница", "охотник"],
+    "cleric": ["priest", "priestess", "healer", "жрец", "целительница"],
+    "wolf": ["hound", "warg", "волчица"],
+    "goblin_warrior": ["goblin", "goblin fighter", "гоблин"],
+    "goblin_shaman": ["goblin mage", "goblin priest", "shaman", "шаман"],
+    "training_dummy": ["dummy", "target", "чучело"]
+  },
+  "tiles": {
+    "floor": ["ground", "grass", "dirt", "пол", "земля", "трава"],
+    "wall": ["walls", "brick", "rock", "стена", "камень"]
+  },
+  "surfaces": {
+    "water": ["puddle", "лужа"],
+    "fire": ["flame", "flames", "burning ground", "пламя"],
+    "ice": ["frost", "лед"],
+    "poison": ["toxic", "acid", "ядовитая лужа"],
+    "steam": ["smoke cloud", "fog", "туман"],
+    "poison_cloud": ["toxic cloud", "gas", "ядовитый газ"],
+    "electrified_water": ["shock water", "electric water"],
+    "electrified_steam": ["electric cloud", "storm cloud"]
+  },
+  "skills": {
+    "attack": ["sword", "weapon attack", "меч"],
+    "battering_ram": ["charge", "ram"],
+    "whirlwind": ["spin attack", "вихрь"],
+    "arrow_shot": ["arrow", "стрела"],
+    "flare": ["fire bolt", "firebolt"],
+    "fireball": ["fire ball"],
+    "rain": ["water rain"],
+    "ice_shard": ["ice spike", "frost bolt"],
+    "minor_heal": ["heal", "лечение"],
+    "shocking_touch": ["shock touch", "electric touch"],
+    "lightning_bolt": ["lightning", "thunder"],
+    "poison_dart": ["dart", "дротик"],
+    "oil_slick": ["oil"],
+    "bless": ["blessing"],
+    "curse": ["hex"]
+  },
+  "statuses": {
+    "wet": ["water drop", "soaked"],
+    "burning": ["burn", "on fire"],
+    "poisoned": ["poison status"],
+    "chilled": ["chill", "cold"],
+    "frozen": ["freeze"],
+    "shocked": ["shock", "electrified"],
+    "stunned": ["stun", "dizzy"],
+    "knocked_down": ["knockdown", "knocked"],
+    "slowed": ["slow"],
+    "blessed": ["bless status"],
+    "cursed": ["curse status"],
+    "regenerating": ["regen", "regeneration"]
+  }
+}

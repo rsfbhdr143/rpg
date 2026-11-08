@@ -14,6 +14,8 @@ var width: int
 var height: int
 var blocked: Dictionary = {}                  # Vector2i -> true (стены, препятствия)
 var layers: Dictionary = {"ground": {}, "cloud": {}}   # layer -> {Vector2i -> {"id","turns","level"}}
+var traps: Dictionary = {}                    # Vector2i -> {"type", "state": hidden|found|disarmed|sprung, "rolled": {uid: true}}
+var deep: Dictionary = {}                     # Vector2i -> id поверхности земли на непроходимой клетке карты (река): видна, но не меняется
 
 
 func _init(w: int = 12, h: int = 10) -> void:
@@ -31,6 +33,21 @@ func is_walkable(c: Vector2i) -> bool:
 	return in_bounds(c) and not blocked.has(c)
 
 
+## Ловушка, которая ещё может сработать (спрятанная или найденная); иначе пустой словарь.
+func armed_trap(c: Vector2i) -> Dictionary:
+	var t: Dictionary = traps.get(c, {})
+	return t if str(t.get("state", "")) in ["hidden", "found"] else {}
+
+
+## Клетки найденных и ещё не обезвреженных ловушек: пути героев их обходят.
+func known_traps() -> Dictionary:
+	var out := {}
+	for c in traps:
+		if str(traps[c]["state"]) == "found":
+			out[c] = true
+	return out
+
+
 static func distance(a: Vector2i, b: Vector2i) -> int:
 	return maxi(absi(a.x - b.x), absi(a.y - b.y))
 
@@ -45,7 +62,9 @@ func cells_in_radius(center: Vector2i, radius: int) -> Array:
 	return out
 
 
-## BFS-путь от from до to (без стартовой клетки). occupied: {Vector2i: true}.
+## Путь от from до to (без стартовой клетки) за наименьшее число шагов; из таких путей — самый короткий на экране
+## (в изометрии шаг по диагонали (1,-1) вдвое длиннее, чем по (1,1)), поэтому фигурки идут прямо, без зигзагов.
+## По диагонали мимо угла стены не срезать (can_step). occupied: {Vector2i: true}.
 ## allow_occupied_goal — путь до занятой клетки (удобно для ИИ: «подойти к врагу»).
 func find_path(from: Vector2i, to: Vector2i, occupied: Dictionary = {}, allow_occupied_goal: bool = false) -> Array:
 	if from == to or not is_walkable(to):
@@ -53,19 +72,24 @@ func find_path(from: Vector2i, to: Vector2i, occupied: Dictionary = {}, allow_oc
 	if occupied.has(to) and not allow_occupied_goal:
 		return []
 	var came_from := {from: from}
-	var queue: Array = [from]
-	while not queue.is_empty():
-		var cur: Vector2i = queue.pop_front()
-		if cur == to:
-			break
-		for d in DIRS:
-			var n: Vector2i = cur + d
-			if came_from.has(n) or not is_walkable(n):
-				continue
-			if occupied.has(n) and n != to:
-				continue
-			came_from[n] = cur
-			queue.append(n)
+	var length := {from: 0.0}
+	var frontier: Array = [from]
+	while not frontier.is_empty() and not came_from.has(to):
+		var level := {}   # клетки этого шага: из какой клетки прийти, чтобы путь на экране был короче
+		for cur in frontier:
+			var cv: Vector2i = cur
+			for d in DIRS:
+				var n: Vector2i = cv + d
+				if (came_from.has(n) and not level.has(n)) or not can_step(cv, d):
+					continue
+				if occupied.has(n) and n != to:
+					continue
+				var l: float = float(length[cv]) + step_length(d)
+				if not level.has(n) or l < float(length[n]):
+					level[n] = true
+					came_from[n] = cv
+					length[n] = l
+		frontier = level.keys()
 	if not came_from.has(to):
 		return []
 	var path: Array = []
@@ -76,12 +100,30 @@ func find_path(from: Vector2i, to: Vector2i, occupied: Dictionary = {}, allow_oc
 	return path
 
 
+## Можно ли шагнуть из клетки c в сторону d: клетка проходима, а по диагонали — ещё и не мимо угла стены.
+func can_step(c: Vector2i, d: Vector2i) -> bool:
+	if not is_walkable(c + d):
+		return false
+	if d.x != 0 and d.y != 0:
+		return is_walkable(c + Vector2i(d.x, 0)) and is_walkable(c + Vector2i(0, d.y))
+	return true
+
+
+## Длина шага на экране в клетках по стороне: (1,1) — вниз на 16 px, (1,-1) — вбок на 32 px, по стороне — ~18 px.
+static func step_length(d: Vector2i) -> float:
+	if d.x != 0 and d.y != 0:
+		return 0.9 if d.x == d.y else 1.8
+	return 1.0
+
+
 # --- Поверхности --------------------------------------------------------------
 
 func get_surface(layer: String, c: Vector2i) -> String:
 	var d: Dictionary = layers[layer]
 	if d.has(c):
 		return str(d[c]["id"])
+	if layer == "ground" and deep.has(c):
+		return str(deep[c])
 	return "none"
 
 
@@ -148,6 +190,7 @@ func _apply_element_cell(c: Vector2i, element: String, create: bool, level: int,
 		reacted = true
 		if r.has("text"):
 			GameLog.add(str(r["text"]))
+			GameEvents.add("reaction", {"cell": GameEvents.cell(c), "text": str(r["text"])})
 		var affected: Array = [c]
 		if bool(r.get("spread", false)):
 			affected = flood_fill(layer, c, cur)
@@ -175,7 +218,7 @@ func flood_fill(layer: String, start: Vector2i, surface_id: String) -> Array:
 		out.append(cur)
 		for d in DIRS:
 			var n: Vector2i = cur + d
-			if not seen.has(n) and get_surface(layer, n) == surface_id:
+			if not seen.has(n) and not deep.has(n) and get_surface(layer, n) == surface_id:   # по руслу реки ток не уходит
 				seen[n] = true
 				queue.append(n)
 	return out
@@ -199,6 +242,15 @@ func tick_round() -> void:
 					d.erase(c)
 
 
+## Есть ли поверхности с конечным сроком (огонь, пар, лёд): им нужно время.
+func has_timed_surfaces() -> bool:
+	for layer in LAYERS:
+		for c in layers[layer]:
+			if int(layers[layer][c]["turns"]) >= 0:
+				return true
+	return false
+
+
 ## Статусы, которые накладывают поверхности клетки: [{"id","chance"}].
 func statuses_for_cell(c: Vector2i) -> Array:
 	var out: Array = []
@@ -209,3 +261,50 @@ func statuses_for_cell(c: Vector2i) -> Array:
 		var sts: Array = GameData.surface(sid).get("statuses", [])
 		out.append_array(sts)
 	return out
+
+
+# --- Сериализация -------------------------------------------------------------
+
+func to_dict() -> Dictionary:
+	var walls: Array = []
+	for c in blocked:
+		walls.append([c.x, c.y])
+	var out_layers := {}
+	for layer in LAYERS:
+		var entries: Array = []
+		var d: Dictionary = layers[layer]
+		for c in d:
+			var s: Dictionary = d[c]
+			entries.append([c.x, c.y, s["id"], s["turns"], s["level"]])
+		out_layers[layer] = entries
+	var trap_list: Array = []
+	for c in traps:
+		var t: Dictionary = traps[c]
+		trap_list.append([c.x, c.y, t["type"], t["state"], (t.get("rolled", {}) as Dictionary).keys()])
+	var deep_list: Array = []
+	for c in deep:
+		deep_list.append([c.x, c.y, deep[c]])
+	return {"w": width, "h": height, "blocked": walls, "layers": out_layers, "traps": trap_list, "deep": deep_list}
+
+
+static func from_dict(d: Dictionary) -> SurfaceGrid:
+	var g := SurfaceGrid.new(int(d.get("w", 12)), int(d.get("h", 10)))
+	var walls: Array = d.get("blocked", [])
+	for w in walls:
+		g.blocked[Vector2i(int(w[0]), int(w[1]))] = true
+	var in_layers: Dictionary = d.get("layers", {})
+	for layer in LAYERS:
+		var entries: Array = in_layers.get(layer, [])
+		var target: Dictionary = g.layers[layer]
+		for e in entries:
+			target[Vector2i(int(e[0]), int(e[1]))] = {"id": str(e[2]), "turns": int(e[3]), "level": int(e[4])}
+	var deep_list: Array = d.get("deep", [])
+	for e in deep_list:
+		g.deep[Vector2i(int(e[0]), int(e[1]))] = str(e[2])
+	var trap_list: Array = d.get("traps", [])
+	for e in trap_list:
+		var rolled := {}
+		for uid in (e[4] if e.size() > 4 else []):
+			rolled[str(uid)] = true
+		g.traps[Vector2i(int(e[0]), int(e[1]))] = {"type": str(e[2]), "state": str(e[3]), "rolled": rolled}
+	return g

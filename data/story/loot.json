@@ -1,0 +1,19 @@
+{
+  "_doc": "Что можно найти на телах. Ключ — шаблон врага (data/characters.json, data/story/enemies.json) или житель из npcs.json; \"_npc\" — для жителя, которому своей записи нет. Каждая строка бросается отдельно: item или gold, chance в процентах, count — число или [от, до]. На теле остаётся мешок, его обыскивают щелчком.",
+  "loot": {
+    "wolf":           [{"item": "wolf_fang", "chance": 75, "count": [1, 2]}, {"item": "wolf_pelt", "chance": 45}],
+    "risen":          [{"item": "grave_ash", "chance": 60}, {"gold": [1, 4], "chance": 50}],
+    "skeleton":       [{"item": "grave_ash", "chance": 40}, {"item": "bone_charm", "chance": 20}, {"gold": [2, 6], "chance": 60}],
+    "drowned":        [{"item": "river_pearl", "chance": 40}, {"item": "grave_ash", "chance": 30}, {"gold": [1, 5], "chance": 40}],
+    "goblin_scout":   [{"item": "goblin_knife", "chance": 100}, {"gold": [2, 5], "chance": 100}],
+    "goblin_warrior": [{"item": "goblin_knife", "chance": 25}, {"item": "goblin_shield", "chance": 25}, {"item": "smoked_fish", "chance": 20}, {"gold": [3, 9], "chance": 85}],
+    "goblin_shaman":  [{"item": "fly_totem", "chance": 35}, {"item": "healing_brew", "chance": 30}, {"gold": [4, 10], "chance": 85}],
+    "boss_mukhoglot": [{"item": "mukhoglot_mask", "chance": 100}, {"item": "fly_totem", "chance": 100}, {"item": "healing_brew", "chance": 100}, {"gold": [25, 40], "chance": 100}],
+    "lado_body":      [],
+    "gunter":         [{"item": "smith_hammer", "chance": 100}, {"gold": [5, 15], "chance": 100}],
+    "zbyszek":        [{"item": "silver_ring", "chance": 100}, {"gold": [20, 40], "chance": 100}],
+    "marta":          [{"item": "lamp_oil", "chance": 100}, {"gold": [8, 20], "chance": 100}],
+    "zaraza":         [],
+    "_npc":           [{"gold": [1, 6], "chance": 70}, {"item": "funeral_bread", "chance": 30}]
+  }
+}

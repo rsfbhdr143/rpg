@@ -36,15 +36,18 @@ static func _act(combat: CombatManager, unit: Character) -> bool:
 	var best_score := -1.0
 	for sk in unit.skills:
 		var def := GameData.skill(sk)
-		if not def.has("damage") and str(def.get("target", "")) != "enemy":
+		var smite := def.has("vs_undead") and not def.has("damage")   # лечение и благословение по нежити
+		if not def.has("damage") and str(def.get("target", "")) != "enemy" and not smite:
 			continue
 		for e in enemies:
+			if smite and not e.is_undead():
+				continue
 			var cell: Vector2i = unit.cell if str(def.get("target", "")) == "self" else e.cell
 			if combat.skill_block_reason(unit, sk, cell) != "":
 				continue
 			if cell == unit.cell and SurfaceGrid.distance(unit.cell, e.cell) > int(def.get("aoe_radius", 0)):
 				continue
-			var score := _score(def, unit, e)
+			var score := _score(def["vs_undead"] if smite else def, unit, e)
 			if score > best_score:
 				best_score = score
 				best_skill = sk
@@ -60,7 +63,7 @@ static func _act(combat: CombatManager, unit: Character) -> bool:
 	var want_range := 1
 	for sk in unit.skills:
 		var def := GameData.skill(sk)
-		if def.has("damage") and int(def.get("ap", 0)) <= unit.ap:
+		if def.has("damage") and int(def.get("ap", 0)) <= unit.ap and not unit.cooldowns.has(sk):
 			want_range = maxi(want_range, SkillSystem.skill_range(unit, def))
 	var path := combat.grid.find_path(unit.cell, target.cell, combat.occupied_cells(unit), true)
 	if path.size() <= 1:

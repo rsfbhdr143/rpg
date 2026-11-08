@@ -37,6 +37,7 @@ static func apply(target: Character, status_id: String, duration: int = -1, sour
 			target.remove_status(str(c))
 		if reaction.has("text"):
 			GameLog.add("%s: %s" % [target.display_name, reaction["text"]])
+			GameEvents.add("reaction", {"unit": target.uid, "text": str(reaction["text"])})
 		var result := str(reaction.get("result", ""))
 		var applied := false
 		if result != "":
@@ -85,6 +86,7 @@ static func _put(target: Character, status_id: String, duration: int, source_lev
 	else:
 		target.statuses[status_id] = {"turns": duration, "level": source_level}
 		GameLog.add("%s: %s (%d х.)" % [target.display_name, def.get("name", status_id), duration])
+		GameEvents.add("status", {"unit": target.uid, "status": status_id, "negative": bool(def.get("negative", false))})
 
 
 ## Начало хода персонажа: урон/лечение от статусов (горение, яд, регенерация).
@@ -102,8 +104,13 @@ static func on_turn_start(target: Character) -> void:
 			var amount := float(roundi(GameData.scaled(tick, lvl)))
 			target.heal(amount)
 			GameLog.add("%s восстанавливает %d ОЗ (%s)." % [target.display_name, amount, def.get("name", id)])
+			GameEvents.add("heal", {"unit": target.uid, "amount": int(amount)})
 		else:
 			var dealt := DamageCalc.environment_damage(target, tick, lvl)
+			if dealt >= 0.0:
+				GameEvents.add("hit", {"unit": target.uid, "amount": int(dealt), "element": str(tick.get("element", "")), "crit": false})
+			else:
+				GameEvents.add("heal", {"unit": target.uid, "amount": int(-dealt)})
 			if dealt >= 0.0:
 				GameLog.add("%s получает %d урона (%s)." % [target.display_name, dealt, def.get("name", id)])
 			else:
