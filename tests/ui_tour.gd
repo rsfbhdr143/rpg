@@ -144,6 +144,17 @@ func _run() -> void:
 		await _wait(1.5)
 		await _shot("15_trade")
 		screen.call("open_panel", "")
+		# сундук старосты: окно с монетами и маслом, потом пустой открытый сундук в доме
+		var sel := str(screen.get("selected_uid"))
+		net.call("send_command", {"type": "talk", "unit": sel, "object": "chest_headman"})
+		await _wait(9.0)
+		await _shot("15_chest")
+		net.call("send_command", {"type": "loot_take", "unit": sel, "corpse": "obj:chest_headman", "item": "all"})
+		await _wait(1.0)
+		await _shot("15_chest_empty")
+		screen.call("open_panel", "")
+		await _wait(0.5)
+		await _shot("15_chest_world")
 
 	# лес: через брод и выход на краю деревни, потом бой; курган
 	await _walk_exit("forest", "16_village_ford", "20_forest")

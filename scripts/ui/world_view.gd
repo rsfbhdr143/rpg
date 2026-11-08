@@ -402,6 +402,27 @@ func _build_props(data: Dictionary) -> void:
 		objects[p.id] = p
 
 
+## Куда смотрит замок сундука на клетке c: от стены (или мебели) за его спиной, лучше к зрителю.
+func chest_front(c: Vector2i) -> Vector2i:
+	if session == null or session.grid == null:
+		return Vector2i(0, 1)
+	for d in [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]:
+		if session.grid.blocked.has(c - d) and session.grid.is_walkable(c + d):
+			return d
+	for d in [Vector2i(0, 1), Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, 0)]:
+		if session.grid.is_walkable(c + d):
+			return d
+	return Vector2i(0, 1)
+
+
+## Сундук уже открывали и всё из него забрали.
+func container_empty(oid: String) -> bool:
+	if session == null:
+		return false
+	var bag: Dictionary = session.loot.get("obj:" + oid, {})
+	return not bag.is_empty() and int(bag.get("gold", 0)) <= 0 and (bag.get("items", {}) as Dictionary).is_empty()
+
+
 ## Дома, в которые можно войти: по узлу на клетку стены и двери (сортируются с фигурками) и крыша над домом.
 ## Если у дома есть рисунок (props/<sprite>), снаружи виден он, а стены и пол комнат появляются, когда внутри герой.
 func _build_houses(data: Dictionary) -> void:
@@ -1242,7 +1263,9 @@ class PropNode extends Node2D:
 		else:
 			modulate = Color.WHITE
 		draw_set_transform(off)
-		if not fr.is_empty():
+		if art == "chest":   # сундук рисуется кодом в изометрии: стоит по осям клетки, пустой — открыт
+			rect = PixelArt.draw_chest(self, Vector2.ZERO, view.chest_front(cell), view.container_empty(id))
+		elif not fr.is_empty():
 			var region: Rect2 = fr["region"]
 			var sc := float(fr["scale"])
 			if size.x > 1 or size.y > 1:   # постройка не уже своего места на карте, иначе жители выше домов
@@ -1316,6 +1339,8 @@ class PropNode extends Node2D:
 		return img.get_pixelv(px).a > 0.3
 
 	func _interactive() -> bool:
+		if view.container_empty(id):
+			return false
 		for o in view.session.visible_objects():
 			if str(o.get("id", "")) == id:
 				return true

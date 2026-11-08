@@ -664,6 +664,131 @@ static func _iso_mound(ci: CanvasItem, o: Vector2, s: float, col: Color) -> void
 	ci.draw_polyline(pts, OUTLINE, s)
 
 
+# --- Сундук -------------------------------------------------------------------------------
+
+## Точка в мире клетки: v — смещение от центра клетки в клетках, z — высота в пикселях.
+static func _iso(o: Vector2, v: Vector2, z: float) -> Vector2:
+	return (o + Vector2((v.x - v.y) * 16.0, (v.x + v.y) * 8.0 - z)).round()
+
+
+static func _poly(ci: CanvasItem, pts: PackedVector2Array, col: Color, outline := true) -> void:
+	ci.draw_colored_polygon(pts, col)
+	if outline:
+		var loop := pts.duplicate()
+		loop.append(pts[0])
+		ci.draw_polyline(loop, OUTLINE, 1.0)
+
+
+## Окованный сундук с полукруглой крышкой, стоит на клетке по её осям, как мебель в комнате.
+## front — куда смотрит замок ((1,0), (-1,0), (0,1) или (0,-1)), open — крышка откинута, внутри пусто.
+static func draw_chest(ci: CanvasItem, o: Vector2, front: Vector2i, open: bool) -> Rect2:
+	var b := Vector2(front)                    # поперёк сундука, к замку
+	var a := Vector2(absf(b.y), absf(b.x))     # вдоль сундука
+	var hl := 0.42                             # половина длины, клетки
+	var hw := 0.25                             # половина ширины, клетки
+	var h := 9.0                               # высота ящика, пиксели
+	var lid := 5.0                             # высота крышки над ящиком
+	var wood := Color("80522e")
+	var iron := Color("3a3532")
+	var to_cam := b.dot(Vector2(1, 1)) > 0.0   # замок смотрит к зрителю
+	var c := func(sa: float, sb: float) -> Vector2: return a * sa * hl + b * sb * hw
+	# тень на полу
+	var sh := PackedVector2Array()
+	for k in 12:
+		var ang := TAU * float(k) / 12.0
+		sh.append(o + Vector2(cos(ang) * 15.0, sin(ang) * 6.0 + 1.0))
+	ci.draw_colored_polygon(sh, Color(0, 0, 0, 0.28))
+	var top_z := h + (lid if not open else 7.0)
+	# откинутая крышка за ящиком рисуется раньше него
+	var hinge_back := -b * hw
+	var lid_open := PackedVector2Array([_iso(o, -a * hl + hinge_back, h), _iso(o, a * hl + hinge_back, h),
+		_iso(o, a * hl - b * (hw + 0.16), h + 7.0), _iso(o, -a * hl - b * (hw + 0.16), h + 7.0)])
+	if open and to_cam:
+		_poly(ci, lid_open, wood.darkened(0.35))
+		for sa in [-0.62, 0.62]:
+			ci.draw_line(_iso(o, a * sa * hl + hinge_back, h), _iso(o, a * sa * hl - b * (hw + 0.16), h + 7.0), iron, 2.0)
+		ci.draw_line(lid_open[3], lid_open[2], wood.lightened(0.2), 1.0)   # кромка крышки
+	# стенки ящика: видны те, что смотрят к зрителю
+	for n in [a, -a, b, -b]:
+		var nv: Vector2 = n
+		if nv.dot(Vector2(1, 1)) <= 0.0:
+			continue
+		var e := Vector2(absf(nv.y), absf(nv.x))   # вдоль стенки
+		var half := hw if nv.dot(a) != 0.0 else hl
+		var depth := hl if nv.dot(a) != 0.0 else hw
+		var p0 := nv * depth - e * half
+		var p1 := nv * depth + e * half
+		var shade := 0.72 if nv.x > 0.0 else 0.92
+		_poly(ci, PackedVector2Array([_iso(o, p0, 0.0), _iso(o, p1, 0.0), _iso(o, p1, h), _iso(o, p0, h)]), wood * Color(shade, shade, shade))
+		ci.draw_line(_iso(o, p0, 1.0), _iso(o, p1, 1.0), iron, 1.0)   # окованный низ
+		if nv.dot(a) == 0.0:   # железные полосы поперёк длинной стенки
+			for sa in [-0.62, 0.62]:
+				ci.draw_line(_iso(o, nv * depth + a * sa * hl, 0.0), _iso(o, nv * depth + a * sa * hl, h), iron, 2.0)
+		else:
+			ci.draw_line(_iso(o, p0, h - 1.0), _iso(o, p1, h - 1.0), wood.lightened(0.15), 1.0)
+	if open:
+		# пустое нутро и кромка
+		var rim := PackedVector2Array([_iso(o, c.call(-1.0, -1.0), h), _iso(o, c.call(1.0, -1.0), h),
+			_iso(o, c.call(1.0, 1.0), h), _iso(o, c.call(-1.0, 1.0), h)])
+		_poly(ci, rim, Color("1e140c"))
+		# изнутри видны дальняя длинная стенка и дальний торец
+		var far := -b if to_cam else b
+		var p0 := _iso(o, -a * hl + far * hw, h)
+		var p1 := _iso(o, a * hl + far * hw, h)
+		var p2 := _iso(o, -a * hl - far * hw, h)
+		ci.draw_colored_polygon(PackedVector2Array([p0, p1, p1 + Vector2(0, 3), p0 + Vector2(0, 3)]), wood.darkened(0.45))
+		ci.draw_colored_polygon(PackedVector2Array([p0, p2, p2 + Vector2(0, 3), p0 + Vector2(0, 3)]), wood.darkened(0.3))
+		var loop := rim.duplicate()
+		loop.append(rim[0])
+		ci.draw_polyline(loop, OUTLINE, 1.0)
+		if not to_cam:
+			_poly(ci, lid_open, wood.darkened(0.1))
+			for sa in [-0.62, 0.62]:
+				ci.draw_line(_iso(o, a * sa * hl + hinge_back, h), _iso(o, a * sa * hl - b * (hw + 0.16), h + 7.0), iron, 2.0)
+	else:
+		# полукруглая крышка полосками, от дальнего края к ближнему
+		var steps := 6
+		var order: Array = range(steps)
+		if to_cam:
+			order.reverse()
+		for i in order:
+			var t0 := PI * float(i) / float(steps)
+			var t1 := PI * float(i + 1) / float(steps)
+			var q0 := b * hw * cos(t0)
+			var q1 := b * hw * cos(t1)
+			var z0 := h + lid * sin(t0)
+			var z1 := h + lid * sin(t1)
+			var k := 0.8 + 0.32 * sin((t0 + t1) * 0.5)
+			_poly(ci, PackedVector2Array([_iso(o, -a * hl + q0, z0), _iso(o, a * hl + q0, z0),
+				_iso(o, a * hl + q1, z1), _iso(o, -a * hl + q1, z1)]), wood.lightened(0.08) * Color(k, k, k), false)
+		# торец крышки, что к зрителю
+		var cap := PackedVector2Array()
+		for i in steps + 1:
+			var th := PI * float(i) / float(steps)
+			cap.append(_iso(o, a * hl + b * hw * cos(th), h + lid * sin(th)))
+		_poly(ci, cap, wood * Color(0.8, 0.8, 0.8))
+		# контур крышки и полосы через неё
+		var arc_lo := 0.0 if to_cam else PI * 0.25
+		var arc_hi := PI * 0.75 if to_cam else PI
+		for sa in [-0.62, 0.62]:
+			var band := PackedVector2Array()
+			for i in 7:
+				var th := lerpf(arc_lo, arc_hi, float(i) / 6.0)
+				band.append(_iso(o, a * sa * hl + b * hw * cos(th), h + lid * sin(th)))
+			ci.draw_polyline(band, iron, 2.0)
+		var ridge := PackedVector2Array([_iso(o, -a * hl, h + lid), _iso(o, a * hl, h + lid)])
+		ci.draw_polyline(ridge, wood.lightened(0.3), 1.0)
+		var near := b if to_cam else -b
+		ci.draw_line(_iso(o, -a * hl + near * hw, h), _iso(o, a * hl + near * hw, h), OUTLINE, 1.0)
+		if to_cam:   # замок
+			var lk := _iso(o, b * hw, h - 1.0)
+			ci.draw_rect(Rect2(lk + Vector2(-2, -1), Vector2(4, 5)), OUTLINE)
+			ci.draw_rect(Rect2(lk + Vector2(-1, 0), Vector2(2, 3)), Color("d8b050"))
+			ci.draw_rect(Rect2(lk + Vector2(0, 1), Vector2(1, 1)), OUTLINE)
+	var w := (hl + hw) * 16.0 + 2.0
+	return Rect2(o + Vector2(-w, -top_z - (hl + hw) * 8.0 - 2.0), Vector2(w * 2.0, top_z + (hl + hw) * 16.0 + 4.0))
+
+
 # --- Здания ------------------------------------------------------------------------------
 
 const BUILDINGS := {

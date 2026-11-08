@@ -113,37 +113,74 @@
       {
         "id": "chest_headman",
         "name": "Сундук старосты",
-        "dialogue": "chest_headman"
+        "container": {
+          "text": "Тяжёлый окованный сундук. Под парадным кафтаном лежит кошель с медью и бутыль лампадного масла.",
+          "gold": 15,
+          "items": {
+            "lamp_oil": 1
+          }
+        }
       },
       {
         "id": "chest_korn",
         "name": "Сундук Корнов",
-        "dialogue": "chest_korn"
+        "container": {
+          "text": "Деревянные мечи, вырезанные для мальчишки, аккуратно сложены на дне. Рядом в холстине поминальный хлеб, приготовленный на всех, кто придёт помянуть Ладо.",
+          "items": {
+            "funeral_bread": 2
+          }
+        }
       },
       {
         "id": "chest_fisher",
         "name": "Короб рыбака",
-        "dialogue": "chest_fisher"
+        "container": {
+          "text": "Сети, крючки и просмолённая верёвка. На самом дне дёгтевый факел и пара монет.",
+          "gold": 6,
+          "items": {
+            "tar_torch": 1
+          }
+        }
       },
       {
         "id": "chest_potter",
         "name": "Сундук гончара",
-        "dialogue": "chest_potter"
+        "container": {
+          "text": "Солома и битые черепки, а среди них целая глиняная копилка. Внутри звенит.",
+          "gold": 12,
+          "items": {}
+        }
       },
       {
         "id": "chest_family",
         "name": "Сундук Бжезинских",
-        "dialogue": "chest_family"
+        "container": {
+          "text": "Праздничная скатерть, пряжа и узелок с сухарями и сыром.",
+          "gold": 4,
+          "items": {
+            "funeral_bread": 1
+          }
+        }
       },
       {
         "id": "chest_baker",
         "name": "Ларь пекаря",
-        "dialogue": "chest_baker"
+        "container": {
+          "text": "Мешки с мукой и каравай, ещё тёплый с вечерней выпечки.",
+          "items": {
+            "funeral_bread": 2
+          }
+        }
       },
       {
         "id": "chest_barn",
         "name": "Ящик в амбаре",
-        "dialogue": "chest_barn"
+        "container": {
+          "text": "Вилы, мешки с зерном и две бутыли масла для фонарей.",
+          "items": {
+            "lamp_oil": 2
+          }
+        }
       }
     ],
     "encounters": []

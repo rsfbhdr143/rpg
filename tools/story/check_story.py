@@ -172,7 +172,12 @@ for lid, loc in locations.items():
     if "on_enter" in loc:
         check_dialogue_ref(loc["on_enter"], f"loc {lid}.on_enter")
     for obj in loc.get("objects", []):
-        check_dialogue_ref(obj["dialogue"], f"loc {lid}.{obj['id']}")
+        if "container" in obj:   # сундук: вещи из него берут в окне, разговора у него нет
+            for item_id in obj["container"].get("items", {}):
+                if item_id not in items:
+                    errors.append(f"loc {lid}.{obj['id']}: в сундуке нет предмета '{item_id}'")
+        else:
+            check_dialogue_ref(obj["dialogue"], f"loc {lid}.{obj['id']}")
         if "if" in obj:
             check_cond(obj["if"], f"loc {lid}.{obj['id']}")
     for enc in loc.get("encounters", []):

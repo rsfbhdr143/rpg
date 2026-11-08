@@ -19,7 +19,7 @@ func _initialize() -> void:
 		"test_exploration", "test_events", "test_sprites", "test_balance", "test_party_and_explore_skills",
 		"test_traps_and_surfaces", "test_houses_and_travel", "test_walking", "test_corners", "test_village", "test_join_combat",
 		"test_physical_skills", "test_notice_board", "test_tooltips_text", "test_attack_villagers", "test_cleric_skills",
-		"test_loot", "test_equipment_slots", "test_trade",
+		"test_loot", "test_chests", "test_equipment_slots", "test_trade",
 	]:
 		GameData.rng.seed = 12345
 		GameLog.clear()
@@ -1265,6 +1265,44 @@ func test_loot() -> void:
 	s.goto_location("village", "from_forest")
 	var forest_loot: Dictionary = s._locations["forest"]["loot"]
 	check(forest_loot.size() == left and s.items == items_before, "уходя по сюжету, сами ничего не берут: тела ждут обыска")
+
+
+func test_chests() -> void:
+	print("chests: open into the loot window, take coins and things by hand, an emptied chest stays open")
+	var s := _story_session()
+	var h: Character = s.heroes[0]
+	var chest := {}
+	for o in s.visible_objects():
+		if str(o.get("id", "")) == "chest_headman":
+			chest = o
+	check(not chest.is_empty() and chest.has("container") and not chest.has("dialogue"), "сундук старосты — сундук, а не разговор")
+	if chest.is_empty():
+		return
+	var gold := s.gold
+	var oil := int(s.items.get("lamp_oil", 0))
+	GameEvents.clear()
+	check(s.submit(1, {"type": "talk", "unit": h.uid, "object": "chest_headman"}) == "", "подойти к сундуку")
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "loot_open" and str(ev.get("corpse", "")) == "obj:chest_headman"),
+		"открывается окно сундука")
+	check(s.gold == gold and int(s.items.get("lamp_oil", 0)) == oil, "само ничего в сумку не падает")
+	var bag: Dictionary = s.loot.get("obj:chest_headman", {})
+	check(int(bag.get("gold", 0)) == 15 and int((bag.get("items", {}) as Dictionary).get("lamp_oil", 0)) == 1, "в сундуке 15 монет и масло")
+	var mirror := GameSession.new()
+	mirror.load_snapshot(s.snapshot())
+	check(mirror.loot.has("obj:chest_headman"), "клиент видит, что лежит в сундуке")
+	check(s.submit(1, {"type": "loot_take", "unit": h.uid, "corpse": "obj:chest_headman", "item": "gold"}) == "" and s.gold == gold + 15,
+		"монеты взяты по щелчку")
+	s.submit(1, {"type": "loot_take", "unit": h.uid, "corpse": "obj:chest_headman", "item": "all"})
+	check(int(s.items.get("lamp_oil", 0)) == oil + 1, "масло взято")
+	bag = s.loot.get("obj:chest_headman", {})
+	check(not bag.is_empty() and int(bag["gold"]) == 0 and (bag["items"] as Dictionary).is_empty(), "пустой сундук остаётся")
+	GameEvents.clear()
+	s.submit(1, {"type": "talk", "unit": h.uid, "object": "chest_headman"})
+	check(GameEvents.list.any(func(ev): return str(ev["type"]) == "loot_open") and s.gold == gold + 15, "второй раз открывается пустым")
+	var old := _story_session()
+	old.flags["looted:chest_korn"] = true
+	old.submit(1, {"type": "talk", "unit": old.heroes[0].uid, "object": "chest_korn"})
+	check((old.loot.get("obj:chest_korn", {}).get("items", {"x": 1}) as Dictionary).is_empty(), "в старом сохранении обысканный сундук пуст")
 
 
 func test_equipment_slots() -> void:
