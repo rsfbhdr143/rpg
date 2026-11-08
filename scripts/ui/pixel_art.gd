@@ -683,6 +683,10 @@ static func _poly(ci: CanvasItem, pts: PackedVector2Array, col: Color, outline :
 ## front — куда смотрит замок ((1,0), (-1,0), (0,1) или (0,-1)), open — крышка откинута, внутри пусто.
 static func draw_chest(ci: CanvasItem, o: Vector2, front: Vector2i, open: bool) -> Rect2:
 	var b := Vector2(front)                    # поперёк сундука, к замку
+	if open and b.dot(Vector2(1, 1)) < 0.0:
+		# открытый сундук всегда откинут крышкой от зрителя: откинутая к нам, она закрывает нутро
+		# и выглядит отогнутой стенкой; ящик симметричен, а замок у открытого не рисуется
+		b = -b
 	var a := Vector2(absf(b.y), absf(b.x))     # вдоль сундука
 	var hl := 0.42                             # половина длины, клетки
 	var hw := 0.25                             # половина ширины, клетки
@@ -699,11 +703,11 @@ static func draw_chest(ci: CanvasItem, o: Vector2, front: Vector2i, open: bool) 
 		sh.append(o + Vector2(cos(ang) * 15.0, sin(ang) * 6.0 + 1.0))
 	ci.draw_colored_polygon(sh, Color(0, 0, 0, 0.28))
 	var top_z := h + (lid if not open else 7.0)
-	# откинутая крышка за ящиком рисуется раньше него
+	# откинутая крышка стоит за ящиком и рисуется раньше него
 	var hinge_back := -b * hw
 	var lid_open := PackedVector2Array([_iso(o, -a * hl + hinge_back, h), _iso(o, a * hl + hinge_back, h),
 		_iso(o, a * hl - b * (hw + 0.16), h + 7.0), _iso(o, -a * hl - b * (hw + 0.16), h + 7.0)])
-	if open and to_cam:
+	if open:
 		_poly(ci, lid_open, wood.darkened(0.35))
 		for sa in [-0.62, 0.62]:
 			ci.draw_line(_iso(o, a * sa * hl + hinge_back, h), _iso(o, a * sa * hl - b * (hw + 0.16), h + 7.0), iron, 2.0)
@@ -732,7 +736,7 @@ static func draw_chest(ci: CanvasItem, o: Vector2, front: Vector2i, open: bool) 
 			_iso(o, c.call(1.0, 1.0), h), _iso(o, c.call(-1.0, 1.0), h)])
 		_poly(ci, rim, Color("1e140c"))
 		# изнутри видны дальняя длинная стенка и дальний торец
-		var far := -b if to_cam else b
+		var far := -b
 		var p0 := _iso(o, -a * hl + far * hw, h)
 		var p1 := _iso(o, a * hl + far * hw, h)
 		var p2 := _iso(o, -a * hl - far * hw, h)
@@ -741,10 +745,6 @@ static func draw_chest(ci: CanvasItem, o: Vector2, front: Vector2i, open: bool) 
 		var loop := rim.duplicate()
 		loop.append(rim[0])
 		ci.draw_polyline(loop, OUTLINE, 1.0)
-		if not to_cam:
-			_poly(ci, lid_open, wood.darkened(0.1))
-			for sa in [-0.62, 0.62]:
-				ci.draw_line(_iso(o, a * sa * hl + hinge_back, h), _iso(o, a * sa * hl - b * (hw + 0.16), h + 7.0), iron, 2.0)
 	else:
 		# полукруглая крышка полосками, от дальнего края к ближнему
 		var steps := 6
