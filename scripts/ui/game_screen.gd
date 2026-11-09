@@ -1000,6 +1000,8 @@ func _world_tip() -> String:
 				if vis and session.mode == "explore":
 					if bool(o.get("waypoint", false)):
 						t += "\n[color=#a89a80]Путевой камень[/color]\n[color=#c8a060]ЛКМ — перенестись к другому камню[/color]"
+					elif o.has("container"):
+						t += "\n[color=#a89a80]Пусто[/color]" if world.container_empty(world.hover_object) else "\n[color=#c8a060]ЛКМ — открыть[/color]"
 					else:
 						t += "\n[color=#c8a060]ЛКМ — осмотреть[/color]"
 				return t

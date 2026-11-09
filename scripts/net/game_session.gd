@@ -27,7 +27,8 @@ extends RefCounted
 ##   {"type": "disarm", "unit": uid, "cell": [x, y]}     подойти к найденной ловушке и обезвредить
 ##   {"type": "travel", "to": id камня}                  перенестись к найденному путевому камню
 ##   {"type": "equip"/"unequip", "unit": uid, "item": id}   надеть в свою ячейку (прежний предмет — в сумку) / снять
-##   {"type": "loot", "unit": uid, "corpse": uid}        подойти к телу и обыскать (откроется окно добычи)
+##   {"type": "loot", "unit": uid, "corpse": uid}        подойти к телу и обыскать (откроется окно добычи); у сундука
+##                                                        corpse = "obj:<id>", а открывают его через talk с object
 ##   {"type": "loot_take", "unit": uid, "corpse": uid, "item": id | "all"}   взять с тела
 ##   {"type": "trade_buy"/"trade_sell", "unit": uid, "npc": id, "item": id}  купить у торговца / продать ему
 ##   {"type": "skill", "skill": id, "cell": [x, y]}     в бою — навык текущего героя;
@@ -1305,6 +1306,17 @@ func _cmd_talk(pid: int, cmd: Dictionary) -> String:
 		for dx in int(size[0]):
 			for dy in int(size[1]):
 				cells.append(oc + Vector2i(dx, dy))
+		if obj.has("container"):   # сундук: подойти и открыть, вещи берут из окна, как с тела
+			if not cells.any(func(c): return SurfaceGrid.distance(u.cell, c) <= 1):
+				var to_chest := _path_next_to(u, cells)
+				if to_chest.is_empty():
+					return "не подойти"
+				if _walk_party(u, to_chest) != "":
+					return ""
+			container_bag(oid)
+			GameEvents.add("loot_open", {"pid": pid, "corpse": "obj:" + oid, "unit": u.uid})
+			GameEvents.add("sfx", {"id": "chest_open"})
+			return ""
 		if bool(obj.get("waypoint", false)):
 			if not cells.any(func(c): return SurfaceGrid.distance(u.cell, c) <= 1):
 				var path := _path_next_to(u, cells)
@@ -1565,6 +1577,26 @@ static func _roll_count(v: Variant) -> int:
 	return maxi(1, int(v))
 
 
+## Сундук или ящик (у предмета локации есть "container": text, gold, items). Его содержимое лежит в loot
+## под ключом "obj:<id>" рядом с мешками с тел и сохраняется вместе с локацией.
+func container_bag(oid: String) -> Dictionary:
+	var key := "obj:" + oid
+	if loot.has(key):
+		return loot[key]
+	for o in visible_objects():
+		if str(o.get("id", "")) != oid or not o.has("container"):
+			continue
+		var def: Dictionary = o["container"]
+		var bag := {"cell": o["cell"], "name": str(o.get("name", oid)), "text": str(def.get("text", "")),
+			"items": (def.get("items", {}) as Dictionary).duplicate(), "gold": int(def.get("gold", 0)), "container": true}
+		if flags.has("looted:" + oid):   # сохранение тех времён, когда сундук открывался разговором
+			bag["items"] = {}
+			bag["gold"] = 0
+		loot[key] = bag
+		return bag
+	return {}
+
+
 ## Взять с тела всё или один предмет ("gold" — деньги). Пустой мешок исчезает.
 func _take_loot(corpse: String, what: String) -> void:
 	var bag: Dictionary = loot.get(corpse, {})
@@ -1578,8 +1610,8 @@ func _take_loot(corpse: String, what: String) -> void:
 		if what == "all" or what == str(id):
 			give_item(str(id), int(its[id]))
 			its.erase(id)
-	if int(bag["gold"]) <= 0 and its.is_empty():
-		loot.erase(corpse)
+	if int(bag["gold"]) <= 0 and its.is_empty() and not bool(bag.get("container", false)):
+		loot.erase(corpse)   # пустой мешок исчезает, пустой сундук остаётся открытым
 	GameEvents.add("loot_taken", {"corpse": corpse, "empty": not loot.has(corpse)})
 	GameEvents.add("sfx", {"id": "pickup"})
 

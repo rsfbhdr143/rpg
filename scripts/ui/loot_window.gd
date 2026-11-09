@@ -1,6 +1,7 @@
 extends PanelContainer
-## Окно добычи: что лежит на теле. Щелчок по предмету — взять его, «Взять всё» — забрать всё (команды loot_take).
-## Закрывается само, когда мешок опустел или партия ушла.
+## Окно добычи: что лежит на теле или в сундуке. Щелчок по предмету — взять его, «Взять всё» — забрать всё
+## (команды loot_take). С тела окно закрывается само, когда мешок опустел; сундук остаётся открытым, пустым.
+## Закрывается и когда партия ушла.
 
 const ItemGrid := preload("res://scripts/ui/item_grid.gd")
 const Describe := preload("res://scripts/ui/describe.gd")
@@ -9,7 +10,9 @@ var screen: Node
 var corpse := ""
 var unit := ""
 var _title: Label
+var _text: Label
 var _grid: ItemGrid
+var _take_all: Button
 var _key := ""
 
 
@@ -24,6 +27,11 @@ func _ready() -> void:
 	_title = UiTheme.label("Добыча", 22, UiTheme.GOLD, "title")
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(_title)
+	_text = UiTheme.label("", 15, UiTheme.TEXT_DIM)
+	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_text.custom_minimum_size = Vector2(340, 0)
+	root.add_child(_text)
 	var page := PanelContainer.new()
 	page.add_theme_stylebox_override("panel", UiTheme.parchment(6))
 	root.add_child(page)
@@ -38,7 +46,8 @@ func _ready() -> void:
 	var row := UiTheme.hbox(10)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	root.add_child(row)
-	row.add_child(UiTheme.button("Взять всё", func() -> void: _take("all"), 18))
+	_take_all = UiTheme.button("Взять всё", func() -> void: _take("all"), 18)
+	row.add_child(_take_all)
 	row.add_child(UiTheme.button("Закрыть", close, 18))
 
 
@@ -73,7 +82,8 @@ func _process(_delta: float) -> void:
 	if key == _key:
 		return
 	_key = key
-	_title.text = "Тело: %s" % str(bag.get("name", ""))
+	var chest := bool(bag.get("container", false))
+	_title.text = str(bag.get("name", "")) if chest else "Тело: %s" % str(bag.get("name", ""))
 	var list: Array = []
 	if int(bag.get("gold", 0)) > 0:
 		list.append({"id": "gold", "count": int(bag["gold"])})
@@ -81,3 +91,6 @@ func _process(_delta: float) -> void:
 	for id in its:
 		list.append({"id": str(id), "count": int(its[id])})
 	_grid.set_entries(list)
+	_take_all.disabled = list.is_empty()
+	_text.text = str(bag.get("text", "")) if not list.is_empty() else "Пусто: всё, что здесь было, вы уже забрали."
+	_text.visible = chest

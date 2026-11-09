@@ -12,3 +12,6 @@ assets/audio/game-music/*.flac
 assets/audio/game-music/*.m4a
 art/nano/jobs/
 art/nano/out/
+# снимки обхода интерфейса и пакеты для выгрузки (кладутся в рабочую папку на ПК)
+shots*/
+drop/

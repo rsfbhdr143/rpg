@@ -30,6 +30,10 @@ func _run() -> void:
 	if i >= 0 and i + 1 < args.size() and DisplayServer.get_name() != "headless":
 		shots_dir = args[i + 1]
 		DirAccess.make_dir_recursive_absolute(shots_dir)
+		# папка снимков может лежать внутри проекта: Godot не должен их импортировать и класть в сборку
+		var gi := FileAccess.open(shots_dir.path_join(".gdignore"), FileAccess.WRITE)
+		if gi != null:
+			gi.close()
 	net = root.get_node_or_null("Net")
 	if net == null:
 		printerr("UI TOUR: нет автозагрузки Net")
@@ -144,6 +148,45 @@ func _run() -> void:
 		await _wait(1.5)
 		await _shot("15_trade")
 		screen.call("open_panel", "")
+		# сундук старосты: окно с монетами и маслом, потом пустой открытый сундук в доме
+		var sel := str(screen.get("selected_uid"))
+		net.call("send_command", {"type": "talk", "unit": sel, "object": "chest_headman"})
+		await _wait(9.0)
+		await _shot("15_chest")
+		net.call("send_command", {"type": "loot_take", "unit": sel, "corpse": "obj:chest_headman", "item": "all"})
+		await _wait(1.0)
+		await _shot("15_chest_empty")
+		screen.call("open_panel", "")
+		# отряд отходит вбок, не выходя из комнаты (иначе дом снова закроется рисунком), камера на сундуке
+		var cc := Vector2i(-99, -99)
+		var chest_bag: Dictionary = s.loot.get("obj:chest_headman", {})
+		if not chest_bag.is_empty():
+			cc = GameSession._cell_of(chest_bag["cell"])
+		var houses: Array = world_node.get("houses")
+		var lead: Character = s.unit_by_uid(sel)
+		var aside := Vector2i(-99, -99)
+		var aside_score := -1
+		for dx in range(-4, 5):
+			for dy in range(-4, 5):
+				var c := cc + Vector2i(dx, dy)
+				if maxi(absi(dx), absi(dy)) < 2 or not s.grid.is_walkable(c) or s.unit_at(c) != null:
+					continue
+				if not houses.any(func(h): return BuildingArt.is_room(h, c)):
+					continue
+				var score := absi(dx - dy) * 2 + maxi(absi(dx), absi(dy))   # вбок по экрану, а не перед сундуком
+				if lead != null and s.grid.find_path(lead.cell, c).size() > 9:
+					continue
+				if score > aside_score:
+					aside = c
+					aside_score = score
+		if aside_score >= 0:
+			net.call("send_command", {"type": "move", "unit": sel, "cell": [aside.x, aside.y]})
+			await _wait(4.0)
+		if cc.x > -99:
+			world_node.set("pan", WorldView.cell_center(cc) + Vector2(0, -8) - (world_node.get("focus") as Vector2))
+		await _wait(1.0)
+		await _shot("15_chest_world")
+		world_node.set("pan", Vector2.ZERO)
 
 	# лес: через брод и выход на краю деревни, потом бой; курган
 	await _walk_exit("forest", "16_village_ford", "20_forest")
