@@ -737,8 +737,11 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
                 continue
             tileset = ov.get("kind") == "tileset" or (ov.get("kind") is None and "tileset" in own)
             tile_like = tileset or bool({"tile", "tileset"} & (own | around))
+            # рисованный портрет или значок — всегда одна картинка: пиксель-арт с ровными блоками иначе
+            # принимается за плотный лист кадров и режется на куски
             sl = slice_image(frames[0][0], info, ov, tileset,
-                             periodic_ok=not tile_like and path.suffix.lower() not in (".jpg", ".jpeg"))
+                             periodic_ok=not tile_like and not ov.get("painted")
+                             and path.suffix.lower() not in (".jpg", ".jpeg"))
             if tile_like and sl.layout == "single":
                 sl = slice_image(frames[0][0], info, dict(ov, background="keep"), tileset, periodic_ok=False)
             count = sum(len(r) for r in sl.rows)

@@ -5,7 +5,8 @@ Gemini рисует портреты гладко и ярко, «как нейр
               в тенях перекрёстная штриховка, контуры тушью; тёмно-коричневые чернила на пергаменте;
   medallion — та же гравюра в овальной рамке, снаружи сетка штрихов;
   coloured  — та же гравюра поверх приглушённой акварельной заливки (как дома и персонажи на карте);
-  pixel     — пиксель-арт 64×64 на 24 цвета, в масштабе игры.
+  pixel     — пиксель-арт 64×64 на 24 цвета, в масштабе игры;
+  pixel_grid — готовый пиксель-арт (например, от Gemini) на ровную сетку 120 точек, хранится вдвое крупнее.
 
 Запуск: python tools/art/portrait_style.py engraving картинки... --out папка [--size 264] [--lines 44]
 """
@@ -175,7 +176,18 @@ def pixel(img: Image.Image, size: int = 64, colors: int = 24) -> Image.Image:
     return q.convert("RGB")
 
 
-STYLES = {"engraving": engraving, "medallion": medallion, "coloured": coloured, "pixel": pixel}
+def pixel_grid(img: Image.Image, size: int = 120, colors: int = 40, store: int = 2) -> Image.Image:
+    """Пиксель-арт от Gemini на ровную сетку: точки у него «плавают» и после уменьшения до 120 размазываются.
+    Уменьшаем усреднением ровно до size точек (столько портрет занимает в окне диалога), сводим к палитре без
+    растра и храним увеличенным в store раз без сглаживания: в окне 120 точек каждая точка остаётся точкой."""
+    src = img.convert("RGB")
+    src = src.filter(ImageFilter.UnsharpMask(radius=max(1, src.width / 400), percent=60, threshold=2))
+    small = src.resize((size, size), Image.BOX)
+    q = small.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).convert("RGB")
+    return q.resize((size * store, size * store), Image.NEAREST)
+
+
+STYLES = {"engraving": engraving, "medallion": medallion, "coloured": coloured, "pixel": pixel, "pixel_grid": pixel_grid}
 
 
 def main() -> None:
@@ -191,7 +203,7 @@ def main() -> None:
     for f in a.files:
         im = Image.open(f)
         kw = {"size": a.size} if a.size else {}
-        if a.lines and a.style != "pixel":
+        if a.lines and not a.style.startswith("pixel"):
             kw["lines"] = a.lines
         res = STYLES[a.style](im, **kw)
         res.save(out / (Path(f).stem + ".png"), optimize=True)

@@ -323,6 +323,19 @@ class ImportTest(unittest.TestCase):
         self.assertGreater(h["boy"], h["man"] * 0.6)
         self.assertEqual(h["girl"], h["boy"])
 
+    def test_painted_pixel_portrait_stays_whole(self):
+        """Пиксельный портрет (блоки 2×2, мало цветов) с подсказкой painted не режется на кадры."""
+        rng = np.random.default_rng(1)
+        small = rng.integers(0, 6, (60, 60))
+        pal = np.array([[30, 20, 15], [90, 60, 40], [160, 120, 80], [200, 180, 150], [60, 80, 100], [120, 40, 30]])
+        img = Image.fromarray(pal[small].astype(np.uint8)).resize((120, 120), Image.NEAREST)
+        self.put("nano/portraits/portrait_x.png", img)
+        (self.inbox / "nano/portraits/portrait_x.art.json").write_text(json.dumps(
+            {"kind": "portrait", "painted": True, "crop": False, "background": "keep", "max_side": 120}))
+        res = self.run_import()
+        self.assertEqual(res["catalog"]["portrait_x"]["count"], 1)
+        self.assertEqual(res["catalog"]["portrait_x"]["frame"], [120, 120])
+
     def test_names(self):
         n = import_art.parse_name("femaleAdventurer_walk3")
         self.assertEqual((n.base, n.anim, n.number), (["female", "adventurer"], "walk", 3))

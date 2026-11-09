@@ -4214,17 +4214,16 @@
    "sheet": "res://art/sprites/portrait_agata.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_agata.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4240,17 +4239,16 @@
    "sheet": "res://art/sprites/portrait_bolek.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_bolek.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4266,17 +4264,16 @@
    "sheet": "res://art/sprites/portrait_bozhena.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_bozhena.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4292,17 +4289,16 @@
    "sheet": "res://art/sprites/portrait_cleric.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_cleric.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4318,17 +4314,16 @@
    "sheet": "res://art/sprites/portrait_gunter.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_gunter.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4344,17 +4339,16 @@
    "sheet": "res://art/sprites/portrait_hanna.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_hanna.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4370,17 +4364,16 @@
    "sheet": "res://art/sprites/portrait_jacek.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_jacek.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4396,17 +4389,16 @@
    "sheet": "res://art/sprites/portrait_knight.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_knight.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4422,17 +4414,16 @@
    "sheet": "res://art/sprites/portrait_lado.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_lado.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4448,17 +4439,16 @@
    "sheet": "res://art/sprites/portrait_lado_ghost.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_lado_ghost.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4474,17 +4464,16 @@
    "sheet": "res://art/sprites/portrait_marta.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_marta.png"
    ],
-   "scale": 0.6718,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4500,17 +4489,16 @@
    "sheet": "res://art/sprites/portrait_matey.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_matey.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4526,17 +4514,16 @@
    "sheet": "res://art/sprites/portrait_mukhoglot.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_mukhoglot.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4552,17 +4539,16 @@
    "sheet": "res://art/sprites/portrait_pipin.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_pipin.png"
    ],
-   "scale": 0.6718,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4578,17 +4564,16 @@
    "sheet": "res://art/sprites/portrait_ranger.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_ranger.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4604,17 +4589,16 @@
    "sheet": "res://art/sprites/portrait_savka.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_savka.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4630,17 +4614,16 @@
    "sheet": "res://art/sprites/portrait_shmyg.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_shmyg.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4656,17 +4639,16 @@
    "sheet": "res://art/sprites/portrait_stefan.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_stefan.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4682,17 +4664,16 @@
    "sheet": "res://art/sprites/portrait_sych.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_sych.png"
    ],
-   "scale": 0.6718,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4708,17 +4689,16 @@
    "sheet": "res://art/sprites/portrait_tadeush.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_tadeush.png"
    ],
-   "scale": 0.6718,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4734,17 +4714,16 @@
    "sheet": "res://art/sprites/portrait_tomash.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_tomash.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4760,17 +4739,16 @@
    "sheet": "res://art/sprites/portrait_vetla.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_vetla.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4786,17 +4764,16 @@
    "sheet": "res://art/sprites/portrait_vlasta.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_vlasta.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4812,17 +4789,16 @@
    "sheet": "res://art/sprites/portrait_wizard.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_wizard.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4838,17 +4814,16 @@
    "sheet": "res://art/sprites/portrait_yurek.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_yurek.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4864,17 +4839,16 @@
    "sheet": "res://art/sprites/portrait_zaraza.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_zaraza.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
@@ -4890,17 +4864,16 @@
    "sheet": "res://art/sprites/portrait_zbyszek.png",
    "kind": "portrait",
    "frame": [
-    264,
-    264
+    240,
+    240
    ],
    "pad": 1,
    "cols": 1,
    "count": 1,
-   "pixel_art": false,
+   "pixel_art": true,
    "source": [
     "nano/portraits/portrait_zbyszek.png"
    ],
-   "scale": 0.5,
    "painted": true,
    "opaque": true,
    "animations": {
