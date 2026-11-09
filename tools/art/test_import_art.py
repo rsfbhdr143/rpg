@@ -310,6 +310,19 @@ class ImportTest(unittest.TestCase):
         self.assertEqual(chests, ["prop_chest"])
         self.assertEqual(res["catalog"]["prop_chest"]["source"], ["nano/props/prop_chest.png"])
 
+    def test_children_are_smaller(self):
+        """settings.children и подсказка "child": ребёнок меньше взрослого из такой же картинки."""
+        (self.root / "data" / "sprites.json").write_text(json.dumps({"settings": {
+            "pixelate": {"unit": 50}, "children": ["boy"], "child_scale": 0.7}}))
+        for name in ("man", "boy", "girl"):
+            self.put("nano/units/%s.png" % name, figure((144, 200)))
+        (self.inbox / "nano/units/girl.art.json").write_text(json.dumps({"kind": "unit", "child": True}))
+        res = self.run_import()
+        h = {k: res["catalog"][k]["frame"][1] for k in ("man", "boy", "girl")}
+        self.assertLess(h["boy"], h["man"] * 0.8)
+        self.assertGreater(h["boy"], h["man"] * 0.6)
+        self.assertEqual(h["girl"], h["boy"])
+
     def test_names(self):
         n = import_art.parse_name("femaleAdventurer_walk3")
         self.assertEqual((n.base, n.anim, n.number), (["female", "adventurer"], "walk", 3))

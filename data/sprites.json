@@ -16,7 +16,11 @@
       "tile_colors": 12,
       "outline": true
     },
-    "sprites_face": "right"
+    "sprites_face": "right",
+    "children": [
+      "yurek"
+    ],
+    "child_scale": 0.72
   },
   "units": {
     "goblin_warrior": "goblin_warrior",

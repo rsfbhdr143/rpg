@@ -6596,8 +6596,8 @@
    "sheet": "res://art/sprites/yurek.png",
    "kind": "unit",
    "frame": [
-    39,
-    53
+    29,
+    39
    ],
    "pad": 1,
    "cols": 1,
@@ -6606,7 +6606,7 @@
    "source": [
     "nano/units/yurek.png"
    ],
-   "scale": 0.3978,
+   "scale": 0.2891,
    "animations": {
     "idle": {
      "start": 0,

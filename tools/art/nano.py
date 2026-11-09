@@ -668,12 +668,28 @@ def bg_mask(a: np.ndarray, bg) -> np.ndarray:
         cand = (r > 150) & (b > 150) & (g < 120) & (np.abs(r - b) < 90)
     else:
         cand = (a.min(axis=2) > 228) & ((a.max(axis=2) - a.min(axis=2)) < 24)
-    lab, _ = ndimage.label(cand)
+    lab, n = ndimage.label(cand)
     edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
     bgm = np.isin(lab, list(edge))
     if tuple(bg) == MAGENTA:
         bgm |= cand                     # пурпур между ногами и в просветах — тоже фон
+    elif n:
+        bgm |= np.isin(lab, paper_holes(a, lab, n, edge))
     return bgm
+
+
+def paper_holes(a: np.ndarray, lab: np.ndarray, n: int, edge: set) -> list[int]:
+    """Просветы, замкнутые предметом (между столбами колодца, ветками, ножками скамьи): белая бумага листа,
+    не связанная с краем. Отличие от белой краски на предмете — почти чистый белый без оттенков и теней."""
+    from scipy import ndimage
+    ids = [i for i in range(1, n + 1) if i not in edge]
+    if not ids:
+        return []
+    lo = a.min(axis=2).astype(float)
+    size = ndimage.sum(np.ones_like(lo), lab, ids)
+    mean = ndimage.mean(lo, lab, ids)
+    std = ndimage.standard_deviation(lo, lab, ids)
+    return [i for i, s, m, d in zip(ids, size, mean, std) if s >= 6 and m >= 240 and d <= 16]
 
 
 def cutout(piece: Image.Image, bg) -> Image.Image:

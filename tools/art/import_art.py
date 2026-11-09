@@ -554,6 +554,7 @@ class Asset:
     painted: bool = False                            # из подсказки: не пикселизовать (портреты, значки из Nano Banana)
     max_side: int = 0                                # из подсказки: свой предел стороны кадра вместо MAX_FRAME_SIDE
     doors: bool = False                              # из подсказки: на доме нарисованы двери (игра свои не рисует)
+    child: bool = False                              # ребёнок: меньше взрослых (подсказка "child" или settings.children)
 
     def add_anim(self, anim: Anim) -> None:
         names = {a.name for a in self.anims}
@@ -725,6 +726,7 @@ def build_assets(files: list[tuple[Path, str]], log) -> list[Asset]:
             asset.painted = bool(ov.get("painted", False))
             asset.max_side = int(ov.get("max_side", 0))
             asset.doors = bool(ov.get("doors", False))
+            asset.child = bool(ov.get("child", False))
             frames = open_frames(path)
             if len(frames) > 1:                       # анимированный GIF / WebP
                 asset.kind = "effect" if "effect" in own | around else "unit"
@@ -1040,7 +1042,11 @@ def pixelize(pieces: list, size: tuple[int, int], colors: int, outline: bool, se
     return out
 
 
-def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None = None) -> dict | None:
+CHILD_SCALE = 0.72      # ребёнок ростом примерно в три четверти взрослого; меняется в settings.child_scale
+
+
+def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None = None,
+               child_scale: float = CHILD_SCALE) -> dict | None:
     """Складывает кадры спрайта в один лист: каждая анимация с новой строки, длинные переносятся."""
     if asset.tiles is not None:
         anims, frames, cols = [], asset.tiles, asset.cols
@@ -1082,7 +1088,11 @@ def pack_asset(asset: Asset, out_dir: Path, max_side: int, pixelate: dict | None
         max_side = asset.max_side
     if not pixel and pixelate is not None and asset.tiles is None and not asset.painted:
         target = asset.pixel_box or pixel_box(asset.kind, (fw, fh), pixelate)
+        if target is not None and asset.child:
+            target = (max(1, round(target[0] * child_scale)), max(1, round(target[1] * child_scale)))
     scale = min(1.0, max_side / max(fw, fh)) if target is None else min(1.0, target[0] / fw, target[1] / fh)
+    if target is None and asset.child:
+        scale *= child_scale
     tw, th = max(1, round(fw * scale)), max(1, round(fh * scale))
     while cols * (tw + 2 * PAD) > MAX_SHEET_SIDE or rows * (th + 2 * PAD) > MAX_SHEET_SIDE:
         scale *= 0.8
@@ -1508,9 +1518,13 @@ def run(root: Path, rebind: bool = False, max_side: int = MAX_FRAME_SIDE, quiet:
         files = collect(inbox, Path(tmp))
         log("Найдено файлов: %d" % len(files))
         assets = build_assets(files, log)
+        settings = bindings.get("settings", {})
+        children = set(settings.get("children", []))
+        child_scale = float(settings.get("child_scale", CHILD_SCALE))
         catalog, words, explicit = {}, {}, {}
         for a in assets:
-            entry = pack_asset(a, sprites, max_side, pixelate)
+            a.child = a.child or a.id in children
+            entry = pack_asset(a, sprites, max_side, pixelate, child_scale)
             if entry is None:
                 log("  ! %s: пустая картинка, пропущена" % a.id)
                 continue
